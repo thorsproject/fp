@@ -18,7 +18,7 @@ const LEVEL_MAP = {
 
 
 // Open-Meteo ECMWF Endpoint (Pressure Level Variablen) :contentReference[oaicite:2]{index=2}
-const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf&temperature_unit=celsius";
+const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf";
 
 // URL wird sonst zu lang -> wir splitten in Chunks
 const CHUNK_SIZE = 60;
@@ -55,8 +55,9 @@ const hourlyVars = [
 const url =
   `${ENDPOINT}?latitude=${encodeURIComponent(lats)}&longitude=${encodeURIComponent(lons)}` +
   `&hourly=${encodeURIComponent(hourlyVars)}` +
-  `&wind_speed_unit=ms&timezone=GMT`;
-
+  `&wind_speed_unit=ms` +
+  `&temperature_unit=celsius` +
+  `&timezone=GMT`;
 
   const res = await fetch(url);
   if (!res.ok) {
