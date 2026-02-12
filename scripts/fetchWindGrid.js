@@ -42,19 +42,20 @@ async function fetchChunk(points) {
   const lats = points.map(p => p.lat).join(",");
   const lons = points.map(p => p.lon).join(",");
 
-  // alle benötigten "current" Variablen in einem Request
-  const currentVars = [
-    "wind_speed_10m", "wind_direction_10m",
-    "wind_speed_925hPa", "wind_direction_925hPa",
-    "wind_speed_850hPa", "wind_direction_850hPa",
-    "wind_speed_700hPa", "wind_direction_700hPa",
-    "wind_speed_500hPa", "wind_direction_500hPa" 
-  ].join(",");
+  // alle benötigten "stündliche" Variablen in einem Request
+const hourlyVars = [
+  "wind_speed_10m", "wind_direction_10m",
+  "wind_speed_925hPa", "wind_direction_925hPa",
+  "wind_speed_850hPa", "wind_direction_850hPa",
+  "wind_speed_700hPa", "wind_direction_700hPa",
+  "wind_speed_500hPa", "wind_direction_500hPa"
+].join(",");
 
-  const url =
-    `${ENDPOINT}?latitude=${encodeURIComponent(lats)}&longitude=${encodeURIComponent(lons)}` +
-    `&current=${encodeURIComponent(currentVars)}` +
-    `&wind_speed_unit=ms&timezone=GMT`;
+const url =
+  `${ENDPOINT}?latitude=${encodeURIComponent(lats)}&longitude=${encodeURIComponent(lons)}` +
+  `&hourly=${encodeURIComponent(hourlyVars)}` +
+  `&wind_speed_unit=ms&timezone=GMT`;
+
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -85,19 +86,22 @@ async function main() {
     for (const item of list) {
       const lat = +item.latitude.toFixed(4);
       const lon = +item.longitude.toFixed(4);
-      const cur = item.current || {};
+      const h = item.hourly || {};
 
-      // pro Höhe einen Eintrag, wenn Werte vorhanden
+      // wir nehmen den ersten verfügbaren Zeitpunkt
+      // (alternativ: nächster zu "jetzt" – können wir später verfeinern)
       for (const [lvl, vars] of Object.entries(LEVEL_MAP)) {
-        const spd = cur[vars.spd];
-        const dir = cur[vars.dir];
+        const spdArr = h[vars.spd];
+        const dirArr = h[vars.dir];
+
+        const spd = Array.isArray(spdArr) ? spdArr[0] : undefined;
+        const dir = Array.isArray(dirArr) ? dirArr[0] : undefined;
 
         if (typeof spd === "number" && typeof dir === "number") {
           levelsOut[lvl].push({ lat, lon, speed: spd, deg: dir });
         }
       }
     }
-
     console.log(`Chunk ${i + 1}/${chunks.length} verarbeitet`);
   }
 
