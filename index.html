@@ -636,7 +636,7 @@ async function drawWindBarbsViewport() {
   if (!windOn) return;
 
   if (!windGrid) await loadWindGrid();
-  if (!windGrid?.points?.length) return;
+  if (!windGrid?.levels?.length) return;
 
   windLayer.clearLayers();
 
