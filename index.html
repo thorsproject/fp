@@ -633,6 +633,8 @@ function decimateByPixelGrid(points, minPx = 45) {
 }
 
 async function drawWindBarbsViewport() {
+  alert("Wind draw: " + selectedWindLevel);
+  
   if (!windOn) return;
 
   if (!windGrid) await loadWindGrid();
