@@ -5,6 +5,10 @@ on:
     - cron: '0 * * * *' # jede Stunde
   workflow_dispatch:   # manuell auslösbar
 
+concurrency:
+  group: update-weather
+  cancel-in-progress: true
+
 jobs:
   fetch-weather:
     runs-on: ubuntu-latest
@@ -26,7 +30,6 @@ jobs:
           node scripts/fetchWeather.js
           node scripts/fetchWindGrid.js
           node scripts/buildAirfieldsFromOurAirports.js
-
         env:
           OPENWEATHER_KEY: ${{ secrets.OPENWEATHER_KEY }}
 
@@ -34,8 +37,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
           git add data/weather.json data/windgrid.json data/airfields.json data/airfields_missing.txt
           git commit -m "Update weather data" || echo "No changes to commit"
+
+          git fetch origin main
+          git rebase origin/main || (git rebase --abort && git pull --rebase origin main)
+
           git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
