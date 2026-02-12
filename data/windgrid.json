@@ -1,0 +1,7 @@
+{
+  "generatedAt": 1770905592,
+  "meta": { "west": 5.5, "east": 16.5, "south": 47.0, "north": 55.5, "step": 0.5 },
+  "points": [
+    { "lat": 52.5, "lon": 13.4, "speed": 2.57, "deg": 140 }
+  ]
+}
