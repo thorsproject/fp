@@ -1,0 +1,20 @@
+{
+  "name": "Flight Planning",
+  "short_name": "FlightPlan",
+  "start_url": "flightplanningV1.html",
+  "display": "standalone",
+  "background_color": "#1b1f24",
+  "theme_color": "#1b1f24",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
