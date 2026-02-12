@@ -1,42 +1,33 @@
-const CACHE_NAME = 'flightplan-cache-v2';
-const FILES_TO_CACHE = [
-    '/index.html',
-    '/manifest.json',
-    '/icon-192.png',
-    '/icon-512.png',
-    // Falls du externe CSS/JS-Dateien hast, ebenfalls hier auflisten
+const CACHE_NAME = "flightplan-v1"; // <- bei jedem Release erhöhen
+
+const APP_SHELL = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./data/weather.json",
+  "./data/windgrid.json"
 ];
 
-self.addEventListener('install', evt => {
-    evt.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            console.log('Caching files...');
-            return cache.addAll(FILES_TO_CACHE);
-        })
-    );
-    self.skipWaiting();
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+  );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', evt => {
-    evt.waitUntil(
-        caches.keys().then(keyList => {
-            return Promise.all(
-                keyList.map(key => {
-                    if (key !== CACHE_NAME) {
-                        console.log('Removing old cache', key);
-                        return caches.delete(key);
-                    }
-                })
-            );
-        })
-    );
-    self.clients.claim();
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', evt => {
-    evt.respondWith(
-        caches.match(evt.request).then(resp => {
-            return resp || fetch(evt.request);
-        })
-    );
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => cached || fetch(event.request))
+  );
 });
