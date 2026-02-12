@@ -6,18 +6,19 @@ const STEP = 0.5;
 
 // Aviation-Auswahl -> Open-Meteo Ebenen
 // SFC = 10m. Die anderen mappen wir auf Druckflächen (ungefähr):
-// 25 ~ 925 hPa, 50 ~ 850 hPa, 75 fehlt, 100 ~ 700 hPa, 180 ~ 500 hPa
+// 25 ~ 925 hPa, 50 ~ 850 hPa, 80 ~ 750 hPa, 100 ~ 700 hPa, 180 ~ 500 hPa
 // (Open-Meteo stellt Wind auf Druckflächen bereit, z.B. wind_speed_925hPa.) :contentReference[oaicite:1]{index=1}
 const LEVEL_MAP = {
-  "SFC": { spd: "wind_speed_10m",  dir: "wind_direction_10m" },
-  "25":  { spd: "wind_speed_925hPa", dir: "wind_direction_925hPa" },
-  "50":  { spd: "wind_speed_850hPa", dir: "wind_direction_850hPa" },
-  "100":  { spd: "wind_speed_700hPa", dir: "wind_direction_700hPa" },
-  "180": { spd: "wind_speed_500hPa", dir: "wind_direction_500hPa" }
+  "SFC": { spd: "wind_speed_10m",  dir: "wind_direction_10m",  tmp: "temperature_2m" },
+  "25":  { spd: "wind_speed_925hPa", dir: "wind_direction_925hPa", tmp: "temperature_925hPa" },
+  "50":  { spd: "wind_speed_850hPa", dir: "wind_direction_850hPa", tmp: "temperature_850hPa" },
+  "100": { spd: "wind_speed_700hPa", dir: "wind_direction_700hPa", tmp: "temperature_700hPa" },
+  "180": { spd: "wind_speed_500hPa", dir: "wind_direction_500hPa", tmp: "temperature_500hPa" }
 };
 
+
 // Open-Meteo ECMWF Endpoint (Pressure Level Variablen) :contentReference[oaicite:2]{index=2}
-const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf";
+const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf&temperature_unit=celsius";
 
 // URL wird sonst zu lang -> wir splitten in Chunks
 const CHUNK_SIZE = 60;
@@ -44,11 +45,11 @@ async function fetchChunk(points) {
 
   // alle benötigten "stündliche" Variablen in einem Request
 const hourlyVars = [
-  "wind_speed_10m", "wind_direction_10m",
-  "wind_speed_925hPa", "wind_direction_925hPa",
-  "wind_speed_850hPa", "wind_direction_850hPa",
-  "wind_speed_700hPa", "wind_direction_700hPa",
-  "wind_speed_500hPa", "wind_direction_500hPa"
+  "wind_speed_10m", "wind_direction_10m", "temperature_2m",
+  "wind_speed_925hPa", "wind_direction_925hPa", "temperature_925hPa",
+  "wind_speed_850hPa", "wind_direction_850hPa", "temperature_850hPa",
+  "wind_speed_700hPa", "wind_direction_700hPa", "temperature_700hPa",
+  "wind_speed_500hPa", "wind_direction_500hPa", "temperature_500hPa"
 ].join(",");
 
 const url =
@@ -93,12 +94,16 @@ async function main() {
       for (const [lvl, vars] of Object.entries(LEVEL_MAP)) {
         const spdArr = h[vars.spd];
         const dirArr = h[vars.dir];
+        const tmpArr = h[vars.tmp];
 
         const spd = Array.isArray(spdArr) ? spdArr[0] : undefined;
         const dir = Array.isArray(dirArr) ? dirArr[0] : undefined;
+        const tmp = Array.isArray(tmpArr) ? tmpArr[0] : undefined;
 
         if (typeof spd === "number" && typeof dir === "number") {
-          levelsOut[lvl].push({ lat, lon, speed: spd, deg: dir });
+          const obj = { lat, lon, speed: spd, deg: dir };
+          if (typeof tmp === "number") obj.temp = tmp;
+          levelsOut[lvl].push(obj);
         }
       }
     }
