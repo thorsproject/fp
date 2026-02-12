@@ -480,176 +480,87 @@ const map = L.map('map').setView([51,10],6);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OSM'}).addTo(map);
 map.invalidateSize();
 setTimeout(()=>{ map.invalidateSize(); },200);
-map.on("zoomend", () => {
-    if (windOn) {
-        drawWindBarbs();
-    }
-});
 
-// ----- OpenWeatherMap Key -----
-const owmApiKey = 'mycode'; // <-- hier einfügen
 
-// Wetter Layer
-const cloudLayer = L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${owmApiKey}`, {opacity:0.5});
-const rainLayer = L.tileLayer(`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${owmApiKey}`, {opacity:0.5});
-let weatherOn=false;
-
-// Wind Layer
+// ------------------ WEATHER & WIND VIA JSON ------------------
+let weatherData = null;
+let cloudLayer = L.layerGroup();
+let rainLayer = L.layerGroup();
 let windLayer = L.layerGroup();
-let windOn=false;
+let weatherOn = false;
+let windOn = false;
 
-// ------------------ WEATHER & WIND ------------------
-document.getElementById("toggleWeather").addEventListener("click",()=>{
-    if(!weatherOn){ cloudLayer.addTo(map); rainLayer.addTo(map); weatherOn=true;}
-    else{ map.removeLayer(cloudLayer); map.removeLayer(rainLayer); weatherOn=false;}
-});
+async function loadWeatherData() {
+    try {
+        const res = await fetch("data/weather.json");
+        if (!res.ok) throw new Error("Weather JSON konnte nicht geladen werden");
+        weatherData = await res.json();
+        console.log("Weather JSON geladen:", weatherData);
+    } catch (err) {
+        console.error(err);
+    }
+}
 
-// ----- Wind Barbs -----
+function updateWeatherLayer() {
+    cloudLayer.clearLayers();
+    rainLayer.clearLayers();
+    if (!weatherData) return;
+
+    // Beispiel: Anzeige Wolken als Marker
+    const clouds = weatherData.clouds ? weatherData.clouds.all : 0;
+    const marker = L.marker([51,10]).bindPopup(`Clouds: ${clouds}%`);
+    cloudLayer.addLayer(marker);
+}
+
 function createWindBarb(speedKts, deg) {
-
-    const scale = getScaleByZoom();
-
-    let fullTriangles = Math.floor(speedKts / 50);
-    let fullBars = Math.floor((speedKts % 50) / 10);
-    let halfBars = Math.floor(((speedKts % 50) % 10) / 5);
-
-    let parts = '';
-    let y = 0;
-
-    const spacing = 8 * scale;
-    const barbLength = 20 * scale;
-
-    const mainColor = "#222";     // synoptik grau
-    const haloColor = "white";    // outline
-    const strokeMain = 3 * scale;
-    const strokeHalo = 6 * scale;
-
-    function drawLine(x1,y1,x2,y2){
-        return `
-        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
-              stroke="${haloColor}" stroke-width="${strokeHalo}"/>
-        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
-              stroke="${mainColor}" stroke-width="${strokeMain}"/>`;
-    }
-
-    function drawTriangle(yPos){
-        return `
-        <polygon points="0,${yPos} ${barbLength},${yPos+10*scale} 0,${yPos+20*scale}"
-                 fill="${haloColor}"/>
-        <polygon points="0,${yPos} ${barbLength},${yPos+10*scale} 0,${yPos+20*scale}"
-                 fill="${mainColor}"/>`;
-    }
-
-    // 50 kt
-    for (let i = 0; i < fullTriangles; i++) {
-        parts += drawTriangle(y);
-        y += (20 * scale) + spacing;
-    }
-
-    // 10 kt
-    for (let i = 0; i < fullBars; i++) {
-        parts += drawLine(0,y,barbLength,y);
-        y += spacing;
-    }
-
-    // 5 kt
-    for (let i = 0; i < halfBars; i++) {
-        parts += drawLine(0,y,barbLength/2,y);
-        y += spacing;
-    }
-
-    const stemLength = y + (40 * scale); //30
-
-    parts += drawLine(0,stemLength,0,0);
-
-    const size = 120 * scale; //120
-
-    return `
-    <svg width="${size}" height="${size}" viewBox="-55 -30 110 180"> //-50 -20 100 160
-        <g transform="rotate(${deg},0,${stemLength})">
-            ${parts}
-        </g>
-    </svg>`;
+    const scale = 1; // Zoom-skalierung anpassen
+    const stemLength = 40;
+    const parts = `<line x1="0" y1="${stemLength}" x2="0" y2="0" stroke="black" stroke-width="2"/>`;
+    return `<svg width="50" height="50" viewBox="-25 -25 50 50"><g transform="rotate(${deg},0,${stemLength})">${parts}</g></svg>`;
 }
 
-async function drawWindBarbs(){
-    if (!windOn) return;
+async function drawWindBarbs() {
+    if (!windOn || !weatherData) return;
     windLayer.clearLayers();
-    const bounds = map.getBounds();
-    // Abstand zwischen Barbs
-    let step;
-    const zoom = map.getZoom();
-    if (zoom <= 5) step = 5;
-    else if (zoom <= 7) step = 1.0; // Wert kleiner = mehr Pfeile
-    else if (zoom <= 9) step = 0.7; // Wert kleiner = mehr Pfeile
-    else if (zoom <= 11) step = 0.5; // Wert kleiner = mehr Pfeile
-    else step = 0.4; // Wert kleiner = mehr Pfeile
 
-    let points = [];
-    for (let lat = bounds.getSouth(); lat <= bounds.getNorth(); lat += step) {
-    	for (let lon = bounds.getWest(); lon <= bounds.getEast(); lon += step) {
-            points.push({lat, lon});
-        }
-    }
+    const speedKts = weatherData.wind.speed * 1.944;
+    const deg = weatherData.wind.deg;
 
-    const requests = points.map(async p=>{
-        try{
-            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${p.lat}&lon=${p.lon}&appid=${owmApiKey}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            if(!data.wind) return;
-            const speedKts = data.wind.speed * 1.944; // m/s -> kt
-            const deg = data.wind.deg; // echte Richtung
-            const svgIcon = L.divIcon({
-                className:'',
-                iconSize:[60,100],  // Pfeile größer oder kleiner
-		iconAnchor:[30,80],  // unterer Punkt ist Dreh-/Standpunkt
-                html: createWindBarb(speedKts, deg)
-            });
-            L.marker([p.lat,p.lon], {icon: svgIcon}).addTo(windLayer);
-        }catch(e){console.log(e);}
+    const svgIcon = L.divIcon({
+        className:'',
+        iconSize:[60,100],
+        iconAnchor:[30,80],
+        html: createWindBarb(speedKts, deg)
     });
 
-    await Promise.all(requests);
+    L.marker([51,10], {icon: svgIcon}).addTo(windLayer);
 }
 
-// Wind Button
-document.getElementById("toggleWind").addEventListener("click", async()=>{
-    if(!windOn){ await drawWindBarbs(); windLayer.addTo(map); windOn=true;}
-    else{ windLayer.clearLayers(); windOn=false;}
-
+// ------------------ BUTTONS ------------------
+document.getElementById("toggleWeather").addEventListener("click", async () => {
+    if (!weatherOn) {
+        if (!weatherData) await loadWeatherData();
+        updateWeatherLayer();
+        cloudLayer.addTo(map);
+        rainLayer.addTo(map);
+        weatherOn = true;
+    } else {
+        map.removeLayer(cloudLayer);
+        map.removeLayer(rainLayer);
+        weatherOn = false;
+    }
 });
 
-function getScaleByZoom() {
-    const zoom = map.getZoom();
-
-    if (zoom <= 5) return 0.6;
-    if (zoom <= 7) return 0.8;
-    if (zoom <= 9) return 1.0;
-    if (zoom <= 11) return 1.3;
-    return 1.6;
-}
-
-// ----- Toggle Funktion Leg 2-4 Ein/Aus -----
-document.querySelectorAll(".activeToggle").forEach(toggle => {
-
-    toggle.addEventListener("change", function() {
-
-        const frame = this.closest(".frame");
-        const fields = frame.querySelectorAll(".legField");
-
-        if (this.value === "inactive") {
-            fields.forEach(f => {
-                f.disabled = true;
-            });
-	    frame.classList.add("inactiveFields");
-        } else {
-            fields.forEach(f => {
-                f.disabled = false;
-            });
-	    frame.classList.remove("inactiveFields");
-        }
-    });
+document.getElementById("toggleWind").addEventListener("click", async () => {
+    if (!windOn) {
+        if (!weatherData) await loadWeatherData();
+        await drawWindBarbs();
+        windLayer.addTo(map);
+        windOn = true;
+    } else {
+        windLayer.clearLayers();
+        windOn = false;
+    }
 });
 
 // ------------------ INIT ------------------
