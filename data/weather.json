@@ -1,4 +1,48 @@
 {
-  "cod": 401,
-  "message": "Invalid API key. Please see https://openweathermap.org/faq#error401 for more info."
+  "coord": {
+    "lon": 13.405,
+    "lat": 52.52
+  },
+  "weather": [
+    {
+      "id": 500,
+      "main": "Rain",
+      "description": "light rain",
+      "icon": "10d"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 8.53,
+    "feels_like": 7.03,
+    "temp_min": 6.68,
+    "temp_max": 9.34,
+    "pressure": 978,
+    "humidity": 92,
+    "sea_level": 978,
+    "grnd_level": 973
+  },
+  "visibility": 10000,
+  "wind": {
+    "speed": 2.57,
+    "deg": 140
+  },
+  "rain": {
+    "1h": 0.56
+  },
+  "clouds": {
+    "all": 100
+  },
+  "dt": 1770905592,
+  "sys": {
+    "type": 2,
+    "id": 2011538,
+    "country": "DE",
+    "sunrise": 1770877747,
+    "sunset": 1770912738
+  },
+  "timezone": 3600,
+  "id": 6545310,
+  "name": "Mitte",
+  "cod": 200
 }
