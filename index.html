@@ -392,7 +392,6 @@ function saveTAC(d){ localStorage.setItem("tacData", JSON.stringify(d)); }
 const lfzSelect = document.getElementById("lfzSelect");
 const tacSelect = document.getElementById("tacSelect");
 const callSignDisplay = document.getElementById("callSignDisplay");
-const callSignDisplay2 = document.getElementById("callSignDisplay2");
 
 function loadLFZ(){
     lfzSelect.innerHTML = "<option value=''>-- wählen --</option>";
@@ -420,13 +419,10 @@ function updateCallSign(){
 
     if(tacVal !== ""){
         callSignDisplay.textContent = tacData[tacVal];
-        callSignDisplay2.textContent = tacData[tacVal];
     } else if(lfzVal !== ""){
         callSignDisplay.textContent = lfzData[lfzVal].cs;
-        callSignDisplay2.textContent = lfzData[lfzVal].cs;
     } else {
         callSignDisplay.textContent = "";
-        callSignDisplay2.textContent = "";
     }
 }
 
