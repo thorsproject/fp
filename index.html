@@ -486,78 +486,151 @@ let windLayer = L.layerGroup();
 let weatherOn = false;
 let windOn = false;
 
+let windGrid = null;
+
 async function loadWeatherData() {
-    try {
-        const res = await fetch("data/weather.json");
-        if (!res.ok) throw new Error("Weather JSON konnte nicht geladen werden");
-        weatherData = await res.json();
-        console.log("Weather JSON geladen:", weatherData);
-    } catch (err) {
-        console.error(err);
-    }
+  try {
+    const res = await fetch("data/weather.json");
+    if (!res.ok) throw new Error("Weather JSON konnte nicht geladen werden");
+    weatherData = await res.json();
+    console.log("Weather JSON geladen:", weatherData);
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-function updateWeatherLayer() {
-    cloudLayer.clearLayers();
-    rainLayer.clearLayers();
-    if (!weatherData) return;
+async function loadWindGrid() {
+  try {
+    const res = await fetch("data/windgrid.json?ts=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error("windgrid.json konnte nicht geladen werden");
+    windGrid = await res.json();
+    console.log("WindGrid geladen:", windGrid);
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-    // Beispiel: Anzeige Wolken als Marker
-    const clouds = weatherData.clouds ? weatherData.clouds.all : 0;
-    const marker = L.marker([51,10]).bindPopup(`Clouds: ${clouds}%`);
-    cloudLayer.addLayer(marker);
+// Testen, ob die JSON geladen wird
+loadWeatherData().then(() => {
+  console.log("Test: JSON Inhalt:", weatherData);
+});
+
+function updateWeatherLayer() {
+  cloudLayer.clearLayers();
+  rainLayer.clearLayers();
+  if (!weatherData) return;
+
+  const clouds = weatherData.clouds ? weatherData.clouds.all : 0;
+  const marker = L.marker([51,10]).bindPopup(`Clouds: ${clouds}%`);
+  cloudLayer.addLayer(marker);
 }
 
 function createWindBarb(speedKts, deg) {
-    const scale = 1; // Zoom-skalierung anpassen
-    const stemLength = 40;
-    const parts = `<line x1="0" y1="${stemLength}" x2="0" y2="0" stroke="black" stroke-width="2"/>`;
-    return `<svg width="50" height="50" viewBox="-25 -25 50 50"><g transform="rotate(${deg},0,${stemLength})">${parts}</g></svg>`;
+  const stemLength = 40;
+  const parts = `<line x1="0" y1="${stemLength}" x2="0" y2="0" stroke="black" stroke-width="2"/>`;
+  return `<svg width="50" height="50" viewBox="-25 -25 50 50"><g transform="rotate(${deg},0,${stemLength})">${parts}</g></svg>`;
 }
 
-async function drawWindBarbs() {
-    if (!windOn || !weatherData) return;
-    windLayer.clearLayers();
+function zoomToSampleStep(zoom) {
+  if (zoom <= 5) return 10; // 5°
+  if (zoom <= 7) return 2;  // 1°
+  if (zoom <= 9) return 1;  // 0.5°
+  return 1;                 // 0.5°
+}
 
-    const speedKts = weatherData.wind.speed * 1.944;
-    const deg = weatherData.wind.deg;
+function shouldKeepPoint(p, factor, baseStep) {
+  const latIdx = Math.round((p.lat - windGrid.meta.south) / baseStep);
+  const lonIdx = Math.round((p.lon - windGrid.meta.west) / baseStep);
+
+  const k = Math.max(1, Math.round(factor));
+  return (latIdx % k === 0) && (lonIdx % k === 0);
+}
+
+function decimateByPixelGrid(points, minPx = 45) {
+  const used = new Set();
+  const out = [];
+
+  for (const p of points) {
+    const pt = map.latLngToContainerPoint([p.lat, p.lon]);
+    const gx = Math.floor(pt.x / minPx);
+    const gy = Math.floor(pt.y / minPx);
+    const key = gx + "," + gy;
+
+    if (used.has(key)) continue;
+    used.add(key);
+    out.push(p);
+  }
+
+  return out;
+}
+
+async function drawWindBarbsViewport() {
+  if (!windOn) return;
+
+  if (!windGrid) await loadWindGrid();
+  if (!windGrid?.points?.length) return;
+
+  windLayer.clearLayers();
+
+  const bounds = map.getBounds();
+  const baseStep = windGrid.meta.step;
+  const factor = zoomToSampleStep(map.getZoom());
+
+  let pts = windGrid.points.filter(p =>
+    p.lat >= bounds.getSouth() &&
+    p.lat <= bounds.getNorth() &&
+    p.lon >= bounds.getWest() &&
+    p.lon <= bounds.getEast()
+  );
+
+  pts = pts.filter(p => shouldKeepPoint(p, factor, baseStep));
+  pts = decimateByPixelGrid(pts, 45);
+
+  for (const p of pts) {
+    const speedKts = p.speed * 1.944;
 
     const svgIcon = L.divIcon({
-        className:'',
-        iconSize:[60,100],
-        iconAnchor:[30,80],
-        html: createWindBarb(speedKts, deg)
+      className: '',
+      iconSize: [60, 100],
+      iconAnchor: [30, 80],
+      html: createWindBarb(speedKts, p.deg)
     });
 
-    L.marker([51,10], {icon: svgIcon}).addTo(windLayer);
+    L.marker([p.lat, p.lon], { icon: svgIcon }).addTo(windLayer);
+  }
 }
+
 
 // ------------------ BUTTONS ------------------
 document.getElementById("toggleWeather").addEventListener("click", async () => {
-    if (!weatherOn) {
-        if (!weatherData) await loadWeatherData();
-        updateWeatherLayer();
-        cloudLayer.addTo(map);
-        rainLayer.addTo(map);
-        weatherOn = true;
-    } else {
-        map.removeLayer(cloudLayer);
-        map.removeLayer(rainLayer);
-        weatherOn = false;
-    }
+  if (!weatherOn) {
+    if (!weatherData) await loadWeatherData();
+    updateWeatherLayer();
+    cloudLayer.addTo(map);
+    rainLayer.addTo(map);
+    weatherOn = true;
+  } else {
+    map.removeLayer(cloudLayer);
+    map.removeLayer(rainLayer);
+    weatherOn = false;
+  }
 });
 
 document.getElementById("toggleWind").addEventListener("click", async () => {
-    if (!windOn) {
-        if (!weatherData) await loadWeatherData();
-        await drawWindBarbs();
-        windLayer.addTo(map);
-        windOn = true;
-    } else {
-        windLayer.clearLayers();
-        windOn = false;
-    }
+  if (!windOn) {
+    windOn = true;
+    await drawWindBarbsViewport();
+    windLayer.addTo(map);
+  } else {
+    windLayer.clearLayers();
+    windOn = false;
+  }
 });
+
+map.on("zoomend moveend", () => {
+  if (windOn) drawWindBarbsViewport();
+});
+
 
 // ------------------ INIT ------------------
 loadLFZ();
@@ -569,6 +642,7 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js")
     .then(() => console.log("Service Worker registriert"));
 }
+
 </script>
 </body>
 </html>
