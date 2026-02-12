@@ -167,6 +167,18 @@ button:hover { background:#00aacc; }
     pointer-events:auto;
 }
 
+/* --- Aero Validation --- */
+.aero.invalid {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 4px rgba(255,77,77,0.7);
+}
+
+.aero-error {
+    font-size: 11px;
+    color: #ff8080;
+    margin-top: 2px;
+}
+
 </style>
 </head>
 <body>
@@ -347,6 +359,8 @@ button:hover { background:#00aacc; }
     </div>
   </div>
 
+  <datalist id="airfieldsList"></datalist>
+
   <!-- MAP -->
   <div class="map-frame" id="map"></div>
 </div>
@@ -386,8 +400,6 @@ function getTAC() {
         JSON.stringify(["CARCL","MADCT","PLSTC"])
     );
 }
-function saveLFZ(d){ localStorage.setItem("lfzData", JSON.stringify(d)); }
-function saveTAC(d){ localStorage.setItem("tacData", JSON.stringify(d)); }
 
 const lfzSelect = document.getElementById("lfzSelect");
 const tacSelect = document.getElementById("tacSelect");
@@ -429,47 +441,106 @@ function updateCallSign(){
 lfzSelect.addEventListener("change", updateCallSign);
 tacSelect.addEventListener("change", updateCallSign);
 
-// ------------------ INPUT RESTRICTIONS LEGS ------------------
-document.addEventListener("input", e=>{
-    if(e.target.classList.contains("time")) e.target.value=e.target.value.replace(/\D/g,"").slice(0,4);
-    if(e.target.classList.contains("aero")) e.target.value=e.target.value.replace(/[^a-zA-Z]/g,"").toUpperCase().slice(0,4);
-});
+// ------------------ AIRFIELDS DB + AUTOCOMPLETE + VALIDATION ------------------
+let icaoDB = {};
 
-// ------------------ ICAO DB für Marker & Linien ------------------
-const icaoDB = {
-  "EDDF":{lat:50.0333, lon:8.5706, name:"Frankfurt"},
-  "EDDM":{lat:48.3538, lon:11.7861, name:"München"},
-  "EDDH":{lat:53.6304, lon:9.9882, name:"Hamburg"},
-  "EDDS":{lat:48.6899, lon:9.2219, name:"Stuttgart"}
-};
-let markers = [];
-let legLines = [];
-
-function updateLegMarkers(){
-    markers.forEach(m=>map.removeLayer(m));
-    markers=[];
-    legLines.forEach(l=>map.removeLayer(l));
-    legLines=[];
-    const legInputs=document.querySelectorAll(".aero");
-    let coords=[];
-    legInputs.forEach(inp=>{
-        const val=inp.value.toUpperCase();
-        if(icaoDB[val]) coords.push([icaoDB[val].lat,icaoDB[val].lon]);
-        if(icaoDB[val]){
-            const m=L.marker([icaoDB[val].lat,icaoDB[val].lon]).addTo(map)
-                     .bindPopup(`${val} - ${icaoDB[val].name}`);
-            markers.push(m);
-        }
-    });
-    if(coords.length>1){
-        const poly=L.polyline(coords,{color:'cyan'}).addTo(map);
-        legLines.push(poly);
-        map.fitBounds(poly.getBounds(),{padding:[50,50]});
-    }
+async function loadAirfields() {
+  const res = await fetch("data/airfields.json?ts=" + Date.now(), { cache: "no-store" });
+  if (!res.ok) throw new Error("airfields.json konnte nicht geladen werden");
+  icaoDB = await res.json();
 }
-document.addEventListener("input", e=>{
-    if(e.target.classList.contains("aero")) updateLegMarkers();
+
+function buildAirfieldsDatalist() {
+  const dl = document.getElementById("airfieldsList");
+  if (!dl) return;
+
+  dl.innerHTML = "";
+
+  // Sortiert nach ICAO
+  const keys = Object.keys(icaoDB).sort();
+
+  for (const icao of keys) {
+    const a = icaoDB[icao];
+    const opt = document.createElement("option");
+    // value = ICAO, label (fallback) = Name
+    opt.value = icao;
+    opt.label = a?.name ? a.name : "";
+    dl.appendChild(opt);
+  }
+}
+
+function attachDatalistToAeroInputs() {
+  document.querySelectorAll("input.aero").forEach(inp => {
+    inp.setAttribute("list", "airfieldsList");
+    inp.setAttribute("autocomplete", "off"); // verhindert Browser-eigenes Autocomplete
+    inp.setAttribute("spellcheck", "false");
+  });
+}
+
+function showAeroError(input, msg) {
+  input.classList.add("invalid");
+  let err = input.nextElementSibling;
+  if (!err || !err.classList.contains("aero-error")) {
+    err = document.createElement("div");
+    err.className = "aero-error";
+    input.parentNode.appendChild(err);
+  }
+  err.textContent = msg;
+}
+
+function clearAeroError(input) {
+  input.classList.remove("invalid");
+  const err = input.parentNode.querySelector(".aero-error");
+  if (err) err.remove();
+}
+
+// ------------------ INPUT RESTRICTIONS LEGS ------------------
+document.addEventListener("input", e => {
+  if (e.target.classList.contains("time")) {
+    e.target.value = e.target.value.replace(/\D/g,"").slice(0,4);
+    return;
+  }
+
+  if (e.target.classList.contains("aero")) {
+    e.target.value = e.target.value.replace(/[^a-zA-Z]/g,"").toUpperCase().slice(0,4);
+    clearAeroError(e.target);
+    updateLegMarkers();
+    return;
+  }
 });
+
+// Validierung wenn fertig (Blur/Enter)
+document.addEventListener("change", e => {
+  if (!e.target.classList.contains("aero")) return;
+
+  const input = e.target;
+  const code = input.value.toUpperCase().trim();
+
+  if (!code) {
+    clearAeroError(input);
+    updateLegMarkers();
+    return;
+  }
+
+  if (!icaoDB[code]) {
+    showAeroError(input, `Flugplatz ${code} nicht erlaubt`);
+  } else {
+    clearAeroError(input);
+  }
+
+  updateLegMarkers();
+});
+
+// ------------------ METAR/TAF -------------------
+async function fetchMetarTaf(icao) {
+  // MET Norway Tafmetar API (Textformat) :contentReference[oaicite:2]{index=2}
+  const url = `https://api.met.no/weatherapi/tafmetar/1.0/tafmetar.txt?icao=${encodeURIComponent(icao)}&ts=${Date.now()}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`METAR/TAF Fehler ${res.status}`);
+  const txt = await res.text();
+  // Antwort ist Text mit ggf. mehreren Zeilen; wir zeigen sie "raw" im <pre>
+  return txt.trim() || "Keine METAR/TAF-Daten gefunden (letzte 24h).";
+}
 
 // ------------------ LEAFLET MAP ------------------
 const map = L.map('map').setView([51,10],6);
@@ -477,6 +548,53 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&
 map.invalidateSize();
 setTimeout(()=>{ map.invalidateSize(); },200);
 
+// ------------------ ROUTE MARKERS & LINES (aus ICAO DB) ------------------
+let markers = [];
+let legLines = [];
+
+function updateLegMarkers(){
+  markers.forEach(m=>map.removeLayer(m));
+  markers = [];
+  legLines.forEach(l=>map.removeLayer(l));
+  legLines = [];
+
+  const legInputs = document.querySelectorAll(".aero");
+  let coords = [];
+
+  legInputs.forEach(inp=>{
+    const val = inp.value.toUpperCase();
+    if (!icaoDB[val]) return;
+
+    coords.push([icaoDB[val].lat, icaoDB[val].lon]);
+
+    const icao = val;
+    const name = icaoDB[val].name;
+
+    const m = L.marker([icaoDB[val].lat, icaoDB[val].lon]).addTo(map);
+    m.bindPopup(`<b>${icao}</b> – ${name}<br>METAR/TAF lädt...`);
+
+    m.on("popupopen", async () => {
+      try {
+        const data = await fetchMetarTaf(icao);
+        m.setPopupContent(
+          `<b>${icao}</b> – ${name}<br><pre style="white-space:pre-wrap;margin:6px 0 0;">${data}</pre>`
+        );
+      } catch (e) {
+        m.setPopupContent(
+          `<b>${icao}</b> – ${name}<br><span style="color:#ff8080;">METAR/TAF konnte nicht geladen werden.</span>`
+        );
+      }
+    });
+
+    markers.push(m);
+  });
+
+  if(coords.length > 1){
+    const poly = L.polyline(coords, { color:'cyan' }).addTo(map);
+    legLines.push(poly);
+    map.fitBounds(poly.getBounds(), { padding:[50,50] });
+  }
+}
 
 // ------------------ WEATHER & WIND VIA JSON ------------------
 let weatherData = null;
@@ -490,31 +608,16 @@ let selectedWindLevel = "SFC";
 let windGrid = null;
 
 async function loadWeatherData() {
-  try {
-    const res = await fetch("data/weather.json");
-    if (!res.ok) throw new Error("Weather JSON konnte nicht geladen werden");
-    weatherData = await res.json();
-    console.log("Weather JSON geladen:", weatherData);
-  } catch (err) {
-    console.error(err);
-  }
+  const res = await fetch("data/weather.json?ts=" + Date.now(), { cache: "no-store" });
+  if (!res.ok) throw new Error("Weather JSON konnte nicht geladen werden");
+  weatherData = await res.json();
 }
 
 async function loadWindGrid() {
-  try {
-    const res = await fetch("data/windgrid.json?ts=" + Date.now(), { cache: "no-store" });
-    if (!res.ok) throw new Error("windgrid.json konnte nicht geladen werden");
-    windGrid = await res.json();
-    console.log("WindGrid geladen:", windGrid);
-  } catch (err) {
-    console.error(err);
-  }
+  const res = await fetch("data/windgrid.json?ts=" + Date.now(), { cache: "no-store" });
+  if (!res.ok) throw new Error("windgrid.json konnte nicht geladen werden");
+  windGrid = await res.json();
 }
-
-// Testen, ob die JSON geladen wird
-loadWeatherData().then(() => {
-  console.log("Test: JSON Inhalt:", weatherData);
-});
 
 function updateWeatherLayer() {
   cloudLayer.clearLayers();
@@ -609,7 +712,6 @@ function zoomToSampleStep(zoom) {
 function shouldKeepPoint(p, factor, baseStep) {
   const latIdx = Math.round((p.lat - windGrid.meta.south) / baseStep);
   const lonIdx = Math.round((p.lon - windGrid.meta.west) / baseStep);
-
   const k = Math.max(1, Math.round(factor));
   return (latIdx % k === 0) && (lonIdx % k === 0);
 }
@@ -644,7 +746,7 @@ async function drawWindBarbsViewport() {
   const baseStep = windGrid.meta.step;
   const factor = zoomToSampleStep(map.getZoom());
 
-  const levelPoints = (windGrid.levels && windGrid.levels[selectedWindLevel]) ? windGrid.levels[selectedWindLevel] : [];
+  const levelPoints = windGrid.levels[selectedWindLevel];
 
   let pts = levelPoints.filter(p =>
     p.lat >= bounds.getSouth() &&
@@ -655,9 +757,6 @@ async function drawWindBarbsViewport() {
 
   pts = pts.filter(p => shouldKeepPoint(p, factor, baseStep));
   pts = decimateByPixelGrid(pts, 45);
-
-// zeichnen wie gehabt
-
 
   for (const p of pts) {
     const speedKts = p.speed * 1.944;
@@ -671,6 +770,68 @@ async function drawWindBarbsViewport() {
 
     L.marker([p.lat, p.lon], { icon: svgIcon }).addTo(windLayer);
   }
+}
+
+function nearestPoint(points, lat, lon) {
+  // schneller Näherungsabstand (für 0.5°-Grid reicht das völlig)
+  let best = null;
+  let bestD = Infinity;
+
+  for (const p of points) {
+    const dLat = p.lat - lat;
+    const dLon = p.lon - lon;
+    const d = dLat*dLat + dLon*dLon;
+    if (d < bestD) { bestD = d; best = p; }
+  }
+  return best;
+}
+
+function fmtKts(ms) { return `${Math.round(ms * 1.944)} kt`; }
+
+function fmtDeg(deg) {
+  // 0–360 sauber
+  const d = ((deg % 360) + 360) % 360;
+  return `${Math.round(d)}°`;
+}
+
+async function showVerticalProfilePopup(latlng) {
+  if (!windGrid) await loadWindGrid();
+  if (!windGrid?.levels) return;
+
+  const levelsOrder = ["SFC", "25", "50", "100", "180"]; // entspricht deinem Select
+  // Für jede Höhe den nächstgelegenen Punkt nehmen
+  const rows = levelsOrder.map(lvl => {
+    const pts = windGrid.levels[lvl] || [];
+    if (!pts.length) return { lvl, ok: false };
+    const p = nearestPoint(pts, latlng.lat, latlng.lng);
+    if (!p) return { lvl, ok: false };
+    return { lvl, ok:true, dir: fmtDeg(p.deg), spd: fmtKts(p.speed) };
+  });
+
+  const header = `<b>Vertical Wind Profile</b><br>
+                  <span style="color:#8fa6bf;">${latlng.lat.toFixed(3)}, ${latlng.lng.toFixed(3)}</span>`;
+
+  const table = `
+    <table style="margin-top:6px;border-collapse:collapse;">
+      <tr>
+        <th style="text-align:left;padding:2px 8px 2px 0;">Level</th>
+        <th style="text-align:left;padding:2px 8px 2px 0;">Dir</th>
+        <th style="text-align:left;padding:2px 0;">Speed</th>
+      </tr>
+      ${rows.map(r => `
+        <tr>
+          <td style="padding:2px 8px 2px 0;">${r.lvl}</td>
+          <td style="padding:2px 8px 2px 0;">${r.ok ? r.dir : "-"}</td>
+          <td style="padding:2px 0;">${r.ok ? r.spd : "-"}</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+
+  L.popup({ maxWidth: 320 })
+    .setLatLng(latlng)
+    .setContent(`${header}${table}`)
+    .openOn(map);
 }
 
 // ------------------ BUTTONS ------------------
@@ -691,8 +852,8 @@ document.getElementById("toggleWeather").addEventListener("click", async () => {
 document.getElementById("toggleWind").addEventListener("click", async () => {
   if (!windOn) {
     windOn = true;
-    await drawWindBarbsViewport();
     windLayer.addTo(map);
+    await drawWindBarbsViewport();
   } else {
     windLayer.clearLayers();
     windOn = false;
@@ -708,17 +869,37 @@ map.on("zoomend moveend", () => {
   if (windOn) drawWindBarbsViewport();
 });
 
+map.on("click", (e) => {
+  showVerticalProfilePopup(e.latlng);
+});
 
-// ------------------ INIT ------------------
-loadLFZ();
-loadTAC();
-updateCallSign();
-setTimeout(()=>{ map.invalidateSize(); },200);
+// ------------------ INIT (einmal, ganz am Ende) ------------------
+(async function init() {
+  // Airfields laden + Autocomplete aktivieren
+  try {
+    await loadAirfields();
+    buildAirfieldsDatalist();
+    attachDatalistToAeroInputs();
+  } catch (e) {
+    console.error(e);
+  }
+  // Dropdowns
+  loadLFZ();
+  loadTAC();
+  updateCallSign();
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js")
-    .then(() => console.log("Service Worker registriert"));
-}
+  // Initial marker update (falls schon was drin steht)
+  updateLegMarkers();
+
+   // Layout-Fix
+  setTimeout(()=>{ map.invalidateSize(); },200);
+
+  // SW
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js")
+      .then(() => console.log("Service Worker registriert"));
+  }
+})();
 
 </script>
 </body>
