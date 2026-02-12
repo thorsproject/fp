@@ -103,4 +103,17 @@ async function main() {
 
   const out = {
     generatedAt: Math.floor(Date.now() / 1000),
-    meta: { ...BOUNDS
+    meta: { ...BOUNDS, step: STEP },
+    levels: levelsOut
+  };
+
+  fs.writeFileSync("data/windgrid.json", JSON.stringify(out, null, 2));
+  console.log("windgrid.json geschrieben. Punkte:", Object.fromEntries(
+    Object.entries(levelsOut).map(([k, v]) => [k, v.length])
+  ));
+}
+
+main().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
