@@ -813,7 +813,7 @@ async function showVerticalProfilePopup(latlng) {
     if (!p) return { lvl, ok: false };
     return { 
         lvl, 
-        ok:true, 
+        ok: true, 
         dir: fmtDeg(p.deg), 
         spd: fmtKts(p.speed),
         tmp: fmtTemp(p.temp)
@@ -828,14 +828,14 @@ async function showVerticalProfilePopup(latlng) {
       <tr>
         <th style="text-align:left;padding:2px 8px 2px 0;">Level</th>
         <th style="text-align:left;padding:2px 8px 2px 0;">Dir</th>
-        <th style="text-align:left;padding:2px 0;">Speed</th>
+        <th style="text-align:left;padding:2px 8px 2px 0;">Speed</th>
         <th style="text-align:left;padding:2px 0;">Temp</th>
       </tr>
       ${rows.map(r => `
         <tr>
           <td style="padding:2px 8px 2px 0;">${r.lvl}</td>
           <td style="padding:2px 8px 2px 0;">${r.ok ? r.dir : "-"}</td>
-          <td style="padding:2px 0;">${r.ok ? r.spd : "-"}</td>
+          <td style="padding:2px 8px 2px 0;">${r.ok ? r.spd : "-"}</td>
           <td style="padding:2px 0;">${r.ok ? r.tmp : "-"}</td>
         </tr>
       `).join("")}
