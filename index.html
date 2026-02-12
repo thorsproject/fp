@@ -336,7 +336,7 @@ button:hover { background:#00aacc; }
       <div class="button-panel">
         <button id="toggleWind">Wind Ein/Aus</button>
         <button id="toggleWeather">Wetter-Layer Ein/Aus</button>
-        <select id="flightLevelSelect">
+        <select id="windLevelSelect">
           <option value="surface">SFC</option>
           <option value="025">FL025</option>
           <option value="050">FL050</option>
@@ -485,6 +485,7 @@ let rainLayer = L.layerGroup();
 let windLayer = L.layerGroup();
 let weatherOn = false;
 let windOn = false;
+let selectedWindLevel = "SFC";
 
 let windGrid = null;
 
@@ -643,7 +644,9 @@ async function drawWindBarbsViewport() {
   const baseStep = windGrid.meta.step;
   const factor = zoomToSampleStep(map.getZoom());
 
-  let pts = windGrid.points.filter(p =>
+  const levelPoints = (windGrid.levels && windGrid.levels[selectedWindLevel]) ? windGrid.levels[selectedWindLevel] : [];
+
+  let pts = levelPoints.filter(p =>
     p.lat >= bounds.getSouth() &&
     p.lat <= bounds.getNorth() &&
     p.lon >= bounds.getWest() &&
@@ -652,6 +655,9 @@ async function drawWindBarbsViewport() {
 
   pts = pts.filter(p => shouldKeepPoint(p, factor, baseStep));
   pts = decimateByPixelGrid(pts, 45);
+
+// zeichnen wie gehabt
+
 
   for (const p of pts) {
     const speedKts = p.speed * 1.944;
@@ -666,7 +672,6 @@ async function drawWindBarbsViewport() {
     L.marker([p.lat, p.lon], { icon: svgIcon }).addTo(windLayer);
   }
 }
-
 
 // ------------------ BUTTONS ------------------
 document.getElementById("toggleWeather").addEventListener("click", async () => {
@@ -692,6 +697,11 @@ document.getElementById("toggleWind").addEventListener("click", async () => {
     windLayer.clearLayers();
     windOn = false;
   }
+});
+
+document.getElementById("windLevelSelect").addEventListener("change", (e) => {
+  selectedWindLevel = e.target.value; // "SFC", "25", "50", "100", "180"
+  if (windOn) drawWindBarbsViewport();
 });
 
 map.on("zoomend moveend", () => {
