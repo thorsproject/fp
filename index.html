@@ -523,7 +523,7 @@ document.addEventListener("change", e => {
   }
 
   if (!icaoDB[code]) {
-    showAeroError(input, `Flugplatz ${code} nicht erlaubt`);
+    showAeroError(input, `Flugplatz ${code} nicht in der Approved Airport List`);
   } else {
     clearAeroError(input);
   }
@@ -794,6 +794,12 @@ function fmtDeg(deg) {
   return `${Math.round(d)}°`;
 }
 
+function fmtTemp(t) {
+  if (!Number.isFinite(t)) return "-";
+  return `${Math.round(t)}°C`;
+}
+
+
 async function showVerticalProfilePopup(latlng) {
   if (!windGrid) await loadWindGrid();
   if (!windGrid?.levels) return;
@@ -805,7 +811,13 @@ async function showVerticalProfilePopup(latlng) {
     if (!pts.length) return { lvl, ok: false };
     const p = nearestPoint(pts, latlng.lat, latlng.lng);
     if (!p) return { lvl, ok: false };
-    return { lvl, ok:true, dir: fmtDeg(p.deg), spd: fmtKts(p.speed) };
+    return { 
+        lvl, 
+        ok:true, 
+        dir: fmtDeg(p.deg), 
+        spd: fmtKts(p.speed),
+        tmp: fmtTemp(p.temp)
+     };
   });
 
   const header = `<b>Vertical Wind Profile</b><br>
@@ -817,12 +829,14 @@ async function showVerticalProfilePopup(latlng) {
         <th style="text-align:left;padding:2px 8px 2px 0;">Level</th>
         <th style="text-align:left;padding:2px 8px 2px 0;">Dir</th>
         <th style="text-align:left;padding:2px 0;">Speed</th>
+        <th style="text-align:left;padding:2px 0;">Temp</th>
       </tr>
       ${rows.map(r => `
         <tr>
           <td style="padding:2px 8px 2px 0;">${r.lvl}</td>
           <td style="padding:2px 8px 2px 0;">${r.ok ? r.dir : "-"}</td>
           <td style="padding:2px 0;">${r.ok ? r.spd : "-"}</td>
+          <td style="padding:2px 0;">${r.ok ? r.tmp : "-"}</td>
         </tr>
       `).join("")}
     </table>
