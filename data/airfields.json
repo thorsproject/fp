@@ -1,0 +1,5 @@
+{
+  "EDDF": { "lat": 50.0333, "lon": 8.5706, "name": "Frankfurt/Main" },
+  "EDDM": { "lat": 48.3538, "lon": 11.7861, "name": "München" },
+  "EDDH": { "lat": 53.6304, "lon": 9.9882, "name": "Hamburg" }
+}
