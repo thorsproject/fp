@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#1b1f24">
+
+<!-- iOS Support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Flight Planning">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<title>Flight Planning</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+html, body {
+    margin:0; 
+    padding:0; 
+    height:100%;
+    font-family:"Segoe UI", Arial;
+    background:#1b1f24;
+    color:#d9e1e8;
+}
+
+header {
+    height:50px; 
+    background:#232a33;
+    color:#00d4ff;
+    display:flex;
+    align-items:center;
+    padding-left:10px;
+    font-size:24px;
+}
+
+.main-container {
+    display:flex;
+    flex-wrap:nowrap;        /* Karte rechts erzwingen */
+    align-items:flex-start;  /* oben ausrichten */
+    height:calc(100% - 50px); /* Header abziehen */
+    gap:10px;
+    padding:10px;
+    box-sizing: border-box;
+}
+
+.left-panel {
+    position: fixed;       /* fixiert links */
+    top: 50px;             /* unter Header */
+    left: 0;
+    width: 600px;
+    bottom: 0;
+    overflow-y: auto;      /* Scroll für Panel */
+    background: #1b1f24;
+    padding: 10px;
+    box-sizing: border-box;
+    border-right: 1px solid #2e3b4e;
+}
+
+.map-frame {
+    position: fixed;       /* fixiert rechts */
+    top: 50px;             /* unter Header */
+    margin-left: 610px;           /* Panel-Breite + Abstand */
+    width: 600px;
+    height: 600px;
+    border: 1px solid #2e3b4e;
+    background: #eef;
+}
+
+.frame {
+    border:1px solid #2e3b4e;
+    background:#232a33;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:5px;
+}
+
+.master-grid {
+    display:grid;
+    grid-template-columns:
+        50px   /* Spalte 1 */
+        90px   /* Spalte 2 */
+        70px   /* Spalte 3 */
+        120px  /* Spalte 4 */
+        70px   /* Spalte 5 */
+        70px;  /* Spalte 6 */
+    grid-auto-rows:30px;
+    gap:3px;
+    align-items:center;
+}
+
+/* Spalte 6 in allen Leg-Frames: Abstand links */
+.frame .master-grid .col6 {
+    margin-left:10px; /* Abstand zur Spalte 5 */
+}
+
+.label {
+    font-weight:bold;
+    font-size:14px;
+    color:#8fa6bf;
+}
+
+.aero-label {
+    justify-self:start;   /* explizit links in seiner Grid-Zelle */
+    padding-left:20px;     /* kleiner Abstand zur Spaltenkante */
+}
+
+input, select {
+    width:95%; 
+    padding:5px;
+    background:#0f141a;
+    color:#00ffcc;
+    border:1px solid #2e3b4e;
+    border-radius:4px;
+}
+input:focus, select:focus {
+    outline:none;
+    border-color:#00d4ff;
+}
+.callSignDisplay {
+    font-size:16px; 
+    font-weight:bold; 
+    color:#00ffcc;
+}
+.button-panel {
+    margin-top:5px;
+}
+button {
+    padding:5px 10px;
+    margin-right:5px;
+    background:#00d4ff;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+    color:#000;
+    font-weight:bold;
+}
+button:hover { background:#00aacc; }
+
+/* ---------------------------------------- */
+/* Felder im inaktiven Frame ausgrauen */
+.inactiveFields .legField {
+    opacity:0.3;
+    pointer-events:none;
+    background:#1a1f26;
+    color:#6c7a89;
+    cursor:not-allowed;
+}
+
+/* Alle Labels im inaktiven Frame leicht ausgrauen */
+.inactiveFields .label,
+.inactiveFields .aero-label,
+.inactiveFields .alternate-label {
+    opacity:0.4;
+    pointer-events:none; /* nur optisch, Klicks verhindern */
+}
+
+/* Der Toggle selbst bleibt aktiv */
+.inactiveFields .activeToggle {
+    opacity:1;
+    pointer-events:auto;
+}
+
+</style>
+</head>
+<body>
+
+<header>FLIGHT PLANNING</header>
+
+<div class="main-container">
+  <div class="left-panel">
+
+    <!-- FRAME 1 -->
+    <div class="frame">
+      <div class="master-grid">
+
+        <!-- Zeile 1 -->
+        <div></div> <!-- Spalte 1 leer -->
+        <div class="label">DATE</div> <!-- Spalte 2 -->
+        <div><input type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
+        <div></div> <!-- Spalte 4 leer -->
+        <div></div> <!-- Spalte 5 leer -->
+        <div></div> <!-- Spalte 6 leer -->
+
+        <!-- Zeile 2 -->
+        <div></div> <!-- Spalte 1 leer -->
+        <div class="label">LFZ</div> <!-- Spalte 2 -->
+        <div><select id="lfzSelect"></select></div> <!-- Spalte 3 -->
+        <div></div> <!-- Spalte 4 leer -->
+        <div></div> <!-- Spalte 5 leer -->
+        <div></div> <!-- Spalte 6 leer -->
+
+        <!-- Zeile 3 -->
+        <div></div> <!-- Spalte 1 leer -->
+        <div class="label">CALL SIGN</div> <!-- Spalte 2 -->
+        <div id="callSignDisplay" class="callSignDisplay"></div> <!-- Spalte 3: Anzeige CALL SIGN -->
+        <div class="label aero-label">TAC-CS</div> <!-- Spalte 4 -->
+        <div><select id="tacSelect"></select></div> <!-- Spalte 5 -->
+        <div></div> <!-- Spalte 6 leer -->
+      </div>
+    </div>
+
+    <!-- FRAME 2-5 - LEGS -->
+    <div id="legsContainer">
+
+      <!-- Leg 1 -->
+      <div class="frame">
+        <div class="master-grid">
+
+        <!-- Zeile 1 -->
+          <div class="label leg-title" style="grid-row:1/4;">LEG 1</div> <!-- Spalte 1 -->
+          <div class="label">ETD</div> <!-- Spalte 2 -->
+          <input type="text" class="time legField"> <!-- Spalte 3 -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="aero legField"> <!-- Spalte 5 -->
+	  <div></div> <!-- Spalte 6 leer -->
+
+        <!-- Zeile 2 -->
+          <div class="label">ETA</div> <!-- Spalte 2 -->
+          <input type="text" class="time legField"> <!-- Spalte 3 -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="aero legField"> <!-- Spalte 5 -->
+	  <div></div> <!-- Spalte 6 leer -->
+
+        <!-- Zeile 3 -->
+          <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
+	  <div></div> <!-- Spalte 3 leer -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="alt1 legField"> <!-- Spalte 5 -->
+          <input type="text" class="alt2 legField col6"> <!-- Spalte 6 -->
+        </div>
+      </div>
+
+      <!-- Leg 2 -->
+      <div class="frame">
+        <div class="master-grid">
+
+        <!-- Zeile 1 -->
+          <div class="label leg-title" style="grid-row:1/4;">LEG 2</div> <!-- Spalte 1 -->
+          <div class="label">ETD</div> <!-- Spalte 2 -->
+          <input type="text" class="time legField"> <!-- Spalte 3 -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="aero legField"> <!-- Spalte 5 -->
+          <select class="activeToggle col6">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select> <!-- Spalte 6 -->
+
+        <!-- Zeile 2 -->
+          <div class="label">ETA</div> <!-- Spalte 2 -->
+          <input type="text" class="time legField"> <!-- Spalte 3 -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="aero legField"> <!-- Spalte 5 -->
+	  <div></div> <!-- Spalte 6 leer -->
+
+        <!-- Zeile 3 -->
+          <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
+	  <div></div> <!-- Spalte 3 leer -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="alt1 legField"> <!-- Spalte 5 -->
+          <input type="text" class="alt2 legField col6"> <!-- Spalte 6 -->
+        </div>
+      </div>
+
+      <!-- Leg 3 -->
+      <div class="frame">
+        <div class="master-grid">
+
+        <!-- Zeile 1 -->
+          <div class="label leg-title" style="grid-row:1/4;">LEG 3</div> <!-- Spalte 1 -->
+          <div class="label">ETD</div> <!-- Spalte 2 -->
+          <input type="text" class="time legField"> <!-- Spalte 3 -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="aero legField"> <!-- Spalte 5 -->
+          <select class="activeToggle col6">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select> <!-- Spalte 6 -->
+
+        <!-- Zeile 2 -->
+          <div class="label">ETA</div> <!-- Spalte 2 -->
+          <input type="text" class="time legField"> <!-- Spalte 3 -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="aero legField"> <!-- Spalte 5 -->
+	  <div></div> <!-- Spalte 6 leer -->
+
+        <!-- Zeile 3 -->
+          <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
+	  <div></div> <!-- Spalte 3 leer -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="alt1 legField"> <!-- Spalte 5 -->
+          <input type="text" class="alt2 legField col6"> <!-- Spalte 6 -->
+        </div>
+      </div>
+
+
+      <!-- Leg 4 -->
+      <div class="frame">
+        <div class="master-grid">
+
+        <!-- Zeile 1 -->
+          <div class="label leg-title" style="grid-row:1/4;">LEG 4</div> <!-- Spalte 1 -->
+          <div class="label">ETD</div> <!-- Spalte 2 -->
+          <input type="text" class="time legField"> <!-- Spalte 3 -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="aero legField"> <!-- Spalte 5 -->
+          <select class="activeToggle col6">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select> <!-- Spalte 6 -->
+
+        <!-- Zeile 2 -->
+          <div class="label">ETA</div> <!-- Spalte 2 -->
+          <input type="text" class="time legField"> <!-- Spalte 3 -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="aero legField"> <!-- Spalte 5 -->
+	  <div></div> <!-- Spalte 6 leer -->
+
+        <!-- Zeile 3 -->
+          <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
+	  <div></div> <!-- Spalte 3 leer -->
+          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+          <input type="text" class="alt1 legField"> <!-- Spalte 5 -->
+          <input type="text" class="alt2 legField col6"> <!-- Spalte 6 -->
+        </div>
+      </div>
+
+    <!-- BUTTON PANEL -->
+    <div class="frame">
+      <div class="button-panel">
+        <button id="toggleWind">Wind Ein/Aus</button>
+        <button id="toggleWeather">Wetter-Layer Ein/Aus</button>
+        <select id="flightLevelSelect">
+          <option value="surface">SFC</option>
+          <option value="025">FL025</option>
+          <option value="050">FL050</option>
+          <option value="075">FL075</option>
+          <option value="100">FL100</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-frame" id="map"></div>
+</div>
+
+<script>
+// ------------------ DATUM ------------------
+const dateInput = document.getElementById("dateInput");
+dateInput.addEventListener("input", function(e){
+    let v = e.target.value.replace(/\D/g,"");
+    if(v.length > 2) v = v.slice(0,2) + "." + v.slice(2);
+    if(v.length > 5) v = v.slice(0,5) + "." + v.slice(5,7);
+    e.target.value = v;
+});
+
+// ------------------ LFZ / TAC ------------------
+function getLFZ() {
+    return JSON.parse(localStorage.getItem("lfzData") || 
+        JSON.stringify([
+            {name:"D-GBRE", cs:"GAF513"},
+            {name:"D-GFRA", cs:"GAF514"},
+            {name:"D-GGYR", cs:"GAF512"},
+            {name:"D-GMUC", cs:"GAF515"},
+            {name:"D-GPHX", cs:"GAF516"},
+            {name:"D-GRLG", cs:"GAF517"},
+            {name:"D-GVIE", cs:"GAF510"},
+            {name:"D-GVRB", cs:"GAF518"},
+            {name:"D-GZAD", cs:"GAF511"},
+            {name:"D-GZRH", cs:"GAF519"},
+            {name:"D-3A120", cs:"GAF512"},
+            {name:"D-3A121", cs:"GAF512"},
+            {name:"D-3A146", cs:"GAF512"}
+        ])
+    );
+}
+function getTAC() {
+    return JSON.parse(localStorage.getItem("tacData") || 
+        JSON.stringify(["CARCL","MADCT","PLSTC"])
+    );
+}
+function saveLFZ(d){ localStorage.setItem("lfzData", JSON.stringify(d)); }
+function saveTAC(d){ localStorage.setItem("tacData", JSON.stringify(d)); }
+
+const lfzSelect = document.getElementById("lfzSelect");
+const tacSelect = document.getElementById("tacSelect");
+const callSignDisplay = document.getElementById("callSignDisplay");
+const callSignDisplay2 = document.getElementById("callSignDisplay2");
+
+function loadLFZ(){
+    lfzSelect.innerHTML = "<option value=''>-- wählen --</option>";
+    getLFZ().forEach((l, i) => {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = l.name;
+        lfzSelect.appendChild(opt);
+    });
+}
+function loadTAC(){
+    tacSelect.innerHTML = "<option value=''>-- keiner --</option>";
+    getTAC().forEach((t, i) => {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = t;
+        tacSelect.appendChild(opt);
+    });
+}
+function updateCallSign(){
+    const tacVal = tacSelect.value;
+    const lfzVal = lfzSelect.value;
+    const lfzData = getLFZ();
+    const tacData = getTAC();
+
+    if(tacVal !== ""){
+        callSignDisplay.textContent = tacData[tacVal];
+        callSignDisplay2.textContent = tacData[tacVal];
+    } else if(lfzVal !== ""){
+        callSignDisplay.textContent = lfzData[lfzVal].cs;
+        callSignDisplay2.textContent = lfzData[lfzVal].cs;
+    } else {
+        callSignDisplay.textContent = "";
+        callSignDisplay2.textContent = "";
+    }
+}
+
+lfzSelect.addEventListener("change", updateCallSign);
+tacSelect.addEventListener("change", updateCallSign);
+
+// ------------------ INPUT RESTRICTIONS LEGS ------------------
+document.addEventListener("input", e=>{
+    if(e.target.classList.contains("time")) e.target.value=e.target.value.replace(/\D/g,"").slice(0,4);
+    if(e.target.classList.contains("aero")) e.target.value=e.target.value.replace(/[^a-zA-Z]/g,"").toUpperCase().slice(0,4);
+});
+
+// ------------------ ICAO DB für Marker & Linien ------------------
+const icaoDB = {
+  "EDDF":{lat:50.0333, lon:8.5706, name:"Frankfurt"},
+  "EDDM":{lat:48.3538, lon:11.7861, name:"München"},
+  "EDDH":{lat:53.6304, lon:9.9882, name:"Hamburg"},
+  "EDDS":{lat:48.6899, lon:9.2219, name:"Stuttgart"}
+};
+let markers = [];
+let legLines = [];
+
+function updateLegMarkers(){
+    markers.forEach(m=>map.removeLayer(m));
+    markers=[];
+    legLines.forEach(l=>map.removeLayer(l));
+    legLines=[];
+    const legInputs=document.querySelectorAll(".aero");
+    let coords=[];
+    legInputs.forEach(inp=>{
+        const val=inp.value.toUpperCase();
+        if(icaoDB[val]) coords.push([icaoDB[val].lat,icaoDB[val].lon]);
+        if(icaoDB[val]){
+            const m=L.marker([icaoDB[val].lat,icaoDB[val].lon]).addTo(map)
+                     .bindPopup(`${val} - ${icaoDB[val].name}`);
+            markers.push(m);
+        }
+    });
+    if(coords.length>1){
+        const poly=L.polyline(coords,{color:'cyan'}).addTo(map);
+        legLines.push(poly);
+        map.fitBounds(poly.getBounds(),{padding:[50,50]});
+    }
+}
+document.addEventListener("input", e=>{
+    if(e.target.classList.contains("aero")) updateLegMarkers();
+});
+
+// ------------------ LEAFLET MAP ------------------
+const map = L.map('map').setView([51,10],6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OSM'}).addTo(map);
+map.invalidateSize();
+setTimeout(()=>{ map.invalidateSize(); },200);
+map.on("zoomend", () => {
+    if (windOn) {
+        drawWindBarbs();
+    }
+});
+
+// ----- OpenWeatherMap Key -----
+const owmApiKey = 'mycode'; // <-- hier einfügen
+
+// Wetter Layer
+const cloudLayer = L.tileLayer(`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${owmApiKey}`, {opacity:0.5});
+const rainLayer = L.tileLayer(`https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${owmApiKey}`, {opacity:0.5});
+let weatherOn=false;
+
+// Wind Layer
+let windLayer = L.layerGroup();
+let windOn=false;
+
+// ------------------ WEATHER & WIND ------------------
+document.getElementById("toggleWeather").addEventListener("click",()=>{
+    if(!weatherOn){ cloudLayer.addTo(map); rainLayer.addTo(map); weatherOn=true;}
+    else{ map.removeLayer(cloudLayer); map.removeLayer(rainLayer); weatherOn=false;}
+});
+
+// ----- Wind Barbs -----
+function createWindBarb(speedKts, deg) {
+
+    const scale = getScaleByZoom();
+
+    let fullTriangles = Math.floor(speedKts / 50);
+    let fullBars = Math.floor((speedKts % 50) / 10);
+    let halfBars = Math.floor(((speedKts % 50) % 10) / 5);
+
+    let parts = '';
+    let y = 0;
+
+    const spacing = 8 * scale;
+    const barbLength = 20 * scale;
+
+    const mainColor = "#222";     // synoptik grau
+    const haloColor = "white";    // outline
+    const strokeMain = 3 * scale;
+    const strokeHalo = 6 * scale;
+
+    function drawLine(x1,y1,x2,y2){
+        return `
+        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+              stroke="${haloColor}" stroke-width="${strokeHalo}"/>
+        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+              stroke="${mainColor}" stroke-width="${strokeMain}"/>`;
+    }
+
+    function drawTriangle(yPos){
+        return `
+        <polygon points="0,${yPos} ${barbLength},${yPos+10*scale} 0,${yPos+20*scale}"
+                 fill="${haloColor}"/>
+        <polygon points="0,${yPos} ${barbLength},${yPos+10*scale} 0,${yPos+20*scale}"
+                 fill="${mainColor}"/>`;
+    }
+
+    // 50 kt
+    for (let i = 0; i < fullTriangles; i++) {
+        parts += drawTriangle(y);
+        y += (20 * scale) + spacing;
+    }
+
+    // 10 kt
+    for (let i = 0; i < fullBars; i++) {
+        parts += drawLine(0,y,barbLength,y);
+        y += spacing;
+    }
+
+    // 5 kt
+    for (let i = 0; i < halfBars; i++) {
+        parts += drawLine(0,y,barbLength/2,y);
+        y += spacing;
+    }
+
+    const stemLength = y + (40 * scale); //30
+
+    parts += drawLine(0,stemLength,0,0);
+
+    const size = 120 * scale; //120
+
+    return `
+    <svg width="${size}" height="${size}" viewBox="-55 -30 110 180"> //-50 -20 100 160
+        <g transform="rotate(${deg},0,${stemLength})">
+            ${parts}
+        </g>
+    </svg>`;
+}
+
+async function drawWindBarbs(){
+    if (!windOn) return;
+    windLayer.clearLayers();
+    const bounds = map.getBounds();
+    // Abstand zwischen Barbs
+    let step;
+    const zoom = map.getZoom();
+    if (zoom <= 5) step = 5;
+    else if (zoom <= 7) step = 1.0; // Wert kleiner = mehr Pfeile
+    else if (zoom <= 9) step = 0.7; // Wert kleiner = mehr Pfeile
+    else if (zoom <= 11) step = 0.5; // Wert kleiner = mehr Pfeile
+    else step = 0.4; // Wert kleiner = mehr Pfeile
+
+    let points = [];
+    for (let lat = bounds.getSouth(); lat <= bounds.getNorth(); lat += step) {
+    	for (let lon = bounds.getWest(); lon <= bounds.getEast(); lon += step) {
+            points.push({lat, lon});
+        }
+    }
+
+    const requests = points.map(async p=>{
+        try{
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${p.lat}&lon=${p.lon}&appid=${owmApiKey}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if(!data.wind) return;
+            const speedKts = data.wind.speed * 1.944; // m/s -> kt
+            const deg = data.wind.deg; // echte Richtung
+            const svgIcon = L.divIcon({
+                className:'',
+                iconSize:[60,100],  // Pfeile größer oder kleiner
+		iconAnchor:[30,80],  // unterer Punkt ist Dreh-/Standpunkt
+                html: createWindBarb(speedKts, deg)
+            });
+            L.marker([p.lat,p.lon], {icon: svgIcon}).addTo(windLayer);
+        }catch(e){console.log(e);}
+    });
+
+    await Promise.all(requests);
+}
+
+// Wind Button
+document.getElementById("toggleWind").addEventListener("click", async()=>{
+    if(!windOn){ await drawWindBarbs(); windLayer.addTo(map); windOn=true;}
+    else{ windLayer.clearLayers(); windOn=false;}
+
+});
+
+function getScaleByZoom() {
+    const zoom = map.getZoom();
+
+    if (zoom <= 5) return 0.6;
+    if (zoom <= 7) return 0.8;
+    if (zoom <= 9) return 1.0;
+    if (zoom <= 11) return 1.3;
+    return 1.6;
+}
+
+// ----- Toggle Funktion Leg 2-4 Ein/Aus -----
+document.querySelectorAll(".activeToggle").forEach(toggle => {
+
+    toggle.addEventListener("change", function() {
+
+        const frame = this.closest(".frame");
+        const fields = frame.querySelectorAll(".legField");
+
+        if (this.value === "inactive") {
+            fields.forEach(f => {
+                f.disabled = true;
+            });
+	    frame.classList.add("inactiveFields");
+        } else {
+            fields.forEach(f => {
+                f.disabled = false;
+            });
+	    frame.classList.remove("inactiveFields");
+        }
+    });
+});
+
+// ------------------ INIT ------------------
+loadLFZ();
+loadTAC();
+updateCallSign();
+setTimeout(()=>{ map.invalidateSize(); },200);
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js")
+    .then(() => console.log("Service Worker registriert"));
+}
+</script>
+</body>
+</html>
