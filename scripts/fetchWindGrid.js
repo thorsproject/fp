@@ -1,27 +1,26 @@
 const fs = require("fs");
 
-const API_KEY = process.env.OPENWEATHER_KEY;
-
-// Deutschland grob
+// Deutschland grob (bei Bedarf anpassen)
 const BOUNDS = { west: 5.5, east: 16.5, south: 47.0, north: 55.5 };
 const STEP = 0.5;
 
-// Concurrency Limit
-async function mapLimit(items, limit, fn) {
-  const ret = new Array(items.length);
-  let i = 0;
+// Aviation-Auswahl -> Open-Meteo Ebenen
+// SFC = 10m. Die anderen mappen wir auf Druckflächen (ungefähr):
+// 25 ~ 925 hPa, 50 ~ 850 hPa, 75 fehlt, 100 ~ 700 hPa, 180 ~ 500 hPa
+// (Open-Meteo stellt Wind auf Druckflächen bereit, z.B. wind_speed_925hPa.) :contentReference[oaicite:1]{index=1}
+const LEVEL_MAP = {
+  "SFC": { spd: "wind_speed_10m",  dir: "wind_direction_10m" },
+  "25":  { spd: "wind_speed_925hPa", dir: "wind_direction_925hPa" },
+  "50":  { spd: "wind_speed_850hPa", dir: "wind_direction_850hPa" },
+  "100":  { spd: "wind_speed_700hPa", dir: "wind_direction_700hPa" },
+  "180": { spd: "wind_speed_500hPa", dir: "wind_direction_500hPa" }
+};
 
-  const workers = new Array(limit).fill(0).map(async () => {
-    while (true) {
-      const idx = i++;
-      if (idx >= items.length) break;
-      ret[idx] = await fn(items[idx], idx);
-    }
-  });
+// Open-Meteo ECMWF Endpoint (Pressure Level Variablen) :contentReference[oaicite:2]{index=2}
+const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf";
 
-  await Promise.all(workers);
-  return ret;
-}
+// URL wird sonst zu lang -> wir splitten in Chunks
+const CHUNK_SIZE = 60;
 
 function makePoints() {
   const pts = [];
@@ -33,49 +32,75 @@ function makePoints() {
   return pts;
 }
 
-async function fetchPoint(p) {
+function chunk(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
+async function fetchChunk(points) {
+  const lats = points.map(p => p.lat).join(",");
+  const lons = points.map(p => p.lon).join(",");
+
+  // alle benötigten "current" Variablen in einem Request
+  const currentVars = [
+    "wind_speed_10m", "wind_direction_10m",
+    "wind_speed_925hPa", "wind_direction_925hPa",
+    "wind_speed_850hPa", "wind_direction_850hPa",
+    "wind_speed_700hPa", "wind_direction_700hPa",
+    "wind_speed_500hPa", "wind_direction_500hPa" 
+  ].join(",");
+
   const url =
-    `https://api.openweathermap.org/data/2.5/weather?lat=${p.lat}&lon=${p.lon}` +
-    `&appid=${API_KEY}&units=metric`;
+    `${ENDPOINT}?latitude=${encodeURIComponent(lats)}&longitude=${encodeURIComponent(lons)}` +
+    `&current=${encodeURIComponent(currentVars)}` +
+    `&wind_speed_unit=ms&timezone=GMT`;
 
   const res = await fetch(url);
-  if (!res.ok) return null;
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Open-Meteo Fehler ${res.status}: ${txt.slice(0, 200)}`);
+  }
 
   const data = await res.json();
-  if (!data.wind || typeof data.wind.speed !== "number") return null;
 
-  return {
-    lat: p.lat,
-    lon: p.lon,
-    speed: data.wind.speed, // m/s
-    deg: data.wind.deg ?? 0
-  };
+  // Bei mehreren Koordinaten liefert Open-Meteo eine Liste von Strukturen. :contentReference[oaicite:3]{index=3}
+  const list = Array.isArray(data) ? data : [data];
+  return list;
 }
 
 async function main() {
-  if (!API_KEY) {
-    console.error("OPENWEATHER_KEY fehlt");
-    process.exit(1);
-  }
-
   const pts = makePoints();
   console.log("Punkte gesamt:", pts.length);
 
-  // wenn Rate-Limit: auf 5 reduzieren
-  const results = await mapLimit(pts, 8, fetchPoint);
-  const points = results.filter(Boolean);
+  const levelsOut = {};
+  for (const key of Object.keys(LEVEL_MAP)) levelsOut[key] = [];
+
+  const chunks = chunk(pts, CHUNK_SIZE);
+
+  for (let i = 0; i < chunks.length; i++) {
+    const c = chunks[i];
+    const list = await fetchChunk(c);
+
+    for (const item of list) {
+      const lat = +item.latitude.toFixed(4);
+      const lon = +item.longitude.toFixed(4);
+      const cur = item.current || {};
+
+      // pro Höhe einen Eintrag, wenn Werte vorhanden
+      for (const [lvl, vars] of Object.entries(LEVEL_MAP)) {
+        const spd = cur[vars.spd];
+        const dir = cur[vars.dir];
+
+        if (typeof spd === "number" && typeof dir === "number") {
+          levelsOut[lvl].push({ lat, lon, speed: spd, deg: dir });
+        }
+      }
+    }
+
+    console.log(`Chunk ${i + 1}/${chunks.length} verarbeitet`);
+  }
 
   const out = {
     generatedAt: Math.floor(Date.now() / 1000),
-    meta: { ...BOUNDS, step: STEP },
-    points
-  };
-
-  fs.writeFileSync("data/windgrid.json", JSON.stringify(out, null, 2));
-  console.log("windgrid.json geschrieben. Punkte:", points.length);
-}
-
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+    meta: { ...BOUNDS
