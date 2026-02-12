@@ -337,9 +337,9 @@ button:hover { background:#00aacc; }
         <button id="toggleWind">Wind Ein/Aus</button>
         <button id="toggleWeather">Wetter-Layer Ein/Aus</button>
         <select id="windLevelSelect">
-          <option value="surface">SFC</option>
-          <option value="025">FL025</option>
-          <option value="050">FL050</option>
+          <option value="SFC">SFC</option>
+          <option value="25">FL025</option>
+          <option value="50">FL050</option>
           <option value="100">FL100</option>
           <option value="180">FL180</option>
         </select>
@@ -633,12 +633,10 @@ function decimateByPixelGrid(points, minPx = 45) {
 }
 
 async function drawWindBarbsViewport() {
-  alert("Wind draw: " + selectedWindLevel);
-  
   if (!windOn) return;
 
   if (!windGrid) await loadWindGrid();
-  if (!windGrid?.levels?.length) return;
+  if (!windGrid?.levels?.[selectedWindLevel]) return;
 
   windLayer.clearLayers();
 
