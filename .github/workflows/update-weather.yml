@@ -25,6 +25,7 @@ jobs:
         run: |
           node scripts/fetchWeather.js
           node scripts/fetchWindGrid.js
+          node scripts/buildAirfieldsFromOurAirports.js
 
         env:
           OPENWEATHER_KEY: ${{ secrets.OPENWEATHER_KEY }}
@@ -33,7 +34,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/weather.json data/windgrid.json
+          git add data/weather.json data/windgrid.json data/airfields.json data/airfields_missing.txt
           git commit -m "Update weather data" || echo "No changes to commit"
           git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
         env:
