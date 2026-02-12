@@ -1,0 +1,18 @@
+name: Weather Proxy
+
+on:
+  workflow_dispatch: # manuell auslösbar
+  # optional: schedule oder push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run proxy script
+        run: node proxy.js
+        env:
+          OPENWEATHER_KEY: ${{ secrets.OPENWEATHER_KEY }}
