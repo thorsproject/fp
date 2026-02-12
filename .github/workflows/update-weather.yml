@@ -22,7 +22,7 @@ jobs:
         run: npm install node-fetch@2
 
       - name: Fetch weather data
-        run: 
+        run: |
           node scripts/fetchWeather.js
           node scripts/fetchWindGrid.js
 
