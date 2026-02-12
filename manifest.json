@@ -1,7 +1,7 @@
 {
   "name": "Flight Planning",
   "short_name": "FlightPlan",
-  "start_url": "flightplanningV1.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#1b1f24",
   "theme_color": "#1b1f24",
