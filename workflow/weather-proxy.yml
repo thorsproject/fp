@@ -1,18 +1,37 @@
-name: Weather Proxy
+name: Update Weather Data
 
 on:
-  workflow_dispatch: # manuell auslösbar
-  # optional: schedule oder push
+  schedule:
+    - cron: '0 * * * *' # jede Stunde
+  workflow_dispatch:   # manuell auslösbar
 
 jobs:
-  deploy:
+  fetch-weather:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Run proxy script
-        run: node proxy.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install node-fetch@2
+
+      - name: Fetch weather data
+        run: node scripts/fetchWeather.js
         env:
           OPENWEATHER_KEY: ${{ secrets.OPENWEATHER_KEY }}
+
+      - name: Commit and push JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/weather.json
+          git commit -m "Update weather data"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
