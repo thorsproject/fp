@@ -1,6 +1,6 @@
 const CACHE_NAME = 'flightplan-cache-v1';
 const FILES_TO_CACHE = [
-    '/flightplanningV1.html',
+    '/index.html',
     '/manifest.json',
     '/icon-192.png',
     '/icon-512.png',
