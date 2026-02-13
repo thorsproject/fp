@@ -180,7 +180,7 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   const ty = 10 * scale;          // leicht unter Spitze
   const fontSize = 14 * scale; // deutlich größer
 
-    ? `
+     `
       <text x="${tx}" y="${ty}"
             font-size="${fontSize}"
             font-weight="600"
