@@ -1,5 +1,18 @@
 let windGrid = null;
 
+export async function loadWindGrid() {
+  if (windGrid) return windGrid;
+
+  const res = await fetch("data/windgrid.json?ts=" + Date.now(), {
+    cache: "no-store",
+  });
+
+  if (!res.ok) throw new Error("windgrid.json konnte nicht geladen werden");
+
+  windGrid = await res.json();
+  return windGrid;
+}
+
 export function getWindGrid() {
   return windGrid;
 }
