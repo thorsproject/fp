@@ -168,16 +168,17 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
     y += spacing;
   }
 
+  // Schaftlänge
   const stemLength = y + 40 * scale;
-  parts += drawLine(0, stemLength, 0, 0);
+  parts += drawLine(0, 0, 0, stemLength);
 
   // Temperatur: an der Spitze (y ~ 0), gegenüber der Barbs (Barbs nach rechts → Temp links)
   const t = formatTempAviation(tempC);
 
     // Pfeilspitze setzen
   const tx = -6 * scale;         // horizontal links von der Spitze
-  const ty = 0;          // leicht unter Spitze
-  const fontSize = 25 * scale; // deutlich größer
+  const ty = stemLength;          // leicht unter Spitze
+  const fontSize = 22 * scale; // deutlich größer
 
   const tempSvg = t
      ? `
