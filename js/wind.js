@@ -1,0 +1,208 @@
+// ------------------ WIND ------------------
+let windGrid = null;
+
+export function createWindLayers() {
+  return {
+    windLayer: L.layerGroup(),
+    cloudLayer: L.layerGroup(),
+    rainLayer: L.layerGroup(),
+  };
+}
+
+export async function loadWindGrid() {
+  const res = await fetch("data/windgrid.json?ts=" + Date.now(), { cache: "no-store" });
+  if (!res.ok) throw new Error("windgrid.json konnte nicht geladen werden");
+  windGrid = await res.json();
+  return windGrid;
+}
+
+export function getWindGrid() {
+  return windGrid;
+}
+
+export function wireWindUI({
+  map,
+  windLayer,
+  getSelectedLevel,
+  isWindOn,
+  drawWindBarbsViewport,
+}) {
+  // Level select
+  document.getElementById("windLevelSelect")?.addEventListener("change", (e) => {
+    // app.js hält selectedWindLevel, wir fragen über getSelectedLevel() nach dem aktuellen Wert
+    // hier reicht: direkt neu zeichnen
+    if (isWindOn()) drawWindBarbsViewport();
+  });
+
+  // Re-draw on map changes
+  map.on("zoomend moveend", () => {
+    if (isWindOn()) drawWindBarbsViewport();
+  });
+}
+
+export async function drawWindBarbsViewport({
+  map,
+  windLayer,
+  selectedWindLevel,
+}) {
+  if (!windGrid) await loadWindGrid();
+  if (!windGrid?.levels?.[selectedWindLevel]) return;
+
+  windLayer.clearLayers();
+
+  const bounds = map.getBounds();
+  const baseStep = windGrid.meta.step;
+  const factor = zoomToSampleStep(map.getZoom());
+
+  const levelPoints = windGrid.levels[selectedWindLevel];
+
+  let pts = levelPoints.filter(
+    (p) =>
+      p.lat >= bounds.getSouth() &&
+      p.lat <= bounds.getNorth() &&
+      p.lon >= bounds.getWest() &&
+      p.lon <= bounds.getEast()
+  );
+
+  pts = pts.filter((p) => shouldKeepPoint(p, factor, baseStep));
+  pts = decimateByPixelGrid(map, pts, 45);
+
+  for (const p of pts) {
+    const speedKts = p.speed * 1.944;
+
+    const svgIcon = L.divIcon({
+      className: "",
+      iconSize: [60, 100],
+      iconAnchor: [30, 80],
+      html: createWindBarb(map, speedKts, p.deg),
+    });
+
+    const marker = L.marker([p.lat, p.lon], { icon: svgIcon });
+
+    // farbige Temp (HTML)
+    if (Number.isFinite(p.temp)) {
+      const div = document.createElement("div");
+      div.innerHTML = fmtTemp(p.temp);
+
+      marker.bindTooltip(div, {
+        permanent: true,
+        direction: "top",
+        offset: [8, -12],
+        className: "wind-temp-label",
+      });
+    }
+
+    marker.addTo(windLayer);
+  }
+}
+
+// ---------- Helpers ----------
+function getScaleByZoom(map) {
+  const zoom = map.getZoom();
+  if (zoom <= 5) return 0.6;
+  if (zoom <= 7) return 0.8;
+  if (zoom <= 9) return 1.0;
+  if (zoom <= 11) return 1.3;
+  return 1.6;
+}
+
+function createWindBarb(map, speedKts, deg) {
+  const scale = getScaleByZoom(map);
+
+  let fullTriangles = Math.floor(speedKts / 50);
+  let fullBars = Math.floor((speedKts % 50) / 10);
+  let halfBars = Math.floor(((speedKts % 50) % 10) / 5);
+
+  let parts = "";
+  let y = 0;
+
+  const spacing = 8 * scale;
+  const barbLength = 20 * scale;
+
+  const mainColor = "#222";
+  const haloColor = "white";
+  const strokeMain = 3 * scale;
+  const strokeHalo = 6 * scale;
+
+  function drawLine(x1, y1, x2, y2) {
+    return `
+      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${haloColor}" stroke-width="${strokeHalo}"/>
+      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${mainColor}" stroke-width="${strokeMain}"/>
+    `;
+  }
+
+  function drawTriangle(yPos) {
+    return `
+      <polygon points="0,${yPos} ${barbLength},${yPos + 10 * scale} 0,${yPos + 20 * scale}" fill="${haloColor}"/>
+      <polygon points="0,${yPos} ${barbLength},${yPos + 10 * scale} 0,${yPos + 20 * scale}" fill="${mainColor}"/>
+    `;
+  }
+
+  for (let i = 0; i < fullTriangles; i++) {
+    parts += drawTriangle(y);
+    y += 20 * scale + spacing;
+  }
+
+  for (let i = 0; i < fullBars; i++) {
+    parts += drawLine(0, y, barbLength, y);
+    y += spacing;
+  }
+
+  for (let i = 0; i < halfBars; i++) {
+    parts += drawLine(0, y, barbLength / 2, y);
+    y += spacing;
+  }
+
+  const stemLength = y + 40 * scale;
+  parts += drawLine(0, stemLength, 0, 0);
+
+  const size = 120 * scale;
+
+  return `
+    <svg width="${size}" height="${size}" viewBox="-55 -30 110 180">
+      <g transform="rotate(${deg},0,${stemLength})">
+        ${parts}
+      </g>
+    </svg>
+  `;
+}
+
+function fmtTemp(t) {
+  if (!Number.isFinite(t)) return "-";
+  const val = Math.round(t);
+  const sign = val > 0 ? "+" : "";
+  const color = val > 0 ? "#267426" : val < 0 ? "#940a0a" : "#cccccc";
+  return `<span style="color:${color}">${sign}${val}°</span>`;
+}
+
+function zoomToSampleStep(zoom) {
+  if (zoom <= 5) return 10;
+  if (zoom <= 7) return 2;
+  if (zoom <= 9) return 1;
+  return 1;
+}
+
+function shouldKeepPoint(p, factor, baseStep) {
+  const latIdx = Math.round((p.lat - windGrid.meta.south) / baseStep);
+  const lonIdx = Math.round((p.lon - windGrid.meta.west) / baseStep);
+  const k = Math.max(1, Math.round(factor));
+  return latIdx % k === 0 && lonIdx % k === 0;
+}
+
+function decimateByPixelGrid(map, points, minPx = 45) {
+  const used = new Set();
+  const out = [];
+
+  for (const p of points) {
+    const pt = map.latLngToContainerPoint([p.lat, p.lon]);
+    const gx = Math.floor(pt.x / minPx);
+    const gy = Math.floor(pt.y / minPx);
+    const key = gx + "," + gy;
+
+    if (used.has(key)) continue;
+    used.add(key);
+    out.push(p);
+  }
+
+  return out;
+}
