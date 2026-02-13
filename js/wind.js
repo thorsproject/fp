@@ -41,11 +41,13 @@ export function wireWindUI({
 }
 
 export async function drawWindBarbsViewport({
-  alert("Wind dra start");
   map,
   windLayer,
   selectedWindLevel,
 }) {
+  // ---------- debug-option ----------
+  alert("Wind dra start");
+  // ----------------------------------
   if (!windGrid) await loadWindGrid();
   if (!windGrid?.levels?.[selectedWindLevel]) return;
 
@@ -84,8 +86,7 @@ export async function drawWindBarbsViewport({
 }
 
 // ---------- Helpers ----------
-function getScaleByZoom(map) {
-  const zoom = map.getZoom();
+function getScaleByZoom(zoom) {
   if (zoom <= 5) return 0.6;
   if (zoom <= 7) return 0.8;
   if (zoom <= 9) return 1.0;
@@ -115,7 +116,7 @@ function formatTemp(t) {
   return { txt, color };
 }
 
-function createWindBarb(speedKts, deg, tempC = null) {
+function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
   const scale = getScaleByZoom(zoom);
 
   let fullTriangles = Math.floor(speedKts / 50);
@@ -196,14 +197,6 @@ function createWindBarb(speedKts, deg, tempC = null) {
       </g>
     </svg>
   `;
-}
-
-function fmtTemp(t) {
-  if (!Number.isFinite(t)) return "-";
-  const val = Math.round(t);
-  const sign = val > 0 ? "+" : "";
-  const color = val > 0 ? "#267426" : val < 0 ? "#940a0a" : "#cccccc";
-  return `<span style="color:${color}">${sign}${val}°</span>`;
 }
 
 function zoomToSampleStep(zoom) {
