@@ -115,15 +115,12 @@ function escapeXml(s) {
 function formatTemp(t) {
   if (!Number.isFinite(t)) return null;
 
-  const v = Math.round(t);
-  const sign = v > 0 ? "+" : "";
-  const txt = `${sign}${v}°`;
+  const val = Math.round(t);
 
-  let color = "#b9c2cc";       // neutral
-  if (v > 0) color = "#255a3a"; // grün (dezent)
-  if (v < 0) color = "#6c1f1f"; // rot (dezent)
-
-  return { txt, color };
+  return {
+    txt: String(val),   // KEIN ° Zeichen, KEIN +
+    color: "#222"       // aviation-style dunkel
+  };
 }
 
 function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
@@ -179,19 +176,18 @@ function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
 
   // Pfeilspitze = oben am Stiel (near y=0 im SVG)
   // "gegenüberliegende Seite der Barbs": Barbs gehen nach rechts -> Temp nach links
-  const tx = -2;         // links von der Spitze
-  const ty = -2;          // leicht über die Spitze
-  const fontSize = 25 * scale; // deutlich größer
+  const tx = -18 * scale;         // horizontal links von der Spitze
+  const ty = 10 * scale;          // leicht unter Spitze
+  const fontSize = 14 * scale; // deutlich größer
 
   const tempSvg = t
     ? `
       <text x="${tx}" y="${ty}"
             font-size="${fontSize}"
-            font-weight="800"
+            font-weight="600"
             fill="${t.color}"
             text-anchor="end"
-            dominant-baseline="central"
-            style="paint-order: stroke; stroke: rgba(0,0,0,0.70); stroke-width: ${3.2 * scale}px;">
+            dominant-baseline="middle"
         ${escapeXml(t.txt)}
       </text>
     `
