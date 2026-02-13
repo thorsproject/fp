@@ -1,53 +1,20 @@
-// ------------------ WIND ------------------
 let windGrid = null;
 
 export function createWindLayers() {
   return {
     windLayer: L.layerGroup(),
-    cloudLayer: L.layerGroup(),
-    rainLayer: L.layerGroup(),
   };
 }
 
-export async function loadWindGrid() {
+async function loadWindGrid() {
   const res = await fetch("data/windgrid.json?ts=" + Date.now(), { cache: "no-store" });
   if (!res.ok) throw new Error("windgrid.json konnte nicht geladen werden");
   windGrid = await res.json();
   return windGrid;
 }
 
-export function getWindGrid() {
-  return windGrid;
-}
-
-export function wireWindUI({
-  map,
-  windLayer,
-  getSelectedLevel,
-  isWindOn,
-  drawWindBarbsViewport,
-}) {
-  // Level select
-  document.getElementById("windLevelSelect")?.addEventListener("change", (e) => {
-    // app.js hält selectedWindLevel, wir fragen über getSelectedLevel() nach dem aktuellen Wert
-    // hier reicht: direkt neu zeichnen
-    if (isWindOn()) drawWindBarbsViewport();
-  });
-
-  // Re-draw on map changes
-  map.on("zoomend moveend", () => {
-    if (isWindOn()) drawWindBarbsViewport();
-  });
-}
-
-export async function drawWindBarbsViewport({
-  map,
-  windLayer,
-  selectedWindLevel,
-}) {
-  // ---------- debug-option ----------
-  alert("Wind dra start");
-  // ----------------------------------
+// --------- Public API (wird von app.js aufgerufen) ----------
+export async function drawWindBarbsViewport({ map, windLayer, selectedWindLevel }) {
   if (!windGrid) await loadWindGrid();
   if (!windGrid?.levels?.[selectedWindLevel]) return;
 
@@ -56,6 +23,7 @@ export async function drawWindBarbsViewport({
   const bounds = map.getBounds();
   const baseStep = windGrid.meta.step;
   const factor = zoomToSampleStep(map.getZoom());
+  const zoom = map.getZoom();
 
   const levelPoints = windGrid.levels[selectedWindLevel];
 
@@ -77,128 +45,14 @@ export async function drawWindBarbsViewport({
       className: "",
       iconSize: [60, 100],
       iconAnchor: [30, 80],
-      html: createWindBarb(speedKts, p.deg, p.temp, map.getZoom()),
+      html: createWindBarb(speedKts, p.deg, p.temp, zoom),
     });
 
-    const marker = L.marker([p.lat, p.lon], { icon: svgIcon });
-    marker.addTo(windLayer);
+    L.marker([p.lat, p.lon], { icon: svgIcon }).addTo(windLayer);
   }
 }
 
-// ---------- Helpers ----------
-function getScaleByZoom(zoom) {
-  if (zoom <= 5) return 0.6;
-  if (zoom <= 7) return 0.8;
-  if (zoom <= 9) return 1.0;
-  if (zoom <= 11) return 1.3;
-  return 1.6;
-}
-
-function escapeXml(s) {
-  return String(s)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
-
-function formatTemp(t) {
-  if (!Number.isFinite(t)) return null;
-  const v = Math.round(t);
-  const sign = v > 0 ? "+" : "";
-  const txt = `${sign}${v}°`;
-
-  let color = "#b9c2cc";     // neutral (dezent)
-  if (v > 0) color = "#49d17c";  // grün (nicht grell)
-  if (v < 0) color = "#ff6b6b";  // rot (nicht grell)
-
-  return { txt, color };
-}
-
-function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
-  const scale = getScaleByZoom(zoom);
-
-  let fullTriangles = Math.floor(speedKts / 50);
-  let fullBars = Math.floor((speedKts % 50) / 10);
-  let halfBars = Math.floor(((speedKts % 50) % 10) / 5);
-
-  let parts = "";
-  let y = 0;
-
-  const spacing = 8 * scale;
-  const barbLength = 20 * scale;
-
-  const mainColor = "#222";
-  const haloColor = "white";
-  const strokeMain = 3 * scale;
-  const strokeHalo = 6 * scale;
-
-  function drawLine(x1, y1, x2, y2) {
-    return `
-      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${haloColor}" stroke-width="${strokeHalo}"/>
-      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${mainColor}" stroke-width="${strokeMain}"/>
-    `;
-  }
-
-  function drawTriangle(yPos) {
-    return `
-      <polygon points="0,${yPos} ${barbLength},${yPos + 10 * scale} 0,${yPos + 20 * scale}" fill="${haloColor}"/>
-      <polygon points="0,${yPos} ${barbLength},${yPos + 10 * scale} 0,${yPos + 20 * scale}" fill="${mainColor}"/>
-    `;
-  }
-
-  // 50 kt
-  for (let i = 0; i < fullTriangles; i++) {
-    parts += drawTriangle(y);
-    y += (20 * scale) + spacing;
-  }
-  // 10 kt
-  for (let i = 0; i < fullBars; i++) {
-    parts += drawLine(0, y, barbLength, y);
-    y += spacing;
-  }
-  // 5 kt
-  for (let i = 0; i < halfBars; i++) {
-    parts += drawLine(0, y, barbLength / 2, y);
-    y += spacing;
-  }
-
-  const stemLength = y + (40 * scale);
-  parts += drawLine(0, stemLength, 0, 0);
-
-  // --- Temp text (clean) ---
-  const t = formatTemp(tempC);
-
-  // Position: rechts oben, minimal Abstand
-  const tx = 22;   // nach rechts
-  const ty = -6;   // etwas nach oben
-
-  const tempSvg = t
-    ? `
-      <text x="${tx}" y="${ty}"
-            font-size="${11 * scale}"
-            font-weight="700"
-            fill="${t.color}"
-            text-anchor="start"
-            style="paint-order: stroke; stroke: rgba(0,0,0,0.55); stroke-width: ${2.2 * scale}px;">
-        ${escapeXml(t.txt)}
-      </text>
-    `
-    : "";
-
-  const size = 120 * scale;
-
-  return `
-    <svg width="${size}" height="${size}" viewBox="-55 -30 110 180">
-      ${tempSvg}
-      <g transform="rotate(${deg},0,${stemLength})">
-        ${parts}
-      </g>
-    </svg>
-  `;
-}
-
+// ---------------- Helpers ----------------
 function zoomToSampleStep(zoom) {
   if (zoom <= 5) return 10;
   if (zoom <= 7) return 2;
@@ -229,4 +83,113 @@ function decimateByPixelGrid(map, points, minPx = 45) {
   }
 
   return out;
+}
+
+function getScaleByZoom(zoom) {
+  if (zoom <= 5) return 0.6;
+  if (zoom <= 7) return 0.8;
+  if (zoom <= 9) return 1.0;
+  if (zoom <= 11) return 1.3;
+  return 1.6;
+}
+
+function escapeXml(s) {
+  return String(s)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
+function formatTemp(t) {
+  if (!Number.isFinite(t)) return null;
+
+  const v = Math.round(t);
+  const sign = v > 0 ? "+" : "";
+  const txt = `${sign}${v}°`;
+
+  let color = "#b9c2cc";       // neutral
+  if (v > 0) color = "#49d17c"; // grün (dezent)
+  if (v < 0) color = "#ff6b6b"; // rot (dezent)
+
+  return { txt, color };
+}
+
+function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
+  const scale = getScaleByZoom(zoom);
+
+  const fullTriangles = Math.floor(speedKts / 50);
+  const fullBars = Math.floor((speedKts % 50) / 10);
+  const halfBars = Math.floor(((speedKts % 50) % 10) / 5);
+
+  let parts = "";
+  let y = 0;
+
+  const spacing = 8 * scale;
+  const barbLength = 20 * scale;
+
+  const mainColor = "#222";
+  const haloColor = "white";
+  const strokeMain = 3 * scale;
+  const strokeHalo = 6 * scale;
+
+  function drawLine(x1, y1, x2, y2) {
+    return `
+      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${haloColor}" stroke-width="${strokeHalo}"/>
+      <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${mainColor}" stroke-width="${strokeMain}"/>
+    `;
+  }
+
+  function drawTriangle(yPos) {
+    return `
+      <polygon points="0,${yPos} ${barbLength},${yPos + 10 * scale} 0,${yPos + 20 * scale}" fill="${haloColor}"/>
+      <polygon points="0,${yPos} ${barbLength},${yPos + 10 * scale} 0,${yPos + 20 * scale}" fill="${mainColor}"/>
+    `;
+  }
+
+  for (let i = 0; i < fullTriangles; i++) {
+    parts += drawTriangle(y);
+    y += (20 * scale) + spacing;
+  }
+  for (let i = 0; i < fullBars; i++) {
+    parts += drawLine(0, y, barbLength, y);
+    y += spacing;
+  }
+  for (let i = 0; i < halfBars; i++) {
+    parts += drawLine(0, y, barbLength / 2, y);
+    y += spacing;
+  }
+
+  const stemLength = y + (40 * scale);
+  parts += drawLine(0, stemLength, 0, 0);
+
+  // --- Temp text: clean (no box) ---
+  const t = formatTemp(tempC);
+  const tx = 22;
+  const ty = -6;
+
+  const tempSvg = t
+    ? `
+      <text x="${tx}" y="${ty}"
+            font-size="${11 * scale}"
+            font-weight="700"
+            fill="${t.color}"
+            text-anchor="start"
+            style="paint-order: stroke; stroke: rgba(0,0,0,0.55); stroke-width: ${2.2 * scale}px;">
+        ${escapeXml(t.txt)}
+      </text>
+    `
+    : "";
+
+  const size = 120 * scale;
+
+  return `
+    <svg width="${size}" height="${size}" viewBox="-55 -30 110 180">
+      ${tempSvg}
+      <g transform="rotate(${deg},0,${stemLength})">
+        ${parts}
+      </g>
+    </svg>
+  `;
 }
