@@ -179,9 +179,9 @@ function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
 
   // Pfeilspitze = oben am Stiel (near y=0 im SVG)
   // "gegenüberliegende Seite der Barbs": Barbs gehen nach rechts -> Temp nach links
-  const tx = -22;         // links von der Spitze
-  const ty = -8;          // leicht über die Spitze
-  const fontSize = 16 * scale; // deutlich größer
+  const tx = -2;         // links von der Spitze
+  const ty = -2;          // leicht über die Spitze
+  const fontSize = 25 * scale; // deutlich größer
 
   const tempSvg = t
     ? `
