@@ -192,6 +192,29 @@ button:hover { background:#00aacc; }
   display: none !important;
 }
 
+/* Leaflet Tooltip komplett ohne Box */
+.leaflet-tooltip.wind-temp-label {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: #00ffcc !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+}
+
+/* Pfeil entfernen */
+.leaflet-tooltip.wind-temp-label::before {
+  display: none !important;
+}
+
+/* Optional: Tooltip soll nichts blockieren */
+.leaflet-tooltip.wind-temp-label {
+  pointer-events: none !important;
+}
+
 </style>
 </head>
 <body>
