@@ -177,7 +177,7 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
 
     // Pfeilspitze setzen
   const tx = -6 * scale;         // horizontal links von der Spitze
-  const ty = stemLength;          // leicht unter Spitze
+  const ty = 0;          // leicht unter Spitze
   const fontSize = 22 * scale; // deutlich größer
 
   const tempSvg = t
@@ -198,7 +198,7 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   return `
     <svg width="60" height="100" viewBox="-55 -30 110 180">
       ${tempSvg}
-      <g transform="rotate(${deg},0,0)">
+      <g transform="rotate(${deg},0,0) translate(0,${-stemLength})">
         ${parts}
       </g>
     </svg>
