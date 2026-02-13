@@ -70,8 +70,6 @@ map.on("click", (e) => {
     buildAlternatesDatalist();
     attachDatalistToAltInputs();
 
-    wireAeroValidationAndMarkers(map);
-
   } catch (e) {
     console.error(e);
   }
