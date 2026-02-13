@@ -187,7 +187,6 @@ button:hover { background:#00aacc; }
   box-shadow: none !important;
   padding: 0 !important;
   margin: 0 !important;
-  color: #00ffcc !important;
   font-size: 11px !important;
   font-weight: bold !important;
 }
@@ -836,8 +835,13 @@ function fmtTemp(t) {
   if (!Number.isFinite(t)) return "-";
 
   const val = Math.round(t);
-  const sign = val > 0 ? "+" : "";  // Plus nur bei positiv
-  return `${sign}${val}°`;
+  const sign = val > 0 ? "+" : "";
+
+  let color = "#cccccc";     // neutral
+  if (val > 0) color = "#4cff4c";   // grün
+  if (val < 0) color = "#ff5a5a";   // rot
+
+  return `<span style="color:${color}">${sign}${val}°</span>`;
 }
 
 
