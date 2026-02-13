@@ -15,7 +15,7 @@ import {
   updateAltMarkers,
 } from "./airfields.js";
 
-import { createWindLayers, drawWindBarbsViewport } from "./wind.js";
+import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 
 // ---------- Map ----------
