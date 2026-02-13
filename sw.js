@@ -1,4 +1,4 @@
-const CACHE_NAME = "flightplan-v9"; // <- bei jedem Release erhöhen
+const CACHE_NAME = "flightplan-v10"; // <- bei jedem Release erhöhen
 
 const APP_SHELL = [
   "./",
