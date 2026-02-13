@@ -1,12 +1,20 @@
+// js/wind.js
+// ------------------ WIND ------------------
+
 let windGrid = null;
+
+export function createWindLayers() {
+  return {
+    windLayer: L.layerGroup(),
+    cloudLayer: L.layerGroup(),
+    rainLayer: L.layerGroup(),
+  };
+}
 
 export async function loadWindGrid() {
   if (windGrid) return windGrid;
 
-  const res = await fetch("data/windgrid.json?ts=" + Date.now(), {
-    cache: "no-store",
-  });
-
+  const res = await fetch("data/windgrid.json?ts=" + Date.now(), { cache: "no-store" });
   if (!res.ok) throw new Error("windgrid.json konnte nicht geladen werden");
 
   windGrid = await res.json();
@@ -17,13 +25,6 @@ export function getWindGrid() {
   return windGrid;
 }
 
-export function createWindLayers() {
-  return {
-    windLayer: L.layerGroup(),
-  };
-}
-
-// --------- Public API (wird von app.js aufgerufen) ----------
 export async function drawWindBarbsViewport({ map, windLayer, selectedWindLevel }) {
   if (!windGrid) await loadWindGrid();
   if (!windGrid?.levels?.[selectedWindLevel]) return;
@@ -33,8 +34,6 @@ export async function drawWindBarbsViewport({ map, windLayer, selectedWindLevel 
   const bounds = map.getBounds();
   const baseStep = windGrid.meta.step;
   const factor = zoomToSampleStep(map.getZoom());
-  const zoom = map.getZoom();
-
   const levelPoints = windGrid.levels[selectedWindLevel];
 
   let pts = levelPoints.filter(
@@ -47,6 +46,8 @@ export async function drawWindBarbsViewport({ map, windLayer, selectedWindLevel 
 
   pts = pts.filter((p) => shouldKeepPoint(p, factor, baseStep));
   pts = decimateByPixelGrid(map, pts, 45);
+
+  const zoom = map.getZoom();
 
   for (const p of pts) {
     const speedKts = p.speed * 1.944;
@@ -62,7 +63,16 @@ export async function drawWindBarbsViewport({ map, windLayer, selectedWindLevel 
   }
 }
 
-// ---------------- Helpers ----------------
+// ---------- Helpers ----------
+
+function scaleByZoom(zoom) {
+  if (zoom <= 5) return 0.6;
+  if (zoom <= 7) return 0.8;
+  if (zoom <= 9) return 1.0;
+  if (zoom <= 11) return 1.3;
+  return 1.6;
+}
+
 function zoomToSampleStep(zoom) {
   if (zoom <= 5) return 10;
   if (zoom <= 7) return 2;
@@ -91,16 +101,7 @@ function decimateByPixelGrid(map, points, minPx = 45) {
     used.add(key);
     out.push(p);
   }
-
   return out;
-}
-
-function getScaleByZoom(zoom) {
-  if (zoom <= 5) return 0.6;
-  if (zoom <= 7) return 0.8;
-  if (zoom <= 9) return 1.0;
-  if (zoom <= 11) return 1.3;
-  return 1.6;
 }
 
 function escapeXml(s) {
@@ -112,19 +113,15 @@ function escapeXml(s) {
     .replaceAll("'", "&apos;");
 }
 
-function formatTemp(t) {
+// Aviation-style temp: nur Zahl, kein °, kein +
+function formatTempAviation(t) {
   if (!Number.isFinite(t)) return null;
-
-  const val = Math.round(t);
-
-  return {
-    txt: String(val),   // KEIN ° Zeichen, KEIN +
-    color: "#222"       // aviation-style dunkel
-  };
+  const v = Math.round(t);
+  return { txt: String(v), color: "#222" };
 }
 
-function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
-  const scale = getScaleByZoom(zoom);
+function createWindBarb(speedKts, deg, tempC, zoom) {
+  const scale = scaleByZoom(zoom);
 
   const fullTriangles = Math.floor(speedKts / 50);
   const fullBars = Math.floor((speedKts % 50) / 10);
@@ -155,39 +152,41 @@ function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
     `;
   }
 
+  // 50 kt
   for (let i = 0; i < fullTriangles; i++) {
     parts += drawTriangle(y);
-    y += (20 * scale) + spacing;
+    y += 20 * scale + spacing;
   }
+  // 10 kt
   for (let i = 0; i < fullBars; i++) {
     parts += drawLine(0, y, barbLength, y);
     y += spacing;
   }
+  // 5 kt
   for (let i = 0; i < halfBars; i++) {
     parts += drawLine(0, y, barbLength / 2, y);
     y += spacing;
   }
 
-  const stemLength = y + (40 * scale);
+  const stemLength = y + 40 * scale;
   parts += drawLine(0, stemLength, 0, 0);
 
-  // --- Temp text (aviation-like) ---
-  const t = formatTemp(tempC);
+  // Temperatur: an der Spitze (y ~ 0), gegenüber der Barbs (Barbs nach rechts → Temp links)
+  const t = formatTempAviation(tempC);
+  const tempSvg = t
 
-  // Pfeilspitze = oben am Stiel (near y=0 im SVG)
-  // "gegenüberliegende Seite der Barbs": Barbs gehen nach rechts -> Temp nach links
+  // Pfeilspitze setzen
   const tx = -18 * scale;         // horizontal links von der Spitze
   const ty = 10 * scale;          // leicht unter Spitze
   const fontSize = 14 * scale; // deutlich größer
 
-  const tempSvg = t
     ? `
       <text x="${tx}" y="${ty}"
             font-size="${fontSize}"
             font-weight="600"
             fill="${t.color}"
             text-anchor="end"
-            dominant-baseline="middle"
+            dominant-baseline="middle">
         ${escapeXml(t.txt)}
       </text>
     `
