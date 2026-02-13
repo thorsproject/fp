@@ -180,13 +180,16 @@ button:hover { background:#00aacc; }
 }
 
 .wind-temp-label {
-  background: rgba(0,0,0,0.6);
-  border: none;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
   color: #00ffcc;
   font-size: 11px;
-  padding: 2px 4px;
-  border-radius: 3px;
-  box-shadow: none;
+  font-weight: bold;
+}
+.wind-temp-label::before {
+  display: none !important;
 }
 
 </style>
@@ -780,18 +783,18 @@ async function drawWindBarbsViewport() {
 
     const marker = L.marker([p.lat, p.lon], { icon: svgIcon });
 
-    if (Number.isFinite(p.temp)) {
-      marker.bindTooltip(
-        `${Math.round(p.temp)}°C`,
+    if (Number.isFinite(p.temp) && map.getZoom() >= 8) {
+      m.bindTooltip(
+        fmtTemp(p.temp),
         {
           permanent: true,
           direction: "top",
-          offset: [0, -10],
+          offset: [8, -12],
           className: "wind-temp-label"
         }
       );
     }
-    
+
 marker.addTo(windLayer);
   }
 }
@@ -820,7 +823,10 @@ function fmtDeg(deg) {
 
 function fmtTemp(t) {
   if (!Number.isFinite(t)) return "-";
-  return `${Math.round(t)}°C`;
+
+  const val = Math.round(t);
+  const sign = val > 0 ? "+" : "";  // Plus nur bei positiv
+  return `${sign}${val}°`;
 }
 
 
