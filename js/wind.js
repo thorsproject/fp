@@ -182,7 +182,7 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   // |sin| = 0 waagerecht -> maximal nach oben
   // |sin| = 1 senkrecht -> keine Verschiebung
   const horiz = 1 - Math.min(1, Math.abs(Math.cos(rad)));   // 0..1
-  const ty = 0;                          // 0..-7*scale (-7 * scale) * horiz;
+  const ty = (-7 * scale) * horiz;                         // 0..-7*scale (-7 * scale) * horiz;
 
   const fontSize = 22 * scale; // Schriftgröße
 
