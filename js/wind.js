@@ -174,19 +174,24 @@ function createWindBarb(speedKts, deg, tempC = null, zoom = 8) {
   const stemLength = y + (40 * scale);
   parts += drawLine(0, stemLength, 0, 0);
 
-  // --- Temp text: clean (no box) ---
+  // --- Temp text (aviation-like) ---
   const t = formatTemp(tempC);
-  const tx = 22;
-  const ty = -6;
+
+  // Pfeilspitze = oben am Stiel (near y=0 im SVG)
+  // "gegenüberliegende Seite der Barbs": Barbs gehen nach rechts -> Temp nach links
+  const tx = -22;         // links von der Spitze
+  const ty = -8;          // leicht über die Spitze
+  const fontSize = 16 * scale; // deutlich größer
 
   const tempSvg = t
     ? `
       <text x="${tx}" y="${ty}"
-            font-size="${11 * scale}"
-            font-weight="700"
+            font-size="${fontSize}"
+            font-weight="800"
             fill="${t.color}"
-            text-anchor="start"
-            style="paint-order: stroke; stroke: rgba(0,0,0,0.55); stroke-width: ${2.2 * scale}px;">
+            text-anchor="end"
+            dominant-baseline="central"
+            style="paint-order: stroke; stroke: rgba(0,0,0,0.70); stroke-width: ${3.2 * scale}px;">
         ${escapeXml(t.txt)}
       </text>
     `
