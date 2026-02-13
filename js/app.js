@@ -5,11 +5,16 @@ import { createMap } from "./map.js";
 import { installMapAutoResize } from "./resize.js";
 import {
   loadAirfields,
+  loadAlternates,
   buildAirfieldsDatalist,
+  buildAlternatesDatalist,
   attachDatalistToAeroInputs,
+  attachDatalistToAltInputs,
   wireAeroValidationAndMarkers,
   updateLegMarkers,
+  updateAltMarkers,
 } from "./airfields.js";
+
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js";
 import { showVerticalProfilePopup } from "./vertprof.js";
 
@@ -60,13 +65,20 @@ map.on("click", (e) => {
     buildAirfieldsDatalist();
     attachDatalistToAeroInputs();
     wireAeroValidationAndMarkers(map);
+
+    await loadAlternates();
+    buildAlternatesDatalist();
+    attachDatalistToAltInputs();
+
+    wireAeroValidationAndMarkers(map);
+
   } catch (e) {
     console.error(e);
   }
 
   updateLegMarkers(map);
-
-  // NEU
+  updateAltMarkers(map);
+  
   initDateInput();
   initLFZ();
 

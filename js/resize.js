@@ -1,4 +1,4 @@
-// js/resize.js
+// ------------------ RESIZE MAP ------------------
 export function installMapAutoResize(map, mapContainerId = "map") {
   const el = document.getElementById(mapContainerId);
   if (!el) {
