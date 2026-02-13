@@ -954,10 +954,12 @@ map.on("click", (e) => {
   setTimeout(()=>{ map.invalidateSize(); },200);
 
   // SW
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js")
-      .then(() => console.log("Service Worker registriert"));
-  }
+// DEV: Service Worker deaktiviert
+// if ("serviceWorker" in navigator) {
+//   navigator.serviceWorker.register("sw.js")
+//     .then(() => console.log("Service Worker registriert"));
+// }
+
 })();
 
 </script>
