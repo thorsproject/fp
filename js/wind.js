@@ -41,6 +41,7 @@ export function wireWindUI({
 }
 
 export async function drawWindBarbsViewport({
+  alert("Wind dra start");
   map,
   windLayer,
   selectedWindLevel,
