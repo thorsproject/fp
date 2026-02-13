@@ -156,31 +156,14 @@ button:hover { background:#00aacc; }
     margin-top: 2px;
 }
 
-/* --- Wind Temperature Tooltip --- */
-
-.leaflet-tooltip.wind-temp-label,
-.leaflet-tooltip.wind-temp-label.leaflet-tooltip-top,
-.leaflet-tooltip.wind-temp-label.leaflet-tooltip-bottom,
-.leaflet-tooltip.wind-temp-label.leaflet-tooltip-left,
-.leaflet-tooltip.wind-temp-label.leaflet-tooltip-right {
-
-  background: transparent !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
+/* --- Alternate Validation --- */
+.alt.invalid {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 4px rgba(255,77,77,0.7);
 }
 
-/* Tooltip Pfeil entfernen */
-.leaflet-tooltip.wind-temp-label::before {
-  display: none !important;
-}
-
-/* Nur Text */
-.wind-temp-label {
-  font-size: 11px;
-  font-weight: bold;
-  text-shadow: 0 0 3px black;
-  pointer-events: none;
+.alt-error {
+    font-size: 11px;
+    color: #ff8080;
+    margin-top: 2px;
 }
