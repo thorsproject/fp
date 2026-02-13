@@ -1,5 +1,9 @@
 let windGrid = null;
 
+export function getWindGrid() {
+  return windGrid;
+}
+
 export function createWindLayers() {
   return {
     windLayer: L.layerGroup(),
