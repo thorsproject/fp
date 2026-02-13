@@ -74,7 +74,7 @@ export async function drawWindBarbsViewport({
       className: "",
       iconSize: [60, 100],
       iconAnchor: [30, 80],
-      html: createWindBarb(speedKts, p.deg, p.temp),
+      html: createWindBarb(speedKts, p.deg, p.temp, map.getZoom()),
     });
 
     const marker = L.marker([p.lat, p.lon], { icon: svgIcon });
@@ -115,7 +115,7 @@ function formatTemp(t) {
 }
 
 function createWindBarb(speedKts, deg, tempC = null) {
-  const scale = getScaleByZoom();
+  const scale = getScaleByZoom(zoom);
 
   let fullTriangles = Math.floor(speedKts / 50);
   let fullBars = Math.floor((speedKts % 50) / 10);
