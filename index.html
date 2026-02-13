@@ -179,6 +179,16 @@ button:hover { background:#00aacc; }
     margin-top: 2px;
 }
 
+.wind-temp-label {
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: #00ffcc;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  box-shadow: none;
+}
+
 </style>
 </head>
 <body>
@@ -768,10 +778,20 @@ async function drawWindBarbsViewport() {
       html: createWindBarb(speedKts, p.deg)
     });
 
-    L.marker([p.lat, p.lon], { icon: svgIcon })
-        .bindTooltip(Number.isFinite(p.temp) ? `${Math.round(p.temp)}°C` : "", { permanent: true, direction: "top", offset: [0,-10] })
-        .addTo(windLayer);
-  }
+    const marker = L.marker([p.lat, p.lon], { icon: svgIcon });
+
+    if (Number.isFinite(p.temp)) {
+        marker.bindTooltip(
+            `${Math.round(p.temp)}°C`,
+            {
+                permanent: true,
+                direction: "top",
+                offset: [0, -10],
+                className: "wind-temp-label"
+            }
+      );
+    }
+    marker.addTo(windLayer);
 }
 
 function nearestPoint(points, lat, lon) {
@@ -821,11 +841,6 @@ async function showVerticalProfilePopup(latlng) {
         tmp: fmtTemp(p.temp)
      };
   });
-const debugFirst = (() => {
-  const p25 = windGrid.levels?.["25"]?.[0];
-  if (!p25) return "DEBUG: no levels[25][0]";
-  return `DEBUG sample 25[0]: temp=${p25.temp} keys=${Object.keys(p25).join(",")}`;
-})();
 
   const header = `<b>Vertical Wind Profile</b><br>
                   <span style="color:#8fa6bf;">${latlng.lat.toFixed(3)}, ${latlng.lng.toFixed(3)}</span>`;
