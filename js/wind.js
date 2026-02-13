@@ -120,8 +120,8 @@ function formatTemp(t) {
   const txt = `${sign}${v}°`;
 
   let color = "#b9c2cc";       // neutral
-  if (v > 0) color = "#49d17c"; // grün (dezent)
-  if (v < 0) color = "#ff6b6b"; // rot (dezent)
+  if (v > 0) color = "#255a3a"; // grün (dezent)
+  if (v < 0) color = "#6c1f1f"; // rot (dezent)
 
   return { txt, color };
 }
