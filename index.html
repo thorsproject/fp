@@ -781,17 +781,19 @@ async function drawWindBarbsViewport() {
     const marker = L.marker([p.lat, p.lon], { icon: svgIcon });
 
     if (Number.isFinite(p.temp)) {
-        marker.bindTooltip(
-            `${Math.round(p.temp)}°C`,
-            {
-                permanent: true,
-                direction: "top",
-                offset: [0, -10],
-                className: "wind-temp-label"
-            }
+      marker.bindTooltip(
+        `${Math.round(p.temp)}°C`,
+        {
+          permanent: true,
+          direction: "top",
+          offset: [0, -10],
+          className: "wind-temp-label"
+        }
       );
     }
-    marker.addTo(windLayer);
+    
+marker.addTo(windLayer);
+  }
 }
 
 function nearestPoint(points, lat, lon) {
@@ -844,7 +846,7 @@ async function showVerticalProfilePopup(latlng) {
 
   const header = `<b>Vertical Wind Profile</b><br>
                   <span style="color:#8fa6bf;">${latlng.lat.toFixed(3)}, ${latlng.lng.toFixed(3)}</span>`;
-                  <span style="color:#8fa6bf;font-size:11px;">${debugFirst}</span>`;
+
   const table = `
     <table style="margin-top:6px;border-collapse:collapse;">
       <tr>
