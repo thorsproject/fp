@@ -156,6 +156,17 @@ button:hover { background:#00aacc; }
     margin-top: 2px;
 }
 
+/* --- Alternates Validation --- */
+.alt.invalid {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 4px rgba(255,77,77,0.7);
+}
+
+.alt-error {
+    font-size: 11px;
+    color: #ff8080;
+    margin-top: 2px;
+
 /* Leaflet Tooltip komplett ohne Box */
 .leaflet-tooltip.wind-temp-label {
   background: transparent !important;
