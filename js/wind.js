@@ -173,13 +173,13 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
 
   // Temperatur: an der Spitze (y ~ 0), gegenüber der Barbs (Barbs nach rechts → Temp links)
   const t = formatTempAviation(tempC);
-  const tempSvg = t
 
-  // Pfeilspitze setzen
+    // Pfeilspitze setzen
   const tx = -18 * scale;         // horizontal links von der Spitze
   const ty = 10 * scale;          // leicht unter Spitze
   const fontSize = 14 * scale; // deutlich größer
 
+  const tempSvg = t
      ? `
       <text x="${tx}" y="${ty}"
             font-size="${fontSize}"
