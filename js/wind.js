@@ -101,17 +101,15 @@ function escapeXml(s) {
     .replaceAll("'", "&apos;");
 }
 
-function formatTempLabel(t) {
+function formatTemp(t) {
   if (!Number.isFinite(t)) return null;
+  const v = Math.round(t);
+  const sign = v > 0 ? "+" : "";
+  const txt = `${sign}${v}°`;
 
-  const val = Math.round(t);
-  const sign = val > 0 ? "+" : "";
-  const txt = `${sign}${val}°`;
-
-  // Farbe: grün positiv, rot negativ, grau null
-  let color = "#cccccc";
-  if (val > 0) color = "#4cff4c";
-  if (val < 0) color = "#ff5a5a";
+  let color = "#b9c2cc";     // neutral (dezent)
+  if (v > 0) color = "#49d17c";  // grün (nicht grell)
+  if (v < 0) color = "#ff6b6b";  // rot (nicht grell)
 
   return { txt, color };
 }
@@ -153,13 +151,11 @@ function createWindBarb(speedKts, deg, tempC = null) {
     parts += drawTriangle(y);
     y += (20 * scale) + spacing;
   }
-
   // 10 kt
   for (let i = 0; i < fullBars; i++) {
     parts += drawLine(0, y, barbLength, y);
     y += spacing;
   }
-
   // 5 kt
   for (let i = 0; i < halfBars; i++) {
     parts += drawLine(0, y, barbLength / 2, y);
@@ -169,29 +165,25 @@ function createWindBarb(speedKts, deg, tempC = null) {
   const stemLength = y + (40 * scale);
   parts += drawLine(0, stemLength, 0, 0);
 
-  // ---- Temperatur-Text (optional) ----
-  const t = formatTempLabel(tempC);
+  // --- Temp text (clean) ---
+  const t = formatTemp(tempC);
 
-  // Position: leicht rechts über dem Barb (passt gut)
-  const tempSvg = t ? `
-    <text x="22" y="-6"
-          font-size="${12 * scale}"
-          font-weight="700"
-          fill="${t.color}"
-          stroke="black"
-          stroke-width="${2.5 * scale}"
-          paint-order="stroke"
-          text-anchor="start">
-      ${escapeXml(t.txt)}
-    </text>
-    <text x="22" y="-6"
-          font-size="${12 * scale}"
-          font-weight="700"
-          fill="${t.color}"
-          text-anchor="start">
-      ${escapeXml(t.txt)}
-    </text>
-  ` : "";
+  // Position: rechts oben, minimal Abstand
+  const tx = 22;   // nach rechts
+  const ty = -6;   // etwas nach oben
+
+  const tempSvg = t
+    ? `
+      <text x="${tx}" y="${ty}"
+            font-size="${11 * scale}"
+            font-weight="700"
+            fill="${t.color}"
+            text-anchor="start"
+            style="paint-order: stroke; stroke: rgba(0,0,0,0.55); stroke-width: ${2.2 * scale}px;">
+        ${escapeXml(t.txt)}
+      </text>
+    `
+    : "";
 
   const size = 120 * scale;
 
