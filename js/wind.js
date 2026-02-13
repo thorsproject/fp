@@ -74,24 +74,10 @@ export async function drawWindBarbsViewport({
       className: "",
       iconSize: [60, 100],
       iconAnchor: [30, 80],
-      html: createWindBarb(map, speedKts, p.deg),
+      html: createWindBarb(speedKts, p.deg, p.temp),
     });
 
     const marker = L.marker([p.lat, p.lon], { icon: svgIcon });
-
-    // farbige Temp (HTML)
-    if (Number.isFinite(p.temp)) {
-      const div = document.createElement("div");
-      div.innerHTML = fmtTemp(p.temp);
-
-      marker.bindTooltip(div, {
-        permanent: true,
-        direction: "top",
-        offset: [8, -12],
-        className: "wind-temp-label",
-      });
-    }
-
     marker.addTo(windLayer);
   }
 }
@@ -106,8 +92,32 @@ function getScaleByZoom(map) {
   return 1.6;
 }
 
-function createWindBarb(map, speedKts, deg) {
-  const scale = getScaleByZoom(map);
+function escapeXml(s) {
+  return String(s)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
+function formatTempLabel(t) {
+  if (!Number.isFinite(t)) return null;
+
+  const val = Math.round(t);
+  const sign = val > 0 ? "+" : "";
+  const txt = `${sign}${val}°`;
+
+  // Farbe: grün positiv, rot negativ, grau null
+  let color = "#cccccc";
+  if (val > 0) color = "#4cff4c";
+  if (val < 0) color = "#ff5a5a";
+
+  return { txt, color };
+}
+
+function createWindBarb(speedKts, deg, tempC = null) {
+  const scale = getScaleByZoom();
 
   let fullTriangles = Math.floor(speedKts / 50);
   let fullBars = Math.floor((speedKts % 50) / 10);
@@ -138,28 +148,56 @@ function createWindBarb(map, speedKts, deg) {
     `;
   }
 
+  // 50 kt
   for (let i = 0; i < fullTriangles; i++) {
     parts += drawTriangle(y);
-    y += 20 * scale + spacing;
+    y += (20 * scale) + spacing;
   }
 
+  // 10 kt
   for (let i = 0; i < fullBars; i++) {
     parts += drawLine(0, y, barbLength, y);
     y += spacing;
   }
 
+  // 5 kt
   for (let i = 0; i < halfBars; i++) {
     parts += drawLine(0, y, barbLength / 2, y);
     y += spacing;
   }
 
-  const stemLength = y + 40 * scale;
+  const stemLength = y + (40 * scale);
   parts += drawLine(0, stemLength, 0, 0);
+
+  // ---- Temperatur-Text (optional) ----
+  const t = formatTempLabel(tempC);
+
+  // Position: leicht rechts über dem Barb (passt gut)
+  const tempSvg = t ? `
+    <text x="22" y="-6"
+          font-size="${12 * scale}"
+          font-weight="700"
+          fill="${t.color}"
+          stroke="black"
+          stroke-width="${2.5 * scale}"
+          paint-order="stroke"
+          text-anchor="start">
+      ${escapeXml(t.txt)}
+    </text>
+    <text x="22" y="-6"
+          font-size="${12 * scale}"
+          font-weight="700"
+          fill="${t.color}"
+          text-anchor="start">
+      ${escapeXml(t.txt)}
+    </text>
+  ` : "";
 
   const size = 120 * scale;
 
   return `
     <svg width="${size}" height="${size}" viewBox="-55 -30 110 180">
+      ${tempSvg}
       <g transform="rotate(${deg},0,${stemLength})">
         ${parts}
       </g>
