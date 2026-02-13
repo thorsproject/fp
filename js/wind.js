@@ -175,9 +175,9 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   const t = formatTempAviation(tempC);
 
     // Pfeilspitze setzen
-  const tx = -18 * scale;         // horizontal links von der Spitze
-  const ty = 10 * scale;          // leicht unter Spitze
-  const fontSize = 14 * scale; // deutlich größer
+  const tx = -3 * scale;         // horizontal links von der Spitze
+  const ty = 3 * scale;          // leicht unter Spitze
+  const fontSize = 30 * scale; // deutlich größer
 
   const tempSvg = t
      ? `
