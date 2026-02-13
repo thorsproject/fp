@@ -175,10 +175,22 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   // Temperatur: an der Spitze (y ~ 0), gegenüber der Barbs (Barbs nach rechts → Temp links)
   const t = formatTempAviation(tempC);
 
-    // Pfeilspitze setzen
-  const tx = -6 * scale;         // horizontal links von der Spitze
-  const ty = 0;          // leicht unter Spitze
-  const fontSize = 22 * scale; // deutlich größer
+  // Pfeilspitze setzen
+  const tx = -6 * scale;
+
+  // |sin| = 0 waagerecht -> maximal nach oben
+  // |sin| = 1 senkrecht -> keine Verschiebung
+  const horiz = 1 - Math.min(1, Math.abs(Math.sin(rad)));   // 0..1
+  const ty = (-7 * scale) * horiz;                          // 0..-7*scale
+
+  const fontSize = 22 * scale; // Schriftgröße
+
+  // deg: meteorologisch (kommt aus Richtung). Für die Darstellung ist das ok,
+  // wir nutzen nur "wie waagerecht ist die Linie" als Heuristik.
+  const rad = (deg * Math.PI) / 180;
+
+  // Wie "waagerecht" ist der Schaft? |sin| ~ 0 => waagerecht
+  const isNearlyHorizontal = Math.abs(Math.sin(rad)) < 0.35; // Schwelle kannst du feinjustieren
 
   const tempSvg = t
      ? `
