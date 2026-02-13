@@ -177,12 +177,12 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   const rad = (deg * Math.PI) / 180;
 
   // Pfeilspitze setzen
-  const tx = -10 * scale;      // 6
+  const tx = -6 * scale;
 
   // |sin| = 0 waagerecht -> maximal nach oben
   // |sin| = 1 senkrecht -> keine Verschiebung
   const horiz = 1 - Math.min(1, Math.abs(Math.cos(rad)));   // 0..1
-  const ty = (-7 * scale) * horiz;                         // 0..-7*scale (-7 * scale) * horiz;
+  const ty = (-7 * scale) * horiz;                          // 0..-7*scale
 
   const fontSize = 22 * scale; // Schriftgröße
 
@@ -206,8 +206,8 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
 
   return `
     <svg width="60" height="100" viewBox="-55 -30 110 180">
-      <g transform="rotate(${deg},0,0)">
-        ${tempSvg}
+      ${tempSvg}
+      <g transform="rotate(${deg},0,0) translate(0,${-stemLength})">
         ${parts}
       </g>
     </svg>
