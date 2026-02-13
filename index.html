@@ -179,19 +179,6 @@ button:hover { background:#00aacc; }
     margin-top: 2px;
 }
 
-.wind-temp-label {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  color: #00ffcc;
-  font-size: 11px;
-  font-weight: bold;
-}
-.wind-temp-label::before {
-  display: none !important;
-}
-
 /* Leaflet Tooltip komplett ohne Box */
 .leaflet-tooltip.wind-temp-label {
   background: transparent !important;
@@ -807,7 +794,7 @@ async function drawWindBarbsViewport() {
     const marker = L.marker([p.lat, p.lon], { icon: svgIcon });
 
     if (Number.isFinite(p.temp) && map.getZoom() >= 8) {
-      m.bindTooltip(
+      marker.bindTooltip(
         fmtTemp(p.temp),
         {
           permanent: true,
@@ -818,7 +805,8 @@ async function drawWindBarbsViewport() {
       );
     }
 
-marker.addTo(windLayer);
+    marker.addTo(windLayer);
+
   }
 }
 
