@@ -2,6 +2,15 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<script>
+  window.addEventListener("error", (e) => {
+    alert("JS ERROR:\n" + (e.message || e.error) + "\n" + (e.filename || "") + ":" + (e.lineno || ""));
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    alert("PROMISE ERROR:\n" + (e.reason?.message || e.reason));
+  });
+</script>
+	
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 
