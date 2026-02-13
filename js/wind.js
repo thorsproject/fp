@@ -23,13 +23,6 @@ export function createWindLayers() {
   };
 }
 
-async function loadWindGrid() {
-  const res = await fetch("data/windgrid.json?ts=" + Date.now(), { cache: "no-store" });
-  if (!res.ok) throw new Error("windgrid.json konnte nicht geladen werden");
-  windGrid = await res.json();
-  return windGrid;
-}
-
 // --------- Public API (wird von app.js aufgerufen) ----------
 export async function drawWindBarbsViewport({ map, windLayer, selectedWindLevel }) {
   if (!windGrid) await loadWindGrid();
