@@ -169,7 +169,7 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   }
 
   const stemLength = y + 40 * scale;
-  parts += drawLine(0, 0, 0, stemLength);
+  parts += drawLine(0, stemLength, 0, 0);
 
   // Temperatur: an der Spitze (y ~ 0), gegenüber der Barbs (Barbs nach rechts → Temp links)
   const t = formatTempAviation(tempC);
