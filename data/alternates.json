@@ -1,5 +1,357 @@
 {
-  "EDDF": { "lat": 50.0333, "lon": 8.5706, "name": "Frankfurt/Main" },
-  "EDDM": { "lat": 48.3538, "lon": 11.7861, "name": "München" },
-  "EDDH": { "lat": 53.6304, "lon": 9.9882, "name": "Hamburg" }
+  "EDAB": {
+    "lat": 51.193611,
+    "lon": 14.519722,
+    "name": "Bautzen Airfield"
+  },
+  "EDAC": {
+    "lat": 50.981945,
+    "lon": 12.506389,
+    "name": "Leipzig–Altenburg Airport"
+  },
+  "EDAH": {
+    "lat": 53.8787,
+    "lon": 14.1523,
+    "name": "Heringsdorf Airport"
+  },
+  "EDAQ": {
+    "lat": 51.552223,
+    "lon": 12.053889,
+    "name": "Halle-Oppin Airfield"
+  },
+  "EDAX": {
+    "lat": 53.306389,
+    "lon": 12.752222,
+    "name": "Müritz Airpark"
+  },
+  "EDAY": {
+    "lat": 52.580555,
+    "lon": 13.916667,
+    "name": "Strausberg Airfield"
+  },
+  "EDAZ": {
+    "lat": 52.204631,
+    "lon": 13.159526,
+    "name": "Schönhagen Airfield"
+  },
+  "EDBH": {
+    "lat": 54.338253,
+    "lon": 12.710515,
+    "name": "Stralsund-Barth Airport"
+  },
+  "EDBK": {
+    "lat": 52.918888,
+    "lon": 12.425278,
+    "name": "Kyritz Airfield"
+  },
+  "EDBM": {
+    "lat": 52.073612,
+    "lon": 11.626389,
+    "name": "Magdeburg City Airfield"
+  },
+  "EDBN": {
+    "lat": 53.6022,
+    "lon": 13.306,
+    "name": "Neubrandenburg Trollenhagen Airport"
+  },
+  "EDCA": {
+    "lat": 53.832779,
+    "lon": 13.668611,
+    "name": "Anklam Otto Lilienthal Airfield"
+  },
+  "EDCG": {
+    "lat": 54.38347,
+    "lon": 13.325542,
+    "name": "Rügen Airport"
+  },
+  "EDDC": {
+    "lat": 51.134123,
+    "lon": 13.767831,
+    "name": "Dresden Airport"
+  },
+  "EDDE": {
+    "lat": 50.978281,
+    "lon": 10.960713,
+    "name": "Erfurt-Weimar Airport"
+  },
+  "EDDG": {
+    "lat": 52.133816,
+    "lon": 7.688482,
+    "name": "Münster Osnabrück Airport"
+  },
+  "EDDH": {
+    "lat": 53.630402,
+    "lon": 9.98823,
+    "name": "Hamburg Helmut Schmidt Airport"
+  },
+  "EDDK": {
+    "lat": 50.865898,
+    "lon": 7.14274,
+    "name": "Cologne Bonn Airport"
+  },
+  "EDDN": {
+    "lat": 49.498699,
+    "lon": 11.078056,
+    "name": "Nuremberg Airport"
+  },
+  "EDDP": {
+    "lat": 51.420657,
+    "lon": 12.232705,
+    "name": "Leipzig/Halle Airport"
+  },
+  "EDDV": {
+    "lat": 52.461102,
+    "lon": 9.68508,
+    "name": "Hannover Airport"
+  },
+  "EDDW": {
+    "lat": 53.046786,
+    "lon": 8.78932,
+    "name": "Bremen Airport"
+  },
+  "EDGS": {
+    "lat": 50.707699,
+    "lon": 8.08297,
+    "name": "Siegerland Airport"
+  },
+  "EDHK": {
+    "lat": 54.37957,
+    "lon": 10.145266,
+    "name": "Kiel-Holtenau Airport"
+  },
+  "EDHL": {
+    "lat": 53.805401,
+    "lon": 10.7192,
+    "name": "Lübeck Blankensee Airport"
+  },
+  "EDJA": {
+    "lat": 47.988092,
+    "lon": 10.238248,
+    "name": "Memmingen Allgau Airport"
+  },
+  "EDLN": {
+    "lat": 51.230278,
+    "lon": 6.504444,
+    "name": "Mönchengladbach Airport"
+  },
+  "EDLP": {
+    "lat": 51.612527,
+    "lon": 8.617459,
+    "name": "Paderborn Lippstadt Airport"
+  },
+  "EDLW": {
+    "lat": 51.518299,
+    "lon": 7.61224,
+    "name": "Dortmund Airport"
+  },
+  "EDMA": {
+    "lat": 48.425278,
+    "lon": 10.931667,
+    "name": "Augsburg Airport"
+  },
+  "EDMS": {
+    "lat": 48.900833,
+    "lon": 12.516667,
+    "name": "Straubing Airport"
+  },
+  "EDQD": {
+    "lat": 49.985001,
+    "lon": 11.64,
+    "name": "Bayreuth Airport"
+  },
+  "EDQM": {
+    "lat": 50.288544,
+    "lon": 11.852876,
+    "name": "Hof-Plauen Airport"
+  },
+  "EDTM": {
+    "lat": 48.05389,
+    "lon": 9.372778,
+    "name": "Mengen-Hohentengen Airfield"
+  },
+  "EDTY": {
+    "lat": 49.118332,
+    "lon": 9.783889,
+    "name": "Adolf Würth Airport"
+  },
+  "EDVE": {
+    "lat": 52.319199,
+    "lon": 10.5561,
+    "name": "Braunschweig-Wolfsburg Airport"
+  },
+  "EDVK": {
+    "lat": 51.418395,
+    "lon": 9.391638,
+    "name": "Kassel Airport"
+  },
+  "EDWE": {
+    "lat": 53.391109,
+    "lon": 7.2275,
+    "name": "Emden Airport"
+  },
+  "EDWI": {
+    "lat": 53.50222,
+    "lon": 8.052222,
+    "name": "JadeWeser Airport"
+  },
+  "EDXR": {
+    "lat": 54.220001,
+    "lon": 9.599444,
+    "name": "Rendsburg-Schachtholm Airfield"
+  },
+  "ETHB": {
+    "lat": 52.2785,
+    "lon": 9.08217,
+    "name": "Bückeburg Air Base"
+  },
+  "ETHC": {
+    "lat": 52.591202,
+    "lon": 10.0221,
+    "name": "Celle Army Airfield"
+  },
+  "ETHN": {
+    "lat": 49.39162,
+    "lon": 9.956747,
+    "name": "Niederstetten Army Air Base"
+  },
+  "ETHS": {
+    "lat": 52.919399,
+    "lon": 10.185827,
+    "name": "Faßberg Air Base"
+  },
+  "ETMN": {
+    "lat": 53.767689,
+    "lon": 8.659201,
+    "name": "Sea-Airport Cuxhaven/Nordholz / Nordholz Naval Airbase"
+  },
+  "ETNL": {
+    "lat": 53.918201,
+    "lon": 12.2783,
+    "name": "Rostock-Laage Airport"
+  },
+  "ETNN": {
+    "lat": 50.8312,
+    "lon": 6.65817,
+    "name": "Nörvenich Air Base"
+  },
+  "ETNS": {
+    "lat": 54.459301,
+    "lon": 9.51633,
+    "name": "Schleswig Air Base"
+  },
+  "ETNT": {
+    "lat": 53.547798,
+    "lon": 7.66733,
+    "name": "Wittmundhafen Air Base"
+  },
+  "ETSH": {
+    "lat": 51.767799,
+    "lon": 13.1677,
+    "name": "Holzdorf Air Base"
+  },
+  "ETSI": {
+    "lat": 48.7156982421875,
+    "lon": 11.534000396728516,
+    "name": "Ingolstadt Manching Airport"
+  },
+  "ETSN": {
+    "lat": 48.710999,
+    "lon": 11.2115,
+    "name": "Neuburg Air Base"
+  },
+  "EKAH": {
+    "lat": 56.303331,
+    "lon": 10.618286,
+    "name": "Aarhus Airport"
+  },
+  "EKEB": {
+    "lat": 55.525902,
+    "lon": 8.5534,
+    "name": "Esbjerg Airport"
+  },
+  "EKOD": {
+    "lat": 55.475307,
+    "lon": 10.327206,
+    "name": "Odense Hans Christian Andersen Airport"
+  },
+  "EKRK": {
+    "lat": 55.585602,
+    "lon": 12.1314,
+    "name": "Copenhagen Roskilde Airport"
+  },
+  "EKRN": {
+    "lat": 55.063301,
+    "lon": 14.7596,
+    "name": "Bornholm Airport"
+  },
+  "EKSB": {
+    "lat": 54.96440124511719,
+    "lon": 9.791729927062988,
+    "name": "Sønderborg Airport"
+  },
+  "EKVD": {
+    "lat": 55.436298,
+    "lon": 9.33092,
+    "name": "Kolding Vamdrup Airfield"
+  },
+  "EKYT": {
+    "lat": 57.094763,
+    "lon": 9.84993,
+    "name": "Aalborg Airport"
+  },
+  "EPBY": {
+    "lat": 53.096802,
+    "lon": 17.977699,
+    "name": "Ignacy Jan Paderewski Bydgoszcz Airport"
+  },
+  "EPPO": {
+    "lat": 52.421598,
+    "lon": 16.823359,
+    "name": "Poznań-Ławica Airport"
+  },
+  "EPSC": {
+    "lat": 53.584702,
+    "lon": 14.9022,
+    "name": "Solidarity Szczecin–Goleniów Airport"
+  },
+  "EPWR": {
+    "lat": 51.103719,
+    "lon": 16.882096,
+    "name": "Copernicus Wrocław Airport"
+  },
+  "EPZG": {
+    "lat": 52.1385,
+    "lon": 15.7986,
+    "name": "Zielona Góra-Babimost Airport"
+  },
+  "ESGJ": {
+    "lat": 57.757598876953125,
+    "lon": 14.068699836730957,
+    "name": "Jönköping Airport"
+  },
+  "ESMK": {
+    "lat": 55.9217,
+    "lon": 14.0855,
+    "name": "Kristianstad Airport"
+  },
+  "ESMQ": {
+    "lat": 56.685501,
+    "lon": 16.2876,
+    "name": "Kalmar Airport"
+  },
+  "ESMT": {
+    "lat": 56.69110107421875,
+    "lon": 12.820199966430664,
+    "name": "Halmstad Airport"
+  },
+  "ESMX": {
+    "lat": 56.929100036621094,
+    "lon": 14.727999687194824,
+    "name": "Växjö Kronoberg Airport"
+  },
+  "ESTA": {
+    "lat": 56.29610061645508,
+    "lon": 12.847100257873535,
+    "name": "Ängelholm-Helsingborg Airport"
+  }
 }
