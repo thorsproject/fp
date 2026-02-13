@@ -55,7 +55,7 @@ export async function drawWindBarbsViewport({ map, windLayer, selectedWindLevel 
     const svgIcon = L.divIcon({
       className: "",
       iconSize: [60, 100],
-      iconAnchor: [30, 17],
+      iconAnchor: [30, 80],
       html: createWindBarb(speedKts, p.deg, p.temp, zoom),
     });
 
@@ -169,15 +169,15 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   }
 
   const stemLength = y + 40 * scale;
-  parts += drawLine(0, 0, 0, stemLength);
+  parts += drawLine(0, stemLength, 0, 0);
 
   // Temperatur: an der Spitze (y ~ 0), gegenüber der Barbs (Barbs nach rechts → Temp links)
   const t = formatTempAviation(tempC);
 
     // Pfeilspitze setzen
   const tx = -6 * scale;         // horizontal links von der Spitze
-  const ty = 0 * scale;          // leicht unter Spitze
-  const fontSize = 14 * scale; // deutlich größer
+  const ty = stemLength + 1 * scale;          // leicht unter Spitze
+  const fontSize = 25 * scale; // deutlich größer
 
   const tempSvg = t
      ? `
@@ -197,7 +197,7 @@ function createWindBarb(speedKts, deg, tempC, zoom) {
   return `
     <svg width="60" height="100" viewBox="-55 -30 110 180">
       ${tempSvg}
-      <g transform="rotate(${deg},0,0)">
+      <g transform="rotate(${deg},0,${stemLength})">
         ${parts}
       </g>
     </svg>
