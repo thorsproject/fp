@@ -100,7 +100,7 @@ header {
     position: fixed;       /* fixiert links */
     top: 50px;             /* unter Header */
     left: 0;
-    width: 550px;
+    width: 520px;
     bottom: 0;
     overflow-y: auto;      /* Scroll für Panel */
     background: #1b1f24;
