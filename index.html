@@ -27,9 +27,19 @@
 
 <title>Flight Planning V0.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<button id="toggleMAP">MAP Ein/Aus</button>
-<button id="toggleFUEL">FUEL Ein/Aus</button>
-<button id="togglePERF">PERF Ein/Aus</button>
+
+<!-- BUTTON PANEL -->
+<div class="frame">
+  <div class="button-TOPpanel">
+    <button id="toggleMAP">MAP An/Aus</button>
+    <button id="toggleFUEL">FUEL Planning</button>
+    <button id="togglePERF">PERFORMANCE</button>
+    <button id="toggleORM">ORM öffnen</button>
+    <button id="toggleMAILEO">Mail EO senden</button>
+  </div>
+</div>
+
+
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -197,9 +207,11 @@
 
     <!-- BUTTON PANEL -->
     <div class="frame">
-      <div class="button-panel">
-        <button id="toggleWind">Wind Ein/Aus</button>
-        <button id="toggleWeather">Wetter-Layer Ein/Aus</button>
+      <div class="button-BOTTOMpanel">
+        <button id="resetETDETA">Reset ETD/ETA</button>
+        <button id="resetAERO">Reset AERODROMES</button>
+        <button id="toggleWind">Wind An/Aus</button>
+        <button id="toggleWeather">Wetter-Layer An/Aus</button>
         <select id="windLevelSelect">
           <option value="SFC">SFC</option>
           <option value="25">FL025</option>
