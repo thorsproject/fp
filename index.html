@@ -39,191 +39,230 @@
 <body>
 
 <header class="topbar">
-  <div class"title">FLIGHT PLANNING V0.1</div>
+  <div class"topbar-title">FLIGHT PLANNING V0.1</div>
   <!-- BUTTON TOPNAV -->
-<div class="topnav">
-  <button id="topbtn">MAP An/Aus</button>
-  <button id="topbtn">FUEL Planning</button>
-  <button id="topbtn">PERFORMANCE</button>
-  <button id="topbtn">ORM öffnen</button>
-  <button id="topbtn">Mail EO senden</button>
-</div>
+<nav class="topbar-nav" id="topnav">
+  <button class="topbtn active" data-view=""view-route" type="button">ROUTE+MAP</button>
+  <button class="topbtn" data-view=""view-fuel" type="button">FUEL Planning</button>
+  <button class="topbtn" data-view=""view-perfo" type="button">PERFORMANCE</button>
+  <button class="topbtn" data-view=""view-orm" type="button">ORM öffnen</button>
+  <button class="topbtn" data-view=""view-mail" type="button">Mail EO senden</button>
+  <button class="topbtn" data-view="view-settings" type="button">Settings</button>
+</nav>
 </header>
 
-<div class="main-container">
-  <div class="left-panel">
+<div class="views">
 
-    <!-- FRAME 1 -->
-    <div class="frame">
-      <div class="master-grid">
+  <!-- VIEW: Route + Map -->
+  <section id="view-route" class="view is-active">
+    <div class="main-container">
+      <div class="left-panel">
+        <!-- FRAME 1 -->
+        <div class="frame">
+          <div class="master-grid">
 
-        <!-- Zeile 1 -->
-        <div></div> <!-- Spalte 1 leer -->
-        <div class="label">DATE</div> <!-- Spalte 2 -->
-        <div><input type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
-        <div class="label aero-label">FDL</div> <!-- Spalte 4 -->
-        <div><input type="text" id="FDLinput"></div> <!-- Spalte 5 -->
+            <!-- Zeile 1 -->
+            <div></div> <!-- Spalte 1 leer -->
+            <div class="label">DATE</div> <!-- Spalte 2 -->
+            <div><input type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
+            <div class="label aero-label">FDL</div> <!-- Spalte 4 -->
+            <div><input type="text" id="FDLinput"></div> <!-- Spalte 5 -->
+            <div></div> <!-- Spalte 6 leer -->
+
+            <!-- Zeile 2 -->
+            <div></div> <!-- Spalte 1 leer -->
+            <div class="label">LFZ</div> <!-- Spalte 2 -->
+            <div><select id="lfzSelect"></select></div> <!-- Spalte 3 -->
+            <div class="label aero-label">TEL:</div> <!-- Spalte 4 -->
+            <div><input type="text" id="TELinput"></div> <!-- Spalte 5 -->
+            <div></div> <!-- Spalte 6 leer -->
+
+            <!-- Zeile 3 -->
+            <div></div> <!-- Spalte 1 leer -->
+            <div class="label">CALL SIGN</div> <!-- Spalte 2 -->
+            <div id="callSignDisplay" class="callSignDisplay"></div> <!-- Spalte 3: Anzeige CALL SIGN -->
+            <div class="label aero-label">TAC-CS</div> <!-- Spalte 4 -->
+            <div><select id="tacSelect"></select></div> <!-- Spalte 5 -->
+            <div></div> <!-- Spalte 6 leer -->
+          </div>
+        </div>
+
+        <!-- FRAME 2-5 - LEGS -->
+        <div id="legsContainer">
+
+          <!-- Leg 1 -->
+          <div class="frame">
+            <div class="master-grid">
+
+            <!-- Zeile 1 -->
+              <div class="label leg-title" style="grid-row:1/4;">LEG 1</div> <!-- Spalte 1 -->
+              <div class="label">ETD</div> <!-- Spalte 2 -->
+              <input type="text" class="time legField etd"> <!-- Spalte 3 -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
         <div></div> <!-- Spalte 6 leer -->
 
-        <!-- Zeile 2 -->
-        <div></div> <!-- Spalte 1 leer -->
-        <div class="label">LFZ</div> <!-- Spalte 2 -->
-        <div><select id="lfzSelect"></select></div> <!-- Spalte 3 -->
-        <div class="label aero-label">TEL:</div> <!-- Spalte 4 -->
-        <div><input type="text" id="TELinput"></div> <!-- Spalte 5 -->
+            <!-- Zeile 2 -->
+              <div class="label">ETA</div> <!-- Spalte 2 -->
+              <input type="text" class="time legField eta"> <!-- Spalte 3 -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="aero legField aeroTo"> <!-- Spalte 5 -->
         <div></div> <!-- Spalte 6 leer -->
 
-        <!-- Zeile 3 -->
-        <div></div> <!-- Spalte 1 leer -->
-        <div class="label">CALL SIGN</div> <!-- Spalte 2 -->
-        <div id="callSignDisplay" class="callSignDisplay"></div> <!-- Spalte 3: Anzeige CALL SIGN -->
-        <div class="label aero-label">TAC-CS</div> <!-- Spalte 4 -->
-        <div><select id="tacSelect"></select></div> <!-- Spalte 5 -->
+            <!-- Zeile 3 -->
+              <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
+        <div></div> <!-- Spalte 3 leer -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="alt legField"> <!-- Spalte 5 -->
+              <input type="text" class="alt legField col6"> <!-- Spalte 6 -->
+            </div>
+          </div>
+
+          <!-- Leg 2 -->
+          <div class="frame">
+            <div class="master-grid">
+
+            <!-- Zeile 1 -->
+              <div class="label leg-title" style="grid-row:1/4;">LEG 2</div> <!-- Spalte 1 -->
+              <div class="label">ETD</div> <!-- Spalte 2 -->
+              <input type="text" class="time legField etd"> <!-- Spalte 3 -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
+              <button class="legToggle col6" data-leg="2" data-state="active">ACTIVE</button> <!-- Spalte 6 -->
+
+            <!-- Zeile 2 -->
+              <div class="label">ETA</div> <!-- Spalte 2 -->
+              <input type="text" class="time legField eta"> <!-- Spalte 3 -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="aero legField aeroTo"> <!-- Spalte 5 -->
         <div></div> <!-- Spalte 6 leer -->
+
+            <!-- Zeile 3 -->
+              <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
+        <div></div> <!-- Spalte 3 leer -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="alt legField"> <!-- Spalte 5 -->
+              <input type="text" class="alt legField col6"> <!-- Spalte 6 -->
+            </div>
+          </div>
+
+          <!-- Leg 3 -->
+          <div class="frame">
+            <div class="master-grid">
+
+            <!-- Zeile 1 -->
+              <div class="label leg-title" style="grid-row:1/4;">LEG 3</div> <!-- Spalte 1 -->
+              <div class="label">ETD</div> <!-- Spalte 2 -->
+              <input type="text" class="time legField etd"> <!-- Spalte 3 -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
+              <button class="legToggle col6" data-leg="3" data-state="active">ACTIVE</button> <!-- Spalte 6 -->
+
+
+            <!-- Zeile 2 -->
+              <div class="label">ETA</div> <!-- Spalte 2 -->
+              <input type="text" class="time legField eta"> <!-- Spalte 3 -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="aero legField aeroTo"> <!-- Spalte 5 -->
+        <div></div> <!-- Spalte 6 leer -->
+
+            <!-- Zeile 3 -->
+              <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
+        <div></div> <!-- Spalte 3 leer -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="alt legField"> <!-- Spalte 5 -->
+              <input type="text" class="alt legField col6"> <!-- Spalte 6 -->
+            </div>
+          </div>
+
+
+          <!-- Leg 4 -->
+          <div class="frame">
+            <div class="master-grid">
+
+            <!-- Zeile 1 -->
+              <div class="label leg-title" style="grid-row:1/4;">LEG 4</div> <!-- Spalte 1 -->
+              <div class="label">ETD</div> <!-- Spalte 2 -->
+              <input type="text" class="time legField etd"> <!-- Spalte 3 -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
+              <button class="legToggle col6" data-leg="4" data-state="active">ACTIVE</button> <!-- Spalte 6 -->
+
+
+            <!-- Zeile 2 -->
+              <div class="label">ETA</div> <!-- Spalte 2 -->
+              <input type="text" class="time legField eta"> <!-- Spalte 3 -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="aero legField aeroTo"> <!-- Spalte 5 -->
+        <div></div> <!-- Spalte 6 leer -->
+
+            <!-- Zeile 3 -->
+              <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
+        <div></div> <!-- Spalte 3 leer -->
+              <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
+              <input type="text" class="alt legField"> <!-- Spalte 5 -->
+              <input type="text" class="alt legField col6"> <!-- Spalte 6 -->
+            </div>
+          </div>
+
+        <!-- BUTTON BOTTOM PANEL -->
+        <div class="frame">
+          <div class="button-BOTTOMpanel">
+            <button id="resetETDETA">Reset ETD/ETA</button>
+            <button id="resetAERO">Reset AERODROMES</button>
+            <button id="toggleWind">Wind An/Aus</button>
+            <button id="toggleWeather">Wetter-Layer An/Aus</button>
+            <select id="windLevelSelect">
+              <option value="SFC">SFC</option>
+              <option value="25">FL025</option>
+              <option value="50">FL050</option>
+              <option value="100">FL100</option>
+              <option value="180">FL180</option>
+            </select>
+          </div>
+        </div>
       </div>
+
+      <datalist id="airfieldsList"></datalist>
+      <datalist id="alternatesList"></datalist>
+
+      <!-- MAP -->
+      <div class="map-frame" id="map"></div>
     </div>
+  </section>
 
-    <!-- FRAME 2-5 - LEGS -->
-    <div id="legsContainer">
-
-      <!-- Leg 1 -->
-      <div class="frame">
-        <div class="master-grid">
-
-        <!-- Zeile 1 -->
-          <div class="label leg-title" style="grid-row:1/4;">LEG 1</div> <!-- Spalte 1 -->
-          <div class="label">ETD</div> <!-- Spalte 2 -->
-          <input type="text" class="time legField etd"> <!-- Spalte 3 -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
-	  <div></div> <!-- Spalte 6 leer -->
-
-        <!-- Zeile 2 -->
-          <div class="label">ETA</div> <!-- Spalte 2 -->
-          <input type="text" class="time legField eta"> <!-- Spalte 3 -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="aero legField aeroTo"> <!-- Spalte 5 -->
-	  <div></div> <!-- Spalte 6 leer -->
-
-        <!-- Zeile 3 -->
-          <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
-	  <div></div> <!-- Spalte 3 leer -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="alt legField"> <!-- Spalte 5 -->
-          <input type="text" class="alt legField col6"> <!-- Spalte 6 -->
-        </div>
-      </div>
-
-      <!-- Leg 2 -->
-      <div class="frame">
-        <div class="master-grid">
-
-        <!-- Zeile 1 -->
-          <div class="label leg-title" style="grid-row:1/4;">LEG 2</div> <!-- Spalte 1 -->
-          <div class="label">ETD</div> <!-- Spalte 2 -->
-          <input type="text" class="time legField etd"> <!-- Spalte 3 -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
-          <button class="legToggle col6" data-leg="2" data-state="active">ACTIVE</button> <!-- Spalte 6 -->
-
-        <!-- Zeile 2 -->
-          <div class="label">ETA</div> <!-- Spalte 2 -->
-          <input type="text" class="time legField eta"> <!-- Spalte 3 -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="aero legField aeroTo"> <!-- Spalte 5 -->
-	  <div></div> <!-- Spalte 6 leer -->
-
-        <!-- Zeile 3 -->
-          <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
-	  <div></div> <!-- Spalte 3 leer -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="alt legField"> <!-- Spalte 5 -->
-          <input type="text" class="alt legField col6"> <!-- Spalte 6 -->
-        </div>
-      </div>
-
-      <!-- Leg 3 -->
-      <div class="frame">
-        <div class="master-grid">
-
-        <!-- Zeile 1 -->
-          <div class="label leg-title" style="grid-row:1/4;">LEG 3</div> <!-- Spalte 1 -->
-          <div class="label">ETD</div> <!-- Spalte 2 -->
-          <input type="text" class="time legField etd"> <!-- Spalte 3 -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
-          <button class="legToggle col6" data-leg="3" data-state="active">ACTIVE</button> <!-- Spalte 6 -->
-
-
-        <!-- Zeile 2 -->
-          <div class="label">ETA</div> <!-- Spalte 2 -->
-          <input type="text" class="time legField eta"> <!-- Spalte 3 -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="aero legField aeroTo"> <!-- Spalte 5 -->
-	  <div></div> <!-- Spalte 6 leer -->
-
-        <!-- Zeile 3 -->
-          <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
-	  <div></div> <!-- Spalte 3 leer -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="alt legField"> <!-- Spalte 5 -->
-          <input type="text" class="alt legField col6"> <!-- Spalte 6 -->
-        </div>
-      </div>
-
-
-      <!-- Leg 4 -->
-      <div class="frame">
-        <div class="master-grid">
-
-        <!-- Zeile 1 -->
-          <div class="label leg-title" style="grid-row:1/4;">LEG 4</div> <!-- Spalte 1 -->
-          <div class="label">ETD</div> <!-- Spalte 2 -->
-          <input type="text" class="time legField etd"> <!-- Spalte 3 -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
-          <button class="legToggle col6" data-leg="4" data-state="active">ACTIVE</button> <!-- Spalte 6 -->
-
-
-        <!-- Zeile 2 -->
-          <div class="label">ETA</div> <!-- Spalte 2 -->
-          <input type="text" class="time legField eta"> <!-- Spalte 3 -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="aero legField aeroTo"> <!-- Spalte 5 -->
-	  <div></div> <!-- Spalte 6 leer -->
-
-        <!-- Zeile 3 -->
-          <div class="label">ALTERNATE</div> <!-- Spalte 2 -->
-	  <div></div> <!-- Spalte 3 leer -->
-          <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
-          <input type="text" class="alt legField"> <!-- Spalte 5 -->
-          <input type="text" class="alt legField col6"> <!-- Spalte 6 -->
-        </div>
-      </div>
-
-    <!-- BUTTON BOTTOM PANEL -->
+  <!-- VIEW: Wind -->
+  <section id="view-wind" class="view">
     <div class="frame">
-      <div class="button-BOTTOMpanel">
-        <button id="resetETDETA">Reset ETD/ETA</button>
-        <button id="resetAERO">Reset AERODROMES</button>
-        <button id="toggleWind">Wind An/Aus</button>
-        <button id="toggleWeather">Wetter-Layer An/Aus</button>
-        <select id="windLevelSelect">
-          <option value="SFC">SFC</option>
-          <option value="25">FL025</option>
-          <option value="50">FL050</option>
-          <option value="100">FL100</option>
-          <option value="180">FL180</option>
-        </select>
-      </div>
+      <h2 style="margin:0 0 8px 0;color:#8fa6bf;">Wind</h2>
+      <p style="margin:0;color:#d9e1e8;">Hier kommen später Wind-Animation, Forecast-Slider etc.</p>
     </div>
-  </div>
+  </section>
 
-  <datalist id="airfieldsList"></datalist>
-  <datalist id="alternatesList"></datalist>
+  <!-- VIEW: Weather -->
+  <section id="view-weather" class="view">
+    <div class="frame">
+      <h2 style="margin:0 0 8px 0;color:#8fa6bf;">Weather</h2>
+      <p style="margin:0;color:#d9e1e8;">Hier kommt später Wolken/Radar/Layer-Steuerung.</p>
+    </div>
+  </section>
 
-  <!-- MAP -->
-  <div class="map-frame" id="map"></div>
+  <!-- VIEW: METAR/TAF -->
+  <section id="view-met" class="view">
+    <div class="frame">
+      <h2 style="margin:0 0 8px 0;color:#8fa6bf;">METAR / TAF</h2>
+      <p style="margin:0;color:#d9e1e8;">Hier kommt später ein Overlay/Listenansicht.</p>
+    </div>
+  </section>
+
+  <!-- VIEW: Settings -->
+  <section id="view-settings" class="view">
+    <div class="frame">
+      <h2 style="margin:0 0 8px 0;color:#8fa6bf;">Settings</h2>
+      <p style="margin:0;color:#d9e1e8;">Hier kommen später App-Optionen.</p>
+    </div>
+  </section>
+
 </div>
 
 </body>

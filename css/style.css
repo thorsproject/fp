@@ -18,43 +18,74 @@ header {
 }
 
 /* ---------- TOPBAR ---------- */
-.topbar {
-    height: 50px;
-    background: #232a33;
-    color: #00d4ff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
+.topbar{
+  height:50px;
+  background:#232a33;
+  color:#00d4ff;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 10px;
+  box-sizing:border-box;
+  position: fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index: 9999;
 }
 
-.title {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: 1px;
+.topbar-title{
+  font-size:24px;
+  font-weight:700;
+  white-space:nowrap;
 }
 
-.topnav {
-    display: flex;
-    gap: 12px;
+.topbar-nav{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  overflow-x:auto;
+  padding-bottom:2px;
 }
 
-.topbtn {
-    padding: 6px 14px;
-    background: #1b1f24;
-    border: 1px solid #2e3b4e;
-    border-radius: 4px;
-    color: #d9e1e8;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
+/* ----- Buttons oben ----- */
+.topbtn{
+  padding:6px 12px;
+  border-radius:6px;
+  border:1px solid #2e3b4e;
+  background:#1b1f24;
+  color:#d9e1e8;
+  cursor:pointer;
+  font-weight:700;
 }
 
-.topbtn:hover {
-    background: #00d4ff;
-    color: #000;
+.topbtn:hover{
+  border-color:#00d4ff;
 }
 
+/* ----- ACTIVE STATE ----- */
+.topbtn.active{
+  background:#00d4ff;
+  color:#000;
+  border-color:#00d4ff;
+}
+
+/* ---------- VIEWS ---------- */
+.views{
+  padding-top: 60px; /* Platz für fixed header */
+}
+
+.view{
+  display:none;
+  padding:10px;
+  box-sizing:border-box;
+}
+
+.view.is-active{
+  display:block;
+}
+
+/* ---------- ROUTE + MAP ---------- */
 .main-container {
     display:flex;
     flex-wrap:nowrap;        /* Karte rechts erzwingen */

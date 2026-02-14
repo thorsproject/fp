@@ -19,6 +19,33 @@ import {
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 
+function initTopNav({ defaultView = "view-route", onViewChange } = {}) {
+  const nav = document.getElementById("topNav");
+  if (!nav) return;
+
+  const buttons = Array.from(nav.querySelectorAll(".topbtn"));
+  const views = Array.from(document.querySelectorAll(".view"));
+
+  function show(viewId) {
+    // active button
+    buttons.forEach((b) => b.classList.toggle("active", b.dataset.view === viewId));
+
+    // active view
+    views.forEach((v) => v.classList.toggle("is-active", v.id === viewId));
+
+    if (typeof onViewChange === "function") onViewChange(viewId);
+  }
+
+  nav.addEventListener("click", (e) => {
+    const btn = e.target.closest(".topbtn");
+    if (!btn) return;
+    show(btn.dataset.view);
+  });
+
+  // initial
+  show(defaultView);
+}
+
 // ---------- Map ----------
 const map = createMap();
 
@@ -78,6 +105,15 @@ map.on("click", (e) => {
   updateLegMarkers(map);
   updateAltMarkers(map);
   
+  initTopNav({
+  defaultView: "view-route",
+  onViewChange: (viewId) => {
+    // wichtig: Leaflet braucht manchmal invalidateSize, wenn Map wieder sichtbar wird
+    if (viewId === "view-route") {
+      setTimeout(() => map.invalidateSize(), 50);
+    }
+  },
+});
   initDateInput();
   initLFZ();
   initLegActivation({
