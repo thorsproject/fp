@@ -149,6 +149,7 @@ document.addEventListener("click", (e) => {
   const newState = isActive ? "inactive" : "active";
 
   applyCascade(legNum, newState);
+  fillChain();
 
   // 👉 Wenn gerade aktiviert wurde → Reset FROM + ETD
   if (newState === "active") {
