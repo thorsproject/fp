@@ -73,6 +73,48 @@ export function initLegActivation({ onChange } = {}) {
   }
 }
 
+function resetFromAndEtdFromPrev(legNum) {
+  if (legNum < 2) return;
+
+  const prevFrame = getLegFrame(legNum - 1);
+  const thisFrame = getLegFrame(legNum);
+
+  if (!prevFrame || !thisFrame) {
+    console.warn("[LEG RESET] frames not found", { legNum, prevFrame: !!prevFrame, thisFrame: !!thisFrame });
+    return;
+  }
+
+  const prevTo = prevFrame.querySelector("input.aeroTo");
+  const prevETA = prevFrame.querySelector("input.eta");
+
+  const thisFrom = thisFrame.querySelector("input.aeroFrom");
+  const thisETD = thisFrame.querySelector("input.etd");
+
+  console.log("[LEG RESET] selectors", {
+    prevTo: !!prevTo, prevETA: !!prevETA, thisFrom: !!thisFrom, thisETD: !!thisETD
+  });
+
+  // ICAO FROM übernehmen
+  if (prevTo && thisFrom) {
+    const icao = (prevTo.value || "").toUpperCase().trim();
+    if (icao) {
+      thisFrom.value = icao;
+      thisFrom.dispatchEvent(new Event("input", { bubbles: true }));
+      thisFrom.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+
+  // ETD übernehmen = ETA vom Vorleg
+  if (prevETA && thisETD) {
+    const t = (prevETA.value || "").trim();
+    if (t) {
+      thisETD.value = t;
+      thisETD.dispatchEvent(new Event("input", { bubbles: true }));
+      thisETD.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+}
+
   function fillChain() {
     for (let l = LEG_MIN; l <= LEG_MAX; l++) {
       const frame = getLegFrame(l);
@@ -110,8 +152,8 @@ document.addEventListener("click", (e) => {
 
   // 👉 Wenn gerade aktiviert wurde → Reset FROM + ETD
   if (newState === "active") {
-    copyPrevLegToThis(legNum, true);     // ICAO FROM immer übernehmen
-    copyPrevTimesToThis(legNum, true);   // ETD immer übernehmen
+    console.log("[LEG RESET] activating leg", legNum);
+    resetFromAndEtdFromPrev(legNum);
   }
 
   fillChain();
