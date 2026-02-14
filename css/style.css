@@ -77,11 +77,19 @@ header {
     margin-left:10px; /* Abstand zur Spalte 5 */
 }
 
+/* ---------- Auswahlfelder Lfz + TAC-CS ---------- */
+#lfzSelect,
+#tacSelect {
+    width: 80px;   
+}
+/* ---------------------------------------- */
+
 .callSignDisplay {
     font-size:14px; 
     font-weight:bold; 
     color:#00ffcc;
 }
+
 /* ---------- alle Labels ---------- */
 .label {
     font-weight:bold;
