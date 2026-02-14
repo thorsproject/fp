@@ -131,8 +131,8 @@ header {
 
 .map-frame {
     position: fixed;       /* fixiert rechts */
-    top: 250px;             /* unter Header */
-    margin-left: 610px;           /* Panel-Breite + Abstand */
+    top: 100px;             /* unter Header */
+    margin-left: 10px;           /* Panel-Breite + Abstand */
     width: 600px;
     height: 600px;
     border: 1px solid #2e3b4e;
