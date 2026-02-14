@@ -1,6 +1,7 @@
 // ------------------ SETUP ------------------
 import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
+import { initLegActivation } from "./legs.js";
 import { createMap } from "./map.js";
 import { installMapAutoResize } from "./resize.js";
 import {
@@ -79,5 +80,11 @@ map.on("click", (e) => {
   
   initDateInput();
   initLFZ();
+  initLegActivation({
+    onChange: () => {
+      updateLegMarkers(map);
+      updateAltMarkers(map);
+    },
+});
 
 })();
