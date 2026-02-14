@@ -157,8 +157,6 @@ document.addEventListener("click", (e) => {
     resetFromAndEtdFromPrev(legNum);
   }
 
-  fillChain();
-
   if (typeof onChange === "function") onChange();
 });
 
