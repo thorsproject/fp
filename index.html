@@ -210,15 +210,6 @@
           <div class="button-BOTTOMpanel">
             <button id="resetETDETA">Reset ETD/ETA</button>
             <button id="resetAERO">Reset AERODROMES</button>
-            <button id="toggleWind">Wind An/Aus</button>
-            <button id="toggleWeather">Wetter-Layer An/Aus</button>
-            <select id="windLevelSelect">
-              <option value="SFC">SFC</option>
-              <option value="25">FL025</option>
-              <option value="50">FL050</option>
-              <option value="100">FL100</option>
-              <option value="180">FL180</option>
-            </select>
           </div>
         </div>
       </div>
@@ -233,8 +224,25 @@
 
       <!-- VIEW: MAP -->
       <section id="view-map" class="view is-active">
+
+        <div class="map-controls frame">
+          <div class="button-panel">
+            <button id="toggleWind" type="button">Wind Ein/Aus</button>
+            <button id="toggleWeather" type="button">Wetter-Layer Ein/Aus</button>
+
+            <select id="windLevelSelect">
+              <option value="SFC">SFC</option>
+              <option value="25">FL025</option>
+              <option value="50">FL050</option>
+              <option value="100">FL100</option>
+              <option value="180">FL180</option>
+            </select>
+          </div>
+        </div>
+
         <div class="map-frame" id="map"></div>
       </section>
+
 
       <!-- VIEW: CHECKLIST -->
       <section id="view-checklist" class="view">
