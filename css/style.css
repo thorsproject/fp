@@ -77,9 +77,10 @@ header {
     margin-left:10px; /* Abstand zur Spalte 5 */
 }
 
+/* ---------- alle Labels ---------- */
 .label {
     font-weight:bold;
-    font-size:14px;
+    font-size:10px;
     color:#8fa6bf;
 }
 
@@ -119,7 +120,9 @@ button {
     font-weight:bold;
 }
 button:hover { background:#00aacc; }
+/* ---------------------------------------- */
 
+/* ---------- TOGGLE BUTTONS ---------- */
 .legToggle {
   padding: 5px 10px;
   border-radius: 4px;
@@ -145,9 +148,9 @@ button:hover { background:#00aacc; }
 .legToggle:hover {
   transform: scale(1.05);
 }
-
 /* ---------------------------------------- */
-/* Felder im inaktiven Frame ausgrauen */
+
+/* ---------- Felder im inaktiven Frame ausgrauen ----------*/
 .inactiveFields .legField {
     opacity:0.3;
     pointer-events:none;
@@ -156,15 +159,15 @@ button:hover { background:#00aacc; }
     cursor:not-allowed;
 }
 
-/* Alle Labels im inaktiven Frame leicht ausgrauen */
 .inactiveFields .label,
 .inactiveFields .aero-label,
 .inactiveFields .alternate-label {
     opacity:0.4;
-    pointer-events:none; /* nur optisch, Klicks verhindern */
+    pointer-events:none;
 }
+/* ---------------------------------------- */
 
-/* --- Aero Validation --- */
+/* ---------- Aero Validation ---------- */
 .aero.invalid {
     border-color: #ff4d4d !important;
     box-shadow: 0 0 4px rgba(255,77,77,0.7);
@@ -175,8 +178,9 @@ button:hover { background:#00aacc; }
     color: #ff8080;
     margin-top: 2px;
 }
+/* ---------------------------------------- */
 
-/* --- Alternate Validation --- */
+/* ---------- Alternate Validation ---------- */
 .alt.invalid {
     border-color: #ff4d4d !important;
     box-shadow: 0 0 4px rgba(255,77,77,0.7);
