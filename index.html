@@ -25,21 +25,7 @@
 
 <link rel="apple-touch-icon" href="icon-192.png">
 
-<title>Flight Planning V0.1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- BUTTON PANEL -->
-<div class="frame">
-  <div class="button-TOPpanel">
-    <button id="toggleMAP">MAP An/Aus</button>
-    <button id="toggleFUEL">FUEL Planning</button>
-    <button id="togglePERF">PERFORMANCE</button>
-    <button id="toggleORM">ORM öffnen</button>
-    <button id="toggleMAILEO">Mail EO senden</button>
-  </div>
-</div>
-
-
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -52,7 +38,17 @@
 </head>
 <body>
 
-<header>FLIGHT PLANNING</header>
+<header class="topbar">
+  <div class"title">FLIGHT PLANNING V0.1</div>
+  <!-- BUTTON TOPNAV -->
+<div class="topnav">
+  <button id="topbtn">MAP An/Aus</button>
+  <button id="topbtn">FUEL Planning</button>
+  <button id="topbtn">PERFORMANCE</button>
+  <button id="topbtn">ORM öffnen</button>
+  <button id="topbtn">Mail EO senden</button>
+</div>
+</header>
 
 <div class="main-container">
   <div class="left-panel">
@@ -205,7 +201,7 @@
         </div>
       </div>
 
-    <!-- BUTTON PANEL -->
+    <!-- BUTTON BOTTOM PANEL -->
     <div class="frame">
       <div class="button-BOTTOMpanel">
         <button id="resetETDETA">Reset ETD/ETA</button>

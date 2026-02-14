@@ -17,6 +17,44 @@ header {
     font-size:24px;
 }
 
+/* ---------- TOPBAR ---------- */
+.topbar {
+    height: 50px;
+    background: #232a33;
+    color: #00d4ff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.topnav {
+    display: flex;
+    gap: 12px;
+}
+
+.topbtn {
+    padding: 6px 14px;
+    background: #1b1f24;
+    border: 1px solid #2e3b4e;
+    border-radius: 4px;
+    color: #d9e1e8;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.topbtn:hover {
+    background: #00d4ff;
+    color: #000;
+}
+
 .main-container {
     display:flex;
     flex-wrap:nowrap;        /* Karte rechts erzwingen */
