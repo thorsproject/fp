@@ -91,6 +91,13 @@ header {
 }
 /* ---------------------------------------- */
 
+/* ---------- Edingabefelder FDL + TEL ---------- */
+#FDLinput,
+#TELinput {
+    width: 180px;   
+}
+/* ---------------------------------------- */
+
 .callSignDisplay {
     font-size:14px; 
     font-weight:bold;
