@@ -31,7 +31,7 @@ header {
     position: fixed;       /* fixiert links */
     top: 50px;             /* unter Header */
     left: 0;
-    width: 600px;
+    width: 550px;
     bottom: 0;
     overflow-y: auto;      /* Scroll für Panel */
     background: #1b1f24;
@@ -42,7 +42,7 @@ header {
 
 .map-frame {
     position: fixed;       /* fixiert rechts */
-    top: 50px;             /* unter Header */
+    top: 250px;             /* unter Header */
     margin-left: 610px;           /* Panel-Breite + Abstand */
     width: 600px;
     height: 600px;
@@ -142,7 +142,7 @@ button:hover { background:#00aacc; }
   border: none;
   font-weight: bold;
   font-size:13px;
-  width: 180%;
+  width: 150%;
   max-width: 120px;
   text-align: center;
   cursor: pointer;
