@@ -160,22 +160,35 @@ document.addEventListener("click", (e) => {
   if (typeof onChange === "function") onChange();
 });
 
-  // 🔥 NEU: Reagiere auf Änderungen im aeroTo
-  document.addEventListener("change", (e) => {
-    if (!e.target.classList.contains("aeroTo")) return;
+// Wenn sich TO (oder ETA) ändert: nächstes Leg hart updaten (wenn aktiv)
+document.addEventListener("change", (e) => {
+  const isTo = e.target.classList.contains("aeroTo");
+  const isEta = e.target.classList.contains("eta");
+  if (!isTo && !isEta) return;
 
-    fillChain();
+  const frame = e.target.closest(".frame");
+  if (!frame) return;
 
-    if (typeof onChange === "function") onChange();
-  });
+  // Leg-Nummer aus Toggle-Button im selben Frame ableiten:
+  // Leg1 hat keinen Toggle -> behandeln wir als 1
+  const toggle = frame.querySelector(".legToggle");
+  const thisLegNum = toggle ? Number(toggle.dataset.leg) : 1;
 
-  document.addEventListener("change", (e) => {
-    if (!e.target.classList.contains("eta")) return;
+  const nextLegNum = thisLegNum + 1;
+  if (nextLegNum < 2 || nextLegNum > 4) return;
 
-    fillChain();
+  // nur wenn nächstes Leg aktiv ist
+  const nextFrame = getLegFrame(nextLegNum);
+  const nextBtn = nextFrame?.querySelector(".legToggle");
+  const nextIsInactive = nextBtn && nextBtn.dataset.state === "inactive";
+  if (nextIsInactive) return;
 
-    if (typeof onChange === "function") onChange();
-  });
+  // erst normal, dann hart setzen
+  fillChain();
+  resetFromAndEtdFromPrev(nextLegNum);
+
+  if (typeof onChange === "function") onChange();
+});
 
   // Initialzustand
   for (let l = LEG_MIN; l <= LEG_MAX; l++) {
