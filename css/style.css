@@ -98,13 +98,6 @@ header {
 }
 /* ---------------------------------------- */
 
-/* ---------- Edingabefelder FDL + TEL ---------- */
-#FDLlabel,
-#TELlabel {
-    padding:20px;
-}
-/* ---------------------------------------- */
-
 .callSignDisplay {
     font-size:14px; 
     font-weight:bold;
