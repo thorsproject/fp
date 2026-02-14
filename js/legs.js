@@ -52,6 +52,27 @@ export function initLegActivation({ onChange } = {}) {
     }
   }
 
+  function copyPrevTimesToThis(legNum, force = false) {
+  if (legNum < 2) return;
+
+  const prevFrame = getLegFrame(legNum - 1);
+  const thisFrame = getLegFrame(legNum);
+  if (!prevFrame || !thisFrame) return;
+
+  const prevETA = prevFrame.querySelector("input.eta");
+  const thisETD = thisFrame.querySelector("input.etd");
+  if (!prevETA || !thisETD) return;
+
+  const val = (prevETA.value || "").trim();
+  if (!val) return;
+
+  if (force || !thisETD.value.trim()) {
+    thisETD.value = val;
+    thisETD.dispatchEvent(new Event("input", { bubbles: true }));
+    thisETD.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
+
   function fillChain() {
     for (let l = LEG_MIN; l <= LEG_MAX; l++) {
       const frame = getLegFrame(l);
@@ -61,6 +82,8 @@ export function initLegActivation({ onChange } = {}) {
       if (btn && btn.dataset.state === "inactive") continue;
 
       copyPrevLegToThis(l);
+      copyPrevTimesToThis(l);
+
     }
   }
 
@@ -93,6 +116,14 @@ export function initLegActivation({ onChange } = {}) {
   // 🔥 NEU: Reagiere auf Änderungen im aeroTo
   document.addEventListener("change", (e) => {
     if (!e.target.classList.contains("aeroTo")) return;
+
+    fillChain();
+
+    if (typeof onChange === "function") onChange();
+  });
+
+  document.addEventListener("change", (e) => {
+    if (!e.target.classList.contains("eta")) return;
 
     fillChain();
 
