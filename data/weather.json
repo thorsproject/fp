@@ -1,43 +1,45 @@
 {
   "coord": {
-    "lon": 13.3951,
-    "lat": 52.5174
+    "lon": 13.405,
+    "lat": 52.52
   },
   "weather": [
     {
-      "id": 804,
-      "main": "Clouds",
-      "description": "overcast clouds",
-      "icon": "04d"
+      "id": 600,
+      "main": "Snow",
+      "description": "light snow",
+      "icon": "13d"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 0.77,
-    "feels_like": -4.15,
+    "temp": 0.26,
+    "feels_like": -4.37,
     "temp_min": -0.51,
-    "temp_max": 1.7,
-    "pressure": 1011,
-    "humidity": 80,
-    "sea_level": 1011,
-    "grnd_level": 1005
+    "temp_max": 1.15,
+    "pressure": 1012,
+    "humidity": 79,
+    "sea_level": 1012,
+    "grnd_level": 1006
   },
   "visibility": 10000,
   "wind": {
-    "speed": 5.36,
-    "deg": 358,
-    "gust": 7.6
+    "speed": 4.63,
+    "deg": 10
+  },
+  "snow": {
+    "1h": 0.12
   },
   "clouds": {
     "all": 100
   },
-  "dt": 1771080686,
+  "dt": 1771084258,
   "sys": {
     "type": 2,
     "id": 2011538,
     "country": "DE",
-    "sunrise": 1771050316,
-    "sunset": 1771085770
+    "sunrise": 1771050314,
+    "sunset": 1771085767
   },
   "timezone": 3600,
   "id": 6545310,
