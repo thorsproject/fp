@@ -71,29 +71,49 @@ header {
 }
 
 /* ---------- VIEWS ---------- */
-.views{
-  padding-top: 60px; /* Platz für fixed header */
+.views, .layout {
+  padding-top: 60px; /* Platz für HEADER / Topbar */
 }
 
-.view{
-  display:none;
+/* ---------- 2-Spalten Layout ---------- */
+.layout{
+  display:flex;
+  gap:10px;
   padding:10px;
   box-sizing:border-box;
 }
 
-.view.is-active{
-  display:block;
+/* ---------- LINKS: Route immer sichtbar ---------- */
+.route-panel{
+  width:520px;
+  height:calc(100vh - 60px - 20px); /* viewport - header - padding */
+  overflow-y:auto;
+  border-right:1px solid #2e3b4e;
+  padding-right:10px;
+  box-sizing:border-box;
 }
 
-/* ---------- ROUTE + MAP ---------- */
-.main-container {
-    display:flex;
-    flex-wrap:nowrap;        /* Karte rechts erzwingen */
-    align-items:flex-start;  /* oben ausrichten */
-    height:calc(100% - 50px); /* Header abziehen */
-    gap:10px;
-    padding:10px;
-    box-sizing: border-box;
+/* ---------- RECHTS: Content wechselt ---------- */
+.content-panel{
+  flex:1;
+  min-width: 0;
+  height:calc(100vh - 60px - 20px);
+  overflow:hidden;
+  box-sizing:border-box;
+  position: relative;
+}
+
+/* ----- Views: nur eine sichtbar ----- */
+.view{ display:none; height:100%; }
+.view.is-active{ display:block; height:100%; }
+
+/* ---------- MAP ---------- */
+#view-map{ height:100%; }
+.map-frame{
+  width:100%;
+  height:100%;
+  border: 1px solid #2e3b4e;
+  background:#eef;
 }
 
 .left-panel {

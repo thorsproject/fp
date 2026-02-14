@@ -43,25 +43,26 @@
   <div class"topbar-title">FLIGHT PLANNING V0.1</div>
   <!-- BUTTON TOPNAV -->
 <nav class="topbar-nav" id="topnav">
-  <button class="topbtn active" data-view=""view-route" type="button">ROUTE+MAP</button>
+  <button class="topbtn active" data-view=""view-map" type="button">MAP</button>
+  <button class="topbtn" data-view=""view-checklist" type="button">Checklist</button>
   <button class="topbtn" data-view=""view-fuel" type="button">FUEL Planning</button>
   <button class="topbtn" data-view=""view-perfo" type="button">PERFORMANCE</button>
+  <button class="topbtn" data-view="view-settings" type="button">Settings</button>
   <button class="topbtn" data-view=""view-orm" type="button">ORM öffnen</button>
   <button class="topbtn" data-view=""view-mail" type="button">Mail EO senden</button>
-  <button class="topbtn" data-view="view-settings" type="button">Settings</button>
 </nav>
 </header>
 
 <div class="views">
-
   <!-- VIEW: Route + Map -->
   <section id="view-route" class="view is-active">
-    <div class="main-container">
+  <div class="layout">
+    <!-- LINKS: Route immer sichtbar -->
+    <aside class="route-panel">
       <div class="left-panel">
         <!-- FRAME 1 -->
         <div class="frame">
           <div class="master-grid">
-
             <!-- Zeile 1 -->
             <div></div> <!-- Spalte 1 leer -->
             <div class="label">DATE</div> <!-- Spalte 2 -->
@@ -176,7 +177,6 @@
             </div>
           </div>
 
-
           <!-- Leg 4 -->
           <div class="frame">
             <div class="master-grid">
@@ -188,7 +188,6 @@
               <div class="label aero-label">AERODROME</div> <!-- Spalte 4 -->
               <input type="text" class="aero legField aeroFrom"> <!-- Spalte 5 -->
               <button class="legToggle col6" data-leg="4" data-state="active">ACTIVE</button> <!-- Spalte 6 -->
-
 
             <!-- Zeile 2 -->
               <div class="label">ETA</div> <!-- Spalte 2 -->
@@ -227,43 +226,50 @@
       <datalist id="airfieldsList"></datalist>
       <datalist id="alternatesList"></datalist>
 
-      <!-- MAP -->
-      <div class="map-frame" id="map"></div>
-    </div>
-  </section>
+    </aside>
 
-  <!-- VIEW: Wind -->
-  <section id="view-wind" class="view">
-    <div class="frame">
-      <h2 style="margin:0 0 8px 0;color:#8fa6bf;">Wind</h2>
-      <p style="margin:0;color:#d9e1e8;">Hier kommen später Wind-Animation, Forecast-Slider etc.</p>
-    </div>
-  </section>
+    <!-- RECHTS: wechselnder Content -->
+    <main class="content-panel">
 
-  <!-- VIEW: Weather -->
-  <section id="view-weather" class="view">
-    <div class="frame">
-      <h2 style="margin:0 0 8px 0;color:#8fa6bf;">Weather</h2>
-      <p style="margin:0;color:#d9e1e8;">Hier kommt später Wolken/Radar/Layer-Steuerung.</p>
-    </div>
-  </section>
+      <!-- VIEW: MAP -->
+      <section id="view-map" class="view is-active">
+        <div class="map-frame" id="map"></div>
+      </section>
 
-  <!-- VIEW: METAR/TAF -->
-  <section id="view-met" class="view">
-    <div class="frame">
-      <h2 style="margin:0 0 8px 0;color:#8fa6bf;">METAR / TAF</h2>
-      <p style="margin:0;color:#d9e1e8;">Hier kommt später ein Overlay/Listenansicht.</p>
-    </div>
-  </section>
+      <!-- VIEW: CHECKLIST -->
+      <section id="view-checklist" class="view">
+        <div class="frame">
+          <h2 class="view-title">Checklist</h2>
+          <p class="view-sub">Platzhalter – hier kommt deine Checklist rein.</p>
+        </div>
+      </section>
 
-  <!-- VIEW: Settings -->
-  <section id="view-settings" class="view">
-    <div class="frame">
-      <h2 style="margin:0 0 8px 0;color:#8fa6bf;">Settings</h2>
-      <p style="margin:0;color:#d9e1e8;">Hier kommen später App-Optionen.</p>
-    </div>
-  </section>
+      <!-- VIEW: FUEL -->
+      <section id="view-fuel" class="view">
+        <div class="frame">
+          <h2 class="view-title">Fuel Planning</h2>
+          <p class="view-sub">Platzhalter – hier kommt Fuel Planning rein.</p>
+        </div>
+      </section>
 
+      <!-- VIEW: PERFORMANCE -->
+      <section id="view-performance" class="view">
+        <div class="frame">
+          <h2 class="view-title">Performance</h2>
+          <p class="view-sub">Platzhalter – hier kommt Performance rein.</p>
+        </div>
+      </section>
+
+      <!-- VIEW: SETTINGS -->
+      <section id="view-settings" class="view">
+        <div class="frame">
+          <h2 class="view-title">Settings</h2>
+          <p class="view-sub">Platzhalter – hier kommen Settings rein.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
 </div>
 
 </body>
