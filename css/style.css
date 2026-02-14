@@ -61,10 +61,10 @@ header {
 .master-grid {
     display:grid;
     grid-template-columns:
-        50px   /* Spalte 1 */
-        90px   /* Spalte 2 */
+        45px   /* Spalte 1 */
+        80px   /* Spalte 2 */
         70px   /* Spalte 3 */
-        120px  /* Spalte 4 */
+        110px  /* Spalte 4 */
         70px   /* Spalte 5 */
         70px;  /* Spalte 6 */
     grid-auto-rows:30px;
@@ -77,6 +77,11 @@ header {
     margin-left:10px; /* Abstand zur Spalte 5 */
 }
 
+.callSignDisplay {
+    font-size:14px; 
+    font-weight:bold; 
+    color:#00ffcc;
+}
 /* ---------- alle Labels ---------- */
 .label {
     font-weight:bold;
@@ -102,11 +107,7 @@ input:focus, select:focus {
     outline:none;
     border-color:#00d4ff;
 }
-.callSignDisplay {
-    font-size:13px; 
-    font-weight:bold; 
-    color:#00ffcc;
-}
+
 .button-panel {
     margin-top:5px;
 }
