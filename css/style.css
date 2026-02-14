@@ -77,6 +77,13 @@ header {
     margin-left:10px; /* Abstand zur Spalte 5 */
 }
 
+/* ---------- alle Labels ---------- */
+.label {
+    font-weight:bold;
+    font-size:11px;
+    color:#8fa6bf;
+}
+
 /* ---------- Auswahlfelder Lfz + TAC-CS ---------- */
 #lfzSelect,
 #tacSelect {
@@ -86,15 +93,9 @@ header {
 
 .callSignDisplay {
     font-size:14px; 
-    font-weight:bold; 
-    color:#00ffcc;
-}
-
-/* ---------- alle Labels ---------- */
-.label {
     font-weight:bold;
-    font-size:11px;
-    color:#8fa6bf;
+    padding:5px;
+    color:#00ffcc;
 }
 
 .aero-label {
@@ -102,6 +103,7 @@ header {
     padding-left:20px;     /* kleiner Abstand zur Spaltenkante */
 }
 
+/* ---------- alle Auswahl- und Eingabefelder ---------- */
 input, select {
     width:95%; 
     padding:5px;
@@ -115,6 +117,7 @@ input:focus, select:focus {
     outline:none;
     border-color:#00d4ff;
 }
+/* ---------------------------------------- */
 
 .button-panel {
     margin-top:5px;
