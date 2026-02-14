@@ -120,6 +120,29 @@ button {
 }
 button:hover { background:#00aacc; }
 
+.legToggle {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.legToggle[data-state="active"] {
+  background: #2e7d32;
+  color: white;
+}
+
+.legToggle[data-state="inactive"] {
+  background: #8b1e1e;
+  color: white;
+}
+
+.legToggle:hover {
+  transform: scale(1.05);
+}
+
 /* ---------------------------------------- */
 /* Felder im inaktiven Frame ausgrauen */
 .inactiveFields .legField {
@@ -136,12 +159,6 @@ button:hover { background:#00aacc; }
 .inactiveFields .alternate-label {
     opacity:0.4;
     pointer-events:none; /* nur optisch, Klicks verhindern */
-}
-
-/* Der Toggle selbst bleibt aktiv */
-.inactiveFields .activeToggle {
-    opacity:1;
-    pointer-events:auto;
 }
 
 /* --- Aero Validation --- */
