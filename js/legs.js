@@ -97,21 +97,27 @@ export function initLegActivation({ onChange } = {}) {
     }
   }
 
-  // Toggle-Klick
-  document.addEventListener("click", (e) => {
-    const btn = e.target;
-    if (!btn.classList?.contains("legToggle")) return;
+// Toggle-Klick
+document.addEventListener("click", (e) => {
+  const btn = e.target;
+  if (!btn.classList?.contains("legToggle")) return;
 
-    const legNum = Number(btn.dataset.leg);
-    const isActive = btn.dataset.state === "active";
-    const newState = isActive ? "inactive" : "active";
+  const legNum = Number(btn.dataset.leg);
+  const isActive = btn.dataset.state === "active";
+  const newState = isActive ? "inactive" : "active";
 
-    applyCascade(legNum, newState);
+  applyCascade(legNum, newState);
 
-    fillChain();
+  // 👉 Wenn gerade aktiviert wurde → Reset FROM + ETD
+  if (newState === "active") {
+    copyPrevLegToThis(legNum, true);     // ICAO FROM immer übernehmen
+    copyPrevTimesToThis(legNum, true);   // ETD immer übernehmen
+  }
 
-    if (typeof onChange === "function") onChange();
-  });
+  fillChain();
+
+  if (typeof onChange === "function") onChange();
+});
 
   // 🔥 NEU: Reagiere auf Änderungen im aeroTo
   document.addEventListener("change", (e) => {
