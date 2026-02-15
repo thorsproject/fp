@@ -70,17 +70,6 @@ let selectedWindLevel = "SFC";
 const { windLayer } = createWindLayers();
 
 // ---------- Buttons ----------
-// document.getElementById("toggleWind")?.addEventListener("click", async () => {
-//  if (!windOn) {
-//    windOn = true;
-//    windLayer.addTo(map);
-//    await drawWindBarbsViewport({ map, windLayer, selectedWindLevel });
-//  } else {
-//    windLayer.clearLayers();
-//    windOn = false;
-//  }
-//});
-
 windBtn?.addEventListener("click", async () => {
 
   windOn = !windOn;

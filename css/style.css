@@ -113,8 +113,7 @@ header {
 #view-map{
   position: relative;
   height: 100%;
-        /* display: flex; */
-        /* flex-direction: column; */
+
 }
 
 /* Controls: oben links, kompakt */
@@ -123,7 +122,6 @@ header {
   padding: 10px;  /* wird nur benötigt, wenn position: relative */
   top: 0;           /* oben am Map-View */
   left: 0;          /* links */
-  /*  margin-top:0; */
   margin-bottom: 10px;  /* wird nur benötigt, wenn position: relative */  
   z-index: 1000;
   padding: 0;       /* kein extra Innenabstand, Chips regeln das */
@@ -137,6 +135,10 @@ header {
   display:flex;
   gap:8px;
   align-items:center;
+}
+
+.map-controls.frame{
+  margin-bottom: 6px;
 }
 
 /* Jeppesen-like Chips */
