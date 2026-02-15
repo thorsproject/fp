@@ -224,10 +224,25 @@
 
       <!-- VIEW: MAP -->
       <section id="view-map" class="view is-active">
-        <div class="map-controls frame">
-          <div class="mapbtn">
-            <button id="toggleWeather" type="button">Wetter-Layer Ein/Aus</button>
-            <button id="toggleWind" type="button">Wind Ein/Aus</button>
+<!--        <div class="map-controls frame"> -->
+<!--          <div class="mapbtn"> -->
+<!--            <button id="toggleWeather" type="button">Wetter-Layer Ein/Aus</button> -->
+<!--            <button id="toggleWind" type="button">Wind Ein/Aus</button> -->
+
+ <!-- neu --> <div class="map-controls">
+   <!-- neu --><div class="ctrl-chip">
+     <!-- neu --><span>Weather</span>
+     <!-- neu --><button id="toggleWeather" type="button">OFF</button>
+   <!-- neu --></div>
+
+   <!-- neu --><div class="ctrl-chip">
+     <!-- neu --><span>Wind</span>
+     <!-- neu --><button id="toggleWind" type="button">OFF</button>
+   <!-- neu --></div>
+
+   <!-- neu --><div class="ctrl-chip">
+     <!-- neu --><span>Level</span>
+
             <select id="windLevelSelect">
               <option value="SFC">SFC</option>
               <option value="25">FL025</option>

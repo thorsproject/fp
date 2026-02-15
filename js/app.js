@@ -19,6 +19,13 @@ import {
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 
+// ---------- Control Button State ----------
+function setBtnState(btn, on){
+  if (!btn) return;
+  btn.textContent = on ? "ON" : "OFF";
+  btn.classList.toggle("is-on", on);
+}
+
 function initTopNav({ map, defaultView = "view-map" } = {}) {
   const nav = document.getElementById("topNav");
   if (!nav) return;
@@ -54,20 +61,42 @@ initTopNav({ map, defaultView: "view-map" });
 let windOn = false;
 let selectedWindLevel = "SFC";
 
+    // NEW:
+    const windBtn = document.getElementById("toggleWind");
+    const wxBtn   = document.getElementById("toggleWeather");
+
+
 // ---------- Layers ----------
 const { windLayer } = createWindLayers();
 
 // ---------- Buttons ----------
-document.getElementById("toggleWind")?.addEventListener("click", async () => {
-  if (!windOn) {
-    windOn = true;
+// document.getElementById("toggleWind")?.addEventListener("click", async () => {
+//  if (!windOn) {
+//    windOn = true;
+//    windLayer.addTo(map);
+//    await drawWindBarbsViewport({ map, windLayer, selectedWindLevel });
+//  } else {
+//    windLayer.clearLayers();
+//    windOn = false;
+//  }
+//});
+
+windBtn?.addEventListener("click", async () => {
+
+  windOn = !windOn;
+
+  if (windOn) {
     windLayer.addTo(map);
     await drawWindBarbsViewport({ map, windLayer, selectedWindLevel });
   } else {
     windLayer.clearLayers();
-    windOn = false;
   }
+
+  // NEW:
+  setBtnState(windBtn, windOn);
+
 });
+
 
 document.getElementById("windLevelSelect")?.addEventListener("change", async (e) => {
   selectedWindLevel = e.target.value;

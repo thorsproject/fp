@@ -113,18 +113,88 @@ header {
 #view-map{
   position: relative;
   height: 100%;
-  display: flex;
-  flex-direction: column;
+        /* display: flex; */
+        /* flex-direction: column; */
 }
 
-/* Overlay-Box auf der Karte */
+/* Controls: oben links, kompakt */
 .map-controls{
-  position: relative;   /* statt absolute */
-  padding: 10px;
-  margin-top:0;
-  margin-bottom: 10px;
+  position:absolute;
+  top: 0;           /* oben am Map-View */
+  left: 0;          /* links */
   z-index: 1000;
+  padding: 0;       /* kein extra Innenabstand, Chips regeln das */
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
+/* Eine Zeile */
+.map-controls{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+/* Jeppesen-like Chips */
+.ctrl-chip{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border:1px solid #2e3b4e;
+  border-radius:999px;
+  background:#1b1f24;
+  color:#d9e1e8;
+  font-weight:800;
+  font-size:12px;
+}
+
+/* Button als kleine Pill */
+.ctrl-chip button{
+  margin:0;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid #2e3b4e;
+  background:#232a33;
+  color:#d9e1e8;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.ctrl-chip button.is-on{
+  background:#00d4ff;
+  color:#000;
+  border-color:#00d4ff;
+}
+
+/* Dropdown kompakt */
+.ctrl-chip select{
+  width:auto;
+  margin:0;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid #2e3b4e;
+  background:#232a33;
+  color:#d9e1e8;
+  font-weight:900;
+}
+
+/* Karte füllt den Bereich */
+.map-frame{
+  width:100%;
+  height:100%;
+  border:1px solid #2e3b4e;
+  background:#eef;
+}
+
+        /* Overlay-Box auf der Karte */
+        /* .map-controls{ */
+        /*  position: relative;   /* statt absolute */
+        /*  padding: 10px; */
+        /*  margin-top:0; */
+        /*  margin-bottom: 10px; */
+        /*  z-index: 1000; */
+        /* } */
 
 /* Optional: kompakter */
 .map-controls .mapbtn{
@@ -248,12 +318,6 @@ button {
 }
 button:hover { background:#00aacc; }
 /* ---------------------------------------- */
-
-/* ----- Buttons oben ----- */
-.btnResTimes{
-  color:#f65702;
-  /* background:#f65702; */
-}
 
 /* ---------- TOGGLE BUTTONS ---------- */
 .legToggle {
