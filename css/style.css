@@ -112,13 +112,13 @@ header {
 /* ---------- MAP ---------- */
 #view-map {
   position: relative;
+  padding-top:0;
   height: 100%;
 }
 
 /* Overlay-Box auf der Karte */
 .map-controls{
   position: absolute;
-  top: -50px;
   z-index: 1000;   /* über Leaflet */
   padding: 10px;
 }
