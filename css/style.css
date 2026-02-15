@@ -112,13 +112,16 @@ header {
 /* ---------- MAP ---------- */
 #view-map {
   position: relative;
-  padding-top:0;
+  overflow:visible;
   height: 100%;
+  padding-top:70px;
 }
 
 /* Overlay-Box auf der Karte */
 .map-controls{
   position: absolute;
+  top:0;
+  left:0;
   z-index: 1000;   /* über Leaflet */
   padding: 10px;
 }
@@ -138,20 +141,20 @@ header {
   .map-frame{
   top:60px;
   width:70%;
-  height:100%;
+  height:calc(90% - 70px);
   border: 1px solid #2e3b4e;
   background:#eef;
 }
 
 .left-panel {
-    position: fixed;       /* fixiert links */
-    top: 50px;             /* unter Header */
-    left: 0;
-    width: 520px;
-    bottom: 0;
-    overflow-y: auto;      /* Scroll für Panel */
+    position: static;       /* fixiert links */
+    top: auto;             /* unter Header */
+    left: auto;
+    width: auto;
+    bottom: auto;
+    overflow-y: visible;
+    padding:0;
     background: #1b1f24;
-    padding: 10px;
     box-sizing: border-box;
     border-right: 1px solid #2e3b4e;
 }
