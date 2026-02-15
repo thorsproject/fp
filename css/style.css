@@ -118,8 +118,9 @@ header {
 /* Overlay-Box auf der Karte */
 .map-controls{
   position: absolute;
+  top: -10px;
   z-index: 1000;   /* über Leaflet */
-  padding: 1px;
+  padding: 10px;
 }
 
 /* Optional: kompakter */
@@ -231,9 +232,6 @@ input:focus, select:focus {
 }
 /* ---------------------------------------- */
 
-.button-routebtn {
-    margin-top:0px;
-}
 button {
     padding:5px 10px;
     margin-right:5px;
