@@ -93,6 +93,20 @@ header {
   box-sizing:border-box;
 }
 
+.routebtnReset{
+  background: #ffb300;
+  color: #000;
+}
+
+.routebtnReset:hover{
+  background: #ffa000;
+}
+
+.routebtnReset:active{
+  background: #ff8f00;
+}
+/* ------------------------------------------------- */
+
 /* ---------- RECHTS: Content wechselt ---------- */
 .content-panel{
   flex:1;
