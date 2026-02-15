@@ -119,15 +119,19 @@ header {
 
 /* Controls: oben links, kompakt */
 .map-controls{
-  position:absolute;
+  position:relative;  /* absolute; <-- Buttons schweben über der Karte */
+  padding: 10px;  /* wird nur benötigt, wenn position: relative */
   top: 0;           /* oben am Map-View */
   left: 0;          /* links */
+  /*  margin-top:0; */
+  margin-bottom: 10px;  /* wird nur benötigt, wenn position: relative */  
   z-index: 1000;
   padding: 0;       /* kein extra Innenabstand, Chips regeln das */
   background: transparent;
   border: none;
   box-shadow: none;
 }
+
 /* Eine Zeile */
 .map-controls{
   display:flex;
@@ -186,15 +190,6 @@ header {
   border:1px solid #2e3b4e;
   background:#eef;
 }
-
-        /* Overlay-Box auf der Karte */
-        /* .map-controls{ */
-        /*  position: relative;   /* statt absolute */
-        /*  padding: 10px; */
-        /*  margin-top:0; */
-        /*  margin-bottom: 10px; */
-        /*  z-index: 1000; */
-        /* } */
 
 /* Optional: kompakter */
 .map-controls .mapbtn{
