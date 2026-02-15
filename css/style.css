@@ -110,20 +110,20 @@ header {
 .view-sub{ margin:0; color:#d9e1e8; }
 
 /* ---------- MAP ---------- */
-#view-map {
+#view-map{
   position: relative;
-  overflow:visible;
   height: 100%;
-  padding-top:70px;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Overlay-Box auf der Karte */
 .map-controls{
-  position: absolute;
-  top:0;
-  left:0;
-  z-index: 1000;   /* über Leaflet */
+  position: relative;   /* statt absolute */
   padding: 10px;
+  margin-top:0;
+  margin-bottom: 10px;
+  z-index: 1000;
 }
 
 /* Optional: kompakter */
@@ -138,8 +138,9 @@ header {
   width: 110px; /* oder was dir gefällt */
 }
 
-  .map-frame{
-  top:60px;
+.map-frame{
+  /* top:60px; */
+  flex:1;
   width:70%;
   height:calc(90% - 70px);
   border: 1px solid #2e3b4e;
