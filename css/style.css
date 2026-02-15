@@ -209,7 +209,7 @@ header {
   /* top:60px; */
   flex:1;
   width:70%;
-  height:calc(90% - 70px);
+  height:calc(100% - 70px);
   border: 1px solid #2e3b4e;
   background:#eef;
 }
