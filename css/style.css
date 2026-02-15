@@ -97,7 +97,7 @@ header {
 .content-panel{
   flex:1;
   min-width: 0;
-  height:calc(100vh - 60px - 20px);
+  height:calc(100vh - 60px - 40px);
   overflow:hidden;
   box-sizing:border-box;
   position: relative;
@@ -118,7 +118,7 @@ header {
 /* Overlay-Box auf der Karte */
 .map-controls{
   position: absolute;
-  top: 1px;
+  top: 0px;
   left: 1px;
   z-index: 1000;   /* über Leaflet */
   padding: 10px;
@@ -127,7 +127,7 @@ header {
 /* Optional: kompakter */
 .map-controls .button-panel{
   display: flex;
-  gap: 8px;
+  gap: 30px;       /* 8 */
   align-items: center;
   flex-wrap: wrap;
 }
@@ -137,7 +137,7 @@ header {
 }
 
   .map-frame{
-  top:50px;
+  top:60px;
   width:70%;
   height:100%;
   border: 1px solid #2e3b4e;
