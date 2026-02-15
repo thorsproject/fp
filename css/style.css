@@ -118,7 +118,7 @@ header {
 /* Overlay-Box auf der Karte */
 .map-controls{
   position: absolute;
-  top: -10px;
+  top: -50px;
   z-index: 1000;   /* über Leaflet */
   padding: 10px;
 }
