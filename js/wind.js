@@ -1,4 +1,3 @@
-// js/wind.js
 // ------------------ WIND ------------------
 
 let windGrid = null;

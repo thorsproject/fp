@@ -12,6 +12,7 @@ const LEVEL_MAP = {
   "SFC": { spd: "wind_speed_10m",  dir: "wind_direction_10m",  tmp: "temperature_2m" },
   "25":  { spd: "wind_speed_925hPa", dir: "wind_direction_925hPa", tmp: "temperature_925hPa" },
   "50":  { spd: "wind_speed_850hPa", dir: "wind_direction_850hPa", tmp: "temperature_850hPa" },
+  "80":  { spd: "wind_speed_750hPa", dir: "wind_direction_750hPa", tmp: "temperature_750hPa" },
   "100": { spd: "wind_speed_700hPa", dir: "wind_direction_700hPa", tmp: "temperature_700hPa" },
   "180": { spd: "wind_speed_500hPa", dir: "wind_direction_500hPa", tmp: "temperature_500hPa" }
 };
@@ -48,6 +49,7 @@ const hourlyVars = [
   "wind_speed_10m", "wind_direction_10m", "temperature_2m",
   "wind_speed_925hPa", "wind_direction_925hPa", "temperature_925hPa",
   "wind_speed_850hPa", "wind_direction_850hPa", "temperature_850hPa",
+  "wind_speed_750hPa", "wind_direction_750hPa", "temperature_750hPa",
   "wind_speed_700hPa", "wind_direction_700hPa", "temperature_700hPa",
   "wind_speed_500hPa", "wind_direction_500hPa", "temperature_500hPa"
 ].join(",");
