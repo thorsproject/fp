@@ -71,6 +71,12 @@ function fmtHHMM(mins) {
   return `${hh}:${String(mm).padStart(2, "0")}`;
 }
 
+function minsFromUsg(usg, rate = BURN.NC) {
+  if (!Number.isFinite(usg) || usg <= 0) return 0;
+  if (!Number.isFinite(rate) || rate <= 0) return 0;
+  return (usg / rate) * 60;
+}
+
 function setOut(panel, key, val) {
   const el = q(panel, `[data-out="${key}"]`);
   if (el) el.textContent = val;
@@ -117,16 +123,10 @@ function readTripFromDOM(panel) {
     return toNum(el?.value);
   });
 
-  const tripMin = [1, 2, 3, 4].map((n) => {
-    if (!isLegActive(n)) return 0;
-    const el = q(panel, `[data-trip-time="${n}"]`);
-    return parseHHMM(el?.value);
-  });
+  const tripUsgSum = tripUsg.reduce((a, b) => a + b, 0);
+  const tripMinSum = minsFromUsg(tripUsgSum, BURN.NC); // ✅ Summe über alle aktiven Legs
 
-  return {
-    tripUsgSum: tripUsg.reduce((a, b) => a + b, 0),
-    tripMinSum: tripMin.reduce((a, b) => a + b, 0),
-  };
+  return { tripUsg, tripUsgSum, tripMinSum };
 }
 
 function syncTripInputsEnabled(panel) {
@@ -157,7 +157,7 @@ export function initFuelPlanning() {
     const blockUsg = toNum(q(panel, `[data-field="block_usg"]`)?.value);
 
     // Trip (manual) – nur aktive Legs zählen
-    const { tripUsgSum, tripMinSum } = readTripFromDOM(panel);
+    const { tripUsg, tripUsgSum, tripMinSum } = readTripFromDOM(panel);
 
     // Approaches (counts)
     const nIFR = clampInt(q(panel, `[data-field="appr_ifr_n"]`)?.value);
@@ -173,7 +173,7 @@ export function initFuelPlanning() {
     // Alternate = log + 2.0
     const altLogUsg = toNum(q(panel, `[data-field="alt_usg_log"]`)?.value);
     const altUsg = altLogUsg + FIX.ALT_EXTRA_USG;
-    const altMin = parseHHMM(q(panel, `[data-field="alt_time"]`)?.value);
+    const altMin = minsFromUsg(altUsg, BURN.NC); // ✅ automatisch
 
     // Reserve fixed by profile
     const resUsg = profile === "VFR" ? FIX.RES_VFR_USG : FIX.RES_IFR_USG;
