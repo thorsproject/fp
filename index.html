@@ -317,10 +317,19 @@
             <div class="c-leg"></div>
             <div class="c-leg"></div>
             <div class="c-desc">Approaches</div>
-            <div class="c-in appr-stack">
-              <input data-field="appr_ifr_n" inputmode="numeric" placeholder="IFR n" />
-              <input data-field="appr_vfr_n" inputmode="numeric" placeholder="VFR n" />
+            <!-- LEG4: Stack -->
+            <div class="c-leg leg-stack">
+              <div class="mini">
+                <label>IFR</label>
+                <input data-field="appr_ifr_n" inputmode="numeric" placeholder="n" />
+              </div>
+
+              <div class="mini">
+                <label>VFR</label>
+                <input data-field="appr_vfr_n" inputmode="numeric" placeholder="n" />
+              </div>
             </div>
+
             <span class="c-out" data-out="company_usg"></span>
             <span class="c-out" data-out="company_time"></span>
           </div>
@@ -338,7 +347,18 @@
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Alternate Fuel (Log + 2.0 USG)</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <input class="c-in" data-field="alt_usg_log" inputmode="decimal" placeholder="USG (Log)" />
+
+            <div class="c-leg leg-stack">
+              <div class="mini">
+                <label>USG (Log)</label>
+                <input data-field="alt_usg_log" inputmode="decimal" />
+              </div>
+              <div class="mini">
+                <label>Time</label>
+                <input data-field="alt_time" inputmode="numeric" placeholder="hh:mm" />
+              </div>
+            </div>
+
             <span class="c-out" data-out="alt_usg"></span>
             <span class="c-out" data-out="alt_time_out"></span>
           </div>
@@ -347,7 +367,14 @@
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Final Reserve (IFR/VFR)</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <div><select id="finres"><option value="IFR" selected>IFR</option><option value="VFR">VFR</option></select></div>
+
+            <div class="c-leg leg-stack">
+              <select id="finres">
+                <option value="IFR" selected>IFR</option>
+                <option value="VFR">VFR</option>
+              </select>
+            </div>
+
             <span class="c-out" data-out="res_usg"></span>
             <span class="c-out" data-out="res_time"></span>
           </div>

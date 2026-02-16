@@ -422,12 +422,14 @@ button:hover { background:#00aacc; }
   font-size:12px;
 }
 
+/* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
 .fuel-grid{
   display:grid;
-  grid-template-columns: 240px repeat(4, 78px) 120px 120px 90px 90px;
+  grid-template-columns: 240px repeat(4, 92px) 90px 90px; /* 92px je nach Optik auf 86–110px anpassen */
   gap:6px;
   align-items:center;
 }
+
 .fuel-header{
   margin-top:10px;
   padding:8px 0;
@@ -468,6 +470,32 @@ button:hover { background:#00aacc; }
 
 .appr-stack input{
   width:100%;
+}
+
+/* Generischer Stack in einer LEG-Zelle (z.B. LEG4) */
+.leg-stack{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.leg-stack input,
+.leg-stack select{
+  width:100%;
+}
+
+/* Optional: kleine Mini-Labels im Stack */
+.leg-stack .mini{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.leg-stack .mini label{
+  font-size:11px;
+  color:#8fa6bf;
+  font-weight:800;
+  margin:0;
 }
 
 .fuel-accent{ background: rgba(0,212,255,0.06); border-radius:8px; padding:10px 8px; }
