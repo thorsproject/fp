@@ -150,7 +150,7 @@ export function initFuelPlanning() {
   initStdBlockBehavior(panel);
 
   function read() {
-    const profile = (q(panel, `[data-field="finres"]`)?.value || "IFR").toUpperCase();
+    const profile = (q(panel, `[id="finres"]`)?.value || "IFR").toUpperCase();
     const auxOn = String(q(panel, `[data-field="aux_on"]`)?.value || "0") === "1";
 
     const cap = CAP.MAIN_DEFAULT + (auxOn ? CAP.AUX : 0);
