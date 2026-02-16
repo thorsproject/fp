@@ -458,6 +458,18 @@ button:hover { background:#00aacc; }
   pointer-events: none;
   filter: grayscale(1);
 }
+
+/* Approaches untereinander */
+.appr-stack{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.appr-stack input{
+  width:100%;
+}
+
 .fuel-accent{ background: rgba(0,212,255,0.06); border-radius:8px; padding:10px 8px; }
 .fuel-total{ background: rgba(0,255,204,0.06); border-radius:8px; padding:10px 8px; }
 

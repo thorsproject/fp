@@ -265,13 +265,6 @@
             <p class="view-title">Fuel Planning</p>
 
             <div class="fuel-controls">
-              <label class="fuel-chip">
-                Profile
-                <select data-field="profile">
-                  <option value="IFR" selected>IFR</option>
-                  <option value="VFR">VFR</option>
-                </select>
-              </label>
 
               <label class="fuel-chip">
                 Aux Tanks
@@ -324,8 +317,10 @@
             <div class="c-leg"></div>
             <div class="c-leg"></div>
             <div class="c-desc">Approaches</div>
-            <input class="c-in" data-field="appr_ifr_n" inputmode="numeric" placeholder="IFR n" />
-            <input class="c-in" data-field="appr_vfr_n" inputmode="numeric" placeholder="VFR n" />
+            <div class="c-in appr-stack">
+              <input data-field="appr_ifr_n" inputmode="numeric" placeholder="IFR n" />
+              <input data-field="appr_vfr_n" inputmode="numeric" placeholder="VFR n" />
+            </div>
             <span class="c-out" data-out="company_usg"></span>
             <span class="c-out" data-out="company_time"></span>
           </div>
