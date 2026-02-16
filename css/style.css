@@ -94,7 +94,7 @@ header {
 }
 
 .routebtnReset{
-  background: #ffb300;
+  background: #ff8800;
   color: #000;
 }
 
@@ -370,7 +370,7 @@ header {
 
 /* unten: Buttonleiste */
 .fuel-actions{
-  background:#c9c9c9;
+  background:#1b1f24;
   padding:10px;
   display:grid;
   grid-template-columns: 1fr 1fr;
