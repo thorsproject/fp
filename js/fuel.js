@@ -1,3 +1,4 @@
+// js/fuel.js
 // Fuel Planning – Trip manuell, Rest automatisch
 
 const BURN = {
@@ -27,17 +28,19 @@ const CAP = {
   AUX: 26.4,
 };
 
-function q(panel, sel) { return panel.querySelector(sel); }
-function qa(panel, sel) { return Array.from(panel.querySelectorAll(sel)); }
+// ---------- DOM helpers ----------
+function q(panel, sel) {
+  return panel.querySelector(sel);
+}
 
 function isLegActive(legNum) {
   if (legNum === 1) return true; // Leg 1 immer aktiv
   const btn = document.querySelector(`.legToggle[data-leg="${legNum}"]`);
-  // fallback: wenn kein Button gefunden, lieber aktiv behandeln
-  if (!btn) return true;
+  if (!btn) return true; // fallback: lieber aktiv
   return btn.dataset.state !== "inactive";
 }
 
+// ---------- parsing ----------
 function toNum(v) {
   if (v == null) return 0;
   const s = String(v).replace(",", ".").trim();
@@ -53,8 +56,6 @@ function clampInt(v) {
 function parseHHMM(s) {
   const t = String(s || "").trim();
   if (!t) return 0;
-
-  // akzeptiere 120 -> 1:20? Nein. Wir erwarten hh:mm oder h:mm.
   const m = t.match(/^(\d{1,2})\s*:\s*(\d{1,2})$/);
   if (!m) return 0;
 
@@ -75,6 +76,7 @@ function setOut(panel, key, val) {
   if (el) el.textContent = val;
 }
 
+// ---------- Standard Block behavior ----------
 function initStdBlockBehavior(panel) {
   const stdSel = q(panel, `[data-field="std_block"]`);
   const auxSel = q(panel, `[data-field="aux_on"]`);
@@ -88,13 +90,15 @@ function initStdBlockBehavior(panel) {
 
   function apply() {
     const std = String(stdSel.value) === "1";
+    const cap = capacity();
+
     if (std) {
-      blockInp.value = String(capacity().toFixed(1)).replace(".", ",");
+      blockInp.value = String(cap.toFixed(1)).replace(".", ",");
       blockInp.disabled = true;
     } else {
       blockInp.disabled = false;
       if (!String(blockInp.value || "").trim()) {
-        blockInp.value = String(capacity().toFixed(1)).replace(".", ",");
+        blockInp.value = String(cap.toFixed(1)).replace(".", ",");
       }
     }
   }
@@ -105,44 +109,40 @@ function initStdBlockBehavior(panel) {
   apply();
 }
 
-// Helpers
+// ---------- Trip (manual) from DOM ----------
 function readTripFromDOM(panel) {
-  // Liest Trip aus den data-trip-* Feldern, berücksichtigt Leg Active State
   const tripUsg = [1, 2, 3, 4].map((n) => {
     if (!isLegActive(n)) return 0;
-    const el = panel.querySelector(`[data-trip-usg="${n}"]`);
+    const el = q(panel, `[data-trip-usg="${n}"]`);
     return toNum(el?.value);
   });
 
   const tripMin = [1, 2, 3, 4].map((n) => {
     if (!isLegActive(n)) return 0;
-    const el = panel.querySelector(`[data-trip-time="${n}"]`);
+    const el = q(panel, `[data-trip-time="${n}"]`);
     return parseHHMM(el?.value);
   });
 
   return {
-    tripUsg,
-    tripMin,
     tripUsgSum: tripUsg.reduce((a, b) => a + b, 0),
     tripMinSum: tripMin.reduce((a, b) => a + b, 0),
   };
 }
 
 function syncTripInputsEnabled(panel) {
-  // Graut Leg 2–4 aus + disabled, wenn Leg inaktiv
-  panel.querySelectorAll(".trip[data-trip-leg]").forEach((cell) => {
+  panel.querySelectorAll('.trip[data-trip-leg]').forEach((cell) => {
     const leg = Number(cell.dataset.tripLeg);
     const active = isLegActive(leg);
 
     cell.classList.toggle("inactive", !active);
-
     cell.querySelectorAll("input").forEach((inp) => {
       inp.disabled = !active;
-      if (!active) inp.value = ""; // optional: leert inaktive Legs (wenn du willst)
+      // NICHT löschen – damit Werte erhalten bleiben, nur nicht mitrechnen
     });
   });
 }
 
+// ---------- main ----------
 export function initFuelPlanning() {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
@@ -154,22 +154,17 @@ export function initFuelPlanning() {
     const auxOn = String(q(panel, `[data-field="aux_on"]`)?.value || "0") === "1";
 
     const cap = CAP.MAIN_DEFAULT + (auxOn ? CAP.AUX : 0);
-
     const blockUsg = toNum(q(panel, `[data-field="block_usg"]`)?.value);
 
-    // Trip (manual)
+    // Trip (manual) – nur aktive Legs zählen
     const { tripUsgSum, tripMinSum } = readTripFromDOM(panel);
 
     // Approaches (counts)
     const nIFR = clampInt(q(panel, `[data-field="appr_ifr_n"]`)?.value);
     const nVFR = clampInt(q(panel, `[data-field="appr_vfr_n"]`)?.value);
 
-    const apprUsg = nIFR * FIX.IFR_APPR_USG + nVFR * FIX.VFR_APPR_USG;
-    const apprMin = nIFR * FIX.IFR_APPR_MIN + nVFR * FIX.VFR_APPR_MIN;
-
-    // Company fuel = approaches sum
-    const companyUsg = apprUsg;
-    const companyMin = apprMin;
+    const companyUsg = nIFR * FIX.IFR_APPR_USG + nVFR * FIX.VFR_APPR_USG;
+    const companyMin = nIFR * FIX.IFR_APPR_MIN + nVFR * FIX.VFR_APPR_MIN;
 
     // Contingency = 5% of (Trip + Company)
     const contUsg = 0.05 * (tripUsgSum + companyUsg);
@@ -188,18 +183,14 @@ export function initFuelPlanning() {
     const taxiUsg = FIX.TAXI_USG;
     const taxiMin = FIX.TAXI_MIN;
 
-    const reqUsg =
-      tripUsgSum + companyUsg + contUsg + altUsg + resUsg + taxiUsg;
-
-    const reqMin =
-      tripMinSum + companyMin + contMin + altMin + resMin + taxiMin;
+    const reqUsg = tripUsgSum + companyUsg + contUsg + altUsg + resUsg + taxiUsg;
+    const reqMin = tripMinSum + companyMin + contMin + altMin + resMin + taxiMin;
 
     const remUsg = blockUsg - reqUsg;
 
     function endurance(rate) {
       if (!Number.isFinite(remUsg) || rate <= 0) return "0:00";
-      const mins = (remUsg / rate) * 60;
-      return fmtHHMM(mins);
+      return fmtHHMM((remUsg / rate) * 60);
     }
 
     return {
@@ -239,6 +230,7 @@ export function initFuelPlanning() {
     const d = read();
 
     setOut(panel, "cap_usg", d.cap.toFixed(1));
+
     setOut(panel, "trip_usg_sum", d.tripUsgSum.toFixed(1));
     setOut(panel, "trip_time_sum", fmtHHMM(d.tripMinSum));
 
@@ -267,17 +259,16 @@ export function initFuelPlanning() {
     setOut(panel, "end_mec", d.endMEC);
   }
 
-  // --- Leg Toggles sollen Trip Inputs ausgrauen + disabled setzen ---
   function syncAndRender() {
-  syncTripInputsEnabled(panel);
-  render();
+    syncTripInputsEnabled(panel);
+    render();
   }
-  
+
   // live updates
   panel.addEventListener("input", syncAndRender);
   panel.addEventListener("change", syncAndRender);
 
-  // Wenn Toggle gedrückt wird: neu syncen + rechnen
+  // wenn Leg Toggles gedrückt werden (Leg 2–4 active/inactive)
   document.addEventListener("click", (e) => {
     if (!e.target.classList?.contains("legToggle")) return;
     syncAndRender();
