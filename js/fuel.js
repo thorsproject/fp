@@ -1,4 +1,3 @@
-// js/fuel.js
 const CFG = {
   rates: { NC: 13.2, LRC: 10.3, MEC: 6.5 },
   approach: {
@@ -69,20 +68,33 @@ export function initFuelPlanning() {
     const blockUSG = blockStd ? (CFG.tanks.main + auxUSG) : blockFree;
 
     // --- Fixed additions ---
+ // --- Approaches: Anzahl * Fixwert ---
+    const ifrCount = Math.max(0, Math.round(parseUSG(getIn("appr_ifr_n")?.value)));
+    const vfrCount = Math.max(0, Math.round(parseUSG(getIn("appr_vfr_n")?.value)));
+
     const apprIFR = CFG.approach.IFR;
     const apprVFR = CFG.approach.VFR;
 
-    const frIFR = CFG.finalReserve.IFR;
-    const frVFR = CFG.finalReserve.VFR;
+    const ifrApproachUSG = ifrCount * apprIFR.usg;
+    const vfrApproachUSG = vfrCount * apprVFR.usg;
 
-    const approachesUSG = apprIFR.usg + apprVFR.usg;
-    const approachesMin = apprIFR.min + apprVFR.min;
+    const ifrApproachMin = ifrCount * apprIFR.min;
+    const vfrApproachMin = vfrCount * apprVFR.min;
+
+    const approachesUSG = ifrApproachUSG + vfrApproachUSG;
+    const approachesMin = ifrApproachMin + vfrApproachMin;
+
+    const companyUSG = approachesUSG;
+    const companyMin = approachesMin;
+
+    setOut("company_usg", fmtUSG(companyUSG));
+    setOut("company_time", minToHHMM(companyMin));
 
     const finalReserveUSG = frIFR.usg + frVFR.usg;
     const finalReserveMin = frIFR.min + frVFR.min;
 
     // --- Contingency: 5% von (Trip + Company + Approaches) ---
-    const contingencyBase = trip + company + approachesUSG;
+    const contingencyBase = trip + company;
     const contingency = contingencyBase * CFG.contingencyPct;
 
     // --- Planned Takeoff Fuel (PTO) ---
@@ -120,6 +132,14 @@ export function initFuelPlanning() {
     // --- Outputs ---
     setOut("trip_usg", fmtUSG(trip));
     setOut("trip_time", tripTime);
+
+    setOut("appr_ifr_usg", fmtUSG(ifrApproachUSG));
+    setOut("appr_ifr_time", minToHHMM(ifrApproachMin));
+    setOut("appr_vfr_usg", fmtUSG(vfrApproachUSG));
+    setOut("appr_vfr_time", minToHHMM(vfrApproachMin));
+
+    setOut("appr_usg", fmtUSG(approachesUSG));
+    setOut("appr_time", minToHHMM(approachesMin));
 
     setOut("company_usg", fmtUSG(company));
     setOut("company_time", companyTime);
