@@ -323,7 +323,7 @@
             <div class="c-desc">Company Fuel</div>
             <div class="c-leg"></div>
             <div class="c-leg"></div>
-            <div class="c-leg">"Approaches"</div>
+            <div class="c-desc">Approaches</div>
             <input class="c-in" data-field="appr_ifr_n" inputmode="numeric" placeholder="IFR n" />
             <input class="c-in" data-field="appr_vfr_n" inputmode="numeric" placeholder="VFR n" />
             <span class="c-out" data-out="company_usg"></span>
@@ -350,9 +350,9 @@
 
           <!-- FINAL RESERVE -->
           <div class="fuel-grid fuel-row">
-            <div class="c-desc">Final Reserve (IFR/VFR fixed)</div>
+            <div class="c-desc">Final Reserve (IFR/VFR)</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <div class="c-in"></div><div class="c-in"></div>
+            <div><select id="finres"><option value="IFR" selected>IFR</option><option value="VFR">VFR</option></select></div>
             <span class="c-out" data-out="res_usg"></span>
             <span class="c-out" data-out="res_time"></span>
           </div>
