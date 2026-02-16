@@ -18,6 +18,7 @@ import {
 
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
+import { initFuelPlanning } from "./fuel.js";
 
 // ---------- Control Button State ----------
 function setBtnState(btn, on){
@@ -132,6 +133,7 @@ map.on("click", (e) => {
       updateLegMarkers(map);
       updateAltMarkers(map);
     },
+  initFuelPlanning();
 });
 
 })();
