@@ -31,7 +31,9 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
   if (!nav) return;
 
   const buttons = Array.from(nav.querySelectorAll(".topbtn"));
-  const views = Array.from(document.querySelectorAll(".view"));
+
+  // ✅ nur die rechten Views (Map/Checklist/Fuel/Performance/Settings)
+  const views = Array.from(document.querySelectorAll(".content-panel .view"));
 
   function show(viewId) {
     buttons.forEach((b) => b.classList.toggle("active", b.dataset.view === viewId));
@@ -39,7 +41,7 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
 
     // Leaflet: wenn Map wieder sichtbar wird -> Größe neu berechnen
     if (viewId === "view-map" && map) {
-      setTimeout(() => map.invalidateSize(), 50);
+      setTimeout(() => map.invalidateSize(), 80);
     }
   }
 
@@ -54,7 +56,6 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
 
 // ---------- Map ----------
 const map = createMap();
-
 initTopNav({ map, defaultView: "view-map" });
 
 // ---------- Wind state ----------
@@ -124,15 +125,6 @@ map.on("click", (e) => {
   updateLegMarkers(map);
   updateAltMarkers(map);
   
-  initTopNav({
-  defaultView: "view-route",
-  onViewChange: (viewId) => {
-    // wichtig: Leaflet braucht manchmal invalidateSize, wenn Map wieder sichtbar wird
-    if (viewId === "view-route") {
-      setTimeout(() => map.invalidateSize(), 50);
-    }
-  },
-});
   initDateInput();
   initLFZ();
   initLegActivation({
