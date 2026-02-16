@@ -133,7 +133,6 @@ map.on("click", (e) => {
       updateLegMarkers(map);
       updateAltMarkers(map);
     },
+  });
   initFuelPlanning();
-});
-
 })();
