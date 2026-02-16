@@ -81,8 +81,8 @@ export function initFuelPlanning() {
     const companyUSG = fuelIFR + fuelVFR;
     const companyMin = timeIFR + timeVFR;
 
-    setOut("company_usg", fmtUSG(companyUSG));
-    setOut("company_time", minToHHMM(companyMin));
+    setOut("company_usg", fmtUSG(companyUSG || 0));
+    setOut("company_time", minToHHMM(companyMin || 0));
 
     const finalReserveUSG = frIFR.usg + frVFR.usg;
     const finalReserveMin = frIFR.min + frVFR.min;
