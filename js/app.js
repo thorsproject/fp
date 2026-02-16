@@ -55,7 +55,7 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
 // ---------- Map ----------
 const map = createMap();
 
-initTopNav({ map, defaultView: "view-map" });
+// --- alt --- initTopNav({ map, defaultView: "view-map" });
 
 // ---------- Wind state ----------
 let windOn = false;
