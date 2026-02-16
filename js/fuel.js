@@ -69,23 +69,17 @@ export function initFuelPlanning() {
 
     // --- Fixed additions ---
  // --- Approaches: Anzahl * Fixwert ---
-    const ifrCount = Math.max(0, Math.round(parseUSG(getIn("appr_ifr_n")?.value)));
-    const vfrCount = Math.max(0, Math.round(parseUSG(getIn("appr_vfr_n")?.value)));
+    const apprIFR = num(q('[data-field="appr_ifr_n"]').value);
+    const apprVFR = num(q('[data-field="appr_vfr_n"]').value);
 
-    const apprIFR = CFG.approach.IFR;
-    const apprVFR = CFG.approach.VFR;
+    const fuelIFR = apprIFR * CFG.ifrAppFuel;
+    const fuelVFR = apprVFR * CFG.vfrAppFuel;
 
-    const ifrApproachUSG = ifrCount * apprIFR.usg;
-    const vfrApproachUSG = vfrCount * apprVFR.usg;
+    const timeIFR = apprIFR * CFG.ifrAppMin;
+    const timeVFR = apprVFR * CFG.vfrAppMin;
 
-    const ifrApproachMin = ifrCount * apprIFR.min;
-    const vfrApproachMin = vfrCount * apprVFR.min;
-
-    const approachesUSG = ifrApproachUSG + vfrApproachUSG;
-    const approachesMin = ifrApproachMin + vfrApproachMin;
-
-    const companyUSG = approachesUSG;
-    const companyMin = approachesMin;
+    const companyUSG = fuelIFR + fuelVFR;
+    const companyMin = timeIFR + timeVFR;
 
     setOut("company_usg", fmtUSG(companyUSG));
     setOut("company_time", minToHHMM(companyMin));
