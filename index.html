@@ -262,7 +262,7 @@
       <section id="view-fuel" class="view">
         <div class="frame fuel-card" id="fuelPanel">
           <div class="fuel-head">
-            <h2 class="view-title">Fuel Planning</h2>
+            <p class="view-title">Fuel Planning</p>
 
             <div class="fuel-controls">
               <label class="fuel-chip">
@@ -303,8 +303,6 @@
             <div class="c-leg">LEG2</div>
             <div class="c-leg">LEG3</div>
             <div class="c-leg">LEG4</div>
-            <div class="c-in">IN</div>
-            <div class="c-in">IN</div>
             <div class="c-out">USG</div>
             <div class="c-out">TIME</div>
           </div>
@@ -312,34 +310,20 @@
           <!-- TRIP FUEL -->
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Trip Fuel</div>
-
-            <div class="c-leg trip" data-trip-leg="1">
-              <input data-trip-usg="1" inputmode="decimal">
-            </div>
-
-            <div class="c-leg trip" data-trip-leg="2">
-              <input data-trip-usg="2" inputmode="decimal">
-            </div>
-
-            <div class="c-leg trip" data-trip-leg="3">
-              <input data-trip-usg="3" inputmode="decimal">
-            </div>
-
-            <div class="c-leg trip" data-trip-leg="4">
-              <input data-trip-usg="4" inputmode="decimal">
-            </div>
-
+            <div class="c-leg trip" data-trip-leg="1"><input data-trip-usg="1" inputmode="decimal"></div>
+            <div class="c-leg trip" data-trip-leg="2"><input data-trip-usg="2" inputmode="decimal"></div>
+            <div class="c-leg trip" data-trip-leg="3"><input data-trip-usg="3" inputmode="decimal"></div>
+            <div class="c-leg trip" data-trip-leg="4"><input data-trip-usg="4" inputmode="decimal"></div>
             <span data-out="trip_usg_sum"></span>
             <span data-out="trip_time_sum"></span>
           </div>
 
           <!-- COMPANY FUEL (Approaches) -->
           <div class="fuel-grid fuel-row fuel-accent">
-            <div class="c-desc">Company Fuel (Approaches)</div>
+            <div class="c-desc">Company Fuel</div>
             <div class="c-leg"></div>
             <div class="c-leg"></div>
-            <div class="c-leg"></div>
-            <div class="c-leg"></div>
+            <div class="c-leg">"Approaches"</div>
             <input class="c-in" data-field="appr_ifr_n" inputmode="numeric" placeholder="IFR n" />
             <input class="c-in" data-field="appr_vfr_n" inputmode="numeric" placeholder="VFR n" />
             <span class="c-out" data-out="company_usg"></span>
@@ -358,7 +342,7 @@
           <!-- ALTERNATE -->
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Alternate Fuel (Log + 2.0 USG)</div>
-            <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+            <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
             <input class="c-in" data-field="alt_usg_log" inputmode="decimal" placeholder="USG (Log)" />
             <span class="c-out" data-out="alt_usg"></span>
             <span class="c-out" data-out="alt_time_out"></span>
@@ -373,6 +357,31 @@
             <span class="c-out" data-out="res_time"></span>
           </div>
 
+          <!-- PLANNED TAKEOFF FUEL -->
+          <div class="fuel-grid fuel-row">
+            <div class="c-desc">Planned Takeoff Fuel</div>
+            <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+            <span class="c-out" data-out="req_usg"></span>
+            <span class="c-out" data-out="req_time"></span>
+          </div>
+
+          <!-- EXTRA FUEL LRC -->
+          <div class="fuel-grid fuel-row">
+            <div class="c-desc">Extra Fuel LRC</div>
+            <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+            <span class="c-out" data-out="req_usg"></span>
+            <span class="c-out" data-out="req_time"></span>
+          </div>
+
+          <!-- TAKEOFF FUEL -->
+          <div class="fuel-grid fuel-row fuel-total">
+            <div class="c-desc">Takeoff Fuel</div>
+            <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+            <div class="c-in"></div><div class="c-in"></div>
+            <span class="c-out" data-out="req_usg"></span>
+            <span class="c-out" data-out="req_time"></span>
+          </div>
+
           <!-- TAXI -->
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Taxi Fuel (fixed)</div>
@@ -382,9 +391,36 @@
             <span class="c-out" data-out="taxi_time"></span>
           </div>
 
-          <!-- TOTAL REQUIRED -->
+          <!-- BLOCK FUEL -->
           <div class="fuel-grid fuel-row fuel-total">
-            <div class="c-desc">Required Fuel</div>
+            <div class="c-desc">Block Fuel</div>
+            <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+            <div class="c-in"></div><div class="c-in"></div>
+            <span class="c-out" data-out="req_usg"></span>
+            <span class="c-out" data-out="req_time"></span>
+          </div>
+
+          <!-- TAXI -->
+          <div class="fuel-grid fuel-row">
+            <div class="c-desc">Taxi Fuel (fixed)</div>
+            <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+            <div class="c-in"></div><div class="c-in"></div>
+            <span class="c-out" data-out="taxi_usg"></span>
+            <span class="c-out" data-out="taxi_time"></span>
+          </div>
+
+          <!-- TRIP FUEL + COMPANY FUEL -->
+          <div class="fuel-grid fuel-row">
+            <div class="c-desc">Taxi Fuel (fixed)</div>
+            <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+            <div class="c-in"></div><div class="c-in"></div>
+            <span class="c-out" data-out="taxi_usg"></span>
+            <span class="c-out" data-out="taxi_time"></span>
+          </div>
+
+          <!-- LANDING FUEL -->
+          <div class="fuel-grid fuel-row fuel-total">
+            <div class="c-desc">Block Fuel</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
             <div class="c-in"></div><div class="c-in"></div>
             <span class="c-out" data-out="req_usg"></span>
