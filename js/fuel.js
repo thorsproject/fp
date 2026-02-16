@@ -233,12 +233,6 @@ export function initFuelPlanning() {
       endLRC: endurance(BURN.LRC),
       endMEC: endurance(BURN.MEC),
     };
-
-    // --- Leg Toggles sollen Trip Inputs ausgrauen + disabled setzen ---
-    function syncAndRender() {
-    syncTripInputsEnabled(panel);
-    render();
-    }
   }
 
   function render() {
@@ -273,9 +267,15 @@ export function initFuelPlanning() {
     setOut(panel, "end_mec", d.endMEC);
   }
 
+  // --- Leg Toggles sollen Trip Inputs ausgrauen + disabled setzen ---
+  function syncAndRender() {
+  syncTripInputsEnabled(panel);
+  render();
+  }
+  
   // live updates
-  panel.addEventListener("input", render);
-  panel.addEventListener("change", render);
+  panel.addEventListener("input", syncAndRender);
+  panel.addEventListener("change", syncAndRender);
 
   // Wenn Toggle gedrückt wird: neu syncen + rechnen
   document.addEventListener("click", (e) => {
