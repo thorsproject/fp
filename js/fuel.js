@@ -30,6 +30,14 @@ const CAP = {
 function q(panel, sel) { return panel.querySelector(sel); }
 function qa(panel, sel) { return Array.from(panel.querySelectorAll(sel)); }
 
+function isLegActive(legNum) {
+  if (legNum === 1) return true; // Leg 1 immer aktiv
+  const btn = document.querySelector(`.legToggle[data-leg="${legNum}"]`);
+  // fallback: wenn kein Button gefunden, lieber aktiv behandeln
+  if (!btn) return true;
+  return btn.dataset.state !== "inactive";
+}
+
 function toNum(v) {
   if (v == null) return 0;
   const s = String(v).replace(",", ".").trim();
@@ -97,6 +105,44 @@ function initStdBlockBehavior(panel) {
   apply();
 }
 
+// Helpers
+function readTripFromDOM(panel) {
+  // Liest Trip aus den data-trip-* Feldern, berücksichtigt Leg Active State
+  const tripUsg = [1, 2, 3, 4].map((n) => {
+    if (!isLegActive(n)) return 0;
+    const el = panel.querySelector(`[data-trip-usg="${n}"]`);
+    return toNum(el?.value);
+  });
+
+  const tripMin = [1, 2, 3, 4].map((n) => {
+    if (!isLegActive(n)) return 0;
+    const el = panel.querySelector(`[data-trip-time="${n}"]`);
+    return parseHHMM(el?.value);
+  });
+
+  return {
+    tripUsg,
+    tripMin,
+    tripUsgSum: tripUsg.reduce((a, b) => a + b, 0),
+    tripMinSum: tripMin.reduce((a, b) => a + b, 0),
+  };
+}
+
+function syncTripInputsEnabled(panel) {
+  // Graut Leg 2–4 aus + disabled, wenn Leg inaktiv
+  panel.querySelectorAll(".trip[data-trip-leg]").forEach((cell) => {
+    const leg = Number(cell.dataset.tripLeg);
+    const active = isLegActive(leg);
+
+    cell.classList.toggle("inactive", !active);
+
+    cell.querySelectorAll("input").forEach((inp) => {
+      inp.disabled = !active;
+      if (!active) inp.value = ""; // optional: leert inaktive Legs (wenn du willst)
+    });
+  });
+}
+
 export function initFuelPlanning() {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
@@ -112,11 +158,7 @@ export function initFuelPlanning() {
     const blockUsg = toNum(q(panel, `[data-field="block_usg"]`)?.value);
 
     // Trip (manual)
-    const tripUsg = [1,2,3,4].map(n => toNum(q(panel, `[data-field="leg${n}_trip_usg"]`)?.value));
-    const tripMin = [1,2,3,4].map(n => parseHHMM(q(panel, `[data-field="leg${n}_trip_time"]`)?.value));
-
-    const tripUsgSum = tripUsg.reduce((a,b)=>a+b,0);
-    const tripMinSum = tripMin.reduce((a,b)=>a+b,0);
+    const { tripUsgSum, tripMinSum } = readTripFromDOM(panel);
 
     // Approaches (counts)
     const nIFR = clampInt(q(panel, `[data-field="appr_ifr_n"]`)?.value);
@@ -160,6 +202,30 @@ export function initFuelPlanning() {
       return fmtHHMM(mins);
     }
 
+    function syncTripInputsEnabled() {
+      // erwartetes Markup: pro Leg eine Trip-Zelle mit data-leg="1..4"
+      document.querySelectorAll('[data-trip-leg]').forEach((cell) => {
+        const leg = Number(cell.dataset.tripLeg);
+        const active = isLegActive(leg);
+
+        cell.classList.toggle("inactive", !active);
+
+        cell.querySelectorAll("input").forEach((inp) => {
+          inp.disabled = !active;
+        });
+      });
+    }
+    // beim Start einmal Sync
+    syncTripInputsEnabled(panel);
+    render();
+
+    // wenn Leg Toggle gedrückt wird: Inputs + Rechnung aktualisieren
+    document.addEventListener("click", (e) => {
+      if (!e.target.classList?.contains("legToggle")) return;
+      syncTripInputsEnabled(panel);
+      render();
+    });
+
     return {
       cap,
       blockUsg,
@@ -197,8 +263,8 @@ export function initFuelPlanning() {
     const d = read();
 
     setOut(panel, "cap_usg", d.cap.toFixed(1));
-    setOut(panel, "trip_usg", d.tripUsgSum.toFixed(1));
-    setOut(panel, "trip_time", fmtHHMM(d.tripMinSum));
+    setOut(panel, "trip_usg_sum", d.tripUsgSum.toFixed(1));
+    setOut(panel, "trip_time_sum", fmtHHMM(d.tripMinSum));
 
     setOut(panel, "company_usg", d.companyUsg.toFixed(1));
     setOut(panel, "company_time", fmtHHMM(d.companyMin));

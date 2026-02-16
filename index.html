@@ -310,16 +310,31 @@
           </div>
 
           <!-- TRIP FUEL -->
-          <div class="fuel-grid fuel-row">
-            <div class="c-desc">Trip Fuel (USG)</div>
-            <input class="c-leg" data-field="leg1_trip_usg" inputmode="decimal" />
-            <input class="c-leg" data-field="leg2_trip_usg" inputmode="decimal" />
-            <input class="c-leg" data-field="leg3_trip_usg" inputmode="decimal" />
-            <input class="c-leg" data-field="leg4_trip_usg" inputmode="decimal" />
-            <div class="c-in"></div>
-            <div class="c-in"></div>
-            <span class="c-out" data-out="trip_usg"></span>
-            <span class="c-out" data-out="trip_time"></span>
+          <div class="fuel-row">
+            <div class="c-desc">Trip Fuel</div>
+
+            <div class="c-leg trip" data-trip-leg="1">
+              <input data-trip-usg="1" inputmode="decimal">
+              <input data-trip-time="1" inputmode="numeric">
+            </div>
+
+            <div class="c-leg trip" data-trip-leg="2">
+              <input data-trip-usg="2" inputmode="decimal">
+              <input data-trip-time="2" inputmode="numeric">
+            </div>
+
+            <div class="c-leg trip" data-trip-leg="3">
+              <input data-trip-usg="3" inputmode="decimal">
+              <input data-trip-time="3" inputmode="numeric">
+            </div>
+
+            <div class="c-leg trip" data-trip-leg="4">
+              <input data-trip-usg="4" inputmode="decimal">
+              <input data-trip-time="4" inputmode="numeric">
+            </div>
+
+            <span data-out="trip_usg_sum"></span>
+            <span data-out="trip_time_sum"></span>
           </div>
 
           <div class="fuel-grid fuel-row">
