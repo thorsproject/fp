@@ -202,30 +202,6 @@ export function initFuelPlanning() {
       return fmtHHMM(mins);
     }
 
-    function syncTripInputsEnabled() {
-      // erwartetes Markup: pro Leg eine Trip-Zelle mit data-leg="1..4"
-      document.querySelectorAll('[data-trip-leg]').forEach((cell) => {
-        const leg = Number(cell.dataset.tripLeg);
-        const active = isLegActive(leg);
-
-        cell.classList.toggle("inactive", !active);
-
-        cell.querySelectorAll("input").forEach((inp) => {
-          inp.disabled = !active;
-        });
-      });
-    }
-    // beim Start einmal Sync
-    syncTripInputsEnabled(panel);
-    render();
-
-    // wenn Leg Toggle gedrückt wird: Inputs + Rechnung aktualisieren
-    document.addEventListener("click", (e) => {
-      if (!e.target.classList?.contains("legToggle")) return;
-      syncTripInputsEnabled(panel);
-      render();
-    });
-
     return {
       cap,
       blockUsg,
@@ -257,6 +233,12 @@ export function initFuelPlanning() {
       endLRC: endurance(BURN.LRC),
       endMEC: endurance(BURN.MEC),
     };
+
+    // --- Leg Toggles sollen Trip Inputs ausgrauen + disabled setzen ---
+    function syncAndRender() {
+    syncTripInputsEnabled(panel);
+    render();
+    }
   }
 
   function render() {
@@ -295,6 +277,12 @@ export function initFuelPlanning() {
   panel.addEventListener("input", render);
   panel.addEventListener("change", render);
 
+  // Wenn Toggle gedrückt wird: neu syncen + rechnen
+  document.addEventListener("click", (e) => {
+    if (!e.target.classList?.contains("legToggle")) return;
+    syncAndRender();
+  });
+
   // initial
-  render();
+  syncAndRender();
 }
