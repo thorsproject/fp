@@ -30,7 +30,7 @@
 
 /* Specific widths */
 #lfzSelect, #tacSelect { width: 80px; }
-#FDLinput, #TELinput { width: 150px; }
+#FDLinput, #TELinput { width: 170px; }
 
 /* Route time/date inputs exakt Spaltenbreite */
 .master-grid input.time,
