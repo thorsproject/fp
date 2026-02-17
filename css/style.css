@@ -425,7 +425,7 @@ button:hover { background:#00aacc; }
 /* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
 .fuel-grid{
   display:grid;
-  grid-template-columns: 240px repeat(4, 50px) 90px 90px; /* 92px je nach Optik auf 86–110px anpassen */
+  grid-template-columns: 240px repeat(4, 60px) 90px 90px; /* 92px je nach Optik auf 86–110px anpassen */
   gap:6px;
   align-items:center;
 }
