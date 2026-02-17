@@ -35,7 +35,7 @@
 /* Route time/date inputs exakt Spaltenbreite */
 .master-grid input.time,
 #dateInput {
-  width: 110%;
+  width: 120%;
   max-width: 80px;
   box-sizing: border-box;
 }
