@@ -204,7 +204,7 @@ input.was-clamped {
     110px  /* col4 */
     70px   /* col5 */
     70px;  /* col6 */
-  grid-auto-rows: 40px; /* 30 */
+  grid-auto-rows: 30px; /* row height */
   gap: 3px;
   align-items: center;
 }
