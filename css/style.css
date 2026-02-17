@@ -558,8 +558,8 @@ input.was-clamped {
   display: inline;
 }
 
-.fuel-accent{ background: rgba(0,212,255,0.06); border-radius:8px; padding:10px 8px; }
-.fuel-total{ background: rgba(0,255,204,0.06); border-radius:8px; padding:10px 8px; }
+.fuel-accent{ background: rgba(0,212,255,0.06); border-radius:8px; padding:8px 8px; }
+.fuel-total{ background: rgba(0,255,204,0.06); border-radius:8px; padding:8px 8px; }
 
 .fuel-foot{ margin-top:12px; display:flex; flex-direction:column; gap:10px; }
 .fuel-kpis{ display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:10px; }
