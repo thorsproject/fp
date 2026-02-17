@@ -23,3 +23,10 @@ html, body {
   background: var(--bg);
   color: var(--text);
 }
+/* =========================================================
+   GLOBAL BOX MODEL FIX
+   verhindert 90% aller Layout-Probleme
+   ========================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}

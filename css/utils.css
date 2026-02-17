@@ -1,0 +1,105 @@
+/* =========================================================
+   QUICK NAV
+   ---------------------------------------------------------
+   [UTIL:VISIBILITY]
+   [UTIL:TEXT]
+   [UTIL:ALIGN]
+   [UTIL:SPACING]
+   [UTIL:INTERACTION]
+   ========================================================= */
+
+
+/* =========================================================
+   [UTIL:VISIBILITY]
+   ========================================================= */
+
+.hidden {
+  display: none !important;
+}
+
+.invisible {
+  visibility: hidden !important;
+}
+
+.show {
+  display: block !important;
+}
+
+
+/* =========================================================
+   [UTIL:TEXT]
+   ========================================================= */
+
+.text-left   { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right  { text-align: right !important; }
+
+.text-muted  { color: var(--muted) !important; }
+.text-accent { color: var(--accent) !important; }
+.text-danger { color: var(--danger) !important; }
+
+.text-bold   { font-weight: 700 !important; }
+.text-normal { font-weight: 400 !important; }
+
+
+/* =========================================================
+   [UTIL:ALIGN]
+   ========================================================= */
+
+.flex {
+  display: flex !important;
+}
+
+.flex-row {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+.flex-col {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.flex-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.flex-between {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+
+/* =========================================================
+   [UTIL:SPACING]
+   ========================================================= */
+
+.mt-4 { margin-top: 4px !important; }
+.mt-8 { margin-top: 8px !important; }
+.mt-12 { margin-top: 12px !important; }
+
+.mb-4 { margin-bottom: 4px !important; }
+.mb-8 { margin-bottom: 8px !important; }
+
+.p-4 { padding: 4px !important; }
+.p-8 { padding: 8px !important; }
+
+
+/* =========================================================
+   [UTIL:INTERACTION]
+   ========================================================= */
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.no-select {
+  user-select: none !important;
+}
+
+.click-through {
+  pointer-events: none !important;
+}
