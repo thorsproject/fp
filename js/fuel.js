@@ -138,6 +138,50 @@ export function initFuelPlanning() {
 
   initStdBlockBehavior(panel);
 
+  // ---------- Toggle Buttons ----------
+  panel.querySelectorAll(".fuelToggle").forEach((btn) => {
+
+    function applyVisual() {
+      const field = btn.dataset.field;
+      const state = btn.dataset.state;
+
+      if (field === "std_block") {
+        btn.textContent = state === "on" ? "ON" : "OFF";
+      }
+
+      if (field === "aux_on") {
+        btn.textContent = state === "on" ? "26.4 USG" : "0 USG";
+      }
+    }
+
+    function toggle() {
+      btn.dataset.state = btn.dataset.state === "on" ? "off" : "on";
+
+      // preset anwenden wenn Standard Block eingeschaltet wird
+      if (btn.dataset.field === "std_block" && btn.dataset.state === "on") {
+
+        const mainInp = q(panel, `[data-field="main_usg"]`);
+        const auxBtn  = q(panel, `[data-field="aux_on"]`);
+
+        if (mainInp) {
+          mainInp.value = String(CAP.MAIN_STANDARD.toFixed(1)).replace(".", ",");
+        }
+
+        if (auxBtn) {
+          auxBtn.dataset.state = "on";
+          applyVisual.call(auxBtn);
+        }
+      }
+
+      applyVisual();
+      syncAndRender();
+    }
+
+    btn.addEventListener("click", toggle);
+
+    applyVisual();
+  });
+  
   // --- UX: Main Input clamp + snap formatting ---
   const mainInp = q(panel, `[data-field="main_usg"]`);
   if (mainInp) {
@@ -185,7 +229,7 @@ export function initFuelPlanning() {
 
   function read() {
     const profile = (q(panel, `#finres`)?.value || "IFR").toUpperCase();
-    const auxOn = String(q(panel, `[data-field="aux_on"]`)?.value || "0") === "1";
+    const auxOn = q(panel, `[data-field="aux_on"]`)?.dataset.state === "on";
 
     const mainRaw = toNum(q(panel, `[data-field="main_usg"]`)?.value);
     const mainUsg = Math.min(Math.max(mainRaw, 0), CAP.MAIN_MAX);

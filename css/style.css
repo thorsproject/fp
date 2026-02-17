@@ -405,6 +405,38 @@ button:hover { background:#00aacc; }
 .fuel-card{ overflow:hidden; }
 .fuel-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
 .fuel-controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+/* Fuel Toggle Buttons */
+.fuelToggle {
+  min-width: 90px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #2b3138;
+  color: #ddd;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+/* ON Zustand */
+.fuelToggle[data-state="on"] {
+  background: #1e7a34;
+  border-color: #2ecc71;
+  color: #fff;
+}
+
+/* OFF Zustand */
+.fuelToggle[data-state="off"] {
+  background: #5a1e1e;
+  border-color: #e74c3c;
+  color: #fff;
+}
+
+.fuelToggle:hover {
+  filter: brightness(1.15);
+}
+
 .fuel-chip{
   display:flex; gap:6px; align-items:center;
   padding:6px 10px;

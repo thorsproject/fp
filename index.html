@@ -265,13 +265,14 @@
             <p class="view-title">Fuel Planning</p>
 
             <div class="fuel-controls">
-
               <label class="fuel-chip">
                 Standard Block
-                <select data-field="std_block">
-                  <option value="1" selected>Ja</option>
-                  <option value="0">Nein</option>
-                </select>
+                <button type="button"
+                        class="fuelToggle"
+                        data-field="std_block"
+                        data-state="on">
+                  ON
+                </button>
               </label>
 
               <label class="fuel-chip">
@@ -281,10 +282,12 @@
 
               <label class="fuel-chip">
                 Aux Tanks
-                <select data-field="aux_on">
-                  <option value="0" selected>0 USG</option>
-                  <option value="1">26.4 USG</option>
-                </select>
+                <button type="button"
+                        class="fuelToggle"
+                        data-field="aux_on"
+                        data-state="on">
+                  26.4 USG
+                </button>
               </label>
             </div>
           </div>
