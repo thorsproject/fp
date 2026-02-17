@@ -425,9 +425,18 @@ button:hover { background:#00aacc; }
 /* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
 .fuel-grid{
   display:grid;
-  grid-template-columns: 240px repeat(4, 60px) 60px 60px; /* 92px je nach Optik auf 86–110px anpassen */
-  gap:6px;
+  grid-template-columns: 240px repeat(4, 86px) 110px 110px;
+  column-gap:10px;
+  row-gap:6px;
   align-items:center;
+}
+
+/* Outputs rechts bündig + optischer Abstand */
+.fuel-grid .c-out,
+.fuel-grid span[data-out]{
+  text-align:right;
+  justify-self:end;
+  padding-left:14px; /* erzeugt “Luft” zu den Legs */
 }
 
 .fuel-header{
@@ -494,18 +503,25 @@ button:hover { background:#00aacc; }
   padding:6px 8px;
 }
 
-/* Optional: kleine Mini-Labels im Stack */
+/* Mini-Row innerhalb Stack */
 .leg-stack .mini{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
+  display:grid;
+  grid-template-columns: 44px 1fr;
+  gap:6px;
+  align-items:center;
 }
 
 .leg-stack .mini label{
   font-size:11px;
   color:#8fa6bf;
   font-weight:800;
-    margin:0 0 1px 0;
+    margin:0;
+}
+.leg-stack .mini input,
+.leg-stack select{
+  height:26px;
+  padding:4px 8px;
+  font-size:12px;
 }
 
 .fuel-accent{ background: rgba(0,212,255,0.06); border-radius:8px; padding:10px 8px; }

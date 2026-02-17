@@ -46,7 +46,7 @@
   <button class="topbtn active" data-view="view-map" type="button">MAP</button>
   <button class="topbtn" data-view="view-checklist" type="button">Checklist</button>
   <button class="topbtn" data-view="view-fuel" type="button">FUEL Planning</button>
-  <button class="topbtn" data-view="view-perfo" type="button">PERFORMANCE</button>
+  <button class="topbtn" data-view="view-performance" type="button">PERFORMANCE</button>
   <button class="topbtn" data-view="view-settings" type="button">Settings</button>
   <button class="topbtn" data-view="view-orm" type="button">ORM öffnen</button>
   <button class="topbtn" data-view="view-mail" type="button">Mail EO senden</button>
@@ -312,7 +312,7 @@
           </div>
 
           <!-- COMPANY FUEL (Approaches) -->
-          <div class="fuel-grid fuel-row fuel-accent">
+          <div class="fuel-grid fuel-row">
             <div class="c-desc">
               Company Fuel
               <span class="sub">Approaches</span>
@@ -381,24 +381,24 @@
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Planned Takeoff Fuel</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <span class="c-out" data-out="req_usg"></span>
-            <span class="c-out" data-out="req_time"></span>
+            <span class="c-out" data-out="planned_usg"></span>
+            <span class="c-out" data-out="planned_time"></span>
           </div>
 
           <!-- EXTRA FUEL LRC -->
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Extra Fuel LRC</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <span class="c-out" data-out="req_usg"></span>
-            <span class="c-out" data-out="req_time"></span>
+            <span class="c-out" data-out="extra_lrc_usg"></span>
+            <span class="c-out" data-out="extra_lrc_time"></span>
           </div>
 
           <!-- TAKEOFF FUEL -->
           <div class="fuel-grid fuel-row fuel-total">
             <div class="c-desc">Takeoff Fuel</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <span class="c-out" data-out="req_usg"></span>
-            <span class="c-out" data-out="req_time"></span>
+            <span class="c-out" data-out="takeoff_usg"></span>
+            <span class="c-out" data-out="takeoff_time"></span>
           </div>
 
           <!-- TAXI -->
@@ -413,8 +413,8 @@
           <div class="fuel-grid fuel-row fuel-total">
             <div class="c-desc">Block Fuel</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <span class="c-out" data-out="req_usg"></span>
-            <span class="c-out" data-out="req_time"></span>
+            <span class="c-out" data-out="block_usg_out"></span>
+            <span class="c-out" data-out="block_time_out"></span>
           </div>
 
           <!-- TAXI -->
@@ -437,8 +437,8 @@
           <div class="fuel-grid fuel-row fuel-total">
             <div class="c-desc">Landing Fuel</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <span class="c-out" data-out="req_usg"></span>
-            <span class="c-out" data-out="req_time"></span>
+            <span class="c-out" data-out="landing_usg"></span>
+            <span class="c-out" data-out="landing_time"></span>
           </div>
 
           <!-- REMAINING + ENDURANCE -->

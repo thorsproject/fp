@@ -84,8 +84,8 @@ function setOut(panel, key, val) {
 
 // ---------- Standard Block behavior ----------
 function initStdBlockBehavior(panel) {
-  const stdSel = q(panel, `[data-field="std_block"]`);
-  const auxSel = q(panel, `[data-field="aux_on"]`);
+  const stdSel   = q(panel, `[data-field="std_block"]`);
+  const auxSel   = q(panel, `[data-field="aux_on"]`);
   const blockInp = q(panel, `[data-field="block_usg"]`);
   if (!stdSel || !auxSel || !blockInp) return;
 
@@ -96,15 +96,23 @@ function initStdBlockBehavior(panel) {
 
   function apply() {
     const std = String(stdSel.value) === "1";
-    const cap = capacity();
 
     if (std) {
-      blockInp.value = String(cap.toFixed(1)).replace(".", ",");
+      // ✅ Standard Block -> Aux MUSS an (26.4)
+      if (String(auxSel.value) !== "1") {
+        auxSel.value = "1";
+        auxSel.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      auxSel.disabled = true;
+
+      blockInp.value = String(capacity().toFixed(1)).replace(".", ",");
       blockInp.disabled = true;
     } else {
+      auxSel.disabled = false;
       blockInp.disabled = false;
+
       if (!String(blockInp.value || "").trim()) {
-        blockInp.value = String(cap.toFixed(1)).replace(".", ",");
+        blockInp.value = String(capacity().toFixed(1)).replace(".", ",");
       }
     }
   }
@@ -179,6 +187,26 @@ export function initFuelPlanning() {
     const resUsg = profile === "VFR" ? FIX.RES_VFR_USG : FIX.RES_IFR_USG;
     const resMin = profile === "VFR" ? FIX.RES_VFR_MIN : FIX.RES_IFR_MIN;
 
+    // --- Planned Takeoff Fuel ---
+    const plannedUsg =
+      tripUsgSum + companyUsg + contUsg + altUsg + resUsg;
+
+    // Zeit für Planned: Trip + Company + Alternate + Reserve (Cont/Taxi zählt NICHT)
+    const plannedMin =
+      tripMinSum + companyMin + altMin + resMin;
+
+    // --- Block / Takeoff / Extra / Landing ---
+    const blockUsgIn = blockUsg;               // dein Input (oder Standard)
+    const takeoffUsg = blockUsgIn - taxiUsg;   // TO = Block - Taxi
+
+    const extraLrcUsg = takeoffUsg - plannedUsg;
+
+    // Landing Fuel: Block - Taxi - (Trip + Company)
+    const landingUsg = blockUsgIn - taxiUsg - (tripUsgSum + companyUsg);
+
+    // Für Endurance nehmen wir sinnvollerweise "Extra Fuel" (kann negativ sein)
+    const remUsg = extraLrcUsg;
+
     // Taxi fixed
     const taxiUsg = FIX.TAXI_USG;
     const taxiMin = FIX.TAXI_MIN;
@@ -193,38 +221,42 @@ export function initFuelPlanning() {
       return fmtHHMM((remUsg / rate) * 60);
     }
 
-    return {
-      cap,
-      blockUsg,
+  return {
+    cap,
+    blockUsg: blockUsgIn,
 
-      tripUsgSum,
-      tripMinSum,
+    tripUsgSum,
+    tripMinSum,
 
-      companyUsg,
-      companyMin,
+    companyUsg,
+    companyMin,
 
-      contUsg,
-      contMin,
+    contUsg,
+    // contMin NICHT mehr verwenden
 
-      altUsg,
-      altMin,
+    altUsg,
+    altMin,
 
-      resUsg,
-      resMin,
+    resUsg,
+    resMin,
 
-      taxiUsg,
-      taxiMin,
+    taxiUsg,
+    // taxiMin NICHT mehr verwenden
 
-      reqUsg,
-      reqMin,
+    plannedUsg,
+    plannedMin,
 
-      remUsg,
+    takeoffUsg,
+    extraLrcUsg,
+    landingUsg,
 
-      endNC: endurance(BURN.NC),
-      endLRC: endurance(BURN.LRC),
-      endMEC: endurance(BURN.MEC),
-    };
-  }
+    remUsg,
+
+    endNC: endurance(BURN.NC),
+    endLRC: endurance(BURN.LRC),
+    endMEC: endurance(BURN.MEC),
+  };
+
 
   function render() {
     const d = read();
@@ -237,22 +269,46 @@ export function initFuelPlanning() {
     setOut(panel, "company_usg", d.companyUsg.toFixed(1));
     setOut(panel, "company_time", fmtHHMM(d.companyMin));
 
+    // Contingency: NUR USG, keine Zeit
     setOut(panel, "cont_usg", d.contUsg.toFixed(1));
-    setOut(panel, "cont_time", fmtHHMM(d.contMin));
+    setOut(panel, "cont_time", "");
 
+    // Alternate: + 2 USG
     setOut(panel, "alt_usg", d.altUsg.toFixed(1));
     setOut(panel, "alt_time_out", fmtHHMM(d.altMin));
 
     setOut(panel, "res_usg", d.resUsg.toFixed(1));
     setOut(panel, "res_time", fmtHHMM(d.resMin));
 
+    // Taxi: keine Zeit
     setOut(panel, "taxi_usg", d.taxiUsg.toFixed(1));
-    setOut(panel, "taxi_time", fmtHHMM(d.taxiMin));
+    setOut(panel, "taxi_time", "");
+
+    // Block Fuel output: keine Zeit
+    setOut(panel, "block_usg_out", d.blockUsg.toFixed(1));
+    setOut(panel, "block_time_out", "");
+
+    // Planned Takeoff
+    setOut(panel, "planned_usg", d.plannedUsg.toFixed(1));
+    setOut(panel, "planned_time", fmtHHMM(d.plannedMin));
+
+    // Takeoff Fuel: keine Zeit (oder wenn du willst, könntest du planned_time zeigen – du wolltest aber nicht)
+    setOut(panel, "takeoff_usg", d.takeoffUsg.toFixed(1));
+    setOut(panel, "takeoff_time", "");
+
+    // Extra Fuel LRC: keine Zeit
+    setOut(panel, "extra_lrc_usg", d.extraLrcUsg.toFixed(1));
+    setOut(panel, "extra_lrc_time", "");
+
+    // Landing Fuel: keine Zeit
+    setOut(panel, "landing_usg", d.landingUsg.toFixed(1));
+    setOut(panel, "landing_time", "");
+
+    // Remaining KPI: ich würde hier Extra Fuel anzeigen (passt zu deiner Definition)
+    setOut(panel, "rem_usg", d.remUsg.toFixed(1));
 
     setOut(panel, "req_usg", d.reqUsg.toFixed(1));
     setOut(panel, "req_time", fmtHHMM(d.reqMin));
-
-    setOut(panel, "rem_usg", d.remUsg.toFixed(1));
 
     setOut(panel, "end_nc", d.endNC);
     setOut(panel, "end_lrc", d.endLRC);
