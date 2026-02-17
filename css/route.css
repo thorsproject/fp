@@ -36,7 +36,7 @@
 .master-grid input.time input.aero input.alt,
 #dateInput {
   width: 120%;
-  /* max-width: 80px; */
+  max-width: 80px;
   box-sizing: border-box;
 }
 
