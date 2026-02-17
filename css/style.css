@@ -493,6 +493,21 @@ input.was-clamped {
   width:100%;
 }
 
+/* Kleinere Inputs für Approaches und Alternate Fuel */
+.fuel-grid .leg-stack .mini input {
+  height: 22px;          /* vorher typ. ~32–34px → jetzt ~⅔ */
+  padding: 2px 6px;
+  font-size: 0.85rem;
+  line-height: 1.1;
+  box-sizing: border-box;
+}
+
+/* optional: Label etwas kompakter */
+.fuel-grid .leg-stack .mini label {
+  font-size: 0.75rem;
+  margin-bottom: 1px;
+}
+
 /* Generischer Stack in einer LEG-Zelle (z.B. LEG4) */
 .leg-stack{
   display:flex;
