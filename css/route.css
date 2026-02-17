@@ -16,7 +16,7 @@
   grid-template-columns:
     45px
     80px
-    80px
+    70px
     110px
     70px
     70px;
@@ -32,6 +32,13 @@
 #lfzSelect, #tacSelect { width: 80px; }
 #FDLinput, #TELinput { width: 150px; }
 
+/* Route time/date inputs exakt Spaltenbreite */
+.master-grid input.time,
+#dateInput {
+  width: 100%;
+  max-width: 80px;
+  box-sizing: border-box;
+}
 
 .callSignDisplay{
   font-size: 14px;
