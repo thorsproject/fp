@@ -25,6 +25,12 @@
   align-items: center;
 }
 
+/* ------------ Debugging - Tool ----------- */
+.master-grid > * {
+  outline: 1px solid red;
+}
+/* ----------------------------------------- */
+
 /* Column 6 spacing helper */
 .frame .master-grid .col6 { margin-left: 10px; }
 
