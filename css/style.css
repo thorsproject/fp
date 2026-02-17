@@ -490,7 +490,7 @@ button:hover { background:#00aacc; }
 .leg-stack input,
 .leg-stack select{
   width:100%;
-  height:20px; /* 30 */ 
+  height:30px;
   padding:6px 8px;
 }
 
