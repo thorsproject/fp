@@ -33,10 +33,10 @@
 #FDLinput, #TELinput { width: 150px; }
 
 /* Route time/date inputs exakt Spaltenbreite */
-.master-grid input.time,
+.master-grid input.time input.aero input.alt,
 #dateInput {
   width: 120%;
-  max-width: 80px;
+  /* max-width: 80px; */
   box-sizing: border-box;
 }
 
