@@ -1,0 +1,92 @@
+/* =========================================================
+   QUICK NAV (Strg+F)
+   ---------------------------------------------------------
+   [TOPBAR]        Fixed header + top navigation buttons
+   [LAYOUT]        2-column layout (route left, content right)
+   [VIEWS]         View switching helpers
+   ========================================================= */
+
+/* ---------- TOPBAR ---------- */
+.topbar {
+  height: 50px;
+  background: var(--panel);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+}
+
+.topbar-title{
+  font-size: 24px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.topbar-nav{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+/* ----- Buttons oben ----- */
+.topbtn{
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+}
+.topbtn:hover{ border-color: var(--accent); }
+.topbtn.active{
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+/* ---------- APP LAYOUT ---------- */
+.views, .layout {
+  padding-top: 60px; /* Platz für fixed Topbar */
+}
+
+.layout{
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Left: Route Panel */
+.route-panel{
+  width: 520px;
+  height: calc(100vh - 60px - 20px);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+
+/* Right: Content Panel */
+.content-panel{
+  flex: 1;
+  min-width: 0;
+  height: calc(100vh - 60px - 20px);
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* ---------- VIEWS ---------- */
+.view{ display:none; height:100%; }
+.view.is-active{ display:block; height:100%; }
+
+.view-title{ margin:0 0 8px 0; color: var(--muted); }
+.view-sub{ margin:0; color: var(--text); }

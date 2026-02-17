@@ -1,0 +1,25 @@
+/* =========================================================
+   QUICK NAV (Strg+F)
+   ---------------------------------------------------------
+   [GLOBAL]        Base styles, typography, colors
+   ========================================================= */
+
+:root{
+  --bg: #1b1f24;
+  --panel: #232a33;
+  --border: #2e3b4e;
+  --text: #d9e1e8;
+  --muted: #8fa6bf;
+  --accent: #00d4ff;
+  --mint: #00ffcc;
+  --danger: #d11;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}

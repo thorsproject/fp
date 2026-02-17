@@ -1,0 +1,264 @@
+/* =========================================================
+   QUICK NAV (Strg+F)
+   ---------------------------------------------------------
+   [FUEL]          Fuel planning layout, toggles, grid, KPIs
+   ========================================================= */
+
+/* =========================================================
+   [FUEL] QUICK NAV (Strg+F)
+   ---------------------------------------------------------
+   [FUEL:HEAD]     Header, Chips, Main/Aux/Std Block controls
+   [FUEL:TOGGLE]   Toggle buttons (Standard Block, Aux Tanks)
+   [FUEL:GRID]     Main grid layout (ITEM | LEG1-4 | USG | TIME)
+   [FUEL:ROWS]     Standard rows, labels, inputs, outputs
+   [FUEL:INPUT]    Special inputs (Approaches, Alternate Fuel)
+   [FUEL:TOTAL]    Highlighted rows (Takeoff, Block, Landing)
+   [FUEL:WARN]     Warning text + negative fuel highlighting
+   [FUEL:KPI]      Bottom KPI cards (Capacity, Remaining, Endurance)
+   [FUEL:FOOT]     Footer note + KPI layout container
+   ========================================================= */
+
+.fuel-card{ overflow:hidden; }
+
+/* -------------------------
+   [FUEL:HEAD]
+   ------------------------- */
+.fuel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.fuel-controls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.fuel-chip{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  padding:6px 10px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+.fuel-chip input,
+.fuel-chip select{
+  width:80px;
+  min-width:80px;
+  padding:6px 8px;
+  font-size:12px;
+  text-align:center;
+}
+
+/* -------------------------
+   [FUEL:TOGGLE]
+   ------------------------- */
+.fuelToggle{
+  min-width:80px;
+  height:24px;
+  padding:0 10px;
+  border-radius:6px;
+  border:1px solid #444;
+  background:#2b3138;
+  color:#ddd;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.fuelToggle[data-state="on"]{
+  background:#1e7a34;
+  border-color:#2ecc71;
+  color:#fff;
+}
+.fuelToggle[data-state="off"]{
+  background:#5a1e1e;
+  border-color:#e74c3c;
+  color:#fff;
+}
+.fuelToggle:hover{ filter:brightness(1.15); }
+
+/* -------------------------
+   [FUEL:GRID]
+   ------------------------- */
+/* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
+.fuel-grid{
+  display:grid;
+  grid-template-columns: 240px repeat(4, 86px) 110px 110px;
+  column-gap:10px;
+  row-gap:6px;
+  align-items:center;
+}
+
+.fuel-header{
+  margin-top:10px;
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+  color: var(--muted);
+  font-weight:800;
+  font-size:12px;
+}
+
+/* -------------------------
+   [FUEL:ROWS]
+   ------------------------- */
+.fuel-row{
+  padding:6px 0;
+  border-bottom:1px dashed rgba(46,59,78,0.55);
+}
+
+.fuel-row .c-desc{
+  font-weight:800;
+  color: var(--text);
+  font-size:12px;
+}
+
+.fuel-row input{
+  width:100%;
+  padding:6px 8px;
+  font-size:12px;
+  text-align:center;
+  box-sizing:border-box;
+}
+
+/* Outputs */
+.fuel-grid .c-out,
+.fuel-grid span[data-out]{
+  text-align:right;
+  justify-self:end;
+  padding-left:14px;
+  font-weight:900;
+  font-size:12px;
+  color: var(--text);
+}
+
+/* Leg cells centered */
+.fuel-grid .c-leg{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Trip inputs greyed when leg inactive */
+.fuel-row .trip.inactive,
+.fuel-row .trip.inactive input{
+  opacity:0.35;
+  pointer-events:none;
+  filter: grayscale(1);
+}
+
+/* Sub label in ITEM column */
+.c-desc .sub{
+  display:block;
+  font-size:11px;
+  color: var(--muted);
+  font-weight:800;
+  margin-top:1px;
+}
+
+/* -------------------------
+   [FUEL:INPUT]
+   ------------------------- */
+/* Label in LEG3 right aligned; Inputs in LEG4 full width */
+.fuel-labelcol{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-end;
+  gap:4px;
+  padding-right:6px;
+}
+.fuel-subrow-label{
+  font-size:0.8rem;
+  color:#ccc;
+  text-align:right;
+  width:100%;
+}
+.fuel-inputcol{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:stretch;
+  gap:4px;
+}
+.fuel-mini-input{
+  width:100%;
+  height:22px;
+  padding:2px 6px;
+  font-size:0.85rem;
+  box-sizing:border-box;
+}
+
+/* -------------------------
+   [FUEL:TOTAL]
+   ------------------------- */
+.fuel-accent{
+  background: rgba(0,212,255,0.06);
+  border-radius:8px;
+  padding:8px 8px;
+}
+.fuel-total{
+  background: rgba(0,255,204,0.06);
+  border-radius:8px;
+  padding:8px 8px;
+}
+/* Totals nicht einrücken */
+.fuel-grid.fuel-total .c-desc{
+  padding-left:0;
+  margin-left:0;
+}
+
+/* -------------------------
+   [FUEL:WARN]
+   ------------------------- */
+.fuel-warn{
+  color: var(--danger);
+  font-weight:700;
+  margin-right:8px;
+  display:none;
+}
+.fuel-warn.is-on{ display:inline; }
+
+/* -------------------------
+   [FUEL:KPI] + [FUEL:FOOT]
+   ------------------------- */
+.fuel-foot{
+  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.fuel-kpis{
+  display:grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap:10px;
+}
+
+.kpi{
+  border:1px solid var(--border);
+  background: var(--bg);
+  border-radius:10px;
+  padding:10px;
+}
+.kpi-label{
+  color: var(--muted);
+  font-weight:800;
+  font-size:12px;
+  margin-bottom:6px;
+}
+.kpi-val{
+  color: var(--text);
+  font-weight:900;
+  font-size:14px;
+}
+.fuel-note{
+  color: var(--muted);
+  font-size:12px;
+}

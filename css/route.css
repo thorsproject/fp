@@ -1,0 +1,96 @@
+/* =========================================================
+   QUICK NAV (Strg+F)
+   ---------------------------------------------------------
+   [ROUTE]         Route panel grid, leg toggles, validation
+   ========================================================= */
+
+.left-panel{
+  background: var(--bg);
+  box-sizing: border-box;
+  border-right: 1px solid var(--border);
+}
+
+/* Master grid */
+.master-grid{
+  display: grid;
+  grid-template-columns:
+    45px
+    80px
+    70px
+    110px
+    70px
+    70px;
+  grid-auto-rows: 30px;
+  gap: 3px;
+  align-items: center;
+}
+
+/* Column 6 spacing helper */
+.frame .master-grid .col6 { margin-left: 10px; }
+
+/* Specific widths */
+#lfzSelect, #tacSelect { width: 80px; }
+#FDLinput, #TELinput { width: 150px; }
+
+
+.callSignDisplay{
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px;
+  color: var(--mint);
+}
+
+.aero-label{
+  justify-self: start;
+  padding-left: 20px;
+}
+
+/* Route reset buttons */
+.routebtnReset{ background: #ff8800; color:#000; }
+.routebtnReset:hover{ background:#ffa000; }
+.routebtnReset:active{ background:#ff8f00; }
+
+/* Leg ACTIVE/INACTIVE toggle */
+.legToggle{
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: none;
+  font-weight: bold;
+  font-size: 12px;
+  width: 110%;
+  max-width: 120px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.legToggle[data-state="active"]{ background:#2e7d32; color:#fff; }
+.legToggle[data-state="inactive"]{ background:#8b1e1e; color:#fff; }
+.legToggle:hover{ transform: scale(1.05); }
+
+/* Inactive Route Fields (legacy) */
+.inactiveFields .legField{
+  opacity: 0.3;
+  pointer-events: none;
+  background: #1a1f26;
+  color: #6c7a89;
+  cursor: not-allowed;
+}
+.inactiveFields .label,
+.inactiveFields .aero-label,
+.inactiveFields .alternate-label{
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Validation */
+.aero.invalid,
+.alt.invalid{
+  border-color: #ff4d4d !important;
+  box-shadow: 0 0 4px rgba(255,77,77,0.7);
+}
+.aero-error,
+.alt-error{
+  font-size: 11px;
+  color: #ff8080;
+  margin-top: 2px;
+}
