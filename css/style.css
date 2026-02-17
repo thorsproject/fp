@@ -408,7 +408,7 @@ button:hover { background:#00aacc; }
 /* Fuel Toggle Buttons */
 .fuelToggle {
   min-width: 90px;
-  height: 28px;
+  height: 22px;
   padding: 0 10px;
   border-radius: 6px;
   border: 1px solid #444;
