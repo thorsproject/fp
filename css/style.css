@@ -1,4 +1,16 @@
 /* =========================================================
+   QUICK NAV (Strg+F)
+   ---------------------------------------------------------
+   [GLOBAL]        Base styles, typography, colors
+   [TOPBAR]        Fixed header + top navigation buttons
+   [LAYOUT]        2-column layout (route left, content right)
+   [UI]            Generic elements (frame, inputs, buttons)
+   [ROUTE]         Route panel grid, leg toggles, validation
+   [MAP]           Map view, controls, Leaflet container
+   [FUEL]          Fuel planning layout, toggles, grid, KPIs
+   ========================================================= */
+
+/* =========================================================
    GLOBAL / BASE
    ========================================================= */
 html, body {
@@ -192,7 +204,7 @@ input.was-clamped {
     110px  /* col4 */
     70px   /* col5 */
     70px;  /* col6 */
-  grid-auto-rows: 30px;
+  grid-auto-rows: 40px; /* 30 */
   gap: 3px;
   align-items: center;
 }
@@ -348,8 +360,24 @@ input.was-clamped {
 /* =========================================================
    FUEL PLANNING
    ========================================================= */
-.fuel-card { overflow: hidden; }
+/* =========================================================
+   [FUEL] QUICK NAV (Strg+F)
+   ---------------------------------------------------------
+   [FUEL:HEAD]     Header, Chips, Main/Aux/Std Block controls
+   [FUEL:TOGGLE]   Toggle buttons (Standard Block, Aux Tanks)
+   [FUEL:GRID]     Main grid layout (ITEM | LEG1-4 | USG | TIME)
+   [FUEL:ROWS]     Standard rows, labels, inputs, outputs
+   [FUEL:INPUT]    Special inputs (Approaches, Alternate Fuel)
+   [FUEL:TOTAL]    Highlighted rows (Takeoff, Block, Landing)
+   [FUEL:WARN]     Warning text + negative fuel highlighting
+   [FUEL:KPI]      Bottom KPI cards (Capacity, Remaining, Endurance)
+   [FUEL:FOOT]     Footer note + KPI layout container
+   ========================================================= */
+   .fuel-card { overflow: hidden; }
 
+/* =========================================================
+   [FUEL:HEAD]
+   ========================================================= */
 .fuel-head {
   display: flex;
   align-items: flex-start;
@@ -388,7 +416,10 @@ input.was-clamped {
   box-sizing: border-box;
 }
 
-/* Fuel Toggle Buttons (std block / aux) */
+/* =========================================================
+   [FUEL:TOGGLE]
+   ========================================================= */
+   /* Fuel Toggle Buttons (std block / aux) */
 .fuelToggle {
   min-width: 80px;
   height: 24px;
@@ -413,7 +444,10 @@ input.was-clamped {
 }
 .fuelToggle:hover { filter: brightness(1.15); }
 
-/* Fuel main grid:
+/* =========================================================
+   [FUEL:GRID]
+   ========================================================= */
+   /* Fuel main grid:
    ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
 .fuel-grid {
   display: grid;
@@ -433,6 +467,9 @@ input.was-clamped {
   font-size: 12px;
 }
 
+/* =========================================================
+   [FUEL:ROWS]
+   ========================================================= */
 /* Normal rows */
 .fuel-row {
   padding: 6px 0;
@@ -488,6 +525,9 @@ input.was-clamped {
   margin-top: 1px;
 }
 
+/* =========================================================
+   [FUEL:INPUT]
+   ========================================================= */
 /* Label in LEG3 (right aligned) + Inputs in LEG4 */
 .fuel-labelcol {
   display: flex;
@@ -515,7 +555,7 @@ input.was-clamped {
 
 .fuel-mini-input {
   width: 100%;
-  height: 22px;
+  height: 24px;
   padding: 2px 6px;
   font-size: 0.85rem;
   box-sizing: border-box;
@@ -528,6 +568,9 @@ input.was-clamped {
   padding: 8px 8px;
 }
 
+/* =========================================================
+   [FUEL:TOTAL]
+   ========================================================= */
 .fuel-total {
   background: rgba(0, 255, 204, 0.06);
   border-radius: 8px;
@@ -546,6 +589,9 @@ input.was-clamped {
   font-weight: 700;
 }
 
+/* =========================================================
+   [FUEL:WARN]
+   ========================================================= */
 .fuel-warn {
   color: #d11;
   font-weight: 700;
@@ -562,6 +608,9 @@ input.was-clamped {
   gap: 10px;
 }
 
+/* =========================================================
+   [FUEL:KPI]
+   ========================================================= */
 .fuel-kpis {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
