@@ -407,8 +407,8 @@ button:hover { background:#00aacc; }
 .fuel-controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
 /* Fuel Toggle Buttons */
 .fuelToggle {
-  min-width: 90px;
-  height: 22px;
+  min-width: 80px;
+  height: 24px;
   padding: 0 10px;
   border-radius: 6px;
   border: 1px solid #444;
