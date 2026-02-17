@@ -448,7 +448,7 @@ button:hover { background:#00aacc; }
   font-weight:700;
 }
 .fuel-chip input, .fuel-chip select{
-  width:auto;
+  width:80px;
   min-width:80px;
   padding:6px 8px;
   font-size:12px;
