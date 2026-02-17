@@ -442,6 +442,50 @@ input.was-clamped {
   justify-self:end;
   padding-left:14px; /* erzeugt “Luft” zu den Legs */
 }
+/* Jede Leg-Zelle vertikal zentrieren */
+.fuel-grid .c-leg {
+  display: flex;
+  align-items: center;      /* vertikale Zentrierung */
+  justify-content: center;  /* horizontale Zentrierung */
+}
+
+.fuel-grid.fuel-row {
+  align-items: center;
+}
+
+/* Stack (IFR/VFR / Alternate Fuel) kompakt und zentriert */
+.fuel-grid .leg-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: left; /* center;  /* vertikal zentrieren */
+  align-items: stretch;
+  gap: 2px;
+  width: 100%;
+}
+
+/* Mini-Blöcke kompakt */
+.fuel-grid .leg-stack .mini {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* Kleinere Inputs (wie vorher) */
+.fuel-grid .leg-stack .mini input {
+  height: 22px;
+  padding: 2px 6px;
+  font-size: 0.85rem;
+  line-height: 1.1;
+  box-sizing: border-box;
+}
+
+/* Label kompakter */
+.fuel-grid .leg-stack .mini label {
+  font-size: 0.75rem;
+  margin: 0;
+  line-height: 1;
+}
 
 .fuel-header{
   margin-top:10px;
@@ -491,48 +535,6 @@ input.was-clamped {
 
 .appr-stack input{
   width:100%;
-}
-
-/* Kleinere Inputs für Approaches und Alternate Fuel */
-/* Jede Leg-Zelle vertikal zentrieren */
-.fuel-grid .c-leg {
-  display: flex;
-  align-items: center;      /* vertikale Zentrierung */
-  justify-content: center;  /* horizontale Zentrierung */
-}
-
-/* Stack (IFR/VFR / Alternate Fuel) kompakt und zentriert */
-.fuel-grid .leg-stack {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;  /* vertikal zentrieren */
-  align-items: stretch;
-  gap: 2px;
-  width: 100%;
-}
-
-/* Mini-Blöcke kompakt */
-.fuel-grid .leg-stack .mini {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-}
-
-/* Kleinere Inputs (wie vorher) */
-.fuel-grid .leg-stack .mini input {
-  height: 22px;
-  padding: 2px 6px;
-  font-size: 0.85rem;
-  line-height: 1.1;
-  box-sizing: border-box;
-}
-
-/* Label kompakter */
-.fuel-grid .leg-stack .mini label {
-  font-size: 0.75rem;
-  margin: 0;
-  line-height: 1;
 }
 
 /* Generischer Stack in einer LEG-Zelle (z.B. LEG4) */
