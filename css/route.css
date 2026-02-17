@@ -32,13 +32,13 @@
 #lfzSelect, #tacSelect { width: 80px; }
 #FDLinput, #TELinput { width: 170px; }
 
-/* Route time/date inputs exakt Spaltenbreite */
+/* Route inputs exakte Spaltenbreite */
 .master-grid input.time,
 .master-grid input.aero,
 .master-grid input.alt,
 #dateInput {
   width: 120%;
-  /* max-width: 80px; */
+  max-width: 80px;
   box-sizing: border-box;
 }
 
