@@ -1,411 +1,394 @@
+/* =========================================================
+   GLOBAL / BASE
+   ========================================================= */
 html, body {
-    margin:0; 
-    padding:0; 
-    height:100%;
-    font-family:"Segoe UI", Arial;
-    background:#1b1f24;
-    color:#d9e1e8;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #1b1f24;
+  color: #d9e1e8;
 }
 
+/* Optional: du hast auch ein <header> Tag gestylt,
+   verwendest aber hauptsächlich .topbar.
+   Falls du <header> NICHT mehr brauchst, kannst du das löschen. */
 header {
-    height:50px; 
-    background:#232a33;
-    color:#00d4ff;
-    display:flex;
-    align-items:center;
-    padding-left:10px;
-    font-size:24px;
+  height: 50px;
+  background: #232a33;
+  color: #00d4ff;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 24px;
 }
 
-/* ---------- TOPBAR ---------- */
-.topbar{
-  height:50px;
-  background:#232a33;
-  color:#00d4ff;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:0 10px;
-  box-sizing:border-box;
+/* =========================================================
+   TOPBAR / NAV
+   ========================================================= */
+.topbar {
+  height: 50px;
+  background: #232a33;
+  color: #00d4ff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 10px;
+  box-sizing: border-box;
+
   position: fixed;
-  top:0;
-  left:0;
-  right:0;
+  top: 0; left: 0; right: 0;
   z-index: 9999;
 }
 
-.topbar-title{
-  font-size:24px;
-  font-weight:700;
-  white-space:nowrap;
+.topbar-title {
+  font-size: 24px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-.topbar-nav{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  overflow-x:auto;
-  padding-bottom:2px;
+.topbar-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
-/* ----- Buttons oben ----- */
-.topbtn{
-  padding:6px 12px;
-  border-radius:6px;
-  border:1px solid #2e3b4e;
-  background:#1b1f24;
-  color:#d9e1e8;
-  cursor:pointer;
-  font-weight:700;
+/* Top Navigation Buttons */
+.topbtn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #2e3b4e;
+  background: #1b1f24;
+  color: #d9e1e8;
+  cursor: pointer;
+  font-weight: 700;
+}
+.topbtn:hover { border-color: #00d4ff; }
+.topbtn.active {
+  background: #00d4ff;
+  color: #000;
+  border-color: #00d4ff;
 }
 
-.topbtn:hover{
-  border-color:#00d4ff;
-}
-
-/* ----- ACTIVE STATE ----- */
-.topbtn.active{
-  background:#00d4ff;
-  color:#000;
-  border-color:#00d4ff;
-}
-
-/* ---------- VIEWS ---------- */
+/* =========================================================
+   APP LAYOUT (Views / 2-column)
+   ========================================================= */
 .views, .layout {
-  padding-top: 60px; /* Platz für HEADER / Topbar */
+  padding-top: 60px; /* Platz für fixed Topbar */
 }
 
-/* ---------- 2-Spalten Layout ---------- */
-.layout{
-  display:flex;
-  gap:10px;
-  padding:10px;
-  box-sizing:border-box;
+.layout {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-/* ---------- LINKS: Route immer sichtbar ---------- */
-.route-panel{
-  width:520px;
-  height:calc(100vh - 60px - 20px); /* viewport - header - padding */
-  overflow-y:auto;
-  border-right:1px solid #2e3b4e;
-  padding-right:10px;
-  box-sizing:border-box;
+/* Left (Route panel) */
+.route-panel {
+  width: 520px;
+  height: calc(100vh - 60px - 20px); /* viewport - topbar - layout padding */
+  overflow-y: auto;
+  border-right: 1px solid #2e3b4e;
+  padding-right: 10px;
+  box-sizing: border-box;
 }
 
-.routebtnReset{
+/* Right (Content panel) */
+.content-panel {
+  flex: 1;
+  min-width: 0;
+  height: calc(100vh - 60px - 20px);
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Views: only one visible */
+.view { display: none; height: 100%; }
+.view.is-active { display: block; height: 100%; }
+
+.view-title { margin: 0 0 8px 0; color: #8fa6bf; }
+.view-sub { margin: 0; color: #d9e1e8; }
+
+/* =========================================================
+   GENERIC UI ELEMENTS
+   ========================================================= */
+.frame {
+  border: 1px solid #2e3b4e;
+  background: #232a33;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+/* Labels */
+.label {
+  font-weight: bold;
+  font-size: 11px;
+  color: #8fa6bf;
+}
+
+/* Generic inputs/selects */
+input, select {
+  width: 95%;
+  padding: 5px;
+  background: #0f141a;
+  color: #00ffcc;
+  font-size: 13px;
+  border: 1px solid #2e3b4e;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #00d4ff;
+}
+
+/* Disabled inputs (Fuel main lock) */
+input:disabled {
+  background: #2a2f36;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* Generic buttons (default) */
+button {
+  padding: 5px 10px;
+  margin-right: 5px;
+  background: #00d4ff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #000;
+  font-weight: bold;
+}
+button:hover { background: #00aacc; }
+
+/* Clamp flash feedback */
+input.was-clamped {
+  box-shadow: 0 0 0 2px rgba(209, 17, 17, 0.6);
+}
+
+/* =========================================================
+   ROUTE PANEL / MASTER GRID
+   ========================================================= */
+.left-panel {
+  background: #1b1f24;
+  box-sizing: border-box;
+  border-right: 1px solid #2e3b4e;
+}
+
+/* Master grid inside frames */
+.master-grid {
+  display: grid;
+  grid-template-columns:
+    45px   /* col1 */
+    80px   /* col2 */
+    70px   /* col3 */
+    110px  /* col4 */
+    70px   /* col5 */
+    70px;  /* col6 */
+  grid-auto-rows: 30px;
+  gap: 3px;
+  align-items: center;
+}
+
+/* Column 6 spacing helper */
+.frame .master-grid .col6 { margin-left: 10px; }
+
+/* Specific widths */
+#lfzSelect, #tacSelect { width: 80px; }
+#FDLinput, #TELinput { width: 150px; }
+
+.callSignDisplay {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px;
+  color: #00ffcc;
+}
+
+/* Aerodrome label indentation */
+.aero-label {
+  justify-self: start;
+  padding-left: 20px;
+}
+
+/* Route buttons */
+.routebtnReset {
   background: #ff8800;
   color: #000;
 }
+.routebtnReset:hover { background: #ffa000; }
+.routebtnReset:active { background: #ff8f00; }
 
-.routebtnReset:hover{
-  background: #ffa000;
-}
-
-.routebtnReset:active{
-  background: #ff8f00;
-}
-/* ------------------------------------------------- */
-
-/* ---------- RECHTS: Content wechselt ---------- */
-.content-panel{
-  flex:1;
-  min-width: 0;
-  height:calc(100vh - 60px - 20px);
-  overflow:hidden;
-  box-sizing:border-box;
-  position: relative;
-}
-
-/* ----- Views: nur eine sichtbar ----- */
-.view{ display:none; height:100%; }
-.view.is-active{ display:block; height:100%; }
-.view-title{ margin:0 0 8px 0; color:#8fa6bf; }
-.view-sub{ margin:0; color:#d9e1e8; }
-
-/* ---------- MAP ---------- */
-#view-map{
-  position: relative;
-  height: 100%;
-
-}
-
-/* Controls: oben links, kompakt */
-.map-controls{
-  position:relative;  /* absolute; <-- Buttons schweben über der Karte */
-  padding: 10px;  /* wird nur benötigt, wenn position: relative */
-  top: 0;           /* oben am Map-View */
-  left: 0;          /* links */
-  margin-bottom: 10px;  /* wird nur benötigt, wenn position: relative */  
-  z-index: 1000;
-  padding: 0;       /* kein extra Innenabstand, Chips regeln das */
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-/* Eine Zeile */
-.map-controls{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-
-.map-controls.frame{
-  margin-bottom: 6px;
-}
-
-/* Jeppesen-like Chips */
-.ctrl-chip{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  padding:6px 10px;
-  border:1px solid #2e3b4e;
-  border-radius:999px;
-  background:#1b1f24;
-  color:#d9e1e8;
-  font-weight:800;
-  font-size:12px;
-}
-
-/* Button als kleine Pill */
-.ctrl-chip button{
-  margin:0;
-  padding:4px 10px;
-  border-radius:999px;
-  border:1px solid #2e3b4e;
-  background:#232a33;
-  color:#d9e1e8;
-  font-weight:900;
-  cursor:pointer;
-}
-
-.ctrl-chip button.is-on{
-  background:#00d4ff;
-  color:#000;
-  border-color:#00d4ff;
-}
-
-/* Dropdown kompakt */
-.ctrl-chip select{
-  width:auto;
-  margin:0;
-  padding:4px 10px;
-  border-radius:999px;
-  border:1px solid #2e3b4e;
-  background:#232a33;
-  color:#d9e1e8;
-  font-weight:900;
-}
-
-/* Karte füllt den Bereich */
-.map-frame{
-  width:100%;
-  height:100%;
-  border:1px solid #2e3b4e;
-  background:#eef;
-}
-
-/* Optional: kompakter */
-.map-controls .mapbtn{
-  display: flex;
-  gap: 8px;       /* 8 */
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.map-controls select{
-  width: 110px; /* oder was dir gefällt */
-}
-
-.map-frame{
-  /* top:60px; */
-  flex:1;
-  width:70%;
-  height:calc(100% - 70px);
-  border: 1px solid #2e3b4e;
-  background:#eef;
-}
-
-.left-panel {
-    position: static;       /* fixiert links */
-    top: auto;             /* unter Header */
-    left: auto;
-    width: auto;
-    bottom: auto;
-    overflow-y: visible;
-    padding:0;
-    background: #1b1f24;
-    box-sizing: border-box;
-    border-right: 1px solid #2e3b4e;
-}
-
-.frame {
-    border:1px solid #2e3b4e;
-    background:#232a33;
-    padding:10px;
-    margin-bottom:10px;
-    border-radius:5px;
-}
-
-.master-grid {
-    display:grid;
-    grid-template-columns:
-        45px   /* Spalte 1 */
-        80px   /* Spalte 2 */
-        70px   /* Spalte 3 */
-        110px  /* Spalte 4 */
-        70px   /* Spalte 5 */
-        70px;  /* Spalte 6 */
-    grid-auto-rows:30px;
-    gap:3px;
-    align-items:center;
-}
-
-/* Spalte 6 in allen Leg-Frames: Abstand links */
-.frame .master-grid .col6 {
-    margin-left:10px; /* Abstand zur Spalte 5 */
-}
-
-/* ---------- alle Labels ---------- */
-.label {
-    font-weight:bold;
-    font-size:11px;
-    color:#8fa6bf;
-}
-
-/* ---------- Auswahlfelder Lfz + TAC-CS ---------- */
-#lfzSelect,
-#tacSelect {
-    width: 80px;   
-}
-/* ---------------------------------------- */
-
-/* ---------- Edingabefelder FDL + TEL ---------- */
-#FDLinput,
-#TELinput {
-    width: 150px;   
-}
-/* ---------------------------------------- */
-
-.callSignDisplay {
-    font-size:14px; 
-    font-weight:bold;
-    padding:5px;
-    color:#00ffcc;
-}
-
-.aero-label {
-    justify-self:start;   /* explizit links in seiner Grid-Zelle */
-    padding-left:20px;     /* kleiner Abstand zur Spaltenkante */
-}
-
-/* ---------- alle Auswahl- und Eingabefelder ---------- */
-input, select {
-    width:95%; 
-    padding:5px;
-    background:#0f141a;
-    color:#00ffcc;
-    font-size:13px;
-    border:1px solid #2e3b4e;
-    border-radius:4px;
-}
-input:focus, select:focus {
-    outline:none;
-    border-color:#00d4ff;
-}
-/* ---------------------------------------- */
-
-button {
-    padding:5px 10px;
-    margin-right:5px;
-    background:#00d4ff;
-    border:none;
-    border-radius:4px;
-    cursor:pointer;
-    color:#000;
-    font-weight:bold;
-}
-button:hover { background:#00aacc; }
-/* ---------------------------------------- */
-
-/* ---------- TOGGLE BUTTONS ---------- */
+/* Leg ACTIVE/INACTIVE toggle */
 .legToggle {
   padding: 5px 10px;
   border-radius: 4px;
   border: none;
   font-weight: bold;
-  font-size:12px;
+  font-size: 12px;
   width: 110%;
   max-width: 120px;
   text-align: center;
   cursor: pointer;
   transition: 0.2s ease;
 }
+.legToggle[data-state="active"] { background: #2e7d32; color: #fff; }
+.legToggle[data-state="inactive"] { background: #8b1e1e; color: #fff; }
+.legToggle:hover { transform: scale(1.05); }
 
-.legToggle[data-state="active"] {
-  background: #2e7d32;
-  color: white;
-}
-
-.legToggle[data-state="inactive"] {
-  background: #8b1e1e;
-  color: white;
-}
-
-.legToggle:hover {
-  transform: scale(1.05);
-}
-/* ---------------------------------------- */
-
-/* ---------- Felder im inaktiven Frame ausgrauen ----------*/
+/* Inactive Route Fields (legacy) */
 .inactiveFields .legField {
-    opacity:0.3;
-    pointer-events:none;
-    background:#1a1f26;
-    color:#6c7a89;
-    cursor:not-allowed;
+  opacity: 0.3;
+  pointer-events: none;
+  background: #1a1f26;
+  color: #6c7a89;
+  cursor: not-allowed;
 }
-
 .inactiveFields .label,
 .inactiveFields .aero-label,
 .inactiveFields .alternate-label {
-    opacity:0.4;
-    pointer-events:none;
-}
-/* ---------------------------------------- */
-
-/* ---------- Aero Validation ---------- */
-.aero.invalid {
-    border-color: #ff4d4d !important;
-    box-shadow: 0 0 4px rgba(255,77,77,0.7);
+  opacity: 0.4;
+  pointer-events: none;
 }
 
-.aero-error {
-    font-size: 11px;
-    color: #ff8080;
-    margin-top: 2px;
-}
-/* ---------------------------------------- */
-
-/* ---------- Alternate Validation ---------- */
+/* Validation styles */
+.aero.invalid,
 .alt.invalid {
-    border-color: #ff4d4d !important;
-    box-shadow: 0 0 4px rgba(255,77,77,0.7);
+  border-color: #ff4d4d !important;
+  box-shadow: 0 0 4px rgba(255, 77, 77, 0.7);
 }
 
+.aero-error,
 .alt-error {
-    font-size: 11px;
-    color: #ff8080;
-    margin-top: 2px;
+  font-size: 11px;
+  color: #ff8080;
+  margin-top: 2px;
 }
 
-/* ---------- FUEL PLANNING ---------- */
-.fuel-card{ overflow:hidden; }
-.fuel-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-.fuel-controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
-/* Fuel Toggle Buttons */
+/* =========================================================
+   MAP VIEW
+   ========================================================= */
+#view-map {
+  position: relative;
+  height: 100%;
+}
+
+/* Controls row above map */
+.map-controls {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  z-index: 1000;
+
+  /* no extra visual chrome */
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Jeppesen-like chips */
+.ctrl-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #2e3b4e;
+  border-radius: 999px;
+  background: #1b1f24;
+  color: #d9e1e8;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.ctrl-chip button {
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #2e3b4e;
+  background: #232a33;
+  color: #d9e1e8;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.ctrl-chip button.is-on {
+  background: #00d4ff;
+  color: #000;
+  border-color: #00d4ff;
+}
+
+.ctrl-chip select {
+  width: auto;
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #2e3b4e;
+  background: #232a33;
+  color: #d9e1e8;
+  font-weight: 900;
+}
+
+/* Map canvas */
+.map-frame {
+  width: 100%;
+  height: calc(100% - 70px);
+  border: 1px solid #2e3b4e;
+  background: #eef;
+}
+
+/* =========================================================
+   FUEL PLANNING
+   ========================================================= */
+.fuel-card { overflow: hidden; }
+
+.fuel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fuel-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Fuel chip container */
+.fuel-chip {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid #2e3b4e;
+  border-radius: 10px;
+  background: #1b1f24;
+  color: #8fa6bf;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fuel-chip input,
+.fuel-chip select {
+  width: 80px;
+  min-width: 80px;
+  padding: 6px 8px;
+  font-size: 12px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Fuel Toggle Buttons (std block / aux) */
 .fuelToggle {
   min-width: 80px;
   height: 24px;
@@ -418,71 +401,103 @@ button:hover { background:#00aacc; }
   cursor: pointer;
   transition: all 0.15s ease;
 }
-
-/* ON Zustand */
 .fuelToggle[data-state="on"] {
   background: #1e7a34;
   border-color: #2ecc71;
   color: #fff;
 }
-
-/* OFF Zustand */
 .fuelToggle[data-state="off"] {
   background: #5a1e1e;
   border-color: #e74c3c;
   color: #fff;
 }
+.fuelToggle:hover { filter: brightness(1.15); }
 
-.fuelToggle:hover {
-  filter: brightness(1.15);
-}
-
-.fuel-chip{
-  display:flex; gap:6px; align-items:center;
-  padding:6px 10px;
-  border:1px solid #2e3b4e;
-  border-radius:10px;
-  background:#1b1f24;
-  color:#8fa6bf;
-  font-size:12px;
-  font-weight:700;
-}
-.fuel-chip input, .fuel-chip select{
-  width:80px;
-  min-width:80px;
-  padding:6px 8px;
-  font-size:12px;
-  text-align:center;
-}
-
-input.was-clamped {
-  box-shadow: 0 0 0 2px rgba(209, 17, 17, 0.6);
-}
-input:disabled {
-  background: #2a2f36;
-  color: #aaa;
-  cursor: not-allowed;
-}
-
-/* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
-.fuel-grid{
-  display:grid;
+/* Fuel main grid:
+   ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
+.fuel-grid {
+  display: grid;
   grid-template-columns: 240px repeat(4, 86px) 110px 110px;
-  column-gap:10px;
-  row-gap:6px;
-  align-items:center;
+  column-gap: 10px;
+  row-gap: 6px;
+  align-items: center;
 }
-/* Label-Spalte (Spalte 3) */
+
+/* Header row */
+.fuel-header {
+  margin-top: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #2e3b4e;
+  color: #8fa6bf;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+/* Normal rows */
+.fuel-row {
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(46, 59, 78, 0.55);
+}
+
+.fuel-row .c-desc {
+  font-weight: 800;
+  color: #d9e1e8;
+  font-size: 12px;
+}
+
+.fuel-row input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 12px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Outputs alignment */
+.fuel-grid .c-out,
+.fuel-grid span[data-out] {
+  text-align: right;
+  justify-self: end;
+  padding-left: 14px; /* spacing from leg columns */
+  font-weight: 900;
+  font-size: 12px;
+  color: #d9e1e8;
+}
+
+/* Leg cells are centered */
+.fuel-grid .c-leg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Trip inputs greyed when leg inactive */
+.fuel-row .trip.inactive,
+.fuel-row .trip.inactive input {
+  opacity: 0.35;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+
+/* Sub label in ITEM column (Approaches) */
+.c-desc .sub {
+  display: block;
+  font-size: 11px;
+  color: #8fa6bf;
+  font-weight: 800;
+  margin-top: 1px;
+}
+
+/* Label in LEG3 (right aligned) + Inputs in LEG4 */
 .fuel-labelcol {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-end;   /* rechtsbündig */
+  align-items: flex-end;
   gap: 4px;
   padding-right: 6px;
 }
 
-/* Label-Stil */
 .fuel-subrow-label {
   font-size: 0.8rem;
   color: #ccc;
@@ -490,7 +505,6 @@ input:disabled {
   width: 100%;
 }
 
-/* Input-Spalte (Spalte 4) */
 .fuel-inputcol {
   display: flex;
   flex-direction: column;
@@ -499,7 +513,6 @@ input:disabled {
   gap: 4px;
 }
 
-/* Input exakt gleiche Breite wie LEG Fuel Inputs */
 .fuel-mini-input {
   width: 100%;
   height: 22px;
@@ -508,170 +521,74 @@ input:disabled {
   box-sizing: border-box;
 }
 
-/* Outputs rechts bündig + optischer Abstand */
-.fuel-grid .c-out,
-.fuel-grid span[data-out]{
-  text-align:right;
-  justify-self:end;
-  padding-left:14px; /* erzeugt “Luft” zu den Legs */
-}
-/* Jede Leg-Zelle vertikal zentrieren */
-.fuel-grid .c-leg {
-  display: flex;
-  align-items: center;      /* vertikale Zentrierung */
-  justify-content: center;  /* horizontale Zentrierung */
+/* Totals / highlighted rows */
+.fuel-accent {
+  background: rgba(0, 212, 255, 0.06);
+  border-radius: 8px;
+  padding: 8px 8px;
 }
 
-.fuel-grid.fuel-row {
-  align-items: center;
+.fuel-total {
+  background: rgba(0, 255, 204, 0.06);
+  border-radius: 8px;
+  padding: 8px 8px;
 }
 
-.fuel-grid .leg-stack {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;  /* vertikal zentrieren */
-  align-items: stretch;
-  gap: 2px;
-  width: 100%;
+/* Make total labels left-aligned like the others (fix indentation) */
+.fuel-grid.fuel-total .c-desc {
+  padding-left: 0;
+  margin-left: 0;
 }
 
-/* Mini-Blöcke kompakt */
-.fuel-grid .leg-stack .mini {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-}
-
-/* Stack (IFR/VFR / Alternate Fuel) kompakt und zentriert */
-/* Kleinere Inputs (wie vorher) */
-.fuel-grid .leg-stack .mini input {
-  height: 22px;
-  padding: 2px 6px;
-  font-size: 0.85rem;
-  line-height: 1.1;
-  box-sizing: border-box;
-}
-
-/* Label kompakter */
-.fuel-grid .leg-stack .mini label {
-  font-size: 0.75rem;
-  margin: 0;
-  line-height: 1;
-}
-
-.fuel-header{
-  margin-top:10px;
-  padding:8px 0;
-  border-bottom:1px solid #2e3b4e;
-  color:#8fa6bf;
-  font-weight:800;
-  font-size:12px;
-}
-.fuel-row{
-  padding:6px 0;
-  border-bottom:1px dashed rgba(46,59,78,0.55);
-}
-.fuel-row .c-desc{ font-weight:800; color:#d9e1e8; font-size:12px; }
-.fuel-row input{
-  width:100%;
-  padding:6px 8px;
-  font-size:12px;
-  text-align: center;
-}
-.fuel-row span{
-  font-weight:900;
-  font-size:12px;
-  color:#d9e1e8;
-}
-/* Fuel: Trip Inputs ausgegraut wenn Leg inaktiv */
-.fuel-row .trip.inactive,
-.fuel-row .trip.inactive input {
-  opacity: 0.35;
-  pointer-events: none;
-  filter: grayscale(1);
-}
-
-/* Approaches untereinander */
-.c-desc .sub{
-  display:block;
-  font-size:11px;
-  color:#8fa6bf;
-  font-weight:800;
-  margin-top:1px;
-}
-
-.appr-stack{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.appr-stack input{
-  width:100%;
-}
-
-/* Generischer Stack in einer LEG-Zelle (z.B. LEG4) */
-.leg-stack{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.leg-stack input,
-.leg-stack select{
-  width:100%;
-  height:30px;
-  padding:6px 8px;
-}
-
-/* Mini-Row innerhalb Stack */
-.leg-stack .mini{
-  display:grid;
-  grid-template-columns: 44px 1fr;
-  gap:6px;
-  align-items:center;
-}
-
-.leg-stack .mini label{
-  font-size:11px;
-  color:#8fa6bf;
-  font-weight:800;
-    margin:0;
-}
-.leg-stack .mini input,
-.leg-stack select{
-  height:26px;
-  padding:4px 8px;
-  font-size:12px;
-}
-.fuel-negative { 
-  color: #d11; 
-  font-weight: 700; 
+/* Negative / warnings */
+.fuel-negative {
+  color: #d11;
+  font-weight: 700;
 }
 
 .fuel-warn {
   color: #d11;
   font-weight: 700;
   margin-right: 8px;
-  display: none; /* default unsichtbar */
+  display: none;
+}
+.fuel-warn.is-on { display: inline; }
+
+/* Footer KPI cards */
+.fuel-foot {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.fuel-warn.is-on {
-  display: inline;
+.fuel-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.fuel-accent{ background: rgba(0,212,255,0.06); border-radius:8px; padding:8px 8px; }
-.fuel-total{ background: rgba(0,255,204,0.06); border-radius:8px; padding:8px 8px; }
-
-.fuel-foot{ margin-top:12px; display:flex; flex-direction:column; gap:10px; }
-.fuel-kpis{ display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:10px; }
-.kpi{
-  border:1px solid #2e3b4e;
-  background:#1b1f24;
-  border-radius:10px;
-  padding:10px;
+.kpi {
+  border: 1px solid #2e3b4e;
+  background: #1b1f24;
+  border-radius: 10px;
+  padding: 10px;
 }
-.kpi-label{ color:#8fa6bf; font-weight:800; font-size:12px; margin-bottom:6px; }
-.kpi-val{ color:#d9e1e8; font-weight:900; font-size:14px; }
-.fuel-note{ color:#8fa6bf; font-size:12px; }
+
+.kpi-label {
+  color: #8fa6bf;
+  font-weight: 800;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.kpi-val {
+  color: #d9e1e8;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.fuel-note {
+  color: #8fa6bf;
+  font-size: 12px;
+}
