@@ -214,8 +214,6 @@ export function initFuelPlanning() {
     const reqUsg = tripUsgSum + companyUsg + contUsg + altUsg + resUsg + taxiUsg;
     const reqMin = tripMinSum + companyMin + contMin + altMin + resMin + taxiMin;
 
-    const remUsg = blockUsg - reqUsg;
-
     function endurance(rate) {
       if (!Number.isFinite(remUsg) || rate <= 0) return "0:00";
       return fmtHHMM((remUsg / rate) * 60);
