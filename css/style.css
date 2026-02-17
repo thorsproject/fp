@@ -453,11 +453,10 @@ input.was-clamped {
   align-items: center;
 }
 
-/* Stack (IFR/VFR / Alternate Fuel) kompakt und zentriert */
 .fuel-grid .leg-stack {
   display: flex;
   flex-direction: column;
-  justify-content: left; /* center;  /* vertikal zentrieren */
+  justify-content: center;  /* vertikal zentrieren */
   align-items: stretch;
   gap: 2px;
   width: 100%;
@@ -471,6 +470,7 @@ input.was-clamped {
   gap: 6px;
 }
 
+/* Stack (IFR/VFR / Alternate Fuel) kompakt und zentriert */
 /* Kleinere Inputs (wie vorher) */
 .fuel-grid .leg-stack .mini input {
   height: 22px;
