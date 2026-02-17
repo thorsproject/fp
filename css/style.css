@@ -452,6 +452,7 @@ button:hover { background:#00aacc; }
   min-width:80px;
   padding:6px 8px;
   font-size:12px;
+  text-align:center;
 }
 
 input.was-clamped {
@@ -536,6 +537,7 @@ input.was-clamped {
   width:100%;
   padding:6px 8px;
   font-size:12px;
+  text-align: center;
 }
 .fuel-row span{
   font-weight:900;
