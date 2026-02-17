@@ -37,9 +37,9 @@
 .master-grid input.aero,
 .master-grid input.alt,
 #dateInput {
-  width: 120%;
-  max-width: 80px;
-  box-sizing: border-box;
+  width: 70px;              /* echte Spaltenbreite */
+  transform: scaleX(1.14); /* ergibt visuell ~80px */
+  transform-origin: left center;
 }
 
 .callSignDisplay{
