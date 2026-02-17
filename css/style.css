@@ -462,6 +462,14 @@ button:hover { background:#00aacc; }
 }
 
 /* Approaches untereinander */
+.c-desc .sub{
+  display:block;
+  font-size:11px;
+  color:#8fa6bf;
+  font-weight:800;
+  margin-top:2px;
+}
+
 .appr-stack{
   display:flex;
   flex-direction:column;
@@ -482,6 +490,8 @@ button:hover { background:#00aacc; }
 .leg-stack input,
 .leg-stack select{
   width:100%;
+  height:30px;
+  padding:6px 8px;
 }
 
 /* Optional: kleine Mini-Labels im Stack */
@@ -495,7 +505,7 @@ button:hover { background:#00aacc; }
   font-size:11px;
   color:#8fa6bf;
   font-weight:800;
-  margin:0;
+    margin:0 0 2px 0;
 }
 
 .fuel-accent{ background: rgba(0,212,255,0.06); border-radius:8px; padding:10px 8px; }
