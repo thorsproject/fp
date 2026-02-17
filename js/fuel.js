@@ -155,21 +155,39 @@ export function initFuelPlanning() {
     }
 
     function toggle() {
+
       btn.dataset.state = btn.dataset.state === "on" ? "off" : "on";
 
-      // preset anwenden wenn Standard Block eingeschaltet wird
-      if (btn.dataset.field === "std_block" && btn.dataset.state === "on") {
+      const field = btn.dataset.field;
+
+      if (field === "std_block") {
 
         const mainInp = q(panel, `[data-field="main_usg"]`);
         const auxBtn  = q(panel, `[data-field="aux_on"]`);
 
-        if (mainInp) {
-          mainInp.value = String(CAP.MAIN_STANDARD.toFixed(1)).replace(".", ",");
-        }
+        if (btn.dataset.state === "on") {
 
-        if (auxBtn) {
-          auxBtn.dataset.state = "on";
-          applyVisual.call(auxBtn);
+          // Standard ON → preset + lock
+          if (mainInp) {
+            mainInp.value = String(CAP.MAIN_STANDARD.toFixed(1)).replace(".", ",");
+            mainInp.disabled = true;
+          }
+
+          // Aux automatisch ON (optional, aber sinnvoll)
+          if (auxBtn) {
+            auxBtn.dataset.state = "on";
+            auxBtn.textContent = "26.4 USG";
+          }
+
+        } else {
+
+          // Standard OFF → unlock + clear
+          if (mainInp) {
+            mainInp.disabled = false;
+            mainInp.value = "";
+            mainInp.focus();
+          }
+
         }
       }
 
@@ -180,6 +198,21 @@ export function initFuelPlanning() {
     btn.addEventListener("click", toggle);
 
     applyVisual();
+    // Initial Lock State anwenden
+    if (btn.dataset.field === "std_block") {
+
+      const mainInp = q(panel, `[data-field="main_usg"]`);
+
+      if (btn.dataset.state === "on") {
+
+        mainInp.value = String(CAP.MAIN_STANDARD.toFixed(1)).replace(".", ",");
+        mainInp.disabled = true;
+
+      } else {
+
+        mainInp.disabled = false;
+      }
+    }
   });
   
   // --- UX: Main Input clamp + snap formatting ---
