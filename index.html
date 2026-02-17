@@ -275,8 +275,8 @@
               </label>
 
               <label class="fuel-chip">
-                Block Fuel (USG)
-                <input data-field="block_usg" inputmode="decimal" />
+                Main (USG)
+                <input data-field="main_usg" inputmode="decimal" />
               </label>
 
               <label class="fuel-chip">
@@ -389,7 +389,10 @@
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Extra Fuel LRC</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <span class="c-out" data-out="extra_lrc_usg"></span>
+            <span class="c-out extra-wrap">
+              <span class="fuel-warn" data-out="extra_warn"></span>
+              <span data-out="extra_lrc_usg"></span>
+            </span>
             <span class="c-out" data-out="extra_lrc_time"></span>
           </div>
 
@@ -429,8 +432,8 @@
           <div class="fuel-grid fuel-row">
             <div class="c-desc">Trip Fuel + Company Fuel</div>
             <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
-            <span class="c-out" data-out="taxi_usg"></span>
-            <span class="c-out" data-out="taxi_time"></span>
+            <span class="c-out" data-out="trip_company_usg"></span>
+            <span class="c-out" data-out="trip_company_time"></span>
           </div>
 
           <!-- LANDING FUEL -->

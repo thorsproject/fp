@@ -422,6 +422,10 @@ button:hover { background:#00aacc; }
   font-size:12px;
 }
 
+input.was-clamped {
+  box-shadow: 0 0 0 2px rgba(209, 17, 17, 0.6);
+}
+
 /* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
 .fuel-grid{
   display:grid;
@@ -522,6 +526,21 @@ button:hover { background:#00aacc; }
   height:26px;
   padding:4px 8px;
   font-size:12px;
+}
+.fuel-negative { 
+  color: #d11; 
+  font-weight: 700; 
+}
+
+.fuel-warn {
+  color: #d11;
+  font-weight: 700;
+  margin-right: 8px;
+  display: none; /* default unsichtbar */
+}
+
+.fuel-warn.is-on {
+  display: inline;
 }
 
 .fuel-accent{ background: rgba(0,212,255,0.06); border-radius:8px; padding:10px 8px; }

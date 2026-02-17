@@ -24,8 +24,9 @@ const FIX = {
 };
 
 const CAP = {
-  MAIN_DEFAULT: 44.0,
-  AUX: 26.4,
+  MAIN_MAX: 50.0,         // Main Tank max editable
+  MAIN_STANDARD: 44.0,    // Standard preset for main
+  AUX: 26.4,              // Aux fixed option
 };
 
 // ---------- DOM helpers ----------
@@ -71,45 +72,36 @@ function setOut(panel, key, val) {
   if (el) el.textContent = val;
 }
 
-// ---------- Standard Block behavior ----------
+// ---------- Standard Block behavior (Preset only, no locking) ----------
 function initStdBlockBehavior(panel) {
   const stdSel = q(panel, `[data-field="std_block"]`);
   const auxSel = q(panel, `[data-field="aux_on"]`);
-  const blockInp = q(panel, `[data-field="block_usg"]`);
-  if (!stdSel || !auxSel || !blockInp) return;
+  const mainInp = q(panel, `[data-field="main_usg"]`);
+  if (!stdSel || !auxSel || !mainInp) return;
 
-  function capacity() {
-    const aux = String(auxSel.value) === "1" ? CAP.AUX : 0;
-    return CAP.MAIN_DEFAULT + aux;
+  function setMain(v) {
+    mainInp.value = String(v.toFixed(1)).replace(".", ",");
+    mainInp.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
-  function apply() {
+  function setAux(on) {
+    auxSel.value = on ? "1" : "0";
+    auxSel.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  function applyPresetIfOn() {
     const std = String(stdSel.value) === "1";
+    if (!std) return;
 
-    if (std) {
-      // Standard Block -> Aux MUSS an (26.4)
-      if (String(auxSel.value) !== "1") {
-        auxSel.value = "1";
-        auxSel.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-      auxSel.disabled = true;
-
-      blockInp.value = String(capacity().toFixed(1)).replace(".", ",");
-      blockInp.disabled = true;
-    } else {
-      auxSel.disabled = false;
-      blockInp.disabled = false;
-
-      if (!String(blockInp.value || "").trim()) {
-        blockInp.value = String(capacity().toFixed(1)).replace(".", ",");
-      }
-    }
+    // Preset setzen, aber NICHT sperren
+    setMain(CAP.MAIN_STANDARD);
+    setAux(true);
   }
 
-  stdSel.addEventListener("change", apply);
-  auxSel.addEventListener("change", apply);
+  stdSel.addEventListener("change", applyPresetIfOn);
 
-  apply();
+  // initial
+  applyPresetIfOn();
 }
 
 // ---------- Trip (manual USG) from DOM ----------
@@ -146,13 +138,60 @@ export function initFuelPlanning() {
 
   initStdBlockBehavior(panel);
 
+  // --- UX: Main Input clamp + snap formatting ---
+  const mainInp = q(panel, `[data-field="main_usg"]`);
+  if (mainInp) {
+    const snap = (reason = "") => {
+      const rawStr = String(mainInp.value ?? "").trim();
+      if (!rawStr) return; // leer lassen
+
+      // tolerant parsen
+      const raw = toNum(rawStr);
+
+      // wenn nicht parsebar (z.B. nur ","), nicht anfassen
+      if (!Number.isFinite(raw)) return;
+
+      // clamp
+      const clamped = Math.min(Math.max(raw, 0), CAP.MAIN_MAX);
+
+      // Snap nur, wenn wirklich drüber/drunter oder wenn blur (formatieren)
+      const shouldWrite =
+        reason === "blur" || Math.abs(clamped - raw) > 0.0001;
+
+      if (shouldWrite) {
+        mainInp.value = String(clamped.toFixed(1)).replace(".", ",");
+
+        // kleine visuelle Rückmeldung, wenn begrenzt wurde
+        const wasClamped = Math.abs(clamped - raw) > 0.0001;
+        if (wasClamped) {
+          mainInp.classList.add("was-clamped");
+          window.setTimeout(() => mainInp.classList.remove("was-clamped"), 350);
+        }
+
+        // render neu anstoßen
+        mainInp.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    };
+
+    // Beim Tippen: nur clampen, wenn klar > MAX oder < 0 (damit es nicht “zittert”)
+    mainInp.addEventListener("input", () => {
+      const raw = toNum(mainInp.value);
+      if (raw > CAP.MAIN_MAX || raw < 0) snap("input");
+    });
+
+    // Beim Verlassen immer sauber formatieren (z.B. "44" -> "44,0")
+    mainInp.addEventListener("blur", () => snap("blur"));
+  }
+
   function read() {
-    // Final Reserve Auswahl (du nutzt #finres statt data-field="profile")
     const profile = (q(panel, `#finres`)?.value || "IFR").toUpperCase();
     const auxOn = String(q(panel, `[data-field="aux_on"]`)?.value || "0") === "1";
 
-    const cap = CAP.MAIN_DEFAULT + (auxOn ? CAP.AUX : 0);
-    const blockUsgIn = toNum(q(panel, `[data-field="block_usg"]`)?.value);
+    const mainRaw = toNum(q(panel, `[data-field="main_usg"]`)?.value);
+    const mainUsg = Math.min(Math.max(mainRaw, 0), CAP.MAIN_MAX);
+
+    const blockUsgIn = mainUsg + (auxOn ? CAP.AUX : 0);
+    const cap = CAP.MAIN_MAX + (auxOn ? CAP.AUX : 0);
 
     // Trip (nur aktive Legs)
     const { tripUsgSum, tripMinSum } = readTripFromDOM(panel);
@@ -186,20 +225,27 @@ export function initFuelPlanning() {
     const plannedMin = tripMinSum + companyMin + altMin + resMin;
 
     // Takeoff / Extra / Landing
-    const takeoffUsg = blockUsgIn - taxiUsg;
+    const takeoffUsg = Math.max(0, blockUsgIn - taxiUsg);
     const extraLrcUsg = takeoffUsg - plannedUsg;
     const landingUsg = blockUsgIn - taxiUsg - (tripUsgSum + companyUsg);
+
+    // Trip + Company line (Company requirement)
+    const tripCompanyUsg = tripUsgSum + companyUsg;
+    const tripCompanyMin = tripMinSum + companyMin;
 
     // Remaining KPI = Extra (wie definiert)
     const remUsg = extraLrcUsg;
 
     function endurance(rate) {
-      if (!Number.isFinite(remUsg) || rate <= 0) return "0:00";
-      return fmtHHMM((remUsg / rate) * 60);
+      const usable = Math.max(0, remUsg);
+      if (!Number.isFinite(usable) || rate <= 0) return "0:00";
+      return fmtHHMM((usable / rate) * 60);
     }
 
     return {
       cap,
+      mainUsg,
+      auxOn,
 
       blockUsgIn,
 
@@ -226,6 +272,9 @@ export function initFuelPlanning() {
       extraLrcUsg,
       landingUsg,
 
+      tripCompanyUsg,
+      tripCompanyMin,
+
       remUsg,
 
       endNC: endurance(BURN.NC),
@@ -245,7 +294,6 @@ export function initFuelPlanning() {
     setOut(panel, "company_usg", d.companyUsg.toFixed(1));
     setOut(panel, "company_time", fmtHHMM(d.companyMin));
 
-    // Contingency: nur USG, keine Zeit
     setOut(panel, "cont_usg", d.contUsg.toFixed(1));
     setOut(panel, "cont_time", "");
 
@@ -255,24 +303,39 @@ export function initFuelPlanning() {
     setOut(panel, "res_usg", d.resUsg.toFixed(1));
     setOut(panel, "res_time", fmtHHMM(d.resMin));
 
-    // Taxi: keine Zeit
-    setOut(panel, "taxi_usg", d.taxiUsg.toFixed(1));
-    setOut(panel, "taxi_time", "");
-
-    // Planned Takeoff
     setOut(panel, "planned_usg", d.plannedUsg.toFixed(1));
     setOut(panel, "planned_time", fmtHHMM(d.plannedMin));
 
-    // Block / Takeoff / Extra / Landing: keine Zeit
-    setOut(panel, "block_usg_out", d.blockUsgIn.toFixed(1));
-    setOut(panel, "block_time_out", "");
+    // Extra Fuel LRC + warning
+    setOut(panel, "extra_lrc_usg", d.extraLrcUsg.toFixed(1));
 
+    const warnEl = q(panel, `[data-out="extra_warn"]`);
+    if (warnEl) {
+      const on = d.extraLrcUsg < 0;
+      warnEl.textContent = on ? "ACHTUNG! Fuel nicht ausreichend, Werte korrigieren!" : "";
+      warnEl.classList.toggle("is-on", on);
+    }
+
+    const extraValEl = q(panel, `[data-out="extra_lrc_usg"]`);
+    if (extraValEl) extraValEl.classList.toggle("fuel-negative", d.extraLrcUsg < 0);
+
+    setOut(panel, "extra_lrc_time", "");
+
+    // Takeoff / Taxi / Block
     setOut(panel, "takeoff_usg", d.takeoffUsg.toFixed(1));
     setOut(panel, "takeoff_time", "");
 
-    setOut(panel, "extra_lrc_usg", d.extraLrcUsg.toFixed(1));
-    setOut(panel, "extra_lrc_time", "");
+    setOut(panel, "taxi_usg", d.taxiUsg.toFixed(1));
+    setOut(panel, "taxi_time", "");
 
+    setOut(panel, "block_usg_out", d.blockUsgIn.toFixed(1));
+    setOut(panel, "block_time_out", "");
+
+    // Trip + Company
+    setOut(panel, "trip_company_usg", d.tripCompanyUsg.toFixed(1));
+    setOut(panel, "trip_company_time", fmtHHMM(d.tripCompanyMin));
+
+    // Landing
     setOut(panel, "landing_usg", d.landingUsg.toFixed(1));
     setOut(panel, "landing_time", "");
 
@@ -289,16 +352,13 @@ export function initFuelPlanning() {
     render();
   }
 
-  // live updates
   panel.addEventListener("input", syncAndRender);
   panel.addEventListener("change", syncAndRender);
 
-  // wenn Leg Toggles gedrückt werden
   document.addEventListener("click", (e) => {
     if (!e.target.classList?.contains("legToggle")) return;
     syncAndRender();
   });
 
-  // initial
   syncAndRender();
 }
