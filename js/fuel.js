@@ -1,36 +1,7 @@
 // js/fuel.js
 // Fuel Planning – Trip manuell (USG), Zeiten automatisch aus NC, Rest automatisch
 
-const BURN = {
-  NC: 13.2,
-  LRC: 10.3,
-  MEC: 6.5,
-};
-
-const FIX = {
-  IFR_APPR_USG: 3,
-  IFR_APPR_MIN: 20,
-  VFR_APPR_USG: 1,
-  VFR_APPR_MIN: 5,
-
-  RES_IFR_USG: 4.9,
-  RES_IFR_MIN: 45,
-  RES_VFR_USG: 3.3,
-  RES_VFR_MIN: 30,
-
-  ALT_EXTRA_USG: 2.0,
-
-  TAXI_USG: 1.0,
-
-  USG_LIT: 3.785,
-  JetA1_kgLit: 0.804,
-};
-
-const CAP = {
-  MAIN_MAX: 50.0,         // Main Tank max editable
-  MAIN_STANDARD: 44.0,    // Standard preset for main
-  AUX: 26.4,              // Aux fixed option
-};
+import { BURN, FIX, CAP } from "./fuelConstants.js";
 
 // ---------- DOM helpers ----------
 function q(panel, sel) {
@@ -323,7 +294,7 @@ export function initFuelPlanning() {
     // Remaining MISC (wie definiert)
     const bingoUsg = altUsg+resUsg;
     const minblUsg = plannedUsg+taxiUsg;
-    const co2Kgs = (tripCompanyUsg + contUsg) * FIX.JetA1_kgLit * FIX.USG_LIT * 3.15;
+    const co2Kgs = (tripCompanyUsg + contUsg) * FIX.USG_LIT * FIX.JETA1_KG_PER_L * FIX.CO2_PER_KG_FUEL;
 
     return {
       cap,
@@ -428,7 +399,7 @@ export function initFuelPlanning() {
     // Fuel MISC
     setOut(panel, "bingo_usg", d.bingoUsg.toFixed(1));
     setOut(panel, "minblock_usg", d.minblUsg.toFixed(1));
-    setOut(panel, "co2fp_kgs", d.co2Kgs.toFixed(0) + " kg");
+    setOut(panel, "co2fp_kgs", `${d.co2Kgs.toFixed(0)} kg`);
   }
 
   function syncAndRender() {
