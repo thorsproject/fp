@@ -306,6 +306,15 @@ export function initFuelPlanning() {
     const extraLrcUsg = takeoffUsg - plannedUsg;
     const landingUsg = blockUsgIn - taxiUsg - (tripUsgSum + companyUsg);
 
+    // Zeiten aus Fuel berechnen (negative Werte ergeben 0:00)
+    const extraLrcMin = minsFromUsg(Math.max(0, extraLrcUsg), BURN.LRC);
+
+    // Takeoff Time = Planned Time + Extra LRC Time
+    const takeoffMin = plannedMin + extraLrcMin;
+
+    // Landing Fuel Time bei NC
+    const landingMin = minsFromUsg(Math.max(0, landingUsg), BURN.NC);
+
     // Trip + Company line (Company requirement)
     const tripCompanyUsg = tripUsgSum + companyUsg;
     const tripCompanyMin = tripMinSum + companyMin;
@@ -345,9 +354,14 @@ export function initFuelPlanning() {
       plannedUsg,
       plannedMin,
 
-      takeoffUsg,
       extraLrcUsg,
+      extraLrcMin,
+
+      takeoffUsg,
+      takeoffMin,
+
       landingUsg,
+      landingMin,
 
       tripCompanyUsg,
       tripCompanyMin,
@@ -396,11 +410,11 @@ export function initFuelPlanning() {
     const extraValEl = q(panel, `[data-out="extra_lrc_usg"]`);
     if (extraValEl) extraValEl.classList.toggle("fuel-negative", d.extraLrcUsg < 0);
 
-    setOut(panel, "extra_lrc_time", "");
+    setOut(panel, "extra_lrc_time", fmtHHMM(d.extraLrcMin));
 
     // Takeoff / Taxi / Block
     setOut(panel, "takeoff_usg", d.takeoffUsg.toFixed(1));
-    setOut(panel, "takeoff_time", "");
+    setOut(panel, "takeoff_time", fmtHHMM(d.takeoffMin));
 
     setOut(panel, "taxi_usg", d.taxiUsg.toFixed(1));
     setOut(panel, "taxi_time", "");
@@ -414,7 +428,7 @@ export function initFuelPlanning() {
 
     // Landing
     setOut(panel, "landing_usg", d.landingUsg.toFixed(1));
-    setOut(panel, "landing_time", "");
+    setOut(panel, "landing_time", fmtHHMM(d.landingMin));
 
     // Remaining KPI
     setOut(panel, "rem_usg", d.remUsg.toFixed(1));
