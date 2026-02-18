@@ -21,6 +21,9 @@ const FIX = {
   ALT_EXTRA_USG: 2.0,
 
   TAXI_USG: 1.0,
+
+  USG_LIT: 3.785,
+  JetA1_kgLit: 0.804,
 };
 
 const CAP = {
@@ -322,8 +325,10 @@ export function initFuelPlanning() {
     const tripCompanyUsg = tripUsgSum + companyUsg;
     const tripCompanyMin = tripMinSum + companyMin;
 
-    // Remaining KPI = Extra (wie definiert)
-    const remUsg = extraLrcUsg;
+    // Remaining MISC (wie definiert)
+    const bingoUsg = altUsg+resUsg;
+    const minblUsg = plannedUsg+taxiUsg;
+    const co2Kgs = (tripCompanyUsg+contUsg)*JetA1_kgLit*USG_LIT*3.15;
 
     function endurance(rate) {
       const usable = Math.max(0, remUsg);
@@ -369,11 +374,9 @@ export function initFuelPlanning() {
       tripCompanyUsg,
       tripCompanyMin,
 
-      remUsg,
-
-      endNC: endurance(BURN.NC),
-      endLRC: endurance(BURN.LRC),
-      endMEC: endurance(BURN.MEC),
+      bingoUsg,
+      minblUsg,
+      co2Kgs,
     };
   }
 
@@ -433,12 +436,10 @@ export function initFuelPlanning() {
     setOut(panel, "landing_usg", d.landingUsg.toFixed(1));
     setOut(panel, "landing_time", fmtHHMM(d.landingMin));
 
-    // Remaining KPI
-    setOut(panel, "rem_usg", d.remUsg.toFixed(1));
-
-    setOut(panel, "end_nc", d.endNC);
-    setOut(panel, "end_lrc", d.endLRC);
-    setOut(panel, "end_mec", d.endMEC);
+    // Fuel MISC
+    setOut(panel, "bingo_usg", d.bingoUsg);
+    setOut(panel, "minblock_usg", d.minblUsg);
+    setOut(panel, "co2fp_kgs", d.co2Kgs);
   }
 
   function syncAndRender() {

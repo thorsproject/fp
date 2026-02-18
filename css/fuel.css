@@ -14,8 +14,8 @@
    [FUEL:INPUT]    Special inputs (Approaches, Alternate Fuel)
    [FUEL:TOTAL]    Highlighted rows (Takeoff, Block, Landing)
    [FUEL:WARN]     Warning text + negative fuel highlighting
-   [FUEL:KPI]      Bottom KPI cards (Capacity, Remaining, Endurance)
-   [FUEL:FOOT]     Footer note + KPI layout container
+   [FUEL:MISC]     Bottom MISC cards (Bingo Fuel, Min Block Fuel, CO2 Fußabdruck)
+   [FUEL:FOOT]     Footer note + MISC layout container
    ========================================================= */
 
 .fuel-card{ overflow:hidden; }
@@ -226,7 +226,7 @@
 .fuel-warn.is-on{ display:inline; }
 
 /* -------------------------
-   [FUEL:KPI] + [FUEL:FOOT]
+   [FUEL:misc] + [FUEL:FOOT]
    ------------------------- */
 .fuel-foot{
   margin-top:12px;
@@ -235,25 +235,25 @@
   gap:10px;
 }
 
-.fuel-kpis{
+.fuel-miscs{
   display:grid;
   grid-template-columns: repeat(5, minmax(0,1fr));
   gap:10px;
 }
 
-.kpi{
+.misc{
   border:1px solid var(--border);
   background: var(--bg);
   border-radius:10px;
   padding:10px;
 }
-.kpi-label{
+.misc-label{
   color: var(--muted);
   font-weight:800;
   font-size:12px;
   margin-bottom:6px;
 }
-.kpi-val{
+.misc-val{
   color: var(--text);
   font-weight:900;
   font-size:14px;
