@@ -44,9 +44,9 @@
 .master-grid input.alt,
 #dateInput {
   width: 70px;              /* echte Spaltenbreite */
-  transform: scaleX(1.14); /* ergibt visuell ~80px */
-  transform-origin: left center;
-  will-change: transform;
+  transform: scaleX(1.14);  /* Input wird nur visuell auf ~80px gestreckt */
+  transform-origin: left center;  /* Stretch beginnt links → perfekte Ausrichtung */
+  will-change: transform;   /* hilft dem Browser bei Rendering-Optimierung */
 }
 
 .callSignDisplay{
