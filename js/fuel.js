@@ -323,13 +323,7 @@ export function initFuelPlanning() {
     // Remaining MISC (wie definiert)
     const bingoUsg = altUsg+resUsg;
     const minblUsg = plannedUsg+taxiUsg;
-    const co2Kgs = (tripCompanyUsg+contUsg)*JetA1_kgLit*USG_LIT*3.15;
-
-    function endurance(rate) {
-      const usable = Math.max(0, remUsg);
-      if (!Number.isFinite(usable) || rate <= 0) return "0:00";
-      return fmtHHMM((usable / rate) * 60);
-    }
+    const co2Kgs = (tripCompanyUsg + contUsg) * FIX.JetA1_kgLit * FIX.USG_LIT * 3.15;
 
     return {
       cap,
@@ -432,9 +426,9 @@ export function initFuelPlanning() {
     setOut(panel, "landing_time", fmtHHMM(d.landingMin));
 
     // Fuel MISC
-    setOut(panel, "bingo_usg", d.bingoUsg);
-    setOut(panel, "minblock_usg", d.minblUsg);
-    setOut(panel, "co2fp_kgs", d.co2Kgs);
+    setOut(panel, "bingo_usg", d.bingoUsg.toFixed(1));
+    setOut(panel, "minblock_usg", d.minblUsg.toFixed(1));
+    setOut(panel, "co2fp_kgs", d.co2Kgs.toFixed(0) + " kg");
   }
 
   function syncAndRender() {
