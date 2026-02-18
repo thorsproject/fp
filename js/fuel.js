@@ -136,8 +136,6 @@ export function initFuelPlanning() {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
-  initStdBlockBehavior(panel);
-
   // ---------- Toggle Buttons ----------
   panel.querySelectorAll(".fuelToggle").forEach((btn) => {
 
@@ -304,8 +302,6 @@ export function initFuelPlanning() {
     // Takeoff / Extra / Landing
     const takeoffUsg = Math.max(0, blockUsgIn - taxiUsg);
     const extraLrcUsg = takeoffUsg - plannedUsg;
-    const landingUsg = blockUsgIn - taxiUsg - (tripUsgSum + companyUsg);
-
     // Zeiten aus Fuel berechnen (negative Werte ergeben 0:00)
     const extraLrcMin = minsFromUsg(Math.max(0, extraLrcUsg), BURN.LRC);
 
@@ -313,6 +309,7 @@ export function initFuelPlanning() {
     const takeoffMin = plannedMin + extraLrcMin;
 
     // Landing Fuel Time bei NC
+    const landingUsg = blockUsgIn - taxiUsg - (tripUsgSum + companyUsg);
     const landingMin = minsFromUsg(Math.max(0, landingUsg), BURN.NC);
 
     // Trip + Company line (Company requirement)
