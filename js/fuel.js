@@ -72,6 +72,12 @@ function setOut(panel, key, val) {
   if (el) el.textContent = val;
 }
 
+function setOutAll(panel, key, val) {
+  panel.querySelectorAll(`[data-out="${key}"]`).forEach((el) => {
+    el.textContent = val;
+  });
+}
+
 // ---------- Standard Block behavior (Preset only, no locking) ----------
 function initStdBlockBehavior(panel) {
   const stdSel = q(panel, `[data-field="std_block"]`);
@@ -413,8 +419,8 @@ export function initFuelPlanning() {
     setOut(panel, "takeoff_usg", d.takeoffUsg.toFixed(1));
     setOut(panel, "takeoff_time", fmtHHMM(d.takeoffMin));
 
-    setOut(panel, "taxi_usg", d.taxiUsg.toFixed(1));
-    setOut(panel, "taxi_time", "");
+    setOutAll(panel, "taxi_usg", d.taxiUsg.toFixed(1));
+    setOutAll(panel, "taxi_time", "");
 
     setOut(panel, "block_usg_out", d.blockUsgIn.toFixed(1));
     setOut(panel, "block_time_out", "");
