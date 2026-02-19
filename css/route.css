@@ -10,7 +10,7 @@
   height: 100%;
   background: var(--bg);
   box-sizing: border-box;
-  border-right: 1px solid var(--border);
+  /* border-right: 1px solid var(--border); */
 }
 /* ---------- Reset-Frame nach ganz unten drücken ---------- */
 .left-panel .frame:last-child {
