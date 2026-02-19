@@ -21,7 +21,6 @@ function getSuggestedOrmFilename() {
   return `ORM-${sanitizeFilePart(datePart)}-${sanitizeFilePart(cs)}.pdf`;
 }
 
-
 // ---------- PDF.js UI minimieren ----------
 function injectPdfJsMinimalUi(iframe) {
   const doc = iframe.contentDocument;
@@ -91,6 +90,18 @@ function applyMinimalUiWhenReady(iframe) {
   tick();
 }
 
+function confirmCloseOrm() {
+
+  const ok = confirm(
+    "ORM schließen?\n\nNicht gespeicherte Änderungen gehen verloren."
+  );
+
+  if (!ok) return false;
+
+  closeOrm();
+
+  return true;
+}
 
 // ---------- PDF Export ----------
 async function getEditedPdfBytesFromViewer(iframe) {
@@ -131,8 +142,9 @@ export function initOrmChecklist() {
   const wrap  = document.getElementById("ormWrap");
   const frame = document.getElementById("ormFrame");
   const hint  = document.getElementById("ormHint");
+  const btnClose = document.getElementById("btnOrmClose");
 
-  if (!btn || !wrap || !frame) return;
+  if (!btn || !btnClose || !wrap || !frame) return;
 
   let isOpen = false;
 
@@ -155,6 +167,7 @@ export function initOrmChecklist() {
     wrap.classList.remove("is-hidden");
 
     btn.textContent = "ORM speichern";
+    btnClose.classList.remove("is-hidden");
     setHint("ORM geöffnet (editierbar).");
 
     isOpen = true;
@@ -168,6 +181,7 @@ export function initOrmChecklist() {
     frame.src = "about:blank";
 
     btn.textContent = "ORM öffnen";
+    btnClose.classList.add("is-hidden");
 
     setHint("");
 
@@ -263,4 +277,13 @@ export function initOrmChecklist() {
 
   });
 
+  btnClose.addEventListener("click", () => {
+    confirmCloseOrm();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isOpen) {
+      confirmCloseOrm();
+    }
+  });
 }
