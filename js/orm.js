@@ -47,11 +47,9 @@ function injectPdfJsMinimalUi(iframe) {
       top:0 !important;
       padding:0 !important;
     }
-
     html, body {
       background:transparent !important;
     }
-
     .pdfViewer .page {
       margin:0 !important;
     }
