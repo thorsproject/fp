@@ -10,7 +10,8 @@
   border:1px solid var(--border);
   border-radius:10px;
   overflow:hidden;
-  height: calc(100vh - 60px - 20px - 140px); /* grob: Topbar + Padding + Controls */
+  height: 100%; /* grob: Topbar + Padding + Controls */
+/*  height: calc(100vh - 60px - 20px - 140px); /* grob: Topbar + Padding + Controls */
   background:#111;
 }
 
