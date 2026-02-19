@@ -118,6 +118,8 @@ function toIsoDateForOrm() {
 }
 
 async function autofillOrmFields(iframe) {
+  console.log("[ORM] autofillOrmFields() fired");
+
   const app = iframe.contentWindow?.PDFViewerApplication;
   const pdf = app?.pdfDocument;
   const storage = pdf?.annotationStorage;
