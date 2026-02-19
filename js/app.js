@@ -19,6 +19,7 @@ import {
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initFuelPlanning } from "./fuel.js";
+import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
 initResets();
 
@@ -110,7 +111,6 @@ map.on("click", (e) => {
 
 // ---------- INIT ----------
 (async function init() {
-
   try {
     await loadAirfields();
     buildAirfieldsDatalist();
@@ -120,7 +120,6 @@ map.on("click", (e) => {
     await loadAlternates();
     buildAlternatesDatalist();
     attachDatalistToAltInputs();
-
   } catch (e) {
     console.error(e);
   }
@@ -137,4 +136,7 @@ map.on("click", (e) => {
     },
   });
   initFuelPlanning();
+
+  loadAll();
+  initAutosave();
 })();

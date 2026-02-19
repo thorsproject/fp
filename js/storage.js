@@ -1,0 +1,219 @@
+// js/storage.js
+const KEY = "fp.v1"; // bei Breaking Changes erhöhen (v2, v3...)
+
+function safeParse(json, fallback = null) {
+  try { return JSON.parse(json); } catch { return fallback; }
+}
+
+function qs(sel, root = document) {
+  return root.querySelector(sel);
+}
+function qsa(sel, root = document) {
+  return Array.from(root.querySelectorAll(sel));
+}
+
+function getValue(el) {
+  if (!el) return null;
+  if (el.type === "checkbox") return !!el.checked;
+  return el.value ?? "";
+}
+function setValue(el, val) {
+  if (!el) return;
+  if (el.type === "checkbox") el.checked = !!val;
+  else el.value = val ?? "";
+}
+
+function legFrames() {
+  return qsa("#legsContainer .frame");
+}
+
+function captureRoute() {
+  const route = {
+    head: {
+      date: getValue(qs("#dateInput")),
+      fdl: getValue(qs("#FDLinput")),
+      tel: getValue(qs("#TELinput")),
+      lfz: getValue(qs("#lfzSelect")),
+      tac: getValue(qs("#tacSelect")),
+    },
+    legs: [],
+    toggles: {},
+  };
+
+  // Leg Toggles (2–4)
+  qsa(".legToggle[data-leg]").forEach((btn) => {
+    route.toggles[String(btn.dataset.leg)] = btn.dataset.state || "active";
+  });
+
+  // Legs: Reihenfolge = 1..4 über DOM (dein Aufbau ist konstant)
+  const frames = legFrames(); // 4 frames
+  frames.forEach((frame, idx) => {
+    const legNum = idx + 1;
+    route.legs.push({
+      leg: legNum,
+      etd: getValue(qs("input.etd", frame)),
+      eta: getValue(qs("input.eta", frame)),
+      aeroFrom: getValue(qs("input.aeroFrom", frame)),
+      aeroTo: getValue(qs("input.aeroTo", frame)),
+      alt1: getValue(qsa("input.alt", frame)[0]),
+      alt2: getValue(qsa("input.alt", frame)[1]),
+    });
+  });
+
+  return route;
+}
+
+function applyRoute(route) {
+  if (!route) return;
+
+  // Kopf
+  setValue(qs("#dateInput"), route.head?.date);
+  setValue(qs("#FDLinput"), route.head?.fdl);
+  setValue(qs("#TELinput"), route.head?.tel);
+
+  // selects: erst setzen, wenn Optionen evtl. async geladen wurden.
+  // -> wir setzen sofort UND nochmal später (siehe init)
+  setValue(qs("#lfzSelect"), route.head?.lfz);
+  setValue(qs("#tacSelect"), route.head?.tac);
+
+  // Legs
+  const frames = legFrames();
+  (route.legs || []).forEach((l, idx) => {
+    const frame = frames[idx];
+    if (!frame) return;
+    setValue(qs("input.etd", frame), l.etd);
+    setValue(qs("input.eta", frame), l.eta);
+    setValue(qs("input.aeroFrom", frame), l.aeroFrom);
+    setValue(qs("input.aeroTo", frame), l.aeroTo);
+
+    const alts = qsa("input.alt", frame);
+    setValue(alts[0], l.alt1);
+    setValue(alts[1], l.alt2);
+  });
+
+  // Toggles
+  Object.entries(route.toggles || {}).forEach(([leg, state]) => {
+    const btn = qs(`.legToggle[data-leg="${leg}"]`);
+    if (!btn) return;
+    btn.dataset.state = state;
+    btn.textContent = state === "inactive" ? "INACTIVE" : "ACTIVE";
+    btn.classList.toggle("inactive", state === "inactive");
+  });
+
+  // Events triggern, damit Berechnungen/Validation reagieren
+  qsa("#routePanel input, #routePanel select").forEach((el) => {
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+
+function captureFuel() {
+  const panel = qs("#fuelPanel");
+  if (!panel) return null;
+
+  const fuel = {
+    toggles: {
+      std_block: qs(`.fuelToggle[data-field="std_block"]`, panel)?.dataset.state || "off",
+      aux_on: qs(`.fuelToggle[data-field="aux_on"]`, panel)?.dataset.state || "off",
+    },
+    main_usg: getValue(qs(`[data-field="main_usg"]`, panel)),
+    trip: {
+      1: getValue(qs(`[data-trip-usg="1"]`, panel)),
+      2: getValue(qs(`[data-trip-usg="2"]`, panel)),
+      3: getValue(qs(`[data-trip-usg="3"]`, panel)),
+      4: getValue(qs(`[data-trip-usg="4"]`, panel)),
+    },
+    appr_ifr_n: getValue(qs(`[data-field="appr_ifr_n"]`, panel)),
+    appr_vfr_n: getValue(qs(`[data-field="appr_vfr_n"]`, panel)),
+    alt_usg_log: getValue(qs(`[data-field="alt_usg_log"]`, panel)),
+    finres: getValue(qs(`#finres`, panel)) || "IFR",
+  };
+
+  return fuel;
+}
+
+function applyFuel(fuel) {
+  const panel = qs("#fuelPanel");
+  if (!panel || !fuel) return;
+
+  // Toggles setzen (nur state + Text; deine fuel.js reagiert auf click,
+  // daher anschließend sync über Events)
+  const stdBtn = qs(`.fuelToggle[data-field="std_block"]`, panel);
+  const auxBtn = qs(`.fuelToggle[data-field="aux_on"]`, panel);
+
+  if (stdBtn) stdBtn.dataset.state = fuel.toggles?.std_block || stdBtn.dataset.state;
+  if (auxBtn) auxBtn.dataset.state = fuel.toggles?.aux_on || auxBtn.dataset.state;
+
+  // Inputs
+  setValue(qs(`[data-field="main_usg"]`, panel), fuel.main_usg);
+
+  setValue(qs(`[data-trip-usg="1"]`, panel), fuel.trip?.["1"] ?? fuel.trip?.[1]);
+  setValue(qs(`[data-trip-usg="2"]`, panel), fuel.trip?.["2"] ?? fuel.trip?.[2]);
+  setValue(qs(`[data-trip-usg="3"]`, panel), fuel.trip?.["3"] ?? fuel.trip?.[3]);
+  setValue(qs(`[data-trip-usg="4"]`, panel), fuel.trip?.["4"] ?? fuel.trip?.[4]);
+
+  setValue(qs(`[data-field="appr_ifr_n"]`, panel), fuel.appr_ifr_n);
+  setValue(qs(`[data-field="appr_vfr_n"]`, panel), fuel.appr_vfr_n);
+  setValue(qs(`[data-field="alt_usg_log"]`, panel), fuel.alt_usg_log);
+
+  const finres = qs("#finres", panel);
+  if (finres) finres.value = fuel.finres || "IFR";
+
+  // Trigger, damit dein fuel.js alles neu berechnet & Toggles-Visuals sauber werden
+  qsa("#fuelPanel input, #fuelPanel select").forEach((el) => {
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+
+  // Falls du in fuel.js applyVisual() beim Start nutzt:
+  // einmal click-event simulieren wollen wir NICHT (würde togglen),
+  // daher nur change/input reicht.
+}
+
+export function saveAll() {
+  const data = {
+    t: Date.now(),
+    route: captureRoute(),
+    fuel: captureFuel(),
+  };
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+
+export function loadAll() {
+  const raw = localStorage.getItem(KEY);
+  const data = safeParse(raw, null);
+  if (!data) return;
+
+  applyRoute(data.route);
+  applyFuel(data.fuel);
+
+  // Selects können nach initialem Populate nochmal überschrieben werden
+  // (falls lfz/tac später gefüllt werden)
+  window.setTimeout(() => {
+    applyRoute(data.route);
+  }, 400);
+}
+
+export function clearAll() {
+  localStorage.removeItem(KEY);
+}
+
+export function initAutosave() {
+  const handler = () => saveAll();
+
+  document.addEventListener("input", handler);
+  document.addEventListener("change", handler);
+
+  // Klicks für Toggle Buttons (Leg + Fuel)
+  document.addEventListener("click", (e) => {
+    if (
+      e.target.closest(".legToggle") ||
+      e.target.closest(".fuelToggle") ||
+      e.target.closest(".routebtnReset") ||
+      e.target.closest(".fuelbtnReset")
+    ) {
+      // nach dem UI-Update speichern
+      window.setTimeout(saveAll, 0);
+    }
+  });
+}
