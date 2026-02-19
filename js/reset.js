@@ -1,4 +1,6 @@
 // js/reset.js
+import { exportDataJSON, importDataJSONFromFile } from "./storage.js";
+
 export function initResets() {
   document.addEventListener("click", (e) => {
     const btn =
@@ -14,8 +16,39 @@ export function initResets() {
     if (typeof fn === "function") {
       fn();
       flashResetSuccess(btn);
+    if (action === "export-data") handleExport();
+    if (action === "import-data") handleImport();
     }
   });
+  function handleExport() {
+  exportDataJSON();
+  }
+
+  async function handleImport() {
+    const inp = document.getElementById("importFile");
+    if (!inp) {
+      alert('Import nicht möglich: #importFile fehlt im HTML.');
+      return;
+    }
+
+    inp.value = ""; // wichtig: gleiche Datei nochmal auswählen können
+    inp.onchange = async () => {
+      const file = inp.files?.[0];
+      if (!file) return;
+
+      if (!confirm("Import überschreibt die aktuell gespeicherten Daten. Fortfahren?")) return;
+
+      try {
+        await importDataJSONFromFile(file, { apply: true });
+        alert("Import erfolgreich.");
+      } catch (e) {
+        console.error(e);
+        alert("Import fehlgeschlagen.");
+      }
+    };
+
+    inp.click();
+  }
 }
 
 const ACTIONS = {

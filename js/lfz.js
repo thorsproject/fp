@@ -45,7 +45,7 @@ export function initLFZ() {
   }
 
   function loadTAC(){
-    tacSelect.innerHTML = "<option value=''>-- keiner --</option>";
+    tacSelect.innerHTML = "<option value=''>-- -- --</option>";
 
     getTAC().forEach((t, i) => {
       const opt = document.createElement("option");

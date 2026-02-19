@@ -3,7 +3,6 @@ import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
 import { initLegActivation } from "./legs.js";
 import { createMap } from "./map.js";
-import { installMapAutoResize } from "./resize.js";
 import {
   loadAirfields,
   loadAlternates,

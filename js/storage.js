@@ -216,4 +216,55 @@ export function initAutosave() {
       window.setTimeout(saveAll, 0);
     }
   });
+const KEY = "fp.v1"; // muss identisch sein
+
+export function exportDataJSON() {
+  const raw = localStorage.getItem(KEY);
+  const data = raw ? raw : JSON.stringify({ t: Date.now(), route: null, fuel: null }, null, 2);
+
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `flight-planning-${new Date().toISOString().slice(0,19).replace(/[:T]/g, "-")}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+export function importDataJSONFromText(jsonText, { apply = true } = {}) {
+  let obj;
+  try {
+    obj = JSON.parse(jsonText);
+  } catch (e) {
+    alert("Import fehlgeschlagen: ungültiges JSON.");
+    return false;
+  }
+
+  // Minimal-Validation: muss wenigstens ein Objekt sein
+  if (!obj || typeof obj !== "object") {
+    alert("Import fehlgeschlagen: ungültige Datenstruktur.");
+    return false;
+  }
+
+  // speichern
+  localStorage.setItem(KEY, JSON.stringify(obj));
+
+  // optional direkt anwenden
+  if (apply) {
+    // loadAll kommt aus storage.js selbst – also hier direkt aufrufen
+    loadAll();
+    setTimeout(loadAll, 400); // safety-reload für selects
+  }
+
+  return true;
+}
+
+export async function importDataJSONFromFile(file, { apply = true } = {}) {
+  const text = await file.text();
+  return importDataJSONFromText(text, { apply });
+}
 }

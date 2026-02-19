@@ -48,13 +48,17 @@
     <div class="topbar-title">FLIGHT PLANNING V0.1</div>
     <!-- BUTTON TOPNAV -->
     <nav class="topbar-nav" id="topNav">
-      <button class="topbtn active" data-view="view-map" type="button">MAP</button>
-      <button class="topbtn" data-view="view-checklist" type="button">Checklist</button>
-      <button class="topbtn" data-view="view-fuel" type="button">FUEL Planning</button>
-      <button class="topbtn" data-view="view-performance" type="button">PERFORMANCE</button>
-      <button class="topbtn" data-view="view-settings" type="button">Settings</button>
-      <button class="topbtn" data-view="view-orm" type="button">ORM öffnen</button>
-      <button class="topbtn" data-view="view-mail" type="button">Mail EO senden</button>
+      <button type="button" class="topbtn active" data-view="view-map">MAP</button>
+      <button type="button" class="topbtn" data-view="view-checklist">Checklist</button>
+      <button type="button" class="topbtn" data-view="view-fuel">FUEL Planning</button>
+      <button type="button" class="topbtn" data-view="view-performance">PERFORMANCE</button>
+      <button type="button" class="topbtn" data-view="view-settings">Settings</button>
+      <button type="button" class="topbtn" data-view="view-orm">ORM öffnen</button>
+      <button type="button" class="topbtn" data-view="view-mail">Mail EO senden</button>
+      <button type="button" class="topbtn" data-action="export-data">Export JSON</button>
+      <button type="button" class="topbtn" data-action="import-data">Import JSON</button>
+      <!-- optional: unsichtbarer file input -->
+      <input id="importFile" type="file" accept="application/json" style="display:none">
     </nav>
   </header>
 
