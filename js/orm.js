@@ -151,8 +151,20 @@ function setDomFieldValue(iframe, fieldName, value) {
   return els.length;
 }
 
+function setOrmField(iframe, fields, storage, name, value) {
+  // Storage
+  for (const f of fields[name] || []) {
+    storage.setValue(f.id, { value });
+  }
+
+  // DOM
+  setDomFieldValue(iframe, name, value);
+}
+
 async function autofillOrmFields(iframe) {
-  console.log("[ORM] autofillOrmFields() fired");
+  // ----- debug option ----- //
+  // console.log("[ORM] autofillOrmFields() fired"); //
+  // ------------------------ //
 
   const app = iframe.contentWindow?.PDFViewerApplication;
   const pdf = app?.pdfDocument;
@@ -166,36 +178,30 @@ async function autofillOrmFields(iframe) {
   const dateIso = toIsoDateForOrm();
   const cs = document.getElementById("callSignDisplay")?.textContent?.trim() || "";
 
-  // Storage-Setter: Feldname -> alle Widget-IDs
-  const setFieldByName = (name, value) => {
-    const arr = fields[name];
-    if (!arr?.length) return false;
-    arr.forEach((f) => storage.setValue(f.id, { value }));
-    return true;
-  };
-
-  // 1) Storage setzen
   let okDate = false;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateIso)) {
-    console.warn("[ORM] Ungültiges Datum, setze Datum nicht:", dateIso);
+  let okCs = false;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateIso) && (fields["Datum1_af_date"]?.length)) {
+    setOrmField(iframe, fields, storage, "Datum1_af_date", dateIso);
+    okDate = true;
   } else {
-    okDate = setFieldByName("Datum1_af_date", dateIso);
+    console.warn("[ORM] Datum nicht gesetzt (leer/ungültig/kein Feld):", dateIso);
   }
 
-  const okCs = setFieldByName("CS", cs);
+  if (fields["CS"]?.length) {
+    setOrmField(iframe, fields, storage, "CS", cs);
+    okCs = true;
+  } else {
+    console.warn("[ORM] CS Feld nicht gefunden");
+  }
 
-  // DOM sichtbar machen (nach Feldnamen)
-  const domDate = okDate ? setDomFieldValue(iframe, "Datum1_af_date", dateIso) : 0;
-  const domCs   = okCs   ? setDomFieldValue(iframe, "CS", cs) : 0;
-
-  console.log("[ORM] DOM hits (by name) date/cs:", domDate, domCs);
-
-  // 3) Viewer informieren / refresh
   storage.onSetModified?.(true);
   app?.eventBus?.dispatch?.("annotationstoragechanged", { source: storage });
   app?.pdfViewer?.refresh?.();
 
-  console.log("[ORM] okDate/okCs:", okDate, okCs, "dateIso:", dateIso, "cs:", cs);
+  // ----- debug option ----- //
+  // console.log("[ORM] okDate/okCs:", okDate, okCs, "dateIso:", dateIso, "cs:", cs); //
+  // ------------------------ //
 }
 
 function wireOrmAutofill(iframe) {
@@ -330,18 +336,26 @@ export function initOrmChecklist() {
 
   function closeOrm() {
 
-    wrap.classList.add("is-hidden");
+    const app = frame.contentWindow?.PDFViewerApplication;
 
+    // ✅ PDF.js sagen: nichts ist mehr "dirty"
+    try {
+      app?.pdfDocument?.annotationStorage?.resetModified?.();
+      app?.eventBus?.dispatch?.("annotationstoragechanged", {
+        source: app?.pdfDocument?.annotationStorage
+      });
+    } catch {}
+
+    // jetzt Viewer schließen
+    wrap.classList.add("is-hidden");
     frame.src = "about:blank";
 
     btn.textContent = "ORM öffnen";
     btnClose.classList.add("is-hidden");
 
     setHint("");
-
     isOpen = false;
   }
-
 
   async function saveOrm() {
 
