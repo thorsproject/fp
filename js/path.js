@@ -20,8 +20,11 @@ export function url(relPath) {
  * @example
  * viewerUrl("data/ORMBlatt.pdf")
  */
-export function viewerUrl(pdfPath) {
+export function viewerUrl(pdfPath, { page = 1, zoom = "page-width" } = {}) {
   const viewer = new URL("pdfjs/web/viewer.html", document.baseURI);
   viewer.searchParams.set("file", url(pdfPath));
+
+  // PDF.js nutzt Hash-Parameter für page/zoom
+  viewer.hash = `page=${page}&zoom=${encodeURIComponent(zoom)}`;
   return viewer.toString();
 }

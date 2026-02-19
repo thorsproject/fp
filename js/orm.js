@@ -20,6 +20,71 @@ function getSuggestedOrmFilename() {
   return `ORM-${sanitizeFilePart(datePart)}-${sanitizeFilePart(cs)}.pdf`;
 }
 
+function injectPdfJsMinimalUi(iframe) {
+  const doc = iframe.contentDocument;
+  if (!doc) return;
+
+  // schon injected?
+  if (doc.getElementById("fp-minimal-pdfjs")) return;
+
+  const style = doc.createElement("style");
+  style.id = "fp-minimal-pdfjs";
+  style.textContent = `
+    /* alles was nach "App eingebettet" aussieht */
+    #outerContainer #sidebarContainer,
+    #outerContainer #toolbarContainer,
+    #outerContainer #secondaryToolbar,
+    #outerContainer #findbar,
+    #outerContainer #editorModeButtons,
+    #outerContainer #toolbarViewerRight,
+    #outerContainer #toolbarViewerLeft,
+    #outerContainer #toolbarViewerMiddle,
+    #outerContainer #toolbarSidebar,
+    #outerContainer #loadingBar,
+    #outerContainer .doorHanger {
+      display: none !important;
+    }
+
+    /* Viewer nach oben ziehen (weil toolbar weg ist) */
+    #outerContainer #viewerContainer {
+      top: 0 !important;
+    }
+
+    /* Optional: mehr “App-like” */
+    html, body {
+      background: transparent !important;
+    }
+  `;
+  doc.head.appendChild(style);
+}
+
+// wartet kurz, bis PDF.js DOM wirklich steht
+function applyMinimalUiWhenReady(iframe) {
+  const start = Date.now();
+  const maxMs = 3000;
+
+  const tick = () => {
+    try {
+      const w = iframe.contentWindow;
+      const doc = iframe.contentDocument;
+
+      // PDF.js Viewer DOM vorhanden?
+      const ok = doc && doc.getElementById("outerContainer");
+      if (ok) {
+        injectPdfJsMinimalUi(iframe);
+
+        // optional: Sidebar sicher zu (falls offen)
+        w?.PDFViewerApplication?.pdfSidebar?.close?.();
+        return;
+      }
+    } catch (_) {}
+
+    if (Date.now() - start < maxMs) requestAnimationFrame(tick);
+  };
+
+  tick();
+}
+
 async function savePdfBytesWithPicker(bytes, suggestedName) {
   const picker = await window.showSaveFilePicker({
     suggestedName,
@@ -94,17 +159,21 @@ function buildOrmViewerSrc() {
   return viewerUrl.toString();
 }
 
-
 function openOrm() {
-  frame.src = viewerUrl("data/ORMBlatt.pdf");
+  frame.src = viewerUrl("data/ORMBlatt.pdf", { page: 1, zoom: "page-width" });
+
+  // einmalig: nach dem Laden anwenden
+  const onLoad = () => {
+    frame.removeEventListener("load", onLoad);
+    applyMinimalUiWhenReady(frame);
+  };
+  frame.addEventListener("load", onLoad);
 
   wrap.classList.remove("is-hidden");
   btn.textContent = "ORM speichern";
   setHint("ORM geöffnet (editierbar).");
   isOpen = true;
 }
-
-
 
   function closeOrm() {
     wrap.classList.add("is-hidden");
