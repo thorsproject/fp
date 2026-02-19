@@ -91,20 +91,29 @@ function applyMinimalUiWhenReady(iframe) {
 }
 
 function toIsoDateForOrm() {
-  const raw = document.getElementById("dateInput")?.value?.trim() || "";
+  const raw0 = document.getElementById("dateInput")?.value ?? "";
+  const raw = raw0.trim();
 
-  // schon ISO?
+  // 1) schon ISO?
   if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
 
-  // dd.mm.yy
-  let m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
-  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
-
-  // dd.mm.yyyy
-  m = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  // 2) dd.mm.yyyy
+  let m = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
   if (m) return `${m[3]}-${m[2]}-${m[1]}`;
 
-  // fallback: heute ISO
+  // 3) dd.mm.yy
+  m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  // 4) ddmmyy (z.B. 250213)
+  m = raw.match(/^(\d{2})(\d{2})(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  // 5) ddmmyyyy
+  m = raw.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  // 6) fallback: heute
   return new Date().toISOString().slice(0, 10);
 }
 
@@ -126,13 +135,18 @@ async function autofillOrmFields(iframe) {
   const setFieldByName = (name, value) => {
     const arr = fields[name];
     if (!arr || !arr.length) return false;
-
     arr.forEach((f) => storage.setValue(f.id, { value }));
     return true;
   };
 
-  const okDate = setFieldByName("Datum1_af_date", dateIso);
-  const okCs   = setFieldByName("CS", cs);
+  let okDate = false;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateIso)) {
+    console.warn("[ORM] Ungültiges Datum, setze Datum nicht:", dateIso);
+  } else {
+    okDate = setFieldByName("Datum1_af_date", dateIso);
+  }
+
+  const okCs = setFieldByName("CS", cs);
 
   // Viewer auffrischen, damit die Widgets den neuen Storage-Wert zeigen
   app?.pdfViewer?.refresh?.();
