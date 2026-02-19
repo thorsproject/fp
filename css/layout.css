@@ -40,31 +40,45 @@ scrollbarer Hauptbereich
   overflow-y: auto;
 }
 
-/*
-Panel Footer
-Reset / Save / Export
-immer unten
-*/
+/* Letzter Inhalt-Frame im Panel-Body: kein Abstand nach unten */
+.panel-body .frame:last-child{
+  margin-bottom: 0;
+}
+
+/* =========================================
+   FLOATING PANEL FOOTER (schwebend)
+   ========================================= */
+
 .panel-footer {
-  flex-shrink: 0;
-  margin-top: auto;
-  padding-top: 8px;
-  border-top: 1px solid #2e3b4e;
+  margin-top: auto;     /* nach unten drücken */
+  padding: 0;           /* keine Innenabstände */
+  border: 0;            /* keine Linie */
   background: transparent;
 }
 
-/*
-Buttons im Footer
-*/
+/* Wenn der Footer aktuell noch ein .frame ist */
+.frame.panel-footer {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin-top: 10px;     /* Abstand zum Inhalt (letzter Frame) */
+}
+
+/* Letzter Inhalt-Frame im Body soll keinen eigenen Abstand nach unten haben,
+   sonst entsteht optisch eine "Trennlinie" im Spalt */
+.panel-body .frame:last-child {
+  margin-bottom: 0;
+}
+
+/* Buttons im Footer auf gleicher Innenkante wie .frame-Inhalt (padding:10px) */
 .panel-footer-buttons {
+  padding: 0 10px;      /* links/rechts exakt wie .frame padding */
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
-
-
-
-
 
    /* ---------- TOPBAR ---------- */
 .topbar {
@@ -156,17 +170,3 @@ Buttons im Footer
 
 .view-title{ margin:0 0 8px 0; color: var(--muted); }
 .view-sub{ margin:0; color: var(--text); }
-
-/* =========================================
-   PANEL FOOTER
-   Universeller Footer für Panels (Reset, Save, Export, etc.)
-   Immer am unteren Rand des Panels
-   ========================================= */
-
-/*.panel-footer {
-  margin-top: auto;              /* schiebt Footer nach unten */
-/*  margin-bottom: 4px;            /* kleiner Abstand zum Panelrand */
-/*  padding-top: 8px;
-  border-top: 1px solid #2e3b4e; /* optische Trennung */
-/*  background: transparent;
-} */
