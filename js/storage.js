@@ -1,7 +1,51 @@
 // js/storage.js
-const KEY = "fp.v1"; // bei Breaking Changes erhöhen (v2, v3...)
+const KEY = "fp.v2"; // bei Breaking Changes erhöhen (v2, v3...)
+const SCHEMA_VERSION = 2;
+const LEGACY_KEYS = ["fp.v1"]; //  alte Keys mit prüfen
 const EXPORT_COUNTER_KEY = "fp.exportCounter";
 const LAST_AUTOEXPORT_KEY = "fp.lastAutoExportBase";
+
+// ---------- MIGRATION PIPELINE ---------- //
+function normalizeIncoming(obj) {
+  if (!obj || typeof obj !== "object") return null;
+  // wenn v fehlt, ist es “v0” (deine ganz frühen Daten)
+  if (!("v" in obj)) obj.v = 0;
+  return obj;
+}
+
+function migrateToV1(d) {
+  // Beispiel: früher hieß route.head.date evtl. route.date
+  if (!d.route?.head && d.route) {
+    d.route.head = d.route.head || {};
+  }
+  return { ...d, v: 1 };
+}
+
+function migrateToV2(d) {
+  // Beispiel: du willst ab v2 "fuel.finres" immer garantiert setzen
+  if (d.fuel && !d.fuel.finres) d.fuel.finres = "IFR";
+
+  // Beispiel: du willst toggles immer "on/off" statt "active/inactive"
+  // (nur als Demo – bei dir aktuell nicht nötig)
+  return { ...d, v: 2 };
+}
+
+function migrate(data) {
+  let d = normalizeIncoming(data);
+  if (!d) return null;
+
+  while (d.v < SCHEMA_VERSION) {
+    if (d.v === 0) d = migrateToV1(d);
+    else if (d.v === 1) d = migrateToV2(d);
+    else throw new Error("Keine Migration definiert für v=" + d.v);
+  }
+
+  // Optional: hier final noch “Defaults” setzen
+  d.route = d.route || { head:{}, legs:[], toggles:{} };
+  d.fuel  = d.fuel  || {};
+  return d;
+}
+// ---------- MIGRATION PIPELINE ENDE ---------- //
 
 // ---------- AUTOSAVE DIRTY GUARD ---------- //
 let isApplying = false;
@@ -296,6 +340,7 @@ function applyFuel(fuel) {
 
 export function saveAll({ onlyIfChanged = false } = {}) {
   const data = {
+    v: SCHEMA_VERSION,
     t: Date.now(),
     route: captureRoute(),
     fuel: captureFuel(),
@@ -323,39 +368,46 @@ export function saveAll({ onlyIfChanged = false } = {}) {
   }
 }
 
+function loadRaw() {
+  // 1) aktueller Key
+  const rawCurrent = localStorage.getItem(KEY);
+  if (rawCurrent) return rawCurrent;
+
+  // 2) fallback: alte Keys
+  for (const k of LEGACY_KEYS) {
+    const raw = localStorage.getItem(k);
+    if (raw) return raw;
+  }
+  return null;
+}
+
 export function loadAll() {
-  const raw = localStorage.getItem(KEY);
+  const raw = loadRaw();
   const data = safeParse(raw, null);
   if (!data) return;
 
+  const migrated = migrate(data);
+  if (!migrated) return;
+
+  // unter aktuellem KEY ablegen
+  localStorage.setItem(KEY, JSON.stringify(migrated));
+
+  // optional: alte Keys löschen, wenn sie existieren
+  for (const k of LEGACY_KEYS) localStorage.removeItem(k);
+
+  // dann anwenden
   setApplying(true);
   try {
-    applyRoute(data.route);
-    applyFuel(data.fuel);
-
-    // Safety-reload für selects (LFZ/TAC)
-    window.setTimeout(() => {
-      setApplying(true);
-      try {
-        applyRoute(data.route);
-      } finally {
-        setApplying(false);
-      }
-    }, 400);
+    applyRoute(migrated.route);
+    applyFuel(migrated.fuel);
   } finally {
-    // nach Apply + initialen Events wieder erlauben
     setTimeout(() => setApplying(false), 0);
   }
 
-  // lastFP passend setzen (damit nach loadAll nicht sofort "dirty" ist)
-  try {
-    lastFP = fpOf({ route: data.route, fuel: data.fuel });
-  } catch {
-    lastFP = "";
-  }
+  // Fingerprint setzen (ohne t)
+  lastFP = fpOf({ route: migrated.route, fuel: migrated.fuel });
   isDirty = false;
   setSaveIndicator("saved", "Geladen");
-  setTimeout(() => setSaveIndicator("saved", "Gespeichert"), 600);
 }
 
 export function clearAll() {
@@ -459,7 +511,9 @@ export function importDataJSONFromText(jsonText, { apply = true } = {}) {
   }
 
   // speichern
-  localStorage.setItem(KEY, JSON.stringify(obj));
+  const migrated = migrate(obj);
+  localStorage.setItem(KEY, JSON.stringify(migrated));
+  if (apply) loadAll();
 
   // optional direkt anwenden
   if (apply) {
