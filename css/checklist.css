@@ -24,7 +24,7 @@
 
 /* Wrapper muss flexen + min-height:0 (wichtig für Scroll/iframe) */
 #view-checklist .orm-wrap {
-  /* flex: 1 1 auto; */
+  flex: 1 1 auto;
   /* min-height: 0; */
   padding: 0 !important;
   margin: 0 !important; 
