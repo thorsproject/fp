@@ -10,7 +10,7 @@
   height: calc(100dvh - 140px); /* ggf. 140 anpassen (Topbar etc.) */
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 5px; /* Abstand zwischen Buttons und Viewer */
   margin-bottom: 0;
   padding: 8px;      /* Abstand der Buttons von oben; statt 10px */
   border-radius: 3px; /* 8 */
@@ -48,4 +48,65 @@
 .pdfViewer .page {
   margin: 6px auto !important;
   border-radius: 8px;
+}
+
+/* Jeppesen Style +/
+/* =============== ForeFlight-like ORM Layout =============== */
+
+/* Checklist-Frame: keine dicken Innenränder, volle Höhe */
+#view-checklist .frame{
+  height: calc(100vh - 140px); /* passt zu deinem Layout; ggf. feinjustieren */
+  padding: 0;                  /* nimmt das .frame padding weg */
+  overflow: hidden;            /* damit iframe/overlay sauber clipped */
+  border-radius: 10px;
+}
+
+/* Controls als Overlay oben */
+#view-checklist .check-controls{
+  position: sticky;            /* bleibt oben in der Frame */
+  top: 0;
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 10px;
+  background: rgba(15, 20, 26, 0.78);  /* dunkel/transluzent */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Hinweistext in der Overlay-Leiste */
+#view-checklist #ormHint{
+  margin-left: 8px;
+  opacity: 0.9;
+}
+
+/* Wrapper nimmt den gesamten Rest ein */
+#view-checklist .orm-wrap{
+  height: 100%;
+  width: 100%;
+}
+
+/* Iframe füllt alles, bis nach unten */
+#view-checklist .orm-frame{
+  width: 100%;
+  height: calc(100% - 0px);
+  border: 0;
+  display: block;
+  background: transparent;
+}
+
+/* Optional: Buttons etwas kompakter */
+#view-checklist .check-controls button{
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+/* Wenn ORM geschlossen ist, bleibt nur die Leiste oben sichtbar */
+#view-checklist .orm-wrap.is-hidden{
+  display: none !important;
 }
