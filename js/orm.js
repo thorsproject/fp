@@ -325,7 +325,17 @@ export function initOrmChecklist() {
   }
 
   function confirmCloseOrm() {
-    if (!isOpen) return false; // ✅ wenn nicht offen: nichts tun, keine Warnung
+
+    if (!isOpen) return false;
+
+    const modified =
+      frame.contentWindow?.PDFViewerApplication?.pdfDocument
+        ?.annotationStorage?.modified;
+
+    if (!modified) {
+      closeOrm();
+      return true;
+    }
 
     const ok = confirm("ORM schließen?\n\nNicht gespeicherte Änderungen gehen verloren.");
     if (!ok) return false;
