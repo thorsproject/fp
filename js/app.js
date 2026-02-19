@@ -19,6 +19,9 @@ import {
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initFuelPlanning } from "./fuel.js";
+import { initResets } from "./reset.js";
+
+initResets();
 
 // ---------- Control Button State ----------
 function setBtnState(btn, on){
