@@ -20,10 +20,26 @@ export function initResets() {
     if (action === "reset-compfuel") resetcompFuelInputs();
     if (action === "reset-altfuel") resetaltFuelInputs();
 
+    // eMAil an EO
+    if (action === "mail-eo") {
+      exportDataJSON({ auto: true });
+    }
+
     // Topbar Export/Import
     if (action === "export-data") handleExport();
     if (action === "import-data") handleImport();
   });
+}
+
+function handleMailEO() {
+  // 1) Immer zuerst sichern
+  exportDataJSON();
+
+  // 2) Optional: Hinweis (kannst du auch weglassen)
+  // alert("Planung als JSON exportiert.");
+
+  // 3) Optional: wenn du später wirklich Mail-Funktion hast, hier triggern
+  // sendMailEO();
 }
 
 function handleExport() {

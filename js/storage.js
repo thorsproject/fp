@@ -1,6 +1,7 @@
 // js/storage.js
 const KEY = "fp.v1"; // bei Breaking Changes erhöhen (v2, v3...)
 const EXPORT_COUNTER_KEY = "fp.exportCounter";
+const LAST_AUTOEXPORT_KEY = "fp.lastAutoExportBase";
 
 function safeParse(json, fallback = null) {
   try { return JSON.parse(json); } catch { return fallback; }
@@ -25,6 +26,9 @@ function setValue(el, val) {
   if (el.type === "checkbox") el.checked = !!val;
   else el.value = val ?? "";
 }
+
+// ---------- eMail EO-Funktion ---------- //
+// kommt später //
 
 // ---------- Export-Funktion ---------- //
 function sanitizeFilePart(s) {
@@ -259,13 +263,22 @@ export function initAutosave() {
   });
 }
 
-export function exportDataJSON() {
+export function exportDataJSON({ auto = false } = {}) {
   const raw = localStorage.getItem(KEY) || JSON.stringify({ t: Date.now() }, null, 2);
 
   const datePart = sanitizeFilePart(getDateForFilename());
   const csPart   = sanitizeFilePart(getCallsignForFilename());
-
   const base = `FP-${datePart}-${csPart}`;
+
+  // --------------------------
+  // AUTO EXPORT GUARD
+  // --------------------------
+  if (auto) {
+    const last = localStorage.getItem(LAST_AUTOEXPORT_KEY);
+    if (last === base) return; // bereits automatisch exportiert
+    localStorage.setItem(LAST_AUTOEXPORT_KEY, base);
+  }
+
   const filename = buildFilename(base);
 
   const blob = new Blob([raw], { type: "application/json" });
