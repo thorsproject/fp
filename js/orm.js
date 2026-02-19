@@ -13,243 +13,254 @@ function getSuggestedOrmFilename() {
   const date = document.getElementById("dateInput")?.value?.trim() || "";
   const cs = document.getElementById("callSignDisplay")?.textContent?.trim() || "CALLSIGN";
 
-  // optional: DATE TT.MM.JJ -> 20YY-MM-DD
   const m = date.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
-  const datePart = m ? `20${m[3]}-${m[2]}-${m[1]}` : new Date().toISOString().slice(0,10);
+  const datePart = m
+    ? `20${m[3]}-${m[2]}-${m[1]}`
+    : new Date().toISOString().slice(0, 10);
 
   return `ORM-${sanitizeFilePart(datePart)}-${sanitizeFilePart(cs)}.pdf`;
 }
 
+
+// ---------- PDF.js UI minimieren ----------
 function injectPdfJsMinimalUi(iframe) {
   const doc = iframe.contentDocument;
-  if (!doc) return;
-
-  // schon injected?
-  if (doc.getElementById("fp-minimal-pdfjs")) return;
+  if (!doc || doc.getElementById("fp-minimal-pdfjs")) return;
 
   const style = doc.createElement("style");
   style.id = "fp-minimal-pdfjs";
   style.textContent = `
-    /* alles was nach "App eingebettet" aussieht */
-    #outerContainer #sidebarContainer,
-    #outerContainer #toolbarContainer,
-    #outerContainer #secondaryToolbar,
-    #outerContainer #findbar,
-    #outerContainer #editorModeButtons,
-    #outerContainer #toolbarViewerRight,
-    #outerContainer #toolbarViewerLeft,
-    #outerContainer #toolbarViewerMiddle,
-    #outerContainer #toolbarSidebar,
-    #outerContainer #loadingBar,
-    #outerContainer .doorHanger {
-      display: none !important;
+    #sidebarContainer,
+    #toolbarContainer,
+    #secondaryToolbar,
+    #findbar,
+    #editorModeButtons,
+    #toolbarViewerRight,
+    #toolbarViewerLeft,
+    #toolbarViewerMiddle,
+    #toolbarSidebar,
+    #loadingBar,
+    .doorHanger {
+      display:none !important;
     }
 
-    /* Viewer nach oben ziehen (weil toolbar weg ist) */
-    #outerContainer #viewerContainer {
-      top: 0 !important;
+    #viewerContainer {
+      top:0 !important;
+      padding:0 !important;
     }
 
-    /* Optional: mehr “App-like” */
     html, body {
-      background: transparent !important;
+      background:transparent !important;
+    }
+
+    .pdfViewer .page {
+      margin:6px auto !important;
+      border-radius:8px;
     }
   `;
   doc.head.appendChild(style);
 }
 
-// wartet kurz, bis PDF.js DOM wirklich steht
 function applyMinimalUiWhenReady(iframe) {
   const start = Date.now();
   const maxMs = 3000;
 
   const tick = () => {
-    try {
-      const w = iframe.contentWindow;
-      const doc = iframe.contentDocument;
+    const w = iframe.contentWindow;
+    const doc = iframe.contentDocument;
 
-      // PDF.js Viewer DOM vorhanden?
-      const ok = doc && doc.getElementById("outerContainer");
-      if (ok) {
-        injectPdfJsMinimalUi(iframe);
+    if (doc?.getElementById("outerContainer")) {
 
-        // optional: Sidebar sicher zu (falls offen)
-        w?.PDFViewerApplication?.pdfSidebar?.close?.();
+      injectPdfJsMinimalUi(iframe);
 
-        // ✅ Zoom wirklich setzen
-        const pv = w?.PDFViewerApplication?.pdfViewer;
-        if (pv) pv.currentScaleValue = "page-width";
-        return;
-      }
-    } catch (_) {}
+      // Sidebar schließen
+      w?.PDFViewerApplication?.pdfSidebar?.close?.();
 
-    if (Date.now() - start < maxMs) requestAnimationFrame(tick);
+      // Zoom setzen
+      const pv = w?.PDFViewerApplication?.pdfViewer;
+      if (pv) pv.currentScaleValue = "page-width";
+
+      return;
+    }
+
+    if (Date.now() - start < maxMs) {
+      requestAnimationFrame(tick);
+    }
   };
 
   tick();
 }
 
-async function savePdfBytesWithPicker(bytes, suggestedName) {
-  const picker = await window.showSaveFilePicker({
-    suggestedName,
-    types: [
-      {
-        description: "PDF",
-        accept: { "application/pdf": [".pdf"] },
-      },
-    ],
-  });
 
-  const writable = await picker.createWritable();
-  await writable.write(bytes);
-  await writable.close();
+// ---------- PDF Export ----------
+async function getEditedPdfBytesFromViewer(iframe) {
+
+  const app = iframe?.contentWindow?.PDFViewerApplication;
+
+  if (!app?.pdfDocument)
+    throw new Error("PDF noch nicht geladen.");
+
+  if (app.pdfDocument.saveDocument)
+    return await app.pdfDocument.saveDocument();
+
+  if (app.pdfDocument.getData)
+    return await app.pdfDocument.getData();
+
+  throw new Error("PDF Export nicht möglich.");
 }
 
+
 function downloadPdfBytes(bytes, filename) {
+
   const blob = new Blob([bytes], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
-  document.body.appendChild(a);
   a.click();
-  a.remove();
 
   URL.revokeObjectURL(url);
 }
 
-async function getEditedPdfBytesFromViewer(iframe) {
-  const w = iframe?.contentWindow;
-  if (!w) throw new Error("ORM Viewer nicht verfügbar.");
 
-  const app = w.PDFViewerApplication;
-  if (!app?.pdfDocument) throw new Error("PDF noch nicht geladen.");
-
-  // Beste Variante (enthält Form/Annotation changes)
-  if (typeof app.pdfDocument.saveDocument === "function") {
-    const u8 = await app.pdfDocument.saveDocument();
-    return u8;
-  }
-
-  // Fallback (kann je nach Version ohne Form-Änderungen sein)
-  if (typeof app.pdfDocument.getData === "function") {
-    const u8 = await app.pdfDocument.getData();
-    return u8;
-  }
-
-  throw new Error("Kann PDF Daten nicht exportieren (saveDocument/getData fehlt).");
-}
-
+// ---------- MAIN ----------
 export function initOrmChecklist() {
-  const btn = document.getElementById("btnOrm");
-  const wrap = document.getElementById("ormWrap");
+
+  const btn   = document.getElementById("btnOrm");
+  const wrap  = document.getElementById("ormWrap");
   const frame = document.getElementById("ormFrame");
-  const hint = document.getElementById("ormHint");
+  const hint  = document.getElementById("ormHint");
 
   if (!btn || !wrap || !frame) return;
 
   let isOpen = false;
 
-  function setHint(msg = "") {
-    if (!hint) return;
-    hint.textContent = msg;
+  function setHint(msg="") {
+    if (hint) hint.textContent = msg;
   }
 
-function buildOrmViewerSrc() {
-  const viewerUrl = new URL("pdfjs/web/viewer.html", document.baseURI);
-  const pdfUrl = new URL("data/ORMBlatt.pdf", document.baseURI); // => /fp/data/ORMBlatt.pdf
-  viewerUrl.searchParams.set("file", pdfUrl.toString());
-  return viewerUrl.toString();
-}
 
-function openOrm() {
-  frame.src = viewerUrl("data/ORMBlatt.pdf", { page: 1, zoom: "page-width" });
+  function openOrm() {
 
-  // einmalig: nach dem Laden anwenden
-  const onLoad = () => {
-    frame.removeEventListener("load", onLoad);
-    applyMinimalUiWhenReady(frame);
-  };
-  frame.addEventListener("load", onLoad);
+    frame.src = viewerUrl("data/ORMBlatt.pdf", {
+      page: 1,
+      zoom: "page-width"
+    });
 
-  wrap.classList.remove("is-hidden");
-  btn.textContent = "ORM speichern";
-  setHint("ORM geöffnet (editierbar).");
-  isOpen = true;
-}
+    frame.addEventListener("load", () => {
+      applyMinimalUiWhenReady(frame);
+    }, { once:true });
+
+    wrap.classList.remove("is-hidden");
+
+    btn.textContent = "ORM speichern";
+    setHint("ORM geöffnet (editierbar).");
+
+    isOpen = true;
+  }
+
 
   function closeOrm() {
+
     wrap.classList.add("is-hidden");
-    // Viewer “wirklich” entladen
+
     frame.src = "about:blank";
+
     btn.textContent = "ORM öffnen";
+
     setHint("");
+
     isOpen = false;
   }
 
-async function saveOrm() {
-  setHint("Speichern…");
-  const filename = getSuggestedOrmFilename();
 
-  // 1) Beste UX: echter Save-As Dialog (Chrome/Edge)
-  if ("showSaveFilePicker" in window) {
-    let handle;
-    try {
-      // ✅ sofort im Click-Event öffnen -> Cancel zuverlässig
-      handle = await window.showSaveFilePicker({
-        suggestedName: filename,
-        types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }],
-      });
-    } catch (e) {
-      if (e?.name === "AbortError") {
-        setHint("Speichern abgebrochen – ORM bleibt geöffnet.");
-        return; // ✅ bleibt offen
+  async function saveOrm() {
+
+    setHint("Speichern…");
+
+    const filename = getSuggestedOrmFilename();
+
+
+    // modern Save Picker
+    if ("showSaveFilePicker" in window) {
+
+      let handle;
+
+      try {
+
+        handle = await showSaveFilePicker({
+          suggestedName: filename,
+          types: [{
+            description: "PDF",
+            accept: { "application/pdf": [".pdf"] }
+          }]
+        });
+
+      } catch (e) {
+
+        if (e.name === "AbortError") {
+          setHint("Speichern abgebrochen.");
+          return;
+        }
+
+        setHint("Save-Dialog fehlgeschlagen.");
+        return;
       }
-      console.error(e);
-      setHint("Save-Dialog fehlgeschlagen – ORM bleibt geöffnet.");
-      return;
+
+
+      try {
+
+        const bytes = await getEditedPdfBytesFromViewer(frame);
+
+        const writable = await handle.createWritable();
+
+        await writable.write(bytes);
+
+        await writable.close();
+
+        setHint("Gespeichert.");
+
+        closeOrm();
+
+        return;
+
+      } catch (e) {
+
+        console.error(e);
+
+        setHint("Speichern fehlgeschlagen.");
+
+        return;
+      }
     }
 
-    // 2) Jetzt erst PDF-Bytes aus dem Viewer holen
-    let bytes;
-    try {
-      bytes = await getEditedPdfBytesFromViewer(frame);
-    } catch (e) {
-      console.error(e);
-      setHint("Speichern nicht möglich (PDF noch nicht bereit?).");
-      return; // bleibt offen
-    }
 
-    // 3) Schreiben
+    // fallback download
     try {
-      const writable = await handle.createWritable();
-      await writable.write(bytes);
-      await writable.close();
 
-      setHint("Gespeichert.");
-      closeOrm(); // ✅ nach Erfolg schließen + Button zurück
-      return;
+      const bytes = await getEditedPdfBytesFromViewer(frame);
+
+      downloadPdfBytes(bytes, filename);
+
+      setHint("Download gestartet.");
+
     } catch (e) {
+
       console.error(e);
-      setHint("Speichern fehlgeschlagen – ORM bleibt geöffnet.");
-      return;
+
+      setHint("Speichern nicht möglich.");
+
     }
   }
 
-  // Fallback: Download (Cancel nicht sauber erkennbar)
-  try {
-    const bytes = await getEditedPdfBytesFromViewer(frame);
-    downloadPdfBytes(bytes, filename);
-    setHint("Download gestartet. ORM bleibt geöffnet.");
-  } catch (e) {
-    console.error(e);
-    setHint("Speichern nicht möglich (PDF noch nicht bereit?).");
-  }
-}
 
-  btn.addEventListener("click", async () => {
-    if (!isOpen) openOrm();
-    else await saveOrm();
+  btn.addEventListener("click", () => {
+
+    if (isOpen) saveOrm();
+
+    else openOrm();
+
   });
+
 }
