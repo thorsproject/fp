@@ -61,16 +61,6 @@ scrollbarer Hauptbereich
   background: transparent;
 }
 
-/* Wenn der Footer aktuell noch ein .frame ist */
-.frame.panel-footer {
-  border: 0 !important;
-  background: transparent !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  margin-top: 10px;     /* Abstand zum Inhalt (letzter Frame) */
-}
-
 /* Buttons im Footer auf gleicher Innenkante wie .frame-Inhalt (padding:10px) */
 .panel-footer-buttons {
   padding: 0 10px;      /* links/rechts exakt wie .frame padding */
