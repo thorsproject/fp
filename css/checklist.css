@@ -1,5 +1,5 @@
 #view-checklist {
-  height: calc(100vh - 80px); /* ggf. anpassen */
+  height: calc(100vh - 40px); /* 80 ggf. anpassen */
   display: flex;
   flex-direction: column;
 }
