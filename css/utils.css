@@ -8,23 +8,28 @@
    [UTIL:INTERACTION]
    ========================================================= */
 
-
 /* =========================================================
    [UTIL:VISIBILITY]
    ========================================================= */
-
-.hidden {
-  display: none !important;
-}
-
-.invisible {
-  visibility: hidden !important;
-}
-
 .show {
   display: block !important;
 }
 
+/* =========================================================
+   [UTIL] Visibility helpers
+   ========================================================= */
+.is-hidden {
+  display: none !important;
+}
+
+.is-invisible {
+  visibility: hidden !important;
+}
+
+.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
 
 /* =========================================================
    [UTIL:TEXT]

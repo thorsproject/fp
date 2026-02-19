@@ -90,19 +90,6 @@ function applyMinimalUiWhenReady(iframe) {
   tick();
 }
 
-function confirmCloseOrm() {
-
-  const ok = confirm(
-    "ORM schließen?\n\nNicht gespeicherte Änderungen gehen verloren."
-  );
-
-  if (!ok) return false;
-
-  closeOrm();
-
-  return true;
-}
-
 // ---------- PDF Export ----------
 async function getEditedPdfBytesFromViewer(iframe) {
 
@@ -173,6 +160,16 @@ export function initOrmChecklist() {
     isOpen = true;
   }
 
+
+  function confirmCloseOrm() {
+    if (!isOpen) return false; // ✅ wenn nicht offen: nichts tun, keine Warnung
+
+    const ok = confirm("ORM schließen?\n\nNicht gespeicherte Änderungen gehen verloren.");
+    if (!ok) return false;
+
+    closeOrm();
+    return true;
+  }
 
   function closeOrm() {
 
