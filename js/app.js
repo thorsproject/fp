@@ -20,7 +20,7 @@ import { showVerticalProfilePopup } from "./vertprof.js";
 import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
-import { initORM } from "./orm.js";
+import { initOrmChecklist } from "./orm.js";
 
 // ---------- Control Button State ----------
 function setBtnState(btn, on){
@@ -137,7 +137,7 @@ document.getElementById("btnMailEO")?.addEventListener("click", () => {
       updateAltMarkers(map);
     },
   });
-  initORM();
+  initOrmChecklist();
   initFuelPlanning();
   initResets();
 

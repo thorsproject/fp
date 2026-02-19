@@ -267,29 +267,24 @@
 
         <!-- VIEW: CHECKLIST -->
         <section id="view-checklist" class="view">
-          <div class="checklist-controls">
-            <div class="ctrl-chip">
-              <span>ORM</span>
-              <button id="btnOrm" type="button">ORM öffnen</button>
-            </div>
-
-            <div class="ctrl-chip">
-              <span>EO</span>
-              <button id="btnMailEO" type="button">Mail EO senden</button>
-            </div>
-          </div>
-
-          <div id="ormHost" class="orm-host is-hidden">
-            <!-- PDF.js Viewer wird hier per iframe geladen -->
-            <iframe id="ormFrame" class="orm-frame" title="ORM Blatt"></iframe>
-          </div>
-
           <div class="frame">
-            <h2 class="view-title">Checklist</h2>
-            <p class="view-sub">Platzhalter – hier kommt deine Checklist rein.</p>
+            <div class="check-controls">
+              <button id="btnOrm" type="button">ORM öffnen</button>
+              <button id="btnMailEO" type="button">Mail EO senden</button>
+              <span id="ormHint" class="hint"></span>
+            </div>
+
+            <div id="ormWrap" class="orm-wrap is-hidden">
+              <iframe
+                id="ormFrame"
+                class="orm-frame"
+                title="ORM Viewer"
+                loading="lazy">
+              </iframe>
+            </div>
           </div>
         </section>
-
+        
         <!-- VIEW: FUEL -->
         <section id="view-fuel" class="view">
           <div class="frame fuel-card panel-container" id="fuelPanel">

@@ -1,113 +1,145 @@
 // js/orm.js
-const ORM_PDF_PATH = "data/ORMBlatt.pdf";   // dein PDF
-const VIEWER_URL   = "pdfjs/web/viewer.html"; // lokaler PDF.js Viewer
-
-function $(id){ return document.getElementById(id); }
-
-function getViewerWin() {
-  const frame = $("ormFrame");
-  return frame?.contentWindow || null;
+function sanitizeFilePart(s) {
+  return String(s || "")
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w\-]+/g, "")
+    .slice(0, 32) || "NA";
 }
 
-// versucht, aus PDF.js die "aktuelle" Datei (inkl. Form-Änderungen) zu bekommen
-async function getEditedPdfBytesFromPdfjs() {
-  const win = getViewerWin();
-  const app = win?.PDFViewerApplication;
-  if (!app) throw new Error("PDFViewerApplication nicht verfügbar.");
+function getSuggestedOrmFilename() {
+  const date = document.getElementById("dateInput")?.value?.trim() || "";
+  const cs = document.getElementById("callSignDisplay")?.textContent?.trim() || "CALLSIGN";
 
-  // PDF.js hat (je nach Version) saveDocument() oder getData() Variationen.
-  // Wir probieren robust mehrere Wege.
-  if (app.pdfDocument?.saveDocument) {
-    const bytes = await app.pdfDocument.saveDocument();
-    return bytes; // Uint8Array
-  }
+  // optional: DATE TT.MM.JJ -> 20YY-MM-DD
+  const m = date.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  const datePart = m ? `20${m[3]}-${m[2]}-${m[1]}` : new Date().toISOString().slice(0,10);
 
-  if (app.pdfDocument?.getData) {
-    // Achtung: getData() kann je nach Version original sein – saveDocument ist besser
-    const bytes = await app.pdfDocument.getData();
-    return bytes;
-  }
-
-  throw new Error("PDF.js liefert keine exportierbaren Bytes (saveDocument/getData fehlt).");
+  return `ORM-${sanitizeFilePart(datePart)}-${sanitizeFilePart(cs)}.pdf`;
 }
 
-async function saveAsNative(bytes, suggestedName = "ORMBlatt.pdf") {
-  // 1) echter Save-As Dialog (Chromium/Edge)
-  if (window.showSaveFilePicker) {
-    const handle = await window.showSaveFilePicker({
-      suggestedName,
-      types: [{
-        description: "PDF Dokument",
-        accept: { "application/pdf": [".pdf"] }
-      }]
-    });
+async function savePdfBytesWithPicker(bytes, suggestedName) {
+  const picker = await window.showSaveFilePicker({
+    suggestedName,
+    types: [
+      {
+        description: "PDF",
+        accept: { "application/pdf": [".pdf"] },
+      },
+    ],
+  });
 
-    const writable = await handle.createWritable();
-    await writable.write(new Blob([bytes], { type: "application/pdf" }));
-    await writable.close();
-    return true;
-  }
+  const writable = await picker.createWritable();
+  await writable.write(bytes);
+  await writable.close();
+}
 
-  // 2) Fallback: Download (kein echter "Cancel" möglich)
+function downloadPdfBytes(bytes, filename) {
   const blob = new Blob([bytes], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = suggestedName;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
 
   URL.revokeObjectURL(url);
-  return true;
 }
 
-export function initORM() {
-  const btn = $("btnOrm");
-  const host = $("ormHost");
-  const frame = $("ormFrame");
-  if (!btn || !host || !frame) return;
+async function getEditedPdfBytesFromViewer(iframe) {
+  const w = iframe?.contentWindow;
+  if (!w) throw new Error("ORM Viewer nicht verfügbar.");
+
+  const app = w.PDFViewerApplication;
+  if (!app?.pdfDocument) throw new Error("PDF noch nicht geladen.");
+
+  // Beste Variante (enthält Form/Annotation changes)
+  if (typeof app.pdfDocument.saveDocument === "function") {
+    const u8 = await app.pdfDocument.saveDocument();
+    return u8;
+  }
+
+  // Fallback (kann je nach Version ohne Form-Änderungen sein)
+  if (typeof app.pdfDocument.getData === "function") {
+    const u8 = await app.pdfDocument.getData();
+    return u8;
+  }
+
+  throw new Error("Kann PDF Daten nicht exportieren (saveDocument/getData fehlt).");
+}
+
+export function initOrmChecklist() {
+  const btn = document.getElementById("btnOrm");
+  const wrap = document.getElementById("ormWrap");
+  const frame = document.getElementById("ormFrame");
+  const hint = document.getElementById("ormHint");
+
+  if (!btn || !wrap || !frame) return;
 
   let isOpen = false;
 
+  function setHint(msg = "") {
+    if (!hint) return;
+    hint.textContent = msg;
+  }
+
   function openOrm() {
-    // PDF.js viewer lädt file=...
-    frame.src = `${VIEWER_URL}?file=${encodeURIComponent("/" + ORM_PDF_PATH)}`;
-    host.classList.remove("is-hidden");
+    // PDF im data Ordner
+    frame.src = `/pdfjs/web/viewer.html?file=/data/ORMBlatt.pdf`;
+    wrap.classList.remove("is-hidden");
     btn.textContent = "ORM speichern";
+    setHint("ORM geöffnet (editierbar).");
     isOpen = true;
   }
 
   function closeOrm() {
-    host.classList.add("is-hidden");
+    wrap.classList.add("is-hidden");
+    // Viewer “wirklich” entladen
     frame.src = "about:blank";
     btn.textContent = "ORM öffnen";
+    setHint("");
     isOpen = false;
   }
 
   async function saveOrm() {
-    // hier soll: wenn Cancel -> offen bleiben
+    setHint("Speichern…");
+
+    const filename = getSuggestedOrmFilename();
+
+    let bytes;
     try {
-      const bytes = await getEditedPdfBytesFromPdfjs();
-
-      // Dateiname Vorschlag (optional: Datum/Callsign)
-      const ok = await saveAsNative(bytes, "ORMBlatt-Ausgefüllt.pdf");
-
-      if (ok) {
-        // gespeichert -> schließen
-        closeOrm();
-      }
+      bytes = await getEditedPdfBytesFromViewer(frame);
     } catch (e) {
-      // User hat im Save Picker abgebrochen?
-      if (e?.name === "AbortError") {
-        // NICHT schließen, Bearbeitungsmodus bleibt
+      console.error(e);
+      setHint("Speichern nicht möglich (PDF noch nicht bereit?).");
+      return;
+    }
+
+    // 1) Beste UX: echter Save-As Dialog (Chrome/Edge)
+    if ("showSaveFilePicker" in window) {
+      try {
+        await savePdfBytesWithPicker(bytes, filename);
+        setHint("Gespeichert.");
+        closeOrm();
+        return;
+      } catch (e) {
+        // Cancel -> im Edit-Modus bleiben (dein Wunsch!)
+        if (e?.name === "AbortError") {
+          setHint("Speichern abgebrochen – ORM bleibt geöffnet.");
+          return;
+        }
+        console.error(e);
+        setHint("Speichern fehlgeschlagen – ORM bleibt geöffnet.");
         return;
       }
-      console.error(e);
-      alert("ORM speichern fehlgeschlagen:\n" + (e?.message || e));
-      // offen lassen, damit User nichts verliert
     }
+
+    // 2) Fallback: Download (kein sicherer Cancel-Callback möglich)
+    // -> Wir bleiben geöffnet, bis du manuell schließt (oder du willst Auto-Close)
+    downloadPdfBytes(bytes, filename);
+    setHint("Download gestartet. Bitte Datei speichern – ORM bleibt geöffnet.");
   }
 
   btn.addEventListener("click", async () => {

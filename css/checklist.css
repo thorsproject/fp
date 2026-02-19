@@ -1,26 +1,29 @@
-.checklist-controls{
+.check-controls{
   display:flex;
-  gap:8px;
+  gap:10px;
   align-items:center;
-  flex-wrap:wrap;
   margin-bottom:10px;
+  flex-wrap:wrap;
 }
 
-/* Host für PDF (unter den Buttons) */
-.orm-host{
+.orm-wrap{
   border:1px solid var(--border);
   border-radius:10px;
   overflow:hidden;
+  height: calc(100vh - 60px - 20px - 140px); /* grob: Topbar + Padding + Controls */
   background:#111;
-  margin-bottom:10px;
 }
 
-/* versteckt */
-.orm-host.is-hidden{ display:none; }
+.orm-wrap.is-hidden{ display:none; }
 
 .orm-frame{
   width:100%;
-  height: calc(100vh - 60px - 20px - 60px); 
+  height:100%;
   border:0;
   background:#111;
+}
+
+.hint{
+  color: var(--muted);
+  font-size:12px;
 }
