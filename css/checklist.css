@@ -58,7 +58,7 @@
   height: calc(100vh - 140px); /* passt zu deinem Layout; ggf. feinjustieren */
   padding: 0;                  /* nimmt das .frame padding weg */
   overflow: hidden;            /* damit iframe/overlay sauber clipped */
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 /* Controls als Overlay oben */
@@ -71,7 +71,7 @@
   align-items: center;
   gap: 8px;
 
-  padding: 8px 10px;
+  padding: 8px 6px;
   background: rgba(15, 20, 26, 0.78);  /* dunkel/transluzent */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
