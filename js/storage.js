@@ -307,7 +307,7 @@ export function saveAll({ onlyIfChanged = false } = {}) {
       if (fp === lastFP) {
         // Zustand ist effektiv saved
         isDirty = false;
-        setSaveIndicator("saved", "Gespeichert");
+        setSaveIndicator("saved", "unverändert");
         return;
       }
       lastFP = fp;
