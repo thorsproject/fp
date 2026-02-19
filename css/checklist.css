@@ -1,30 +1,28 @@
-.check-controls{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  margin-bottom:10px;
-  flex-wrap:wrap;
+/* CHECKLIST: die Karte soll die View-Höhe nutzen */
+#view-checklist .frame {
+  height: calc(100vh - 140px); /* ggf. 140 anpassen (Topbar etc.) */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.orm-wrap{
-  border:1px solid var(--border);
-  border-radius:10px;
-  overflow:hidden;
-  height: 100%; /* grob: Topbar + Padding + Controls */
-/*  height: calc(100vh - 60px - 20px - 140px); /* grob: Topbar + Padding + Controls */
-  background:#111;
+/* Controls oben, ORM darunter nimmt den Rest */
+#view-checklist .check-controls {
+  flex: 0 0 auto;
 }
 
-.orm-wrap.is-hidden{ display:none; }
-
-.orm-frame{
-  width:100%;
-  height:100%;
-  border:0;
-  background:#111;
+/* Wrapper muss flexen + min-height:0 (wichtig für Scroll/iframe) */
+#view-checklist .orm-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-.hint{
-  color: var(--muted);
-  font-size:12px;
+/* iframe wirklich groß machen */
+#view-checklist .orm-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  border-radius: 10px;
+  background: transparent;
 }
