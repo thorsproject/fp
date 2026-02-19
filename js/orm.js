@@ -176,6 +176,7 @@ async function autofillOrmFields(iframe) {
 
   // 3) Viewer informieren / refresh
   storage.onSetModified?.(true);
+  app?.eventBus?.dispatch?.("annotationstoragechanged", { source: storage });
   app?.pdfViewer?.refresh?.();
 
   console.log("[ORM] okDate/okCs:", okDate, okCs, "dateIso:", dateIso, "cs:", cs);
@@ -188,30 +189,38 @@ function wireOrmAutofill(iframe) {
   const ready = app.initializedPromise ?? Promise.resolve();
 
   ready.then(() => {
-    let done = false;
+    const start = Date.now();
+    const maxMs = 2000;
 
-    const runOnce = async () => {
-      if (done) return;
-      if (!app.pdfDocument) return;
+    let scheduled = false;
 
-      done = true;
-      try {
-        await autofillOrmFields(iframe);
-      } catch (e) {
-        console.error("[ORM] autofill failed:", e);
-        done = false; // falls du später nochmal triggern willst
-      }
+    const scheduleFillBurst = () => {
+      if (scheduled) return;
+      scheduled = true;
+
+      // 3 Versuche, falls PDF.js nochmal drüber rendert
+      setTimeout(() => autofillOrmFields(iframe).catch(console.error), 0);
+      setTimeout(() => autofillOrmFields(iframe).catch(console.error), 150);
+      setTimeout(() => autofillOrmFields(iframe).catch(console.error), 500);
+
+      // danach wieder erlauben, falls nochmal gerendert wird
+      setTimeout(() => { scheduled = false; }, 600);
     };
 
-    // ✅ erst wenn Annotation-Layer da ist (Formfelder sichtbar)
-    app.eventBus?.on?.("annotationlayerrendered", runOnce);
+    const onAnyRender = () => {
+      if (!app.pdfDocument) return;
+      if (Date.now() - start > maxMs) return;
 
-    // Fallbacks: manchmal kommt annotationlayerrendered spät/gar nicht (je nach PDF)
-    app.eventBus?.on?.("pagesloaded", runOnce);
-    app.eventBus?.on?.("documentloaded", runOnce);
+      scheduleFillBurst();
+    };
 
-    // Falls beim Wiring schon fertig geladen:
-    if (app.pdfDocument) runOnce();
+    app.eventBus?.on?.("annotationlayerrendered", onAnyRender);
+    app.eventBus?.on?.("pagerendered", onAnyRender);
+    app.eventBus?.on?.("pagesloaded", onAnyRender);
+    app.eventBus?.on?.("documentloaded", onAnyRender);
+
+    // sofort einmal anstoßen
+    onAnyRender();
   });
 }
 
@@ -267,15 +276,16 @@ export function initOrmChecklist() {
 
 
   function openOrm() {
+    const pdfPath = `data/ORMBlatt.pdf?v=${Date.now()}`;
 
-    frame.src = viewerUrl("data/ORMBlatt.pdf", {
+    frame.src = viewerUrl(pdfPath, {
       page: 1,
       zoom: "page-width"
     });
 
     frame.addEventListener("load", () => {
       applyMinimalUiWhenReady(frame);
-      wireOrmAutofill(frame);            // ✅ wichtig
+      wireOrmAutofill(frame);
     }, { once:true });
 
     wrap.classList.remove("is-hidden");
