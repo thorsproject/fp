@@ -143,7 +143,7 @@ async function autofillOrmFields(iframe) {
   // DOM-Sync: Widget-ID -> input im Annotation-Layer
   const setDomValueByWidgetId = (id, value) => {
     const root = iframe.contentDocument;
-    const wrap = root?.querySelector(`[data-annotation-id="${CSS.escape(id)}"]`);
+    const wrap = root?.querySelector(`[data-annotation-id="${esc(id)}"]`);
     const el = wrap?.querySelector("input, textarea, select");
     if (!el) return false;
 
@@ -288,6 +288,11 @@ export function initOrmChecklist() {
     frame.addEventListener("load", () => {
       applyMinimalUiWhenReady(frame);
       wireOrmAutofill(frame);
+
+      setTimeout(() => autofillOrmFields(frame), 300);
+      setTimeout(() => autofillOrmFields(frame), 900);
+      setTimeout(() => autofillOrmFields(frame), 1600);
+
     }, { once:true });
 
     wrap.classList.remove("is-hidden");
