@@ -1,5 +1,6 @@
 // js/storage.js
 const KEY = "fp.v1"; // bei Breaking Changes erhöhen (v2, v3...)
+const EXPORT_COUNTER_KEY = "fp.exportCounter";
 
 function safeParse(json, fallback = null) {
   try { return JSON.parse(json); } catch { return fallback; }
@@ -8,6 +9,7 @@ function safeParse(json, fallback = null) {
 function qs(sel, root = document) {
   return root.querySelector(sel);
 }
+
 function qsa(sel, root = document) {
   return Array.from(root.querySelectorAll(sel));
 }
@@ -17,11 +19,50 @@ function getValue(el) {
   if (el.type === "checkbox") return !!el.checked;
   return el.value ?? "";
 }
+
 function setValue(el, val) {
   if (!el) return;
   if (el.type === "checkbox") el.checked = !!val;
   else el.value = val ?? "";
 }
+
+// ---------- Export-Funktion ---------- //
+function sanitizeFilePart(s) {
+  return String(s || "")
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w\-]+/g, "")
+    .slice(0, 32) || "NA";
+}
+
+function getDateForFilename() {
+  const el = document.getElementById("dateInput");
+  const raw = el?.value?.trim() || "";
+
+  const m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  if (m) {
+    const [, dd, mm, yy] = m;
+    return `20${yy}-${mm}-${dd}`;
+  }
+
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getCallsignForFilename() {
+  const el = document.getElementById("callSignDisplay");
+  return el?.textContent?.trim() || "CALLSIGN";
+}
+
+function buildFilename(base) {
+  const last = Number(localStorage.getItem(EXPORT_COUNTER_KEY) || "0");
+  const next = last + 1;
+
+  localStorage.setItem(EXPORT_COUNTER_KEY, next);
+
+  if (next === 1) return `${base}.json`;
+  return `${base} (${next}).json`;
+}
+// ---------- Export Funktion Ende ---------- //
 
 function legFrames() {
   return qsa("#legsContainer .frame");
@@ -216,18 +257,23 @@ export function initAutosave() {
       window.setTimeout(saveAll, 0);
     }
   });
-const KEY = "fp.v1"; // muss identisch sein
+}
 
 export function exportDataJSON() {
-  const raw = localStorage.getItem(KEY);
-  const data = raw ? raw : JSON.stringify({ t: Date.now(), route: null, fuel: null }, null, 2);
+  const raw = localStorage.getItem(KEY) || JSON.stringify({ t: Date.now() }, null, 2);
 
-  const blob = new Blob([data], { type: "application/json" });
+  const datePart = sanitizeFilePart(getDateForFilename());
+  const csPart   = sanitizeFilePart(getCallsignForFilename());
+
+  const base = `FP-${datePart}-${csPart}`;
+  const filename = buildFilename(base);
+
+  const blob = new Blob([raw], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = `flight-planning-${new Date().toISOString().slice(0,19).replace(/[:T]/g, "-")}.json`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -266,5 +312,4 @@ export function importDataJSONFromText(jsonText, { apply = true } = {}) {
 export async function importDataJSONFromFile(file, { apply = true } = {}) {
   const text = await file.text();
   return importDataJSONFromText(text, { apply });
-}
 }

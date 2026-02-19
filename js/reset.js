@@ -3,52 +3,58 @@ import { exportDataJSON, importDataJSONFromFile } from "./storage.js";
 
 export function initResets() {
   document.addEventListener("click", (e) => {
-    const btn =
-      e.target.closest("button.routebtnReset") ||
-      e.target.closest("button.fuelbtnReset");
-
+    const btn = e.target.closest("button");
     if (!btn) return;
 
     const action = btn.dataset.action;
     if (!action) return;
 
-    const fn = ACTIONS[action];
-    if (typeof fn === "function") {
-      fn();
-      flashResetSuccess(btn);
+    // Route
+    if (action === "reset-kopf") resetKopf();
+    if (action === "reset-times") resetTimes();
+    if (action === "reset-aeros") resetAerodromes();
+
+    // Fuel
+    if (action === "reset-fuel") resetFuelInputs();
+    if (action === "reset-legfuel") resetlegFuelInputs();
+    if (action === "reset-compfuel") resetcompFuelInputs();
+    if (action === "reset-altfuel") resetaltFuelInputs();
+
+    // Topbar Export/Import
     if (action === "export-data") handleExport();
     if (action === "import-data") handleImport();
-    }
   });
-  function handleExport() {
+}
+
+function handleExport() {
   exportDataJSON();
+}
+
+async function handleImport() {
+  const inp = document.getElementById("importFile");
+  if (!inp) {
+    alert("Import nicht möglich: #importFile fehlt im HTML.");
+    return;
   }
 
-  async function handleImport() {
-    const inp = document.getElementById("importFile");
-    if (!inp) {
-      alert('Import nicht möglich: #importFile fehlt im HTML.');
-      return;
+  inp.value = ""; // erlaubt gleiche Datei erneut
+  inp.onchange = async () => {
+    const file = inp.files?.[0];
+    if (!file) return;
+
+    const ok = confirm("Import überschreibt die aktuell gespeicherten Daten. Fortfahren?");
+    if (!ok) return;
+
+    try {
+      await importDataJSONFromFile(file, { apply: true });
+      alert("Import erfolgreich.");
+    } catch (e) {
+      console.error(e);
+      alert("Import fehlgeschlagen.");
     }
+  };
 
-    inp.value = ""; // wichtig: gleiche Datei nochmal auswählen können
-    inp.onchange = async () => {
-      const file = inp.files?.[0];
-      if (!file) return;
-
-      if (!confirm("Import überschreibt die aktuell gespeicherten Daten. Fortfahren?")) return;
-
-      try {
-        await importDataJSONFromFile(file, { apply: true });
-        alert("Import erfolgreich.");
-      } catch (e) {
-        console.error(e);
-        alert("Import fehlgeschlagen.");
-      }
-    };
-
-    inp.click();
-  }
+  inp.click();
 }
 
 const ACTIONS = {
