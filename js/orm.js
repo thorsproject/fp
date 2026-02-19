@@ -1,4 +1,6 @@
 // js/orm.js
+import { viewerUrl } from "./path.js";
+
 function sanitizeFilePart(s) {
   return String(s || "")
     .trim()
@@ -85,14 +87,24 @@ export function initOrmChecklist() {
     hint.textContent = msg;
   }
 
-  function openOrm() {
-    // PDF im data Ordner
-    frame.src = `/pdfjs/web/viewer.html?file=/data/ORMBlatt.pdf`;
-    wrap.classList.remove("is-hidden");
-    btn.textContent = "ORM speichern";
-    setHint("ORM geöffnet (editierbar).");
-    isOpen = true;
-  }
+function buildOrmViewerSrc() {
+  const viewerUrl = new URL("pdfjs/web/viewer.html", document.baseURI);
+  const pdfUrl = new URL("data/ORMBlatt.pdf", document.baseURI); // => /fp/data/ORMBlatt.pdf
+  viewerUrl.searchParams.set("file", pdfUrl.toString());
+  return viewerUrl.toString();
+}
+
+
+function openOrm() {
+  frame.src = viewerUrl("data/ORMBlatt.pdf");
+
+  wrap.classList.remove("is-hidden");
+  btn.textContent = "ORM speichern";
+  setHint("ORM geöffnet (editierbar).");
+  isOpen = true;
+}
+
+
 
   function closeOrm() {
     wrap.classList.add("is-hidden");
@@ -103,44 +115,65 @@ export function initOrmChecklist() {
     isOpen = false;
   }
 
-  async function saveOrm() {
-    setHint("Speichern…");
+async function saveOrm() {
+  setHint("Speichern…");
+  const filename = getSuggestedOrmFilename();
 
-    const filename = getSuggestedOrmFilename();
+  // 1) Beste UX: echter Save-As Dialog (Chrome/Edge)
+  if ("showSaveFilePicker" in window) {
+    let handle;
+    try {
+      // ✅ sofort im Click-Event öffnen -> Cancel zuverlässig
+      handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }],
+      });
+    } catch (e) {
+      if (e?.name === "AbortError") {
+        setHint("Speichern abgebrochen – ORM bleibt geöffnet.");
+        return; // ✅ bleibt offen
+      }
+      console.error(e);
+      setHint("Save-Dialog fehlgeschlagen – ORM bleibt geöffnet.");
+      return;
+    }
 
+    // 2) Jetzt erst PDF-Bytes aus dem Viewer holen
     let bytes;
     try {
       bytes = await getEditedPdfBytesFromViewer(frame);
     } catch (e) {
       console.error(e);
       setHint("Speichern nicht möglich (PDF noch nicht bereit?).");
+      return; // bleibt offen
+    }
+
+    // 3) Schreiben
+    try {
+      const writable = await handle.createWritable();
+      await writable.write(bytes);
+      await writable.close();
+
+      setHint("Gespeichert.");
+      closeOrm(); // ✅ nach Erfolg schließen + Button zurück
+      return;
+    } catch (e) {
+      console.error(e);
+      setHint("Speichern fehlgeschlagen – ORM bleibt geöffnet.");
       return;
     }
-
-    // 1) Beste UX: echter Save-As Dialog (Chrome/Edge)
-    if ("showSaveFilePicker" in window) {
-      try {
-        await savePdfBytesWithPicker(bytes, filename);
-        setHint("Gespeichert.");
-        closeOrm();
-        return;
-      } catch (e) {
-        // Cancel -> im Edit-Modus bleiben (dein Wunsch!)
-        if (e?.name === "AbortError") {
-          setHint("Speichern abgebrochen – ORM bleibt geöffnet.");
-          return;
-        }
-        console.error(e);
-        setHint("Speichern fehlgeschlagen – ORM bleibt geöffnet.");
-        return;
-      }
-    }
-
-    // 2) Fallback: Download (kein sicherer Cancel-Callback möglich)
-    // -> Wir bleiben geöffnet, bis du manuell schließt (oder du willst Auto-Close)
-    downloadPdfBytes(bytes, filename);
-    setHint("Download gestartet. Bitte Datei speichern – ORM bleibt geöffnet.");
   }
+
+  // Fallback: Download (Cancel nicht sauber erkennbar)
+  try {
+    const bytes = await getEditedPdfBytesFromViewer(frame);
+    downloadPdfBytes(bytes, filename);
+    setHint("Download gestartet. ORM bleibt geöffnet.");
+  } catch (e) {
+    console.error(e);
+    setHint("Speichern nicht möglich (PDF noch nicht bereit?).");
+  }
+}
 
   btn.addEventListener("click", async () => {
     if (!isOpen) openOrm();
