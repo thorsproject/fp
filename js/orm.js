@@ -53,8 +53,7 @@ function injectPdfJsMinimalUi(iframe) {
     }
 
     .pdfViewer .page {
-      margin:6px auto !important;
-      border-radius:8px;
+      margin:0 !important;
     }
   `;
   doc.head.appendChild(style);
