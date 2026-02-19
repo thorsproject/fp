@@ -63,3 +63,34 @@ input.was-clamped {
 
 /* Utilities */
 .fuel-negative { color: var(--danger); font-weight: 700; }
+
+/* Save-Indicator */
+.save-indicator{
+  margin-left:auto;                 /* drückt ihn nach rechts */
+  font-size:12px;
+  font-weight:800;
+  color: var(--muted);
+  padding:6px 10px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background: var(--bg);
+  min-width: 120px;
+  text-align:center;
+  user-select:none;
+}
+
+/* Zustände */
+.save-indicator.is-dirty{
+  color:#ffb300;                     /* “Änderungen…” */
+  border-color: rgba(255,179,0,.45);
+}
+
+.save-indicator.is-saved{
+  color:#00ffcc;                     /* “Gespeichert” */
+  border-color: rgba(0,255,204,.35);
+}
+
+.save-indicator.is-error{
+  color:#ff8080;
+  border-color: rgba(255,128,128,.45);
+}

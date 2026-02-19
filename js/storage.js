@@ -7,6 +7,7 @@ const LAST_AUTOEXPORT_KEY = "fp.lastAutoExportBase";
 let isApplying = false;
 let lastFP = "";
 let saveTimer = null;
+let isDirty = false;
 
 // stabil stringify + kleiner Hash (FNV-1a)
 function stableStringify(obj) {
@@ -42,6 +43,10 @@ function setApplying(on) {
 
 function scheduleSave(delay = 300) {
   if (isApplying) return;
+  
+  isDirty = true;
+  setSaveIndicator("dirty", "Änderungen…");
+  
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     if (isApplying) return;
@@ -49,6 +54,28 @@ function scheduleSave(delay = 300) {
   }, delay);
 }
 // ---------- AUTOSAVE DIRTY GUARD ENDE ---------- //
+
+// ---------- SAVE INDICATOR ---------- //
+function setSaveIndicator(state, msg = "") {
+  const el = document.getElementById("saveIndicator");
+  if (!el) return;
+
+  el.classList.remove("is-dirty", "is-saved", "is-error");
+
+  if (state === "dirty") {
+    el.classList.add("is-dirty");
+    el.textContent = msg || "Änderungen…";
+  } else if (state === "saved") {
+    el.classList.add("is-saved");
+    el.textContent = msg || "Gespeichert";
+  } else if (state === "error") {
+    el.classList.add("is-error");
+    el.textContent = msg || "Speichern fehlgeschlagen";
+  } else {
+    el.textContent = msg || "";
+  }
+}
+// ---------- SAVE INDICATOR ENDE ---------- //
 
 function safeParse(json, fallback = null) {
   try { return JSON.parse(json); } catch { return fallback; }
@@ -269,13 +296,26 @@ export function saveAll({ onlyIfChanged = false } = {}) {
     fuel: captureFuel(),
   };
 
-  if (onlyIfChanged) {
-    const fp = fpOf(data);
-    if (fp === lastFP) return; // nichts geändert -> nicht schreiben
-    lastFP = fp;
-  }
+  try {
+    if (onlyIfChanged) {
+      const fp = fpOf(data);
+      if (fp === lastFP) {
+        // Zustand ist effektiv saved
+        isDirty = false;
+        setSaveIndicator("saved", "Gespeichert");
+        return;
+      }
+      lastFP = fp;
+    }
 
-  localStorage.setItem(KEY, JSON.stringify(data));
+    localStorage.setItem(KEY, JSON.stringify(data));
+
+    isDirty = false;
+    setSaveIndicator("saved", "Gespeichert");
+  } catch (e) {
+    console.error(e);
+    setSaveIndicator("error", "Speichern fehlgeschlagen");
+  }
 }
 
 export function loadAll() {
@@ -308,6 +348,9 @@ export function loadAll() {
   } catch {
     lastFP = "";
   }
+  isDirty = false;
+  setSaveIndicator("saved", "Geladen");
+  setTimeout(() => setSaveIndicator("saved", "Gespeichert"), 600);
 }
 
 export function clearAll() {
@@ -324,6 +367,8 @@ export function initAutosave({ delay = 300 } = {}) {
   } catch {
     lastFP = "";
   }
+  setSaveIndicator("saved", "Bereit");
+  setTimeout(() => setSaveIndicator("saved", "Gespeichert"), 500);
 
   // input/change -> debounced save
   document.addEventListener("input", (e) => {
@@ -352,6 +397,11 @@ export function initAutosave({ delay = 300 } = {}) {
       scheduleSave(0); // sofort (aber trotzdem dirty-guarded)
     }
   }, { passive: true });
+  window.addEventListener("beforeunload", (e) => {
+    if (!isDirty) return;
+    e.preventDefault();
+    e.returnValue = ""; // Browser zeigt Standard-Warnung
+  });
 }
 
 export function exportDataJSON({ auto = false } = {}) {
