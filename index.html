@@ -66,32 +66,34 @@
     <!-- LINKS: Route immer sichtbar -->
     <aside class="route-panel">
       <div class="left-panel">
-        <!-- FRAME 1 -->
-        <div class="frame">
-          <div class="master-grid">
-            <!-- Zeile 1 -->
-            <div></div> <!-- Spalte 1 leer -->
-            <div class="label">DATE</div> <!-- Spalte 2 -->
-            <div><input type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
-            <div class="label aero-label">FDL</div> <!-- Spalte 4 -->
-            <div><input type="text" id="FDLinput"></div> <!-- Spalte 5 -->
-            <div></div> <!-- Spalte 6 leer -->
+        <div id="kopfContainer"></div>
+          <!-- FRAME 1 -->
+          <div class="frame">
+            <div class="master-grid">
+              <!-- Zeile 1 -->
+              <div></div> <!-- Spalte 1 leer -->
+              <div class="label">DATE</div> <!-- Spalte 2 -->
+              <div><input type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
+              <div class="label aero-label">FDL</div> <!-- Spalte 4 -->
+              <div><input type="text" id="FDLinput"></div> <!-- Spalte 5 -->
+              <div></div> <!-- Spalte 6 leer -->
 
-            <!-- Zeile 2 -->
-            <div></div> <!-- Spalte 1 leer -->
-            <div class="label">LFZ</div> <!-- Spalte 2 -->
-            <div><select id="lfzSelect"></select></div> <!-- Spalte 3 -->
-            <div class="label aero-label">TEL:</div> <!-- Spalte 4 -->
-            <div><input type="text" id="TELinput"></div> <!-- Spalte 5 -->
-            <div></div> <!-- Spalte 6 leer -->
+              <!-- Zeile 2 -->
+              <div></div> <!-- Spalte 1 leer -->
+              <div class="label">LFZ</div> <!-- Spalte 2 -->
+              <div><select id="lfzSelect"></select></div> <!-- Spalte 3 -->
+              <div class="label aero-label">TEL:</div> <!-- Spalte 4 -->
+              <div><input type="text" id="TELinput"></div> <!-- Spalte 5 -->
+              <div></div> <!-- Spalte 6 leer -->
 
-            <!-- Zeile 3 -->
-            <div></div> <!-- Spalte 1 leer -->
-            <div class="label">CALL SIGN</div> <!-- Spalte 2 -->
-            <div id="callSignDisplay" class="callSignDisplay"></div> <!-- Spalte 3: Anzeige CALL SIGN -->
-            <div class="label aero-label">TAC-CS</div> <!-- Spalte 4 -->
-            <div><select id="tacSelect"></select></div> <!-- Spalte 5 -->
-            <div></div> <!-- Spalte 6 leer -->
+              <!-- Zeile 3 -->
+              <div></div> <!-- Spalte 1 leer -->
+              <div class="label">CALL SIGN</div> <!-- Spalte 2 -->
+              <div id="callSignDisplay" class="callSignDisplay"></div> <!-- Spalte 3: Anzeige CALL SIGN -->
+              <div class="label aero-label">TAC-CS</div> <!-- Spalte 4 -->
+              <div><select id="tacSelect"></select></div> <!-- Spalte 5 -->
+              <div></div> <!-- Spalte 6 leer -->
+            </div>
           </div>
         </div>
 
@@ -214,6 +216,7 @@
         <!-- BUTTON BOTTOM PANEL -->
         <div class="frame">
           <div class="routebtn">
+            <button class="routebtnReset" data-action="reset-kopf">Reset Kopfdaten</button>
             <button class="routebtnReset" data-action="reset-times">Reset ETD/ETA</button>
             <button class="routebtnReset" data-action="reset-aeros">Reset AERODROMES</button>
           </div>

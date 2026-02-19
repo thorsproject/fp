@@ -8,6 +8,7 @@ export function initRouteResets() {
     const action = btn.dataset.action;
     if (!action) return;
 
+    if (action === "reset-kopf") resetKopf();
     if (action === "reset-times") resetTimes();
     if (action === "reset-aeros") resetAerodromes();
   });
@@ -51,14 +52,22 @@ function removeValidation(nodeList) {
   });
 }
 
-// ---------- 1.1) Reset ETD/ETA ----------
+// ---------- 1.1) Reset Kopfdaten ----------
+function resetKopf() {
+  const etd = document.querySelectorAll("#kopfContainer .dateInput");
+  const eta = document.querySelectorAll("#kopfContainer .lfzSelect");
+  const eta = document.querySelectorAll("#kopfContainer .tacSelect");
+  clearInputs([...dateInput, ...lfzSelect, ...tacSelect]);
+}
+
+// ---------- 1.2) Reset ETD/ETA ----------
 function resetTimes() {
   const etd = document.querySelectorAll("#legsContainer .legField.etd");
   const eta = document.querySelectorAll("#legsContainer .legField.eta");
   clearInputs([...etd, ...eta]);
 }
 
-// ---------- 1.2) Reset Aerodromes + Alternates ----------
+// ---------- 1.3) Reset Aerodromes + Alternates ----------
 function resetAerodromes() {
   const aeroFrom = document.querySelectorAll("#legsContainer .legField.aeroFrom");
   const aeroTo = document.querySelectorAll("#legsContainer .legField.aeroTo");
