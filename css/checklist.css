@@ -1,9 +1,11 @@
 /* CHECKLIST: die Karte soll die View-Höhe nutzen */
 #view-checklist .frame {
   height: calc(100vh - 140px); /* ggf. 140 anpassen (Topbar etc.) */
+  height: calc(100dvh - 140px); /* ggf. 140 anpassen (Topbar etc.) */
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-bottom: 0;
 }
 
 /* Controls oben, ORM darunter nimmt den Rest */
