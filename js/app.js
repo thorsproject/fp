@@ -21,7 +21,6 @@ import { showVerticalProfilePopup } from "./vertprof.js";
 import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
-initResets();
 
 // ---------- Control Button State ----------
 function setBtnState(btn, on){
@@ -66,9 +65,8 @@ initTopNav({ map, defaultView: "view-map" });
 let windOn = false;
 let selectedWindLevel = "SFC";
 
-    // NEW:
-    const windBtn = document.getElementById("toggleWind");
-    const wxBtn   = document.getElementById("toggleWeather");
+const windBtn = document.getElementById("toggleWind");
+const wxBtn   = document.getElementById("toggleWeather");
 
 
 // ---------- Layers ----------
@@ -76,7 +74,6 @@ const { windLayer } = createWindLayers();
 
 // ---------- Buttons ----------
 windBtn?.addEventListener("click", async () => {
-
   windOn = !windOn;
 
   if (windOn) {
@@ -90,7 +87,6 @@ windBtn?.addEventListener("click", async () => {
   setBtnState(windBtn, windOn);
 
 });
-
 
 document.getElementById("windLevelSelect")?.addEventListener("change", async (e) => {
   selectedWindLevel = e.target.value;
@@ -136,13 +132,19 @@ map.on("click", (e) => {
     },
   });
   initFuelPlanning();
+  initResets();
 
   // SAFETY: erst rendern lassen, dann laden
   requestAnimationFrame(() => {
     loadAll();
 
-    // SAFETY: und nochmal kurz später (für späte select-options)
-    setTimeout(loadAll, 400);
+    const lfz = document.querySelector("#lfzSelect");
+    const tac = document.querySelector("#tacSelect");
+    const needsRetry =
+      (lfz && lfz.options.length < 2) ||
+      (tac && tac.options.length < 2);
+
+    if (needsRetry) setTimeout(loadAll, 400);
 
     initAutosave();
   });
