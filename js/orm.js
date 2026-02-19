@@ -116,33 +116,39 @@ function toIsoDateForOrm() {
   // 6) fallback: heute
   return new Date().toISOString().slice(0, 10);
 }
-function setDomWidgetValue(iframe, widgetId, value) {
+
+function setDomFieldValue(iframe, fieldName, value) {
   const doc = iframe.contentDocument;
-  if (!doc) return false;
+  if (!doc) return 0;
 
   const esc = (s) =>
     (window.CSS && CSS.escape) ? CSS.escape(s) : String(s).replace(/"/g, '\\"');
 
-  // PDF.js hat je nach Version unterschiedliche Attribute
-  const selectors = [
-    `[data-annotation-id="${esc(widgetId)}"]`,
-    `[data-id="${esc(widgetId)}"]`,
-    `#${esc(widgetId)}`,
+  const sels = [
+    `input[name="${esc(fieldName)}"]`,
+    `textarea[name="${esc(fieldName)}"]`,
+    `select[name="${esc(fieldName)}"]`,
+
+    // manche PDF.js Builds nutzen data-* statt name
+    `[data-field-name="${esc(fieldName)}"] input`,
+    `[data-field-name="${esc(fieldName)}"] textarea`,
+    `[data-field-name="${esc(fieldName)}"] select`,
+
+    `[data-name="${esc(fieldName)}"] input`,
+    `[data-name="${esc(fieldName)}"] textarea`,
+    `[data-name="${esc(fieldName)}"] select`,
   ];
 
-  let wrap = null;
-  for (const sel of selectors) {
-    wrap = doc.querySelector(sel);
-    if (wrap) break;
+  const els = sels.flatMap((sel) => Array.from(doc.querySelectorAll(sel)));
+  if (!els.length) return 0;
+
+  for (const el of els) {
+    el.value = value;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  const el = wrap?.querySelector?.("input, textarea, select") || null;
-  if (!el) return false;
-
-  el.value = value;
-  el.dispatchEvent(new Event("input", { bubbles: true }));
-  el.dispatchEvent(new Event("change", { bubbles: true }));
-  return true;
+  return els.length;
 }
 
 async function autofillOrmFields(iframe) {
@@ -178,23 +184,11 @@ async function autofillOrmFields(iframe) {
 
   const okCs = setFieldByName("CS", cs);
 
-  // DOM sichtbar machen
-  let domDate = 0;
-  let domCs = 0;
+  // DOM sichtbar machen (nach Feldnamen)
+  const domDate = okDate ? setDomFieldValue(iframe, "Datum1_af_date", dateIso) : 0;
+  const domCs   = okCs   ? setDomFieldValue(iframe, "CS", cs) : 0;
 
-  if (okDate) {
-    for (const f of fields["Datum1_af_date"] || []) {
-      if (setDomWidgetValue(iframe, f.id, dateIso)) domDate++;
-    }
-  }
-
-  if (okCs) {
-    for (const f of fields["CS"] || []) {
-      if (setDomWidgetValue(iframe, f.id, cs)) domCs++;
-    }
-  }
-
-  console.log("[ORM] DOM hits date/cs:", domDate, domCs);
+  console.log("[ORM] DOM hits (by name) date/cs:", domDate, domCs);
 
   // 3) Viewer informieren / refresh
   storage.onSetModified?.(true);
