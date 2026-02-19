@@ -294,7 +294,7 @@ export function initFuelPlanning() {
     // Remaining MISC (wie definiert)
     const bingoUsg = altUsg+resUsg;
     const minblUsg = plannedUsg+taxiUsg;
-    const co2Kgs = (tripCompanyUsg + contUsg) * FIX.USG_LIT * FIX.JETA1_KG_PER_L * FIX.CO2_PER_KG_FUEL;
+    const co2Kgs = (tripCompanyUsg + contUsg + taxiUsg) * FIX.USG_LIT * FIX.JETA1_KG_PER_L * FIX.CO2_PER_KG_FUEL;
 
     return {
       cap,
