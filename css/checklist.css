@@ -10,9 +10,9 @@
   height: calc(100dvh - 140px); /* ggf. 140 anpassen (Topbar etc.) */
   display: flex;
   flex-direction: column;
-  gap: 5px; /* Abstand zwischen Buttons und Viewer */
+  gap: 8px; /* Abstand zwischen Buttons und Viewer */
   margin-bottom: 0;
-  padding: 0 !important;      /* Abstand der Buttons von oben; statt 10px */
+  padding: 8px;      /* Abstand der Buttons von oben; statt 10px */
   border-radius: 3px; /* 8 */
   overflow: hidden;
 }
