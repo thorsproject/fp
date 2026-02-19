@@ -143,7 +143,7 @@ scrollbarer Hauptbereich
 
 /* Left: Route Panel */
 .route-panel{
-  width: 520px;
+  width: 530px;
   height: calc(100vh - 60px - 20px);
   overflow-y: hidden;
   border-right: 0;
