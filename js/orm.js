@@ -78,6 +78,8 @@ function applyMinimalUiWhenReady(iframe) {
       // Zoom setzen
       const pv = w?.PDFViewerApplication?.pdfViewer;
       if (pv) pv.currentScaleValue = "page-width";
+      
+      autofillOrmFields(iframe);
 
       return;
     }
@@ -88,6 +90,31 @@ function applyMinimalUiWhenReady(iframe) {
   };
 
   tick();
+}
+
+function autofillOrmFields(iframe) {
+
+  const app = iframe.contentWindow?.PDFViewerApplication;
+  const storage = app?.pdfDocument?.annotationStorage;
+
+  if (!storage) return;
+
+  // Datum: aus App oder fallback = heute
+  const dateInput = document.getElementById("dateInput")?.value?.trim();
+  const date = dateInput || new Date().toLocaleDateString("de-DE");
+
+  // Call Sign
+  const cs   = document.getElementById("callSignDisplay")?.textContent?.trim() || "";
+
+  // echtes PDF Feld: Datum
+  storage.setValue("Datum1_af_date", {
+    value: date
+  });
+
+  // echtes PDF Feld: Call Sign
+  storage.setValue("CS", {
+    value: cs
+  });
 }
 
 // ---------- PDF Export ----------
@@ -159,7 +186,6 @@ export function initOrmChecklist() {
 
     isOpen = true;
   }
-
 
   function confirmCloseOrm() {
     if (!isOpen) return false; // ✅ wenn nicht offen: nichts tun, keine Warnung
