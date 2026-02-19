@@ -4,19 +4,6 @@
    [ROUTE]         Route panel grid, leg toggles, validation
    ========================================================= */
 
-.left-panel{
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: var(--bg);
-  box-sizing: border-box;
-}
-/* ---------- Reset-Frame nach ganz unten drücken ---------- */
-.left-panel .frame:last-child {
-  margin-top: auto;
-  margin-bottom: 4px;
-}
-
 /* Master grid */
 .master-grid{
   display: grid;
@@ -84,21 +71,6 @@
 .legToggle[data-state="active"]{ background:#2e7d32; color:#fff; }
 .legToggle[data-state="inactive"]{ background:#8b1e1e; color:#fff; }
 .legToggle:hover{ transform: scale(1.05); }
-
-/* Inactive Route Fields (legacy) */
-.inactiveFields .legField{
-  opacity: 0.3;
-  pointer-events: none;
-  background: #1a1f26;
-  color: #6c7a89;
-  cursor: not-allowed;
-}
-.inactiveFields .label,
-.inactiveFields .aero-label,
-.inactiveFields .alternate-label{
-  opacity: 0.4;
-  pointer-events: none;
-}
 
 /* Validation */
 .aero.invalid,

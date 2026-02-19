@@ -71,12 +71,6 @@ scrollbarer Hauptbereich
   margin-top: 10px;     /* Abstand zum Inhalt (letzter Frame) */
 }
 
-/* Letzter Inhalt-Frame im Body soll keinen eigenen Abstand nach unten haben,
-   sonst entsteht optisch eine "Trennlinie" im Spalt */
-.panel-body .frame:last-child {
-  margin-bottom: 0;
-}
-
 /* Buttons im Footer auf gleicher Innenkante wie .frame-Inhalt (padding:10px) */
 .panel-footer-buttons {
   padding: 0 10px;      /* links/rechts exakt wie .frame padding */
@@ -151,7 +145,7 @@ scrollbarer Hauptbereich
 .route-panel{
   width: 520px;
   height: calc(100vh - 60px - 20px);
-  overflow-y: auto;
+  overflow-y: hidden;
   border-right: 0;
   padding-right: var(--panel-gutter);
   box-sizing: border-box;
