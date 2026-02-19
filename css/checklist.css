@@ -25,11 +25,11 @@
 /* Wrapper muss flexen + min-height:0 (wichtig für Scroll/iframe) */
 #view-checklist .orm-wrap {
   flex: 1 1 auto;
-  /* min-height: 0; */
+  min-height: 0;
   padding: 0 !important;
   margin: 0 !important; 
-  /* display: flex; */ 
-  /* flex-direction: column; */
+  display: flex;
+  flex-direction: column;
 }
 
 /* iframe wirklich groß machen */
