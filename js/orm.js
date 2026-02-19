@@ -75,6 +75,10 @@ function applyMinimalUiWhenReady(iframe) {
 
         // optional: Sidebar sicher zu (falls offen)
         w?.PDFViewerApplication?.pdfSidebar?.close?.();
+
+        // ✅ Zoom wirklich setzen
+        const pv = w?.PDFViewerApplication?.pdfViewer;
+        if (pv) pv.currentScaleValue = "page-width";
         return;
       }
     } catch (_) {}
