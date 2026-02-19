@@ -116,6 +116,34 @@ function toIsoDateForOrm() {
   // 6) fallback: heute
   return new Date().toISOString().slice(0, 10);
 }
+function setDomWidgetValue(iframe, widgetId, value) {
+  const doc = iframe.contentDocument;
+  if (!doc) return false;
+
+  const esc = (s) =>
+    (window.CSS && CSS.escape) ? CSS.escape(s) : String(s).replace(/"/g, '\\"');
+
+  // PDF.js hat je nach Version unterschiedliche Attribute
+  const selectors = [
+    `[data-annotation-id="${esc(widgetId)}"]`,
+    `[data-id="${esc(widgetId)}"]`,
+    `#${esc(widgetId)}`,
+  ];
+
+  let wrap = null;
+  for (const sel of selectors) {
+    wrap = doc.querySelector(sel);
+    if (wrap) break;
+  }
+
+  const el = wrap?.querySelector?.("input, textarea, select") || null;
+  if (!el) return false;
+
+  el.value = value;
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+  return true;
+}
 
 async function autofillOrmFields(iframe) {
   console.log("[ORM] autofillOrmFields() fired");
@@ -140,19 +168,6 @@ async function autofillOrmFields(iframe) {
     return true;
   };
 
-  // DOM-Sync: Widget-ID -> input im Annotation-Layer
-  const setDomValueByWidgetId = (id, value) => {
-    const root = iframe.contentDocument;
-    const wrap = root?.querySelector(`[data-annotation-id="${esc(id)}"]`);
-    const el = wrap?.querySelector("input, textarea, select");
-    if (!el) return false;
-
-    el.value = value;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-    return true;
-  };
-
   // 1) Storage setzen
   let okDate = false;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dateIso)) {
@@ -163,18 +178,23 @@ async function autofillOrmFields(iframe) {
 
   const okCs = setFieldByName("CS", cs);
 
-  // 2) DOM sichtbar machen (nur für Felder, die es gibt)
+  // DOM sichtbar machen
+  let domDate = 0;
+  let domCs = 0;
+
   if (okDate) {
     for (const f of fields["Datum1_af_date"] || []) {
-      setDomValueByWidgetId(f.id, dateIso);
+      if (setDomWidgetValue(iframe, f.id, dateIso)) domDate++;
     }
   }
 
   if (okCs) {
     for (const f of fields["CS"] || []) {
-      setDomValueByWidgetId(f.id, cs);
+      if (setDomWidgetValue(iframe, f.id, cs)) domCs++;
     }
   }
+
+  console.log("[ORM] DOM hits date/cs:", domDate, domCs);
 
   // 3) Viewer informieren / refresh
   storage.onSetModified?.(true);
