@@ -11,6 +11,11 @@
    PANEL SYSTEM
    Standardstruktur für alle Panels
    ========================================= */
+/* gemeinsame Variable */
+:root{
+  --panel-gutter: 10px;
+}
+
 /*
 Panel Container
 Hauptcontainer eines Panels
@@ -147,8 +152,8 @@ scrollbarer Hauptbereich
   width: 520px;
   height: calc(100vh - 60px - 20px);
   overflow-y: auto;
-  border-right: 1px solid var(--border);
-  padding-right: 10px;
+  border-right: 0;
+  padding-right: var(--panel-gutter);
   box-sizing: border-box;
 }
 
@@ -158,8 +163,14 @@ scrollbarer Hauptbereich
   min-width: 0;
   height: calc(100vh - 60px - 20px);
   overflow: hidden;
+  padding-left: var(--panel-gutter);
   box-sizing: border-box;
   position: relative;
+}
+
+.route-panel,
+.panel-body{
+  scrollbar-gutter: stable;
 }
 
 /* =========================================
