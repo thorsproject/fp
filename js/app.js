@@ -137,6 +137,13 @@ map.on("click", (e) => {
   });
   initFuelPlanning();
 
-  loadAll();
-  initAutosave();
+  // SAFETY: erst rendern lassen, dann laden
+  requestAnimationFrame(() => {
+    loadAll();
+
+    // SAFETY: und nochmal kurz später (für späte select-options)
+    setTimeout(loadAll, 400);
+
+    initAutosave();
+  });
 })();
