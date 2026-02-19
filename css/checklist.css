@@ -1,0 +1,26 @@
+.checklist-controls{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+/* Host für PDF (unter den Buttons) */
+.orm-host{
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  background:#111;
+  margin-bottom:10px;
+}
+
+/* versteckt */
+.orm-host.is-hidden{ display:none; }
+
+.orm-frame{
+  width:100%;
+  height: calc(100vh - 60px - 20px - 60px); 
+  border:0;
+  background:#111;
+}

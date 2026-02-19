@@ -53,8 +53,6 @@
       <button type="button" class="topbtn" data-view="view-fuel">FUEL Planning</button>
       <button type="button" class="topbtn" data-view="view-performance">PERFORMANCE</button>
       <button type="button" class="topbtn" data-view="view-settings">Settings</button>
-      <button type="button" class="topbtn" data-view="view-orm">ORM öffnen</button>
-      <button type="button" class="topbtn" data-view="view-mail" data-action="mail-eo">Mail EO senden</button>
       <button type="button" class="topbtn" data-action="export-data">Export JSON</button>
       <button type="button" class="topbtn" data-action="import-data">Import JSON</button>
       <!-- optional: unsichtbarer file input -->
@@ -269,6 +267,23 @@
 
         <!-- VIEW: CHECKLIST -->
         <section id="view-checklist" class="view">
+          <div class="checklist-controls">
+            <div class="ctrl-chip">
+              <span>ORM</span>
+              <button id="btnOrm" type="button">ORM öffnen</button>
+            </div>
+
+            <div class="ctrl-chip">
+              <span>EO</span>
+              <button id="btnMailEO" type="button">Mail EO senden</button>
+            </div>
+          </div>
+
+          <div id="ormHost" class="orm-host is-hidden">
+            <!-- PDF.js Viewer wird hier per iframe geladen -->
+            <iframe id="ormFrame" class="orm-frame" title="ORM Blatt"></iframe>
+          </div>
+
           <div class="frame">
             <h2 class="view-title">Checklist</h2>
             <p class="view-sub">Platzhalter – hier kommt deine Checklist rein.</p>

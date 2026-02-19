@@ -20,6 +20,7 @@ import { showVerticalProfilePopup } from "./vertprof.js";
 import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
+import { initORM } from "./orm.js";
 
 // ---------- Control Button State ----------
 function setBtnState(btn, on){
@@ -104,6 +105,12 @@ map.on("click", (e) => {
   showVerticalProfilePopup(map, e.latlng);
 });
 
+// Platzhalter für eMail an EO
+document.getElementById("btnMailEO")?.addEventListener("click", () => {
+  // hier später: export + mail workflow
+  // aktuell z.B. exportDataJSON({ auto:true }) oder was du willst
+});
+
 // ---------- INIT ----------
 (async function init() {
   try {
@@ -130,6 +137,7 @@ map.on("click", (e) => {
       updateAltMarkers(map);
     },
   });
+  initORM();
   initFuelPlanning();
   initResets();
 
