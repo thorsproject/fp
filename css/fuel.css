@@ -18,7 +18,17 @@
    [FUEL:FOOT]     Footer note + MISC layout container
    ========================================================= */
 
-.fuel-card{ overflow:hidden; }
+.fuel-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ---------- Reset-Frame nach ganz unten drücken ---------- */
+.fuel-card > .frame:last-child {
+  margin-top: auto;
+  margin-bottom: 4px;
+}
 
 /* -------------------------
    [FUEL:HEAD]
