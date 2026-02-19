@@ -54,10 +54,10 @@ function removeValidation(nodeList) {
 
 // ---------- 1.1) Reset Kopfdaten ----------
 function resetKopf() {
-  const etd = document.querySelectorAll("#kopfContainer .dateInput");
-  const eta = document.querySelectorAll("#kopfContainer .lfzSelect");
-  const eta = document.querySelectorAll("#kopfContainer .tacSelect");
-  clearInputs([...dateInput, ...lfzSelect, ...tacSelect]);
+  const date = document.querySelectorAll("#kopfContainer .dateInput");
+  const lfz = document.querySelectorAll("#kopfContainer .lfzSelect");
+  const tac = document.querySelectorAll("#kopfContainer .tacSelect");
+  clearInputs([...date, ...lfz, ...tac]);
 }
 
 // ---------- 1.2) Reset ETD/ETA ----------
