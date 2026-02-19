@@ -92,29 +92,55 @@ function applyMinimalUiWhenReady(iframe) {
   tick();
 }
 
-function autofillOrmFields(iframe) {
+function toIsoDateForOrm() {
+  const raw = document.getElementById("dateInput")?.value?.trim() || "";
 
+  // schon ISO?
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+  // dd.mm.yy
+  let m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  // dd.mm.yyyy
+  m = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  // fallback: heute ISO
+  return new Date().toISOString().slice(0, 10);
+}
+
+async function autofillOrmFields(iframe) {
   const app = iframe.contentWindow?.PDFViewerApplication;
-  const storage = app?.pdfDocument?.annotationStorage;
+  const pdf = app?.pdfDocument;
+  const storage = pdf?.annotationStorage;
 
-  if (!storage) return;
+  if (!pdf || !storage) return;
 
-  // Datum: aus App oder fallback = heute
-  const dateInput = document.getElementById("dateInput")?.value?.trim();
-  const date = dateInput || new Date().toLocaleDateString("de-DE");
+  // ✅ Feldnamen -> Widget IDs
+  const fields = await pdf.getFieldObjects(); // { [name]: [{id, ...}, ...] }
+  if (!fields) return;
 
-  // Call Sign
-  const cs   = document.getElementById("callSignDisplay")?.textContent?.trim() || "";
+  const dateIso = toIsoDateForOrm();
+  const cs = document.getElementById("callSignDisplay")?.textContent?.trim() || "";
 
-  // echtes PDF Feld: Datum
-  storage.setValue("Datum1_af_date", {
-    value: date
-  });
+  // Hilfssetter: setzt alle Widgets eines Feldnamens
+  const setFieldByName = (name, value) => {
+    const arr = fields[name];
+    if (!arr || !arr.length) return false;
 
-  // echtes PDF Feld: Call Sign
-  storage.setValue("CS", {
-    value: cs
-  });
+    arr.forEach((f) => storage.setValue(f.id, { value }));
+    return true;
+  };
+
+  const okDate = setFieldByName("Datum1_af_date", dateIso);
+  const okCs   = setFieldByName("CS", cs);
+
+  // Viewer auffrischen, damit die Widgets den neuen Storage-Wert zeigen
+  app?.pdfViewer?.refresh?.();
+
+  // Optional: Feedback im console.log (nur zum Debuggen)
+  // console.log("Autofill:", { okDate, okCs, dateIso, cs });
 }
 
 // ---------- PDF Export ----------
