@@ -11,7 +11,10 @@ export function initResets() {
     if (!action) return;
 
     const fn = ACTIONS[action];
-    if (typeof fn === "function") fn();
+    if (typeof fn === "function") {
+      fn();
+      flashResetSuccess(btn);
+    }
   });
 }
 
@@ -43,6 +46,16 @@ function removeValidation(nodeList) {
   document.querySelectorAll(".aero-error, .alt-error").forEach((el) => {
     el.textContent = "";
   });
+}
+
+function flashResetSuccess(btn) {
+  if (!btn) return;
+
+  btn.classList.add("reset-success");
+
+  setTimeout(() => {
+    btn.classList.remove("reset-success");
+  }, 220);
 }
 
 // ---------- ROUTE ----------
