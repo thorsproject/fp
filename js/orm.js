@@ -79,8 +79,6 @@ function applyMinimalUiWhenReady(iframe) {
       const pv = w?.PDFViewerApplication?.pdfViewer;
       if (pv) pv.currentScaleValue = "page-width";
       
-      autofillOrmFields(iframe);
-
       return;
     }
 
@@ -140,7 +138,28 @@ async function autofillOrmFields(iframe) {
   app?.pdfViewer?.refresh?.();
 
   // Optional: Feedback im console.log (nur zum Debuggen)
-  // console.log("Autofill:", { okDate, okCs, dateIso, cs });
+  console.log("[ORM] fieldNames:", Object.keys(fields));
+  console.log("[ORM] okDate/okCs:", okDate, okCs, "dateIso:", dateIso, "cs:", cs);
+}
+
+function wireOrmAutofill(iframe) {
+  const w = iframe.contentWindow;
+  const app = w?.PDFViewerApplication;
+  if (!app) return;
+
+  const ready = app.initializedPromise ?? Promise.resolve();
+
+  ready.then(() => {
+    // füllen, sobald das Dokument wirklich geladen ist
+    app.eventBus?.on?.("documentloaded", () => {
+      autofillOrmFields(iframe);
+    });
+
+    // falls es beim Wiring schon geladen ist
+    if (app.pdfDocument) {
+      autofillOrmFields(iframe);
+    }
+  });
 }
 
 // ---------- PDF Export ----------
@@ -202,6 +221,7 @@ export function initOrmChecklist() {
 
     frame.addEventListener("load", () => {
       applyMinimalUiWhenReady(frame);
+      wireOrmAutofill(frame);            // ✅ wichtig
     }, { once:true });
 
     wrap.classList.remove("is-hidden");
