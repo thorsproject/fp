@@ -147,6 +147,7 @@ async function autofillOrmFields(iframe) {
   }
 
   const okCs = setFieldByName("CS", cs);
+  storage.onSetModified?.(true);
 
   // Viewer auffrischen, damit die Widgets den neuen Storage-Wert zeigen
   app?.pdfViewer?.refresh?.();
@@ -157,24 +158,39 @@ async function autofillOrmFields(iframe) {
 }
 
 function wireOrmAutofill(iframe) {
-  const w = iframe.contentWindow;
-  const app = w?.PDFViewerApplication;
+  const app = iframe.contentWindow?.PDFViewerApplication;
   if (!app) return;
 
   const ready = app.initializedPromise ?? Promise.resolve();
 
   ready.then(() => {
-    // füllen, sobald das Dokument wirklich geladen ist
-    app.eventBus?.on?.("documentloaded", () => {
-      autofillOrmFields(iframe);
-    });
+    let done = false;
 
-    // falls es beim Wiring schon geladen ist
-    if (app.pdfDocument) {
-      autofillOrmFields(iframe);
-    }
+    const runOnce = async () => {
+      if (done) return;
+      if (!app.pdfDocument) return;
+
+      done = true;
+      try {
+        await autofillOrmFields(iframe);
+      } catch (e) {
+        console.error("[ORM] autofill failed:", e);
+        done = false; // falls du später nochmal triggern willst
+      }
+    };
+
+    // ✅ erst wenn Annotation-Layer da ist (Formfelder sichtbar)
+    app.eventBus?.on?.("annotationlayerrendered", runOnce);
+
+    // Fallbacks: manchmal kommt annotationlayerrendered spät/gar nicht (je nach PDF)
+    app.eventBus?.on?.("pagesloaded", runOnce);
+    app.eventBus?.on?.("documentloaded", runOnce);
+
+    // Falls beim Wiring schon fertig geladen:
+    if (app.pdfDocument) runOnce();
   });
 }
+
 
 // ---------- PDF Export ----------
 async function getEditedPdfBytesFromViewer(iframe) {
