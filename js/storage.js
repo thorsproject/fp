@@ -3,6 +3,53 @@ const KEY = "fp.v1"; // bei Breaking Changes erhöhen (v2, v3...)
 const EXPORT_COUNTER_KEY = "fp.exportCounter";
 const LAST_AUTOEXPORT_KEY = "fp.lastAutoExportBase";
 
+// ---------- AUTOSAVE DIRTY GUARD ---------- //
+let isApplying = false;
+let lastFP = "";
+let saveTimer = null;
+
+// stabil stringify + kleiner Hash (FNV-1a)
+function stableStringify(obj) {
+  const seen = new WeakSet();
+
+  // keys stabil sortieren
+  const allKeys = [];
+  JSON.stringify(obj, (k, v) => (allKeys.push(k), v));
+  allKeys.sort();
+
+  return JSON.stringify(obj, (k, v) => {
+    if (typeof v === "object" && v !== null) {
+      if (seen.has(v)) return; // zirkulär ignorieren (sollte nicht vorkommen)
+      seen.add(v);
+    }
+    return v;
+  }, 0, allKeys);
+}
+
+function fpOf(obj) {
+  const s = stableStringify(obj);
+  let h = 2166136261; // FNV-1a
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return String(h >>> 0);
+}
+
+function setApplying(on) {
+  isApplying = on;
+}
+
+function scheduleSave(delay = 300) {
+  if (isApplying) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    if (isApplying) return;
+    saveAll({ onlyIfChanged: true });
+  }, delay);
+}
+// ---------- AUTOSAVE DIRTY GUARD ENDE ---------- //
+
 function safeParse(json, fallback = null) {
   try { return JSON.parse(json); } catch { return fallback; }
 }
@@ -215,12 +262,19 @@ function applyFuel(fuel) {
   // daher nur change/input reicht.
 }
 
-export function saveAll() {
+export function saveAll({ onlyIfChanged = false } = {}) {
   const data = {
     t: Date.now(),
     route: captureRoute(),
     fuel: captureFuel(),
   };
+
+  if (onlyIfChanged) {
+    const fp = fpOf(data);
+    if (fp === lastFP) return; // nichts geändert -> nicht schreiben
+    lastFP = fp;
+  }
+
   localStorage.setItem(KEY, JSON.stringify(data));
 }
 
@@ -229,27 +283,65 @@ export function loadAll() {
   const data = safeParse(raw, null);
   if (!data) return;
 
-  applyRoute(data.route);
-  applyFuel(data.fuel);
-
-  // Selects können nach initialem Populate nochmal überschrieben werden
-  // (falls lfz/tac später gefüllt werden)
-  window.setTimeout(() => {
+  setApplying(true);
+  try {
     applyRoute(data.route);
-  }, 400);
+    applyFuel(data.fuel);
+
+    // Safety-reload für selects (LFZ/TAC)
+    window.setTimeout(() => {
+      setApplying(true);
+      try {
+        applyRoute(data.route);
+      } finally {
+        setApplying(false);
+      }
+    }, 400);
+  } finally {
+    // nach Apply + initialen Events wieder erlauben
+    setTimeout(() => setApplying(false), 0);
+  }
+
+  // lastFP passend setzen (damit nach loadAll nicht sofort "dirty" ist)
+  try {
+    lastFP = fpOf(data);
+  } catch {
+    lastFP = "";
+  }
 }
 
 export function clearAll() {
   localStorage.removeItem(KEY);
 }
 
-export function initAutosave() {
-  const handler = () => saveAll();
+export function initAutosave({ delay = 300 } = {}) {
+  // initial fingerprint setzen (aus localStorage, falls vorhanden)
+  try {
+    const raw = localStorage.getItem(KEY);
+    const data = safeParse(raw, null);
+    if (data) lastFP = fpOf(data);
+    else lastFP = fpOf({ route: captureRoute(), fuel: captureFuel() });
+  } catch {
+    lastFP = "";
+  }
 
-  document.addEventListener("input", handler);
-  document.addEventListener("change", handler);
+  // input/change -> debounced save
+  document.addEventListener("input", (e) => {
+    const t = e.target;
+    if (!t) return;
+    // nur echte Inputs/Selects/Textareas
+    if (!(t.matches?.("input, select, textarea"))) return;
+    scheduleSave(delay);
+  }, { passive: true });
 
-  // Klicks für Toggle Buttons (Leg + Fuel)
+  document.addEventListener("change", (e) => {
+    const t = e.target;
+    if (!t) return;
+    if (!(t.matches?.("input, select, textarea"))) return;
+    scheduleSave(delay);
+  }, { passive: true });
+
+  // Toggles/Resets -> nach UI Update speichern (debounced reicht)
   document.addEventListener("click", (e) => {
     if (
       e.target.closest(".legToggle") ||
@@ -257,10 +349,9 @@ export function initAutosave() {
       e.target.closest(".routebtnReset") ||
       e.target.closest(".fuelbtnReset")
     ) {
-      // nach dem UI-Update speichern
-      window.setTimeout(saveAll, 0);
+      scheduleSave(0); // sofort (aber trotzdem dirty-guarded)
     }
-  });
+  }, { passive: true });
 }
 
 export function exportDataJSON({ auto = false } = {}) {
