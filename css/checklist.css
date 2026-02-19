@@ -12,7 +12,7 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 0;
-  padding: 3px;      /* statt 10px */
+  padding: 6px;      /* statt 10px */
   border-radius: 3px; /* 8 */
 }
 
