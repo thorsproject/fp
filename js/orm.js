@@ -124,21 +124,34 @@ async function autofillOrmFields(iframe) {
 
   if (!pdf || !storage) return;
 
-  // ✅ Feldnamen -> Widget IDs
-  const fields = await pdf.getFieldObjects(); // { [name]: [{id, ...}, ...] }
+  const fields = await pdf.getFieldObjects();
   if (!fields) return;
 
   const dateIso = toIsoDateForOrm();
   const cs = document.getElementById("callSignDisplay")?.textContent?.trim() || "";
 
-  // Hilfssetter: setzt alle Widgets eines Feldnamens
+  // Storage-Setter: Feldname -> alle Widget-IDs
   const setFieldByName = (name, value) => {
     const arr = fields[name];
-    if (!arr || !arr.length) return false;
+    if (!arr?.length) return false;
     arr.forEach((f) => storage.setValue(f.id, { value }));
     return true;
   };
 
+  // DOM-Sync: Widget-ID -> input im Annotation-Layer
+  const setDomValueByWidgetId = (id, value) => {
+    const root = iframe.contentDocument;
+    const wrap = root?.querySelector(`[data-annotation-id="${CSS.escape(id)}"]`);
+    const el = wrap?.querySelector("input, textarea, select");
+    if (!el) return false;
+
+    el.value = value;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+    return true;
+  };
+
+  // 1) Storage setzen
   let okDate = false;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dateIso)) {
     console.warn("[ORM] Ungültiges Datum, setze Datum nicht:", dateIso);
@@ -147,13 +160,24 @@ async function autofillOrmFields(iframe) {
   }
 
   const okCs = setFieldByName("CS", cs);
-  storage.onSetModified?.(true);
 
-  // Viewer auffrischen, damit die Widgets den neuen Storage-Wert zeigen
+  // 2) DOM sichtbar machen (nur für Felder, die es gibt)
+  if (okDate) {
+    for (const f of fields["Datum1_af_date"] || []) {
+      setDomValueByWidgetId(f.id, dateIso);
+    }
+  }
+
+  if (okCs) {
+    for (const f of fields["CS"] || []) {
+      setDomValueByWidgetId(f.id, cs);
+    }
+  }
+
+  // 3) Viewer informieren / refresh
+  storage.onSetModified?.(true);
   app?.pdfViewer?.refresh?.();
 
-  // Optional: Feedback im console.log (nur zum Debuggen)
-  console.log("[ORM] fieldNames:", Object.keys(fields));
   console.log("[ORM] okDate/okCs:", okDate, okCs, "dateIso:", dateIso, "cs:", cs);
 }
 
