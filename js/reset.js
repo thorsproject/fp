@@ -1,133 +1,163 @@
 // js/reset.js
-export function initRouteResets() {
-  // Delegation: funktioniert auch, wenn Buttons später neu gerendert werden
+export function initResets() {
   document.addEventListener("click", (e) => {
-    const btn = e.target.closest("button.routebtnReset");
+    const btn =
+      e.target.closest("button.routebtnReset") ||
+      e.target.closest("button.fuelbtnReset");
+
     if (!btn) return;
 
     const action = btn.dataset.action;
     if (!action) return;
 
-    if (action === "reset-kopf") resetKopf();
-    if (action === "reset-times") resetTimes();
-    if (action === "reset-aeros") resetAerodromes();
+    const fn = ACTIONS[action];
+    if (typeof fn === "function") fn();
   });
 }
 
-export function initFuelResets() {
-  // Delegation: funktioniert auch, wenn Buttons später neu gerendert werden
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest("button.fuelbtnReset");
-    if (!btn) return;
+const ACTIONS = {
+  // Route
+  "reset-kopf": resetKopf,
+  "reset-times": resetTimes,
+  "reset-aeros": resetAerodromes,
 
-    const action = btn.dataset.action;
-    if (!action) return;
-
-    if (action === "reset-fuel") resetFuelInputs();
-    if (action === "reset-legfuel") resetlegFuelInputs();
-    if (action === "reset-compfuel") resetcompFuelInputs();
-    if (action === "reset-altfuel") resetaltFuelInputs();
-  });
-}
+  // Fuel
+  "reset-fuel": resetFuelInputs,
+  "reset-legfuel": resetLegFuelInputs,
+  "reset-compfuel": resetCompFuelInputs,
+  "reset-altfuel": resetAltFuelInputs,
+};
 
 // ---------- helpers ----------
 function clearInputs(nodeList) {
   nodeList.forEach((el) => {
     if (!el) return;
     el.value = "";
-    // triggert live-calc / UI updates
     el.dispatchEvent(new Event("input", { bubbles: true }));
     el.dispatchEvent(new Event("change", { bubbles: true }));
   });
 }
 
 function removeValidation(nodeList) {
-  nodeList.forEach((el) => {
-    el.classList.remove("invalid");
-  });
-
-  // Falls du Fehlertexte irgendwo als Elemente ausgibst:
+  nodeList.forEach((el) => el.classList.remove("invalid"));
   document.querySelectorAll(".aero-error, .alt-error").forEach((el) => {
     el.textContent = "";
   });
 }
 
-// ---------- 1.1) Reset Kopfdaten ----------
+// ---------- ROUTE ----------
 function resetKopf() {
-  const date = document.querySelectorAll("#kopfContainer .dateInput");
-  const lfz = document.querySelectorAll("#kopfContainer .lfzSelect");
-  const tac = document.querySelectorAll("#kopfContainer .tacSelect");
-  clearInputs([...date, ...lfz, ...tac]);
+  // Wenn du inzwischen den #kopfContainer korrekt schließt und alles drin ist:
+  const scope = document.getElementById("kopfContainer") || document;
+
+  const date = scope.querySelector("#dateInput");
+  const fdl  = scope.querySelector("#FDLinput");
+  const tel  = scope.querySelector("#TELinput");
+  clearInputs([date, fdl, tel]);
+
+  const lfz = scope.querySelector("#lfzSelect");
+  const tac = scope.querySelector("#tacSelect");
+
+  if (lfz) {
+    lfz.selectedIndex = 0;
+    lfz.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  if (tac) {
+    tac.selectedIndex = 0;
+    tac.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  const cs = scope.querySelector("#callSignDisplay");
+  if (cs) cs.textContent = "";
 }
 
-// ---------- 1.2) Reset ETD/ETA ----------
 function resetTimes() {
   const etd = document.querySelectorAll("#legsContainer .legField.etd");
   const eta = document.querySelectorAll("#legsContainer .legField.eta");
   clearInputs([...etd, ...eta]);
 }
 
-// ---------- 1.3) Reset Aerodromes + Alternates ----------
 function resetAerodromes() {
   const aeroFrom = document.querySelectorAll("#legsContainer .legField.aeroFrom");
-  const aeroTo = document.querySelectorAll("#legsContainer .legField.aeroTo");
-  const alts = document.querySelectorAll("#legsContainer .legField.alt");
+  const aeroTo   = document.querySelectorAll("#legsContainer .legField.aeroTo");
+  const alts     = document.querySelectorAll("#legsContainer .legField.alt");
   clearInputs([...aeroFrom, ...aeroTo, ...alts]);
   removeValidation([...aeroFrom, ...aeroTo, ...alts]);
 }
 
-// ---------- 2.1) Reset Fuel Inputs ----------
+// ---------- FUEL ----------
 function resetFuelInputs() {
+  resetLegFuelInputs();
+  resetCompFuelInputs();
+  resetAltFuelInputs();
+
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
-  // Trip Fuel (Leg 1-4) – auch wenn disabled/inactive: wir leeren trotzdem
-  const trip = panel.querySelectorAll(`[data-trip-usg="1"],[data-trip-usg="2"],[data-trip-usg="3"],[data-trip-usg="4"]`);
-  clearInputs(trip);
-
-  // Approaches
-  const ifr = panel.querySelector(`[data-field="appr_ifr_n"]`);
-  const vfr = panel.querySelector(`[data-field="appr_vfr_n"]`);
-  clearInputs([ifr, vfr]);
-
-  // Alternate Fuel (Log)
-  const alt = panel.querySelector(`[data-field="alt_usg_log"]`);
-  clearInputs([alt]);
-
-  // Final Reserve auf IFR setzen
-  const finres = panel.querySelector(`#finres`);
+  // Final Reserve auf IFR
+  const finres = panel.querySelector("#finres");
   if (finres) {
     finres.value = "IFR";
     finres.dispatchEvent(new Event("change", { bubbles: true }));
   }
+
+  // Reset-Policy: Standard Block ON
+  setStdBlockOn(panel);
 }
 
-// ---------- 2.2) Reset Leg Fuel Inputs ----------
-function resetlegFuelInputs() {
+function resetLegFuelInputs() {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
-  // Trip Fuel (Leg 1-4) – auch wenn disabled/inactive: wir leeren trotzdem
-  const trip = panel.querySelectorAll(`[data-trip-usg="1"],[data-trip-usg="2"],[data-trip-usg="3"],[data-trip-usg="4"]`);
+  const trip = panel.querySelectorAll(
+    `[data-trip-usg="1"],[data-trip-usg="2"],[data-trip-usg="3"],[data-trip-usg="4"]`
+  );
   clearInputs(trip);
 }
 
-// ---------- 2.3) Reset Company Fuel Inputs ----------
-function resetcompFuelInputs() {
+function resetCompFuelInputs() {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
-  // Approaches
   const ifr = panel.querySelector(`[data-field="appr_ifr_n"]`);
   const vfr = panel.querySelector(`[data-field="appr_vfr_n"]`);
   clearInputs([ifr, vfr]);
 }
-// ---------- 2.4) Reset Alternate Fuel Inputs ----------
-function resetaltFuelInputs() {
+
+function resetAltFuelInputs() {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
-  // Alternate Fuel (Log)
   const alt = panel.querySelector(`[data-field="alt_usg_log"]`);
   clearInputs([alt]);
+}
+
+// --- Reset-Policy helper: Std Block ON (Main=44 locked, Aux=ON) ---
+function setStdBlockOn(panel) {
+  const stdBtn  = panel.querySelector(`.fuelToggle[data-field="std_block"]`);
+  const auxBtn  = panel.querySelector(`.fuelToggle[data-field="aux_on"]`);
+  const mainInp = panel.querySelector(`[data-field="main_usg"]`);
+
+  // Standard ON
+  if (stdBtn) {
+    stdBtn.dataset.state = "on";
+    stdBtn.textContent = "ON";
+  }
+
+  // Aux ON
+  if (auxBtn) {
+    auxBtn.dataset.state = "on";
+    auxBtn.textContent = "26.4 USG";
+  }
+
+  // Main = 44.0 locked
+  if (mainInp) {
+    mainInp.value = "44,0";
+    mainInp.disabled = true;
+    mainInp.dispatchEvent(new Event("input", { bubbles: true }));
+    mainInp.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  // Damit Fuel.js sicher neu rechnet (falls es nur auf input/change hört)
+  panel.dispatchEvent(new Event("change", { bubbles: true }));
 }
