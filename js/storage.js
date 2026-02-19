@@ -13,18 +13,23 @@ let isDirty = false;
 function stableStringify(obj) {
   const seen = new WeakSet();
 
-  // keys stabil sortieren
-  const allKeys = [];
-  JSON.stringify(obj, (k, v) => (allKeys.push(k), v));
-  allKeys.sort();
-
-  return JSON.stringify(obj, (k, v) => {
-    if (typeof v === "object" && v !== null) {
-      if (seen.has(v)) return; // zirkulär ignorieren (sollte nicht vorkommen)
+  function norm(v) {
+    if (v && typeof v === "object") {
+      if (seen.has(v)) return null;
       seen.add(v);
+
+      if (Array.isArray(v)) return v.map(norm);
+
+      const out = {};
+      Object.keys(v).sort().forEach((k) => {
+        out[k] = norm(v[k]);
+      });
+      return out;
     }
     return v;
-  }, 0, allKeys);
+  }
+
+  return JSON.stringify(norm(obj));
 }
 
 function fpOf(obj) {
@@ -298,7 +303,7 @@ export function saveAll({ onlyIfChanged = false } = {}) {
 
   try {
     if (onlyIfChanged) {
-      const fp = fpOf(data);
+      const fp = fpOf({ route: data.route, fuel: data.fuel });
       if (fp === lastFP) {
         // Zustand ist effektiv saved
         isDirty = false;
@@ -344,7 +349,7 @@ export function loadAll() {
 
   // lastFP passend setzen (damit nach loadAll nicht sofort "dirty" ist)
   try {
-    lastFP = fpOf(data);
+    lastFP = fpOf({ route: data.route, fuel: data.fuel });
   } catch {
     lastFP = "";
   }
@@ -355,6 +360,9 @@ export function loadAll() {
 
 export function clearAll() {
   localStorage.removeItem(KEY);
+  isDirty = false;
+  lastFP = "";
+  setSaveIndicator("saved", "Zurückgesetzt");
 }
 
 export function initAutosave({ delay = 300 } = {}) {
@@ -362,7 +370,7 @@ export function initAutosave({ delay = 300 } = {}) {
   try {
     const raw = localStorage.getItem(KEY);
     const data = safeParse(raw, null);
-    if (data) lastFP = fpOf(data);
+    if (data) lastFP = fpOf({ route: data.route, fuel: data.fuel });
     else lastFP = fpOf({ route: captureRoute(), fuel: captureFuel() });
   } catch {
     lastFP = "";
