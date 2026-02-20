@@ -113,11 +113,31 @@ document.getElementById("btnMailEO")?.addEventListener("click", () => {
 
 // ---------- INIT ----------
 (async function init() {
+  async function loadIncludes(root = document) {
+    const nodes = Array.from(root.querySelectorAll("[data-include]"));
+
+    for (const el of nodes) {
+      const rel = el.getAttribute("data-include");
+
+      // ✅ macht den Pfad immer absolut korrekt (wichtig bei /fp/ + GitHub Pages)
+      const url = new URL(rel, document.baseURI).toString();
+
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) {
+        console.error("Include failed:", { rel, url, status: res.status, statusText: res.statusText });
+        throw new Error(`Include failed: ${url} (${res.status})`);
+      }
+
+      el.innerHTML = await res.text();
+      el.removeAttribute("data-include");
+    }
+  }
   try {
-    await loadIncludes();   // ✅ zuerst Partials reinladen
+    await loadIncludes();
   } catch (e) {
     console.error(e);
-    alert("Include-Laden fehlgeschlagen. Console prüfen.");
+    alert("Include-Laden fehlgeschlagen:\n" + (e?.message || e));
+    return;
   }
   try {
     await loadAirfields();
