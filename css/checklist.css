@@ -9,10 +9,6 @@
   background: var(--bg);    /* oder transparent */
 }
 
-.orm-overlay.is-hidden{
-  display: none !important;
-}
-
 .orm-overlay-bar{
   flex: 0 0 auto;
   display: flex;

@@ -1,47 +1,40 @@
 // js/reset.js
 import { exportDataJSON, importDataJSONFromFile } from "./storage.js";
 
+const ACTIONS = {
+  // Route
+  "reset-kopf": resetKopf,
+  "reset-times": resetTimes,
+  "reset-aeros": resetAerodromes,
+
+  // Fuel
+  "reset-fuel": resetFuelInputs,
+  "reset-legfuel": resetLegFuelInputs,
+  "reset-compfuel": resetCompFuelInputs,
+  "reset-altfuel": resetAltFuelInputs,
+
+  // Topbar
+  "export-data": handleExport,
+  "import-data": handleImport,
+
+  // optional (wenn mal wieder data-action="mail-eo" verwendet wird)
+  "mail-eo": () => exportDataJSON({ auto: true }),
+};
+
 export function initResets() {
   document.addEventListener("click", (e) => {
-    const btn = e.target.closest("button");
+    const btn = e.target.closest("button[data-action]");
     if (!btn) return;
 
     const action = btn.dataset.action;
-    if (!action) return;
+    const fn = ACTIONS[action];
+    if (!fn) return;
 
-    // Route
-    if (action === "reset-kopf") resetKopf();
-    if (action === "reset-times") resetTimes();
-    if (action === "reset-aeros") resetAerodromes();
-
-    // Fuel
-    if (action === "reset-fuel") resetFuelInputs();
-    if (action === "reset-legfuel") resetlegFuelInputs();
-    if (action === "reset-compfuel") resetcompFuelInputs();
-    if (action === "reset-altfuel") resetaltFuelInputs();
-
-    // eMAil an EO
-    if (action === "mail-eo") {
-      exportDataJSON({ auto: true });
-    }
-
-    // Topbar Export/Import
-    if (action === "export-data") handleExport();
-    if (action === "import-data") handleImport();
+    fn(btn); // btn optional reinreichen
   });
 }
 
-function handleMailEO() {
-  // 1) Immer zuerst sichern
-  exportDataJSON();
-
-  // 2) Optional: Hinweis (kannst du auch weglassen)
-  // alert("Planung als JSON exportiert.");
-
-  // 3) Optional: wenn du später wirklich Mail-Funktion hast, hier triggern
-  // sendMailEO();
-}
-
+// ---------- Topbar ----------
 function handleExport() {
   exportDataJSON();
 }
@@ -53,7 +46,7 @@ async function handleImport() {
     return;
   }
 
-  inp.value = ""; // erlaubt gleiche Datei erneut
+  inp.value = "";
   inp.onchange = async () => {
     const file = inp.files?.[0];
     if (!file) return;
@@ -72,19 +65,6 @@ async function handleImport() {
 
   inp.click();
 }
-
-const ACTIONS = {
-  // Route
-  "reset-kopf": resetKopf,
-  "reset-times": resetTimes,
-  "reset-aeros": resetAerodromes,
-
-  // Fuel
-  "reset-fuel": resetFuelInputs,
-  "reset-legfuel": resetLegFuelInputs,
-  "reset-compfuel": resetCompFuelInputs,
-  "reset-altfuel": resetAltFuelInputs,
-};
 
 // ---------- helpers ----------
 function clearInputs(nodeList) {
@@ -105,17 +85,12 @@ function removeValidation(nodeList) {
 
 function flashResetSuccess(btn) {
   if (!btn) return;
-
   btn.classList.add("reset-success");
-
-  setTimeout(() => {
-    btn.classList.remove("reset-success");
-  }, 220);
+  setTimeout(() => btn.classList.remove("reset-success"), 220);
 }
 
 // ---------- ROUTE ----------
-function resetKopf() {
-  // Wenn du inzwischen den #kopfContainer korrekt schließt und alles drin ist:
+function resetKopf(btn) {
   const scope = document.getElementById("kopfContainer") || document;
 
   const date = scope.querySelector("#dateInput");
@@ -137,24 +112,28 @@ function resetKopf() {
 
   const cs = scope.querySelector("#callSignDisplay");
   if (cs) cs.textContent = "";
+
+  flashResetSuccess(btn);
 }
 
-function resetTimes() {
+function resetTimes(btn) {
   const etd = document.querySelectorAll("#legsContainer .legField.etd");
   const eta = document.querySelectorAll("#legsContainer .legField.eta");
   clearInputs([...etd, ...eta]);
+  flashResetSuccess(btn);
 }
 
-function resetAerodromes() {
+function resetAerodromes(btn) {
   const aeroFrom = document.querySelectorAll("#legsContainer .legField.aeroFrom");
   const aeroTo   = document.querySelectorAll("#legsContainer .legField.aeroTo");
   const alts     = document.querySelectorAll("#legsContainer .legField.alt");
   clearInputs([...aeroFrom, ...aeroTo, ...alts]);
   removeValidation([...aeroFrom, ...aeroTo, ...alts]);
+  flashResetSuccess(btn);
 }
 
 // ---------- FUEL ----------
-function resetFuelInputs() {
+function resetFuelInputs(btn) {
   resetLegFuelInputs();
   resetCompFuelInputs();
   resetAltFuelInputs();
@@ -162,18 +141,17 @@ function resetFuelInputs() {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
-  // Final Reserve auf IFR
   const finres = panel.querySelector("#finres");
   if (finres) {
     finres.value = "IFR";
     finres.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  // Reset-Policy: Standard Block ON
   setStdBlockOn(panel);
+  flashResetSuccess(btn);
 }
 
-function resetLegFuelInputs() {
+function resetLegFuelInputs(btn) {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
@@ -181,44 +159,43 @@ function resetLegFuelInputs() {
     `[data-trip-usg="1"],[data-trip-usg="2"],[data-trip-usg="3"],[data-trip-usg="4"]`
   );
   clearInputs(trip);
+  flashResetSuccess(btn);
 }
 
-function resetCompFuelInputs() {
+function resetCompFuelInputs(btn) {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
   const ifr = panel.querySelector(`[data-field="appr_ifr_n"]`);
   const vfr = panel.querySelector(`[data-field="appr_vfr_n"]`);
   clearInputs([ifr, vfr]);
+  flashResetSuccess(btn);
 }
 
-function resetAltFuelInputs() {
+function resetAltFuelInputs(btn) {
   const panel = document.getElementById("fuelPanel");
   if (!panel) return;
 
   const alt = panel.querySelector(`[data-field="alt_usg_log"]`);
   clearInputs([alt]);
+  flashResetSuccess(btn);
 }
 
-// --- Reset-Policy helper: Std Block ON (Main=44 locked, Aux=ON) ---
 function setStdBlockOn(panel) {
   const stdBtn  = panel.querySelector(`.fuelToggle[data-field="std_block"]`);
   const auxBtn  = panel.querySelector(`.fuelToggle[data-field="aux_on"]`);
   const mainInp = panel.querySelector(`[data-field="main_usg"]`);
 
-  // Standard ON
   if (stdBtn) {
     stdBtn.dataset.state = "on";
     stdBtn.textContent = "ON";
   }
 
-  // Aux ON
   if (auxBtn) {
     auxBtn.dataset.state = "on";
     auxBtn.textContent = "26.4 USG";
   }
 
-  // Main = 44.0 locked
   if (mainInp) {
     mainInp.value = "44,0";
     mainInp.disabled = true;
@@ -226,6 +203,5 @@ function setStdBlockOn(panel) {
     mainInp.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  // Damit Fuel.js sicher neu rechnet (falls es nur auf input/change hört)
   panel.dispatchEvent(new Event("change", { bubbles: true }));
 }

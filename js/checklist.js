@@ -1,5 +1,9 @@
+// js/checklist.js
+// Local-only Planning Checklist state (NOT part of fp storage.js)
+
 const STORAGE_KEY = "fp_checklist_v1";
 
+// ---------- Storage helpers ----------
 function readState() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
@@ -12,17 +16,24 @@ function writeState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-function applyToggle(el, checked) {
-  el.classList.toggle("is-checked", !!checked);
-  el.textContent = checked ? "CHECK" : "UNCHECK";
+// ---------- UI helpers ----------
+function applyToggle(btn, checked) {
+  btn.classList.toggle("is-checked", !!checked);
+  btn.textContent = checked ? "CHECK" : "UNCHECK";
 }
 
+function flashReset(btn) {
+  if (!btn) return;
+  btn.classList.add("reset-success");
+  setTimeout(() => btn.classList.remove("reset-success"), 300);
+}
+
+// ---------- Public helper for other modules (orm.js / app.js) ----------
 export function checklistSetToggle(key, checked = true) {
+  const btn = document.querySelector(`.tb[data-tb="${key}"]`);
+  if (!btn) return;
 
-  const tb = document.querySelector(`.tb[data-tb="${key}"]`);
-  if (!tb) return;
-
-  applyToggle(tb, checked);
+  applyToggle(btn, checked);
 
   const s = readState();
   s.toggles = s.toggles || {};
@@ -30,8 +41,12 @@ export function checklistSetToggle(key, checked = true) {
   writeState(s);
 }
 
+// ---------- Main ----------
 export function initChecklistUI() {
-  const toast = document.getElementById("checkToast");
+  // Scope to checklist view to avoid side effects in other views
+  const scope = document.getElementById("view-checklist") || document;
+
+  const toast = scope.querySelector("#checkToast") || document.getElementById("checkToast");
 
   function showToast(msg) {
     if (!toast) return;
@@ -44,14 +59,14 @@ export function initChecklistUI() {
   // ---------- Restore ----------
   const state = readState();
   const toggles = state.toggles || {};
-  const fields  = state.fields  || {};
+  const fields = state.fields || {};
 
-  document.querySelectorAll(".tb[data-tb]").forEach((tb) => {
+  scope.querySelectorAll(".tb[data-tb]").forEach((tb) => {
     const key = tb.dataset.tb;
     if (key in toggles) applyToggle(tb, toggles[key]);
   });
 
-  document.querySelectorAll("[data-field]").forEach((inp) => {
+  scope.querySelectorAll("[data-field]").forEach((inp) => {
     const key = inp.dataset.field;
     if (key in fields) inp.value = fields[key] ?? "";
   });
@@ -71,51 +86,31 @@ export function initChecklistUI() {
     writeState(s);
   }
 
-  // INITIALS automatisch uppercase
-  document.addEventListener("input", (e) => {
-    const el = e.target.closest('[data-field="wx_init"]');
-    if (!el) return;
-
-    const pos = el.selectionStart;
-    el.value = el.value.toUpperCase();
-    el.setSelectionRange(pos, pos);
-  });
-
-  document.getElementById("btnResetChecklist")?.addEventListener("click", () => {
-
-    // kompletten Checklist State löschen
+  // ---------- Reset buttons ----------
+  scope.querySelector("#btnResetChecklist")?.addEventListener("click", (e) => {
+    // wipe whole checklist state
     localStorage.removeItem(STORAGE_KEY);
 
-    // alle Checkmarks resetten
-    document.querySelectorAll(".tb[data-tb]").forEach((tb) => {
-      applyToggle(tb, false);
-    });
+    // reset toggles
+    scope.querySelectorAll(".tb[data-tb]").forEach((tb) => applyToggle(tb, false));
 
-    // alle Eingabefelder resetten
-    document.querySelectorAll("[data-field]").forEach((el) => {
-      el.value = "";
-    });
+    // reset inputs
+    scope.querySelectorAll("[data-field]").forEach((el) => (el.value = ""));
 
+    flashReset(e.currentTarget);
   });
 
-  document.getElementById("btnResetCheckmarks")?.addEventListener("click", () => {
-
-    // if (!confirm("Alle Checkmarks zurücksetzen?")) return;    <--- aktivieren, wenn Abfrage erfolgen soll
-
+  scope.querySelector("#btnResetCheckmarks")?.addEventListener("click", (e) => {
     const s = readState();
     s.toggles = {};
     writeState(s);
 
-    document.querySelectorAll(".tb[data-tb]").forEach((tb) => {
-      applyToggle(tb, false);
-    });
+    scope.querySelectorAll(".tb[data-tb]").forEach((tb) => applyToggle(tb, false));
 
+    flashReset(e.currentTarget);
   });
 
-  document.getElementById("btnResetWx")?.addEventListener("click", () => {
-
-    // if (!confirm("Wx Felder zurücksetzen?")) return;    <--- aktivieren, wenn Abfrage erfolgen soll
-
+  scope.querySelector("#btnResetWx")?.addEventListener("click", (e) => {
     const s = readState();
     s.fields = s.fields || {};
 
@@ -125,23 +120,24 @@ export function initChecklistUI() {
 
     writeState(s);
 
-    document.querySelectorAll('[data-field="wx_nr"],[data-field="wx_void"],[data-field="wx_init"]')
-      .forEach(el => el.value = "");
+    scope
+      .querySelectorAll('[data-field="wx_nr"],[data-field="wx_void"],[data-field="wx_init"]')
+      .forEach((el) => (el.value = ""));
 
+    flashReset(e.currentTarget);
   });
 
   // ---------- Toggle click ----------
-  document.addEventListener("click", (e) => {
+  scope.addEventListener("click", (e) => {
     const tb = e.target.closest(".tb[data-tb]");
-    if (!tb) return;
+    if (!tb || !scope.contains(tb)) return;
 
     const checked = !tb.classList.contains("is-checked");
     applyToggle(tb, checked);
     saveToggle(tb.dataset.tb, checked);
   });
 
-  // ---------- Inputs ----------
-  // input + change => speichern (debounced pro field)
+  // ---------- Inputs (debounced save) ----------
   const timers = new Map();
 
   function debounceSaveField(key, value) {
@@ -149,32 +145,45 @@ export function initChecklistUI() {
     timers.set(key, setTimeout(() => saveField(key, value), 200));
   }
 
-  document.addEventListener("input", (e) => {
+  // INITIALS uppercase + save + wx auto-check
+  scope.addEventListener("input", (e) => {
     const el = e.target.closest("[data-field]");
-    if (!el) return;
+    if (!el || !scope.contains(el)) return;
+
+    // initials: uppercase while typing
+    if (el.dataset.field === "wx_init") {
+      const pos = el.selectionStart ?? el.value.length;
+      el.value = String(el.value).toUpperCase();
+      try { el.setSelectionRange(pos, pos); } catch {}
+    }
+
     debounceSaveField(el.dataset.field, el.value);
-    // Wx Autofill Check
-    const nr   = document.querySelector('[data-field="wx_nr"]')?.value?.trim();
-    const voidv= document.querySelector('[data-field="wx_void"]')?.value?.trim();
-    const init = document.querySelector('[data-field="wx_init"]')?.value?.trim();
+
+    // Wx auto-check if complete
+    const nr = scope.querySelector('[data-field="wx_nr"]')?.value?.trim();
+    const voidv = scope.querySelector('[data-field="wx_void"]')?.value?.trim();
+    const init = scope.querySelector('[data-field="wx_init"]')?.value?.trim();
+
     if (nr && voidv && init) {
       checklistSetToggle("wx", true);
     }
   });
 
-  document.addEventListener("change", (e) => {
+  scope.addEventListener("change", (e) => {
     const el = e.target.closest("[data-field]");
-    if (!el) return;
+    if (!el || !scope.contains(el)) return;
     saveField(el.dataset.field, el.value);
   });
 
   // ---------- Phone Buttons ----------
-  document.addEventListener("click", (e) => {
+  scope.addEventListener("click", (e) => {
     const b = e.target.closest(".phone-btn");
-    if (!b) return;
+    if (!b || !scope.contains(b)) return;
+
     const label = b.dataset.phoneLabel || b.textContent.trim();
     const phone = b.dataset.phone || "";
     if (!phone) return;
+
     showToast(`${label}: ${phone}`);
   });
 }
