@@ -68,10 +68,26 @@ export function initChecklistUI() {
     el.setSelectionRange(pos, pos);
   });
 
+  document.getElementById("btnResetChecklist")?.addEventListener("click", () => {
+
+    // kompletten Checklist State löschen
+    localStorage.removeItem(STORAGE_KEY);
+
+    // alle Checkmarks resetten
+    document.querySelectorAll(".tb[data-tb]").forEach((tb) => {
+      applyToggle(tb, false);
+    });
+
+    // alle Eingabefelder resetten
+    document.querySelectorAll("[data-field]").forEach((el) => {
+      el.value = "";
+    });
+
+  });
 
   document.getElementById("btnResetCheckmarks")?.addEventListener("click", () => {
 
-    if (!confirm("Alle Checkmarks zurücksetzen?")) return;
+    // if (!confirm("Alle Checkmarks zurücksetzen?")) return;    <--- aktivieren, wenn Abfrage erfolgen soll
 
     const s = readState();
     s.toggles = {};
@@ -85,7 +101,7 @@ export function initChecklistUI() {
 
   document.getElementById("btnResetWx")?.addEventListener("click", () => {
 
-    if (!confirm("Wx Felder zurücksetzen?")) return;
+    // if (!confirm("Wx Felder zurücksetzen?")) return;    <--- aktivieren, wenn Abfrage erfolgen soll
 
     const s = readState();
     s.fields = s.fields || {};
