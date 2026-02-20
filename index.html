@@ -280,16 +280,14 @@
               <button id="btnMailEO" type="button">Mail EO senden</button>
               <span id="ormHint" class="hint"></span>
             </div>
-
-
-          </div>
-          <div id="ormWrap" class="orm-wrap is-hidden">
-            <iframe
-              id="ormFrame"
-              class="orm-frame"
-              title="ORM Viewer"
-              loading="lazy">
-            </iframe>
+            <div id="ormWrap" class="orm-wrap is-hidden">
+              <iframe
+                id="ormFrame"
+                class="orm-frame"
+                title="ORM Viewer"
+                loading="lazy">
+              </iframe>
+            </div>
           </div>
         </section>
 
@@ -541,6 +539,21 @@
       </main>
     </div>
   </section>
+</div>
+<!-- ORM Overlay (außerhalb des Frames) -->
+<div id="ormOverlay" class="orm-overlay is-hidden" aria-hidden="true">
+  <div class="orm-overlay-bar">
+    <button id="btnOrmSaveOverlay" type="button">ORM speichern</button>
+    <button id="btnOrmCloseOverlay" type="button">Schließen</button>
+    <span id="ormHintOverlay" class="hint"></span>
+  </div>
+
+  <iframe
+    id="ormFrameOverlay"
+    class="orm-overlay-frame"
+    title="ORM Viewer"
+    loading="lazy">
+  </iframe>
 </div>
 
 </body>

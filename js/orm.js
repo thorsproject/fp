@@ -279,11 +279,14 @@ function downloadPdfBytes(bytes, filename) {
 // ---------- MAIN ----------
 export function initOrmChecklist() {
 
-  const btn   = document.getElementById("btnOrm");
-  const wrap  = document.getElementById("ormWrap");
-  const frame = document.getElementById("ormFrame");
-  const hint  = document.getElementById("ormHint");
-  const btnClose = document.getElementById("btnOrmClose");
+  const overlay = document.getElementById("ormOverlay");
+  const frame   = document.getElementById("ormFrameOverlay");
+  const hint    = document.getElementById("ormHintOverlay");
+
+  const btnOpen = document.getElementById("btnOrm"); // bleibt in Checklist Controls
+  const btnSave = document.getElementById("btnOrmSaveOverlay");
+  const btnClose= document.getElementById("btnOrmCloseOverlay");
+
 
   if (!btn || !btnClose || !wrap || !frame) return;
 
@@ -308,16 +311,12 @@ export function initOrmChecklist() {
 
       setTimeout(() => autofillOrmFields(frame), 300);
       setTimeout(() => autofillOrmFields(frame), 900);
-      setTimeout(() => autofillOrmFields(frame), 1600);
 
     }, { once:true });
 
-    wrap.classList.remove("is-hidden");
-
-    btn.textContent = "ORM speichern";
-    btnClose.classList.remove("is-hidden");
+    overlay.classList.remove("is-hidden");
+    overlay.setAttribute("aria-hidden", "false");
     setHint("ORM geöffnet (editierbar).");
-
     isOpen = true;
   }
 
@@ -342,27 +341,17 @@ export function initOrmChecklist() {
   }
 
   function closeOrm() {
-
+    // PDF.js dirty state reset (verhindert 2. Browser-Warnung)
     const app = frame.contentWindow?.PDFViewerApplication;
+    try { app?.pdfDocument?.annotationStorage?.resetModified?.(); } catch {}
 
-    // ✅ PDF.js sagen: nichts ist mehr "dirty"
-    try {
-      app?.pdfDocument?.annotationStorage?.resetModified?.();
-      app?.eventBus?.dispatch?.("annotationstoragechanged", {
-        source: app?.pdfDocument?.annotationStorage
-      });
-    } catch {}
-
-    // jetzt Viewer schließen
-    wrap.classList.add("is-hidden");
+    overlay.classList.add("is-hidden");
+    overlay.setAttribute("aria-hidden", "true");
     frame.src = "about:blank";
-
-    btn.textContent = "ORM öffnen";
-    btnClose.classList.add("is-hidden");
-
     setHint("");
     isOpen = false;
   }
+
 
   async function saveOrm() {
 
@@ -445,16 +434,22 @@ export function initOrmChecklist() {
 
 
   btn.addEventListener("click", () => {
+    openOrm();
+  });
 
-    if (isOpen) saveOrm();
+  btnOpen.addEventListener("click", () => {
+    if (!isOpen) openOrm();
+    else overlay.classList.remove("is-hidden"); // falls du "reopen" willst
+  });
 
-    else openOrm();
-
+  btnSave.addEventListener("click", () => {
+    if (isOpen) saveOrm();  // deine bestehende saveOrm() kann bleiben (sie nutzt frame)
   });
 
   btnClose.addEventListener("click", () => {
     confirmCloseOrm();
   });
+
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && isOpen) {
