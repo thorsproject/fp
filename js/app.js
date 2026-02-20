@@ -114,6 +114,12 @@ document.getElementById("btnMailEO")?.addEventListener("click", () => {
 // ---------- INIT ----------
 (async function init() {
   try {
+    await loadIncludes();   // ✅ zuerst Partials reinladen
+  } catch (e) {
+    console.error(e);
+    alert("Include-Laden fehlgeschlagen. Console prüfen.");
+  }
+  try {
     await loadAirfields();
     buildAirfieldsDatalist();
     attachDatalistToAeroInputs();

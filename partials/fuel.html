@@ -1,0 +1,225 @@
+          <div class="frame fuel-card panel-container" id="fuelPanel">
+            <div class="fuel-head panel-header">
+              <p class="view-title">Fuel Planning</p>
+
+              <div class="fuel-controls">
+                <label class="fuel-chip">
+                  Standard Block Fuel
+                  <button type="button"
+                          class="fuelToggle"
+                          data-field="std_block"
+                          data-state="on">
+                    ON
+                  </button>
+                </label>
+
+                <label class="fuel-chip">
+                  Main (USG)
+                  <input data-field="main_usg" inputmode="decimal" />
+                </label>
+
+                <label class="fuel-chip">
+                  Aux Tanks
+                  <button type="button"
+                          class="fuelToggle"
+                          data-field="aux_on"
+                          data-state="on">
+                    26.4 USG
+                  </button>
+                </label>
+              </div>
+            </div>
+
+            <div class="panel-body">
+              <!-- GRID HEADER -->
+              <div class="fuel-grid fuel-header">
+                <div class="c-desc">ITEM</div>
+                <div class="c-leg">LEG1</div>
+                <div class="c-leg">LEG2</div>
+                <div class="c-leg">LEG3</div>
+                <div class="c-leg">LEG4</div>
+                <div class="c-out">USG</div>
+                <div class="c-out">TIME</div>
+              </div>
+
+              <!-- TRIP FUEL -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Trip Fuel</div>
+                <div class="c-leg trip" data-trip-leg="1"><input data-trip-usg="1" inputmode="decimal"></div>
+                <div class="c-leg trip" data-trip-leg="2"><input data-trip-usg="2" inputmode="decimal"></div>
+                <div class="c-leg trip" data-trip-leg="3"><input data-trip-usg="3" inputmode="decimal"></div>
+                <div class="c-leg trip" data-trip-leg="4"><input data-trip-usg="4" inputmode="decimal"></div>
+                <span data-out="trip_usg_sum"></span>
+                <span data-out="trip_time_sum"></span>
+              </div>
+
+              <!-- COMPANY FUEL (Approaches) -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">
+                  Company Fuel
+                  <span class="sub">Approaches</span>
+                </div>
+
+                <div class="c-leg"></div>
+                <div class="c-leg"></div>
+
+                          <!-- LEG4: Stack -->
+                <div class="c-leg fuel-labelcol">
+                  <div class="fuel-subrow-label">IFR</div>
+                  <div class="fuel-subrow-label">VFR</div>
+                </div>
+
+                <div class="c-leg fuel-inputcol">
+                  <input class="fuel-mini-input"
+                        data-field="appr_ifr_n"
+                        inputmode="numeric"
+                        placeholder="n" />
+
+                  <input class="fuel-mini-input"
+                        data-field="appr_vfr_n"
+                        inputmode="numeric"
+                        placeholder="n" />
+                </div>
+
+                <span class="c-out" data-out="company_usg"></span>
+                <span class="c-out" data-out="company_time"></span>
+              </div>
+
+              <!-- CONTINGENCY -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Contingency (5% Trip + Company)</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out" data-out="cont_usg"></span>
+                <span class="c-out" data-out="cont_time"></span>
+              </div>
+
+              <!-- ALTERNATE -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Alternate Fuel (Log + 2.0 USG)</div>
+                <div class="c-leg"></div><div class="c-leg"></div>
+                <div class="c-leg fuel-labelcol">
+                  <div class="fuel-subrow-label">USG (Log)</div>
+                </div>
+
+                <div class="c-leg fuel-inputcol">
+                  <input class="fuel-mini-input"
+                        data-field="alt_usg_log"
+                        inputmode="decimal" />
+                </div>
+                <span class="c-out" data-out="alt_usg"></span>
+                <span class="c-out" data-out="alt_time_out"></span>
+              </div>
+
+              <!-- FINAL RESERVE -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Final Reserve (IFR/VFR)</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+
+                <div class="c-leg leg-stack">
+                  <select id="finres">
+                    <option value="IFR" selected>IFR</option>
+                    <option value="VFR">VFR</option>
+                  </select>
+                </div>
+
+                <span class="c-out" data-out="res_usg"></span>
+                <span class="c-out" data-out="res_time"></span>
+              </div>
+
+              <!-- PLANNED TAKEOFF FUEL -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Planned Takeoff Fuel</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out" data-out="planned_usg"></span>
+                <span class="c-out" data-out="planned_time"></span>
+              </div>
+
+              <!-- EXTRA FUEL LRC -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Extra Fuel LRC</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out extra-wrap">
+                  <span class="fuel-warn" data-out="extra_warn"></span>
+                  <span data-out="extra_lrc_usg"></span>
+                </span>
+                <span class="c-out" data-out="extra_lrc_time"></span>
+              </div>
+
+              <!-- TAKEOFF FUEL -->
+              <div class="fuel-grid fuel-row fuel-total">
+                <div class="c-desc">Takeoff Fuel</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out" data-out="takeoff_usg"></span>
+                <span class="c-out" data-out="takeoff_time"></span>
+              </div>
+
+              <!-- TAXI -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Taxi Fuel</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out" data-out="taxi_usg"></span>
+                <span class="c-out" data-out="taxi_time"></span>
+              </div>
+
+              <!-- BLOCK FUEL -->
+              <div class="fuel-grid fuel-row fuel-total">
+                <div class="c-desc">Block Fuel</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out" data-out="block_usg_out"></span>
+                <span class="c-out" data-out="block_time_out"></span>
+              </div>
+
+              <!-- TAXI -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Taxi Fuel</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out" data-out="taxi_usg"></span>
+                <span class="c-out" data-out="taxi_time"></span>
+              </div>
+
+              <!-- TRIP FUEL + COMPANY FUEL -->
+              <div class="fuel-grid fuel-row">
+                <div class="c-desc">Trip Fuel + Company Fuel</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out" data-out="trip_company_usg"></span>
+                <span class="c-out" data-out="trip_company_time"></span>
+              </div>
+
+              <!-- LANDING FUEL -->
+              <div class="fuel-grid fuel-row fuel-total">
+                <div class="c-desc">Landing Fuel</div>
+                <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
+                <span class="c-out" data-out="landing_usg"></span>
+                <span class="c-out" data-out="landing_time"></span>
+              </div>
+
+              <!-- REMAINING + ENDURANCE -->
+              <div class="fuel-foot">
+                <div class="fuel-miscs">
+                  <div class="misc">
+                    <div class="misc-label">Bingo Fuel</div>
+                    <div class="misc-val"><span data-out="bingo_usg"></span> USG</div>
+                  </div>
+                  <div class="misc">
+                    <div class="misc-label">Min Block Fuel</div>
+                    <div class="misc-val"><span data-out="minblock_usg"></span> USG</div>
+                  </div>
+                  <div class="misc">
+                    <div class="misc-label">CO2 Fußabdruck</div>
+                    <div class="misc-val"><span data-out="co2fp_kgs"></span></div>
+                  </div>
+                </div>
+                <div class="fuel-note">
+                </div>
+              </div>
+            </div>
+
+            <!-- BUTTON BOTTOM PANEL -->
+            <div class="panel-footer">
+              <div class="panel-footer-buttons">
+                <button class="fuelbtnReset" data-action="reset-fuel">Reset Fuel Inputs</button>
+                <button class="fuelbtnReset" data-action="reset-legfuel">Reset Leg Fuel</button>
+                <button class="fuelbtnReset" data-action="reset-compfuel">Reset Company Fuel</button>
+                <button class="fuelbtnReset" data-action="reset-altfuel">Reset Alternate Fuel</button>
+              </div>
+            </div>
