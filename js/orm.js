@@ -288,7 +288,7 @@ export function initOrmChecklist() {
   const btnClose= document.getElementById("btnOrmCloseOverlay");
 
 
-  if (!btn || !btnClose || !wrap || !frame) return;
+  if (!btnOpen || !btnSave || !btnClose || !overlay || !frame) return;
 
   let isOpen = false;
 
