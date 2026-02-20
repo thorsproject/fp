@@ -432,11 +432,6 @@ export function initOrmChecklist() {
     }
   }
 
-
-  btn.addEventListener("click", () => {
-    openOrm();
-  });
-
   btnOpen.addEventListener("click", () => {
     if (!isOpen) openOrm();
     else overlay.classList.remove("is-hidden"); // falls du "reopen" willst
