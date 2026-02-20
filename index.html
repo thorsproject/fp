@@ -160,15 +160,18 @@
         </section>
 
         <!-- VIEW: CHECKLIST -->
-        <div class="checklist-card">
-          <div class="check-head">
-            <h2 class="check-title">Planning-Checklist</h2>
-            <div class="check-toast is-hidden" id="checkToast" role="status" aria-live="polite"></div>
+        <section id="view-checklist" class="view">
+          <div class="frame">
+            <div class="checklist-card">
+              <div class="check-head">
+                <h2 class="check-title">Planning-Checklist</h2>
+                <div class="check-toast is-hidden" id="checkToast" role="status" aria-live="polite"></div>
+              </div>
+
+              <div class="check-grid" data-include="partials/checklist.html"></div>
+            </div>
           </div>
-
-          <div class="check-grid" data-include="partials/checklist.html"></div>
-        </div>
-
+        </section>
 
         <!-- VIEW: FUEL -->
         <section id="view-fuel" class="view" data-include="partials/fuel.html"></section>
