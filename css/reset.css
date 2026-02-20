@@ -13,6 +13,7 @@
 
 /* Basis-Style für alle Reset Buttons */
 .routebtnReset,
+.chklstbtnReset,
 .fuelbtnReset {
   background: #ff8800;
   color: #000;
@@ -27,12 +28,14 @@
 
 /* Hover */
 .routebtnReset:hover,
+.chklstbtnReset:hover,
 .fuelbtnReset:hover {
   background: #ffa000;
 }
 
 /* Active / Click */
 .routebtnReset:active,
+.chklstbtnReset:active,
 .fuelbtnReset:active {
   background: #ff6f00;
   transform: translateY(1px);
@@ -40,6 +43,7 @@
 
 /* Focus (Keyboard Navigation) */
 .routebtnReset:focus,
+.chklstbtnReset:focus,
 .fuelbtnReset:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.4);
@@ -47,6 +51,7 @@
 
 /* Optional: Disabled State */
 .routebtnReset:disabled,
+.chklstbtnReset:disabled,
 .fuelbtnReset:disabled {
   background: #555;
   color: #aaa;

@@ -42,8 +42,8 @@
                 <button class="chip phone-btn" data-phone-label="Laage RDR" data-phone="+49 38454 000000">Laage RDR</button>
               </div>
 
-              <div class="cg-action"><span class="muted">—</span></div>
-              <div class="cg-details"><span class="muted">—</span></div>
+              <div class="cg-action"><span class="muted"></span></div>
+              <div class="cg-details"><span class="muted"></span></div>
 
               <div class="cg-status">Anflüge genehmigt</div>
 
@@ -125,19 +125,17 @@
                 <button class="tb" data-tb="eo">UNCHECK</button>
               </div>
             </div>
+            
             <!-- Footer Buttons -->
             <div class="check-footer">
-
-              <button type="button" id="btnResetCheckmarks" class="btn-secondary">
-                Reset Checkmarks
-              </button>
-
-              <button type="button" id="btnResetWx" class="btn-secondary">
-                Reset Wx
-              </button>
-
-              <button type="button" id="btnResetChecklist" class="btn-secondary btn-danger">
+              <button class="chklstbtnReset btn-danger" type="button" id="btnResetChecklist">
                 Reset Checklist
               </button>
-
+              <button class="chklstbtnReset" type="button" id="btnResetCheckmarks">
+                Reset Checkmarks
+              </button>
+              <button class="chklstbtnReset" type="button" id="btnResetWx">
+                Reset Wx
+              </button>
             </div>
+              <button class="fuelbtnReset" data-action="reset-legfuel">Reset Leg Fuel</button>

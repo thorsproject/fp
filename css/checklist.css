@@ -125,7 +125,7 @@
 }
 
 .tb.is-checked{
-  background: #00ffcc;
+  background: #00ff51;
 }
 
 .check-toast{
@@ -141,17 +141,4 @@
   gap:10px;
   justify-content:flex-end;
   margin-top:10px;
-}
-
-.btn-secondary{
-  padding:6px 12px;
-  border-radius:8px;
-  background:#0f141a;
-  border:1px solid var(--border);
-  color:var(--mint);
-  font-weight:800;
-}
-
-.btn-secondary:hover{
-  border-color:var(--accent);
 }

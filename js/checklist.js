@@ -17,6 +17,19 @@ function applyToggle(el, checked) {
   el.textContent = checked ? "CHECK" : "UNCHECK";
 }
 
+export function checklistSetToggle(key, checked = true) {
+
+  const tb = document.querySelector(`.tb[data-tb="${key}"]`);
+  if (!tb) return;
+
+  applyToggle(tb, checked);
+
+  const s = readState();
+  s.toggles = s.toggles || {};
+  s.toggles[key] = !!checked;
+  writeState(s);
+}
+
 export function initChecklistUI() {
   const toast = document.getElementById("checkToast");
 
@@ -140,6 +153,13 @@ export function initChecklistUI() {
     const el = e.target.closest("[data-field]");
     if (!el) return;
     debounceSaveField(el.dataset.field, el.value);
+    // Wx Autofill Check
+    const nr   = document.querySelector('[data-field="wx_nr"]')?.value?.trim();
+    const voidv= document.querySelector('[data-field="wx_void"]')?.value?.trim();
+    const init = document.querySelector('[data-field="wx_init"]')?.value?.trim();
+    if (nr && voidv && init) {
+      checklistSetToggle("wx", true);
+    }
   });
 
   document.addEventListener("change", (e) => {
@@ -152,11 +172,9 @@ export function initChecklistUI() {
   document.addEventListener("click", (e) => {
     const b = e.target.closest(".phone-btn");
     if (!b) return;
-
     const label = b.dataset.phoneLabel || b.textContent.trim();
     const phone = b.dataset.phone || "";
     if (!phone) return;
-
     showToast(`${label}: ${phone}`);
   });
 }

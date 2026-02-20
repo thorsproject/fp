@@ -110,6 +110,7 @@ map.on("click", (e) => {
 document.getElementById("btnMailEO")?.addEventListener("click", () => {
   // hier später: export + mail workflow
   // aktuell z.B. exportDataJSON({ auto:true }) oder was du willst
+  import("./checklist.js").then(m => m.checklistSetToggle("eo", true));
 });
 
 // ---------- INIT ----------

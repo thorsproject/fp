@@ -439,6 +439,9 @@ export function initOrmChecklist() {
 
         closeOrm();
 
+        // Checklist automatisch abhaken
+        import("./checklist.js").then(m => m.checklistSetToggle("orm", true));
+        
         return;
 
       } catch (e) {
