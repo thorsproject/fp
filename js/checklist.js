@@ -58,6 +58,49 @@ export function initChecklistUI() {
     writeState(s);
   }
 
+  // INITIALS automatisch uppercase
+  document.addEventListener("input", (e) => {
+    const el = e.target.closest('[data-field="wx_init"]');
+    if (!el) return;
+
+    const pos = el.selectionStart;
+    el.value = el.value.toUpperCase();
+    el.setSelectionRange(pos, pos);
+  });
+
+
+  document.getElementById("btnResetCheckmarks")?.addEventListener("click", () => {
+
+    if (!confirm("Alle Checkmarks zurücksetzen?")) return;
+
+    const s = readState();
+    s.toggles = {};
+    writeState(s);
+
+    document.querySelectorAll(".tb[data-tb]").forEach((tb) => {
+      applyToggle(tb, false);
+    });
+
+  });
+
+  document.getElementById("btnResetWx")?.addEventListener("click", () => {
+
+    if (!confirm("Wx Felder zurücksetzen?")) return;
+
+    const s = readState();
+    s.fields = s.fields || {};
+
+    delete s.fields.wx_nr;
+    delete s.fields.wx_void;
+    delete s.fields.wx_init;
+
+    writeState(s);
+
+    document.querySelectorAll('[data-field="wx_nr"],[data-field="wx_void"],[data-field="wx_init"]')
+      .forEach(el => el.value = "");
+
+  });
+
   // ---------- Toggle click ----------
   document.addEventListener("click", (e) => {
     const tb = e.target.closest(".tb[data-tb]");
