@@ -46,23 +46,36 @@ function safeFilename(name) {
   return (name || "attachment").replace(/[\/\\?%*:|"<>]/g, "_").trim();
 }
 
+function textToBase64(str) {
+  const u8 = new TextEncoder().encode(str);
+  return toBase64(u8); // nutzt deine bestehende toBase64(uint8)
+}
+
 async function buildEml({ to, subject, body, files }) {
   const boundary = "----=_fp_" + Math.random().toString(16).slice(2);
+
+  // optional, aber hilft manchen Clients:
+  const now = new Date();
+  const msgId = `<fp-${now.getTime()}-${Math.random().toString(16).slice(2)}@local>`;
 
   const headers = [
     `To: ${to}`,
     `Subject: ${subject}`,
+    `Date: ${now.toUTCString()}`,
+    `Message-ID: ${msgId}`,
     `MIME-Version: 1.0`,
     `Content-Type: multipart/mixed; boundary="${boundary}"`,
     ``,
   ].join("\r\n");
 
+  const bodyB64 = wrapBase64(textToBase64(body));
+
   const textPart = [
     `--${boundary}`,
     `Content-Type: text/plain; charset="utf-8"`,
-    `Content-Transfer-Encoding: 8bit`,
+    `Content-Transfer-Encoding: base64`,
     ``,
-    body,
+    bodyB64,
     ``,
   ].join("\r\n");
 
@@ -88,7 +101,8 @@ async function buildEml({ to, subject, body, files }) {
 
   const end = `--${boundary}--\r\n`;
 
-  return headers + textPart + attachmentParts.join("") + end;
+  // Wichtig: zwischen Parts sauber trennen
+  return headers + textPart + attachmentParts.join("\r\n") + "\r\n" + end;
 }
 
 // Klick-Handler (ohne Auto-CHECK)
@@ -120,6 +134,11 @@ export async function handleMailEOClick() {
 
   const eml = await buildEml({ to, subject, body, files });
 
+  // Debug.Option
+  console.log("MAIL BODY:\n", body);
+  console.log("EML contains body snippet?", eml.includes("anbei die Legs"));
+  // Debug.Option Ende
+  
   const blob = new Blob([eml], { type: "message/rfc822" });
   const url = URL.createObjectURL(blob);
 
