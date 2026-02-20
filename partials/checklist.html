@@ -1,140 +1,105 @@
            <!-- Header -->
             <div class="cg-row cg-head">
-              <div>ToDo</div>
-              <div>Kontakt</div>
-              <div>Aktion</div>
-              <div>Details</div>
-              <div>Status</div>
+              <div>ToDo</div>  <!-- Spalte 1 -->
+              <div>Kontakt</div>  <!-- Spalte 2 -->
+              <div>Aktion</div>  <!-- Spalte 3 -->
+              <div>Details</div>  <!-- Spalte 4 -->
+              <div>Status</div>  <!-- Spalte 5+6 -->
               <div></div>
             </div>
 
             <!-- 1) Anflüge anmelden -->
             <div class="cg-row">
-              <div class="cg-todo">Anflüge anmelden</div>
-
-              <div class="cg-contacts">
-                <button class="chip phone-btn" data-phone-label="Wachleiter" data-phone="+49 000 000000">Wachleiter</button>
-                <button class="chip phone-btn" data-phone-label="Bremen" data-phone="+49 421 000000">Bremen</button>
-                <button class="chip phone-btn" data-phone-label="Langen" data-phone="+49 6103 000000">Langen</button>
-                <button class="chip phone-btn" data-phone-label="München" data-phone="+49 89 000000">München</button>
+              <div class="cg-todo">Wachleiter: Anflüge anmelden</div>  <!-- Spalte 1 -->
+              <div class="cg-contacts">  <!-- Spalte 2 -->
+                <button class="chip phone-btn" data-phone-label="Bremen" data-phone="+49 421 000000">Bremen</button>  <!-- Spalte 2 -->
+                <button class="chip phone-btn" data-phone-label="Langen" data-phone="+49 6103 000000">Langen</button>  <!-- Spalte 2 -->
+                <button class="chip phone-btn" data-phone-label="München" data-phone="+49 89 000000">München</button>  <!-- Spalte 2 -->
               </div>
-
-              <div class="cg-action">
-                <span class="muted"></span>
-              </div>
-
-              <div class="cg-details">
-                <span class="muted"></span>
-              </div>
-
-              <div class="cg-status">Anflüge angemeldet und genehmigt</div>
-
-              <div class="cg-toggle">
-                <button class="tb" data-tb="appr">UNCHECK</button>
-              </div>
+              <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+              <div class="cg-status">Anflüge angemeldet und genehmigt</div>  <!-- Spalte 5 -->
+              <div class="cg-toggle"><button class="tb" data-tb="appr">UNCHECK</button></div>  <!-- Spalte 6 -->
             </div>
 
             <!-- 2) lokale Anflüge absprechen -->
             <div class="cg-row">
-              <div class="cg-todo">lokale Anflüge absprechen</div>
-
-              <div class="cg-contacts">
-                <button class="chip phone-btn" data-phone-label="Laage RDR" data-phone="+49 38454 000000">Laage RDR</button>
-              </div>
-
-              <div class="cg-action"><span class="muted"></span></div>
-              <div class="cg-details"><span class="muted"></span></div>
-
-              <div class="cg-status">Anflüge genehmigt</div>
-
-              <div class="cg-toggle">
-                <button class="tb" data-tb="local">UNCHECK</button>
-              </div>
+              <div class="cg-todo">lokale Anflüge absprechen</div>  <!-- Spalte 1 -->
+              <div class="cg-contacts"><button class="chip phone-btn" data-phone-label="Laage RDR" data-phone="+49 38454 000000">Laage RDR</button></div>  <!-- Spalte 2 -->
+              <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+              <div class="cg-status">Anflüge genehmigt</div>  <!-- Spalte 5 -->
+              <div class="cg-toggle"><button class="tb" data-tb="local">UNCHECK</button></div>  <!-- Spalte 6 -->
             </div>
 
             <!-- 3) Wx Check -->
             <div class="cg-row">
-              <div class="cg-todo">Wx Check</div>
-
-              <div class="cg-contacts">
-                <button class="chip phone-btn" data-phone-label="Wx Münster" data-phone="+49 251 000000">Wx Münster</button>
+              <div class="cg-todo">Wx Check</div>  <!-- Spalte 1 -->
+              <div class="cg-contacts">  <!-- Spalte 2 -->
+                <button class="chip phone-btn" data-phone-label="Wx Münster" data-phone="+49 251 000000">Wx Münster</button>  <!-- Spalte 2 -->
               </div>
-
-              <div class="cg-action">
-                <label class="mini-field">
+              <div class="cg-action">  <!-- Spalte 3 -->
+                <label class="mini-field">  <!-- Spalte 3 -->
                   NR
-                  <input class="mini-input" type="text" inputmode="numeric" data-field="wx_nr" placeholder="NR">
+                  <input class="mini-input" type="text" inputmode="numeric" data-field="wx_nr" placeholder="NR">  <!-- Spalte 3 -->
                 </label>
-                <label class="mini-field">
+                <label class="mini-field">  <!-- Spalte 3 -->
                   VOID
-                  <input class="mini-input" type="text" data-field="wx_void" placeholder="VOID">
+                  <input class="mini-input" type="text" data-field="wx_void" placeholder="VOID">  <!-- Spalte 3 -->
                 </label>
-                <label class="mini-field">
+                <label class="mini-field">  <!-- Spalte 3 -->
                   INITIALS
-                  <input class="mini-input" type="text" data-field="wx_init" placeholder="ABC">
+                  <input class="mini-input" type="text" data-field="wx_init" placeholder="ABC">  <!-- Spalte 3 -->
                 </label>
               </div>
-
-              <div class="cg-details"><span class="muted"></span></div>
-
-              <div class="cg-status">Wx angerufen</div>
-
-              <div class="cg-toggle">
-                <button class="tb" data-tb="wx">UNCHECK</button>
-              </div>
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+              <div class="cg-status">Wx angerufen</div>  <!-- Spalte 5 -->
+              <div class="cg-toggle"><button class="tb" data-tb="wx">UNCHECK</button></div>  <!-- Spalte 6 -->
             </div>
 
             <!-- 4) ORM Sheet -->
             <div class="cg-row">
-              <div class="cg-todo">ORM-Sheet</div>
-
-              <div class="cg-contacts"><span class="muted"></span></div>
-
-              <div class="cg-action">
-                <!-- nutzt deinen existierenden Button -->
-                <button id="btnOrm" type="button">ORM öffnen</button>
-              </div>
-
-              <div class="cg-details"><span class="muted"></span></div>
-
-              <div class="cg-status">ausgefüllt und gespeichert</div>
-
-              <div class="cg-toggle">
-                <button class="tb" data-tb="orm">UNCHECK</button>
-              </div>
+              <div class="cg-todo">ORM-Sheet</div>  <!-- Spalte 1 -->
+              <div class="cg-contacts"><span class="muted"></span></div>  <!-- Spalte 2 -->
+              <div class="cg-action"><button id="btnOrm" type="button">ORM öffnen</button></div>  <!-- Spalte 3 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+              <div class="cg-status">ausgefüllt und gespeichert</div>  <!-- Spalte 5 -->
+              <div class="cg-toggle"><button class="tb" data-tb="wx">UNCHECK</button></div>  <!-- Spalte 6 -->
             </div>
 
             <!-- 5) Package send to -->
             <div class="cg-row">
-              <div class="cg-todo">Package send to</div>
-
-              <div class="cg-contacts">
-                <span class="email">xxx@abc.de</span>
-              </div>
-
-              <div class="cg-action">
-                <!-- nutzt deinen existierenden Button -->
-                <button id="btnMailEO" type="button">Mail EO senden</button>
-              </div>
-
-              <div class="cg-details"><span class="muted"></span></div>
-
-              <div class="cg-status">eMail an EO gesendet</div>
-
-              <div class="cg-toggle">
-                <button class="tb" data-tb="eo">UNCHECK</button>
-              </div>
+              <div class="cg-todo">Package send to</div>  <!-- Spalte 1 -->
+              <div class="cg-contacts"><span class="email">xxx@abc.de</span></div>  <!-- Spalte 2 -->
+              <div class="cg-action"><button id="btnMailEO" type="button">Mail EO senden</button></div>  <!-- Spalte 3 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+              <div class="cg-status">eMail an EO gesendet</div>  <!-- Spalte 5 -->
+              <div class="cg-toggle"><button class="tb" data-tb="wx">UNCHECK</button></div>  <!-- Spalte 6 -->
             </div>
             
+            <!-- 6) Phoenix signed -->
+            <div class="cg-row">
+              <div class="cg-todo">Phoenix Signout</div>  <!-- Spalte 1 -->
+              <div class="cg-contacts"><span class="intranet">https://phoenix.de</span></div>  <!-- Spalte 2 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 3 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+              <div class="cg-status">Phoenix Signout durchgeführt</div>  <!-- Spalte 5 -->
+              <div class="cg-toggle"><button class="tb" data-tb="wx">UNCHECK</button></div>  <!-- Spalte 6 -->
+            </div>
+
+            <!-- 7) FDL informiert -->
+            <div class="cg-row">
+              <div class="cg-todo">Flugplan an FDL</div>  <!-- Spalte 1 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 2 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 3 -->
+              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+              <div class="cg-status">FPL (short) per SMS oder Telegram gesendet</div>  <!-- Spalte 5 -->
+              <div class="cg-toggle"><button class="tb" data-tb="wx">UNCHECK</button></div>  <!-- Spalte 6 -->
+            </div>
+
             <!-- Footer Buttons -->
             <div class="check-footer">
-              <button class="chklstbtnReset btn-danger" type="button" id="btnResetChecklist">
-                Reset Checklist
-              </button>
-              <button class="chklstbtnReset" type="button" id="btnResetCheckmarks">
-                Reset Checkmarks
-              </button>
-              <button class="chklstbtnReset" type="button" id="btnResetWx">
-                Reset Wx
-              </button>
+              <button class="chklstbtnReset btn-danger" type="button" id="btnResetChecklist">Reset Checklist</button>
+              <button class="chklstbtnReset" type="button" id="btnResetCheckmarks">Reset Checkmarks</button>
+              <button class="chklstbtnReset" type="button" id="btnResetWx">Reset Wx</button>
             </div>
