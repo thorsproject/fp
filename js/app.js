@@ -1,4 +1,16 @@
 // ------------------ SETUP ------------------
+// eMail an EO
+import { handleMailEOClick } from "./mail_eo.js";
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("#btnMailEO");
+  if (!btn) return;
+
+  handleMailEOClick().catch((err) => {
+    console.error(err);
+    alert("Mail-Erstellung fehlgeschlagen.");
+  });
+});
+
 import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
 import { initLegActivation } from "./legs.js";
@@ -18,7 +30,6 @@ import {
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initChecklistUI } from "./checklist.js";
-import { handleMailEOClick } from "./mail_eo.js";
 import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
@@ -105,14 +116,6 @@ map.on("zoomend moveend", async () => {
 // vertical profile on click
 map.on("click", (e) => {
   showVerticalProfilePopup(map, e.latlng);
-});
-
-// eMail an EO
-document.getElementById("btnMailEO")?.addEventListener("click", () => {
-  handleMailEOClick().catch((e) => {
-    console.error(e);
-    alert("Mail-Erstellung fehlgeschlagen.");
-  });
 });
 
 // ---------- INIT ----------
