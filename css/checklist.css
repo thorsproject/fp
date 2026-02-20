@@ -45,7 +45,7 @@
 /* ==== Pixelperfect: neutralisiert Parent-Padding nur im Checklist-View ==== */
 
 /* Setze hier den typischen Innenabstand deines Content-Panels (oft 10px) */
-:root { --fp-content-pad: 1px; }
+:root { --fp-content-pad: 10px; }
 
 #view-checklist{
   /* full-bleed innerhalb des Content-Panels */
