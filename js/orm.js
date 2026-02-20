@@ -1,6 +1,9 @@
 // js/orm.js
 import { viewerUrl } from "./path.js";
 
+let lastAutofill = { cs: null, dateIso: null };
+let reAutofillTimer = null;
+
 function sanitizeFilePart(s) {
   return String(s || "")
     .trim()
@@ -149,13 +152,48 @@ function setDomFieldValue(iframe, fieldName, value) {
 }
 
 function setOrmField(iframe, fields, storage, name, value) {
-  // Storage
+  // Aktuellen DOM-Wert prüfen (falls vorhanden)
+  const currentDomValue = getDomFieldValue(iframe, name);
+
+  // Nur überschreiben, wenn:
+  // - Feld leer ist
+  // - oder es noch den letzten von uns gesetzten Wert hat
+  const canOverwrite =
+    !currentDomValue ||
+    (name === "CS" && currentDomValue === (lastAutofill.cs ?? "")) ||
+    (name === "Datum1_af_date" && currentDomValue === (lastAutofill.dateIso ?? ""));
+
+  if (!canOverwrite) return false;
+
+  // Storage setzen (für saveDocument)
   for (const f of fields[name] || []) {
     storage.setValue(f.id, { value });
   }
 
-  // DOM
-  setDomFieldValue(iframe, name, value);
+  // DOM setzen (für Anzeige)
+  const domHits = setDomFieldValue(iframe, name, value);
+  return domHits > 0;
+}
+
+// liest DOM-Wert nach Feldnamen (passt zu deiner funktionierenden Lösung)
+function getDomFieldValue(iframe, fieldName) {
+  const doc = iframe.contentDocument;
+  if (!doc) return "";
+
+  const sel = [
+    `input[name="${fieldName}"]`,
+    `textarea[name="${fieldName}"]`,
+    `select[name="${fieldName}"]`,
+    `[data-field-name="${fieldName}"] input`,
+    `[data-field-name="${fieldName}"] textarea`,
+    `[data-field-name="${fieldName}"] select`,
+    `[data-name="${fieldName}"] input`,
+    `[data-name="${fieldName}"] textarea`,
+    `[data-name="${fieldName}"] select`,
+  ].join(",");
+
+  const el = doc.querySelector(sel);
+  return (el?.value ?? "").trim();
 }
 
 async function autofillOrmFields(iframe) {
@@ -196,6 +234,9 @@ async function autofillOrmFields(iframe) {
   app?.eventBus?.dispatch?.("annotationstoragechanged", { source: storage });
   app?.pdfViewer?.refresh?.();
 
+  lastAutofill.cs = cs;
+  lastAutofill.dateIso = dateIso;
+  
   // ----- debug option ----- //
   // console.log("[ORM] okDate/okCs:", okDate, okCs, "dateIso:", dateIso, "cs:", cs); //
   // ------------------------ //
@@ -243,7 +284,6 @@ function wireOrmAutofill(iframe) {
   });
 }
 
-
 // ---------- PDF Export ----------
 async function getEditedPdfBytesFromViewer(iframe) {
 
@@ -274,7 +314,6 @@ function downloadPdfBytes(bytes, filename) {
 
   URL.revokeObjectURL(url);
 }
-
 
 // ---------- MAIN ----------
 export function initOrmChecklist() {
@@ -351,7 +390,6 @@ export function initOrmChecklist() {
     setHint("");
     isOpen = false;
   }
-
 
   async function saveOrm() {
 
@@ -445,6 +483,27 @@ export function initOrmChecklist() {
     confirmCloseOrm();
   });
 
+  function scheduleReAutofill() {
+    if (!IsOpen) return;
+
+    clearTimeout(reAutofillTimer);
+    reAutofillTimer = setTimeout(() => {
+      // frame ist dein Overlay-iframe
+      autofillOrmFields(frame).catch?.(() => {});
+    }, 250);
+  }
+
+  // CallSignDisplay (div) beobachten
+  const csEl = document.getElementById("callSignDisplay");
+  if (csEl) {
+    const mo = new MutationObserver(scheduleReAutofill);
+    mo.observe(csEl, { childList: true, characterData: true, subtree: true });
+  }
+
+  // Datum-Input (normaler input event)
+  const dateEl = document.getElementById("dateInput");
+  dateEl?.addEventListener("input", scheduleReAutofill);
+  dateEl?.addEventListener("change", scheduleReAutofill);
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && isOpen) {
