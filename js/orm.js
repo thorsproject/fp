@@ -484,7 +484,7 @@ export function initOrmChecklist() {
   });
 
   function scheduleReAutofill() {
-    if (!IsOpen) return;
+    if (!isOpen) return;
 
     clearTimeout(reAutofillTimer);
     reAutofillTimer = setTimeout(() => {
