@@ -17,6 +17,7 @@ import {
 
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
+import { initChecklistUI } from "./checklist.js";
 import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
@@ -163,6 +164,7 @@ document.getElementById("btnMailEO")?.addEventListener("click", () => {
       updateAltMarkers(map);
     },
   });
+  initChecklistUI();
   initOrmChecklist();
   initFuelPlanning();
   initResets();

@@ -160,16 +160,143 @@
         </section>
 
         <!-- VIEW: CHECKLIST -->
-        <section id="view-checklist" class="view">
-          <div class="frame">
-            <div class="check-controls">
-              <button id="btnOrm" type="button">ORM öffnen</button>
-              <button id="btnOrmClose" type="button" class="is-hidden">ORM schließen</button>
-              <button id="btnMailEO" type="button">Mail EO senden</button>
-              <span id="ormHint" class="hint"></span>
+        <div class="checklist-card">
+          <div class="check-head">
+            <h2 class="check-title">Planning-Checklist</h2>
+            <div class="check-toast is-hidden" id="checkToast" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="check-grid">
+            <!-- Header -->
+            <div class="cg-row cg-head">
+              <div>ToDo</div>
+              <div>Kontakt</div>
+              <div>Aktion</div>
+              <div>Details</div>
+              <div>Status</div>
+              <div></div>
+            </div>
+
+            <!-- 1) Anflüge anmelden -->
+            <div class="cg-row">
+              <div class="cg-todo">Anflüge anmelden</div>
+
+              <div class="cg-contacts">
+                <button class="chip phone-btn" data-phone-label="Wachleiter" data-phone="+49 000 000000">Wachleiter</button>
+                <button class="chip phone-btn" data-phone-label="Bremen" data-phone="+49 421 000000">Bremen</button>
+                <button class="chip phone-btn" data-phone-label="Langen" data-phone="+49 6103 000000">Langen</button>
+                <button class="chip phone-btn" data-phone-label="München" data-phone="+49 89 000000">München</button>
+              </div>
+
+              <div class="cg-action">
+                <span class="muted">—</span>
+              </div>
+
+              <div class="cg-details">
+                <span class="muted">—</span>
+              </div>
+
+              <div class="cg-status">Anflüge angemeldet und genehmigt</div>
+
+              <div class="cg-toggle">
+                <button class="tb" data-tb="appr">UNCHECK</button>
+              </div>
+            </div>
+
+            <!-- 2) lokale Anflüge absprechen -->
+            <div class="cg-row">
+              <div class="cg-todo">lokale Anflüge absprechen</div>
+
+              <div class="cg-contacts">
+                <button class="chip phone-btn" data-phone-label="Laage RDR" data-phone="+49 38454 000000">Laage RDR</button>
+              </div>
+
+              <div class="cg-action"><span class="muted">—</span></div>
+              <div class="cg-details"><span class="muted">—</span></div>
+
+              <div class="cg-status">Anflüge genehmigt</div>
+
+              <div class="cg-toggle">
+                <button class="tb" data-tb="local">UNCHECK</button>
+              </div>
+            </div>
+
+            <!-- 3) Wx Check -->
+            <div class="cg-row">
+              <div class="cg-todo">Wx Check</div>
+
+              <div class="cg-contacts">
+                <button class="chip phone-btn" data-phone-label="Wx Münster" data-phone="+49 251 000000">Wx Münster</button>
+              </div>
+
+              <div class="cg-action">
+                <label class="mini-field">
+                  NR
+                  <input class="mini-input" type="text" inputmode="numeric" data-field="wx_nr" placeholder="NR">
+                </label>
+                <label class="mini-field">
+                  VOID
+                  <input class="mini-input" type="text" data-field="wx_void" placeholder="VOID">
+                </label>
+                <label class="mini-field">
+                  INITIALS
+                  <input class="mini-input" type="text" data-field="wx_init" placeholder="ABC">
+                </label>
+              </div>
+
+              <div class="cg-details"><span class="muted">—</span></div>
+
+              <div class="cg-status">Wx angerufen</div>
+
+              <div class="cg-toggle">
+                <button class="tb" data-tb="wx">UNCHECK</button>
+              </div>
+            </div>
+
+            <!-- 4) ORM Sheet -->
+            <div class="cg-row">
+              <div class="cg-todo">ORM-Sheet</div>
+
+              <div class="cg-contacts"><span class="muted">—</span></div>
+
+              <div class="cg-action">
+                <!-- nutzt deinen existierenden Button -->
+                <button id="btnOrm" type="button">ORM öffnen</button>
+              </div>
+
+              <div class="cg-details"><span class="muted">—</span></div>
+
+              <div class="cg-status">ausgefüllt und gespeichert</div>
+
+              <div class="cg-toggle">
+                <button class="tb" data-tb="orm">UNCHECK</button>
+              </div>
+            </div>
+
+            <!-- 5) Package send to -->
+            <div class="cg-row">
+              <div class="cg-todo">Package send to</div>
+
+              <div class="cg-contacts">
+                <span class="email">xxx@abc.de</span>
+              </div>
+
+              <div class="cg-action">
+                <!-- nutzt deinen existierenden Button -->
+                <button id="btnMailEO" type="button">Mail EO senden</button>
+              </div>
+
+              <div class="cg-details"><span class="muted">—</span></div>
+
+              <div class="cg-status">eMail an EO gesendet</div>
+
+              <div class="cg-toggle">
+                <button class="tb" data-tb="eo">UNCHECK</button>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
+
 
         <!-- VIEW: FUEL -->
         <section id="view-fuel" class="view" data-include="partials/fuel.html"></section>
