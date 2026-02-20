@@ -18,6 +18,7 @@ import {
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initChecklistUI } from "./checklist.js";
+import { handleMailEOClick } from "./mail_eo.js";
 import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
@@ -106,11 +107,9 @@ map.on("click", (e) => {
   showVerticalProfilePopup(map, e.latlng);
 });
 
-// Platzhalter für eMail an EO
-document.getElementById("btnMailEO")?.addEventListener("click", () => {
-  // hier später: export + mail workflow
-  // aktuell z.B. exportDataJSON({ auto:true }) oder was du willst
-  import("./checklist.js").then(m => m.checklistSetToggle("eo", true));
+// eMail an EO
+document.getElementById("btnMailEO")?.addEventListener("click", async () => {
+  await handleMailEOClick({ autoCheck: false });
 });
 
 // ---------- INIT ----------
