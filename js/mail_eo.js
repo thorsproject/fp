@@ -131,13 +131,15 @@ export async function handleMailEOClick() {
 
   const subject = "Flight Planning Package";
   const body = buildBodyText();
+  // Debug.Option
   console.log("BODY STRING:");
   console.log(body);
+  // Ende Debug.Option
   const eml = await buildEml({ to, subject, body, files });
 
   // Debug.Option
-  console.log("MAIL BODY:\n", body);
-  console.log("EML contains body snippet?", eml.includes("anbei die Legs"));
+  console.log("EML preview:");
+  console.log(eml.substring(0, 1000)); // nur Anfang anzeigen
   // Debug.Option Ende
 
   const blob = new Blob([eml], { type: "message/rfc822" });
