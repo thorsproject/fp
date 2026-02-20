@@ -108,8 +108,11 @@ map.on("click", (e) => {
 });
 
 // eMail an EO
-document.getElementById("btnMailEO")?.addEventListener("click", async () => {
-  await handleMailEOClick({ autoCheck: false });
+document.getElementById("btnMailEO")?.addEventListener("click", () => {
+  handleMailEOClick().catch((e) => {
+    console.error(e);
+    alert("Mail-Erstellung fehlgeschlagen.");
+  });
 });
 
 // ---------- INIT ----------

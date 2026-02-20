@@ -1,11 +1,10 @@
 // js/mail_eo.js
-import { checklistSetToggle } from "./checklist.js";
+// Erstellt eine .eml (RFC822) inkl. Attachments -> Nutzer öffnet sie im Mailprogramm und sendet selbst.
 
-// Hilfsfunktionen
 function q(sel) { return document.querySelector(sel); }
 
 function getEmailRecipient() {
-  // aus deiner checklist.html: <span class="email">xxx@abc.de</span>
+  // <span class="email">xxx@abc.de</span>
   return (q(".email")?.textContent || "").trim();
 }
 
@@ -44,12 +43,9 @@ function wrapBase64(b64, lineLen = 76) {
 }
 
 function safeFilename(name) {
-  return (name || "attachment")
-    .replace(/[\/\\?%*:|"<>]/g, "_")
-    .trim();
+  return (name || "attachment").replace(/[\/\\?%*:|"<>]/g, "_").trim();
 }
 
-// Baut eine RFC822 .eml mit Attachments (MIME multipart/mixed)
 async function buildEml({ to, subject, body, files }) {
   const boundary = "----=_fp_" + Math.random().toString(16).slice(2);
 
@@ -95,28 +91,26 @@ async function buildEml({ to, subject, body, files }) {
   return headers + textPart + attachmentParts.join("") + end;
 }
 
-// öffnet Dateiauswahl + erzeugt .eml Download
-export async function handleMailEOClick({ autoCheck = false } = {}) {
+// Klick-Handler (ohne Auto-CHECK)
+export async function handleMailEOClick() {
   const to = getEmailRecipient();
   if (!to) {
-    alert("Kein Empfänger gefunden (.email).");
+    alert("Kein Empfänger gefunden (Element .email fehlt/leer).");
     return;
   }
 
-  // OS-Dialog: Dateien auswählen
+  // OS-Dateiauswahl (Mac/Windows)
   const input = document.createElement("input");
   input.type = "file";
   input.multiple = true;
-  input.accept = ".pdf,.json,.txt,.png,.jpg,.jpeg"; // optional, anpassen
   input.style.display = "none";
   document.body.appendChild(input);
 
-  const pickFiles = () => new Promise((resolve) => {
+  const files = await new Promise((resolve) => {
     input.onchange = () => resolve(Array.from(input.files || []));
     input.click();
   });
 
-  const files = await pickFiles();
   input.remove();
 
   if (!files.length) return; // abgebrochen
@@ -124,24 +118,20 @@ export async function handleMailEOClick({ autoCheck = false } = {}) {
   const subject = "Flight Planning Package";
   const body = buildBodyText();
 
-  // .eml bauen + downloaden
   const eml = await buildEml({ to, subject, body, files });
+
   const blob = new Blob([eml], { type: "message/rfc822" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = `EO-Mail-${new Date().toISOString().slice(0,10)}.eml`;
+  a.download = `EO-Mail-${new Date().toISOString().slice(0, 10)}.eml`;
   document.body.appendChild(a);
   a.click();
   a.remove();
+
   URL.revokeObjectURL(url);
 
-  // CHECK setzen: entweder sofort (praktisch) oder du machst es erst nach "Mail gesendet"-Klick
-  if (autoCheck) {
-    checklistSetToggle("eo", true);
-  } else {
-    // Optional: Toast/Hint in UI – hier nur minimal:
-    // alert("E-Mail-Datei (.eml) wurde erstellt. Öffnen, senden, danach 'Mail gesendet' abhaken.");
-  }
+  // Hinweis (optional)
+  // alert("EO-Mail (.eml) erstellt. Öffnen, senden, danach in der Checklist abhaken.");
 }
