@@ -48,17 +48,17 @@ function safeFilename(name) {
 
 function textToBase64(str) {
   const u8 = new TextEncoder().encode(str);
-  return toBase64(u8); // nutzt deine bestehende toBase64(uint8)
+  return wrapBase64(toBase64(u8));
 }
 
 async function buildEml({ to, subject, body, files }) {
   const boundary = "----=_fp_" + Math.random().toString(16).slice(2);
-
-  // optional, aber hilft manchen Clients:
   const now = new Date();
   const msgId = `<fp-${now.getTime()}-${Math.random().toString(16).slice(2)}@local>`;
 
+  // WICHTIG: From + Date + Message-ID erhöhen Kompatibilität deutlich
   const headers = [
+    `From: Flight Planning <no-reply@local>`,
     `To: ${to}`,
     `Subject: ${subject}`,
     `Date: ${now.toUTCString()}`,
@@ -66,16 +66,18 @@ async function buildEml({ to, subject, body, files }) {
     `MIME-Version: 1.0`,
     `Content-Type: multipart/mixed; boundary="${boundary}"`,
     ``,
+    // “Preamble” – manche Clients mögen das
+    `This is a multi-part message in MIME format.`,
+    ``,
   ].join("\r\n");
-
-  const bodyB64 = wrapBase64(textToBase64(body));
 
   const textPart = [
     `--${boundary}`,
     `Content-Type: text/plain; charset="utf-8"`,
     `Content-Transfer-Encoding: base64`,
+    `Content-Disposition: inline`,
     ``,
-    bodyB64,
+    textToBase64(body),
     ``,
   ].join("\r\n");
 
@@ -99,9 +101,12 @@ async function buildEml({ to, subject, body, files }) {
     ].join("\r\n"));
   }
 
-  const end = `--${boundary}--\r\n`;
+  const end = [
+    `--${boundary}--`,
+    ``,
+  ].join("\r\n");
 
-  // Wichtig: zwischen Parts sauber trennen
+  // WICHTIG: Parts sauber mit CRLF trennen
   return headers + textPart + attachmentParts.join("\r\n") + "\r\n" + end;
 }
 
