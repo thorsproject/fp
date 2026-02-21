@@ -71,23 +71,6 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
   show(defaultView);
 }
 
-async function tryAutoLoadConfig() {
-  const pass = getConfigPassword();
-  if (!pass) return;
-
-  try {
-    const cfg = await loadConfig({ force: true });
-    applyConfigToSettings(cfg);
-    applyChecklistContacts(cfg);
-
-    // optional Status anzeigen
-    const status = document.getElementById("cfgStatus");
-    if (status) status.textContent = "OK ✓ (auto)";
-  } catch (e) {
-    console.warn("Auto config load failed:", e?.message || e);
-  }
-}
-
 // ---------- FDL ----------
 const LS_FDL_SELECTED = "fp.fdl.selected";
 
@@ -265,7 +248,7 @@ map.on("click", (e) => {
       opt.dataset.tel = item.tel || "";
       sel.appendChild(opt);
     }
-
+    
     // Default auswählen (falls vorhanden)
     const saved = localStorage.getItem(LS_FDL_SELECTED) || "";
     const def = config?.defaults?.fdlName || "";
@@ -288,6 +271,25 @@ map.on("click", (e) => {
 
     sel.addEventListener("change", showTel);
     showTel();
+  }
+
+  async function tryAutoLoadConfig() {
+    const pass = getConfigPassword();
+    if (!pass) return;
+
+    const status = document.getElementById("cfgStatus");
+    const setStatus = (t) => { if (status) status.textContent = t || ""; };
+
+    try {
+      const cfg = await loadConfig({ force: true });
+      applyConfigToSettings(cfg);
+      applyChecklistContacts(cfg);
+      setStatus("OK ✓ (auto)");
+    } catch (e) {
+      const msg = String(e?.message || e);
+      setStatus(`Auto-Load: ${msg}`);
+      console.error("Auto config load failed:", e);
+    }
   }
 
   // nach Includes: Settings sind im DOM
