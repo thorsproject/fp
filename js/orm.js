@@ -386,7 +386,13 @@ export function initOrmChecklist() {
   }
 
   function closeOrm() {
-    // PDF.js dirty state reset (verhindert 2. Browser-Warnung)
+    // ✅ Fokus aus dem Overlay entfernen (verhindert aria-hidden warning)
+    if (overlay.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
+    document.getElementById("btnOrm")?.focus();
+
+    // PDF.js dirty state reset...
     const app = frame.contentWindow?.PDFViewerApplication;
     try { app?.pdfDocument?.annotationStorage?.resetModified?.(); } catch {}
 
@@ -395,7 +401,6 @@ export function initOrmChecklist() {
     frame.src = "about:blank";
     setHint("");
     isOpen = false;
-    removeAttachment("orm");
   }
 
   async function saveOrm() {
