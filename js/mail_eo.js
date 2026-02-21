@@ -129,6 +129,15 @@ function looksLikeOrmFile(file) {
   return n.startsWith("orm-") || n.includes("ormblatt") || n.includes("orm");
 }
 
+function sortFilesOrmFirst(files) {
+  return [...files].sort((a, b) => {
+    const ao = looksLikeOrmFile(a) ? 0 : 1;
+    const bo = looksLikeOrmFile(b) ? 0 : 1;
+    if (ao !== bo) return ao - bo;
+    return (a.name || "").localeCompare(b.name || "");
+  });
+}
+
 function buildSubject({ isoDate, cs, logCount }) {
   const csPart = cs ? ` ${cs}` : "";
   const logsPart = logCount > 0 ? ` +${logCount} Logs` : "";
@@ -286,7 +295,8 @@ export async function handleMailEOClick(mode = "auto") {
       return;
     }
   }
-
+  files = sortFilesOrmFirst(files);
+  
   const isoDate = getIsoDateFromUi();
   const cs = getCallsign();
 
