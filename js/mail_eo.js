@@ -1,22 +1,22 @@
 // js/mail_eo.js
 // Erstellt eine .eml (RFC822) inkl. Attachments -> Nutzer öffnet sie im Mailprogramm und sendet selbst.
-import { collectAttachments , hasAttachment } from "./attachments.js";
+
+import { collectAttachments, hasAttachment } from "./attachments.js";
 
 const LS_MAIL_MODE = "fp.mail_eo.mode"; // "auto" | "picker"
 
+// ------------------ MODE (auto | picker) ------------------
 export function getMailMode() {
-  // 1) Checkbox gewinnt, wenn vorhanden
   const cb = document.getElementById("mailEoUsePicker");
   if (cb) return cb.checked ? "picker" : "auto";
-
-  // 2) Fallback auf localStorage
   return localStorage.getItem(LS_MAIL_MODE) === "picker" ? "picker" : "auto";
 }
 
 function setMailMode(mode) {
-  localStorage.setItem(LS_MAIL_MODE, mode);
+  localStorage.setItem(LS_MAIL_MODE, mode === "picker" ? "picker" : "auto");
 }
 
+// ------------------ UI ------------------
 function setMailButtonState() {
   const btn = document.getElementById("btnMailEO");
   if (!btn) return;
@@ -53,33 +53,19 @@ function refreshMailUi() {
   setMailButtonState();
 }
 
+// Initial (falls Settings schon da sind)
 refreshMailUi();
+
+// Nach Includes (Settings kommt per Partial)
 window.addEventListener("fp:includes-loaded", refreshMailUi);
+
+// Wenn Attachments sich ändern (ORM gespeichert etc.)
 window.addEventListener("fp:attachments-changed", setMailButtonState);
 
-// 3) wenn Attachments sich ändern
-window.addEventListener("fp:attachments-changed", setMailButtonState);
-
+// ------------------ Helpers ------------------
 function q(sel) { return document.querySelector(sel); }
 
-async function pickFilesViaDialog() {
-  const input = document.createElement("input");
-  input.type = "file";
-  input.multiple = true;
-  input.style.display = "none";
-  document.body.appendChild(input);
-
-  const files = await new Promise((resolve) => {
-    input.onchange = () => resolve(Array.from(input.files || []));
-    input.click();
-  });
-
-  input.remove();
-  return files;
-}
-
 function getEmailRecipient() {
-  // <span class="email">xxx@abc.de</span>
   return (q(".email")?.textContent || "").trim();
 }
 
@@ -107,15 +93,12 @@ function toIsoDate(raw) {
 
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
 
-  // dd.mm.yyyy
   let m = s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
   if (m) return `${m[3]}-${m[2]}-${m[1]}`;
 
-  // dd.mm.yy
   m = s.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
   if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
 
-  // fallback: heute
   return new Date().toISOString().slice(0, 10);
 }
 
@@ -138,17 +121,6 @@ function sortFilesOrmFirst(files) {
   });
 }
 
-function buildSubject({ isoDate, cs, logCount }) {
-  const csPart = cs ? ` ${cs}` : "";
-  const logsPart = logCount > 0 ? ` +${logCount} Logs` : "";
-  return `Flight Planning ${isoDate}${csPart}${logsPart}`;
-}
-
-function buildEmlFilename({ isoDate, cs }) {
-  const csPart = cs ? `-${sanitizeFilePart(cs)}` : "";
-  return `EO-Mail-${sanitizeFilePart(isoDate)}${csPart}.eml`;
-}
-
 function buildAttachmentSummary(files) {
   const names = files.map(f => `- ${f.name}`);
   const ormCount = files.filter(looksLikeOrmFile).length;
@@ -166,26 +138,18 @@ function buildAttachmentSummary(files) {
   };
 }
 
-function buildBodyText(files = []) {
-  const { nr, voidv, init } = getWxValues();
-  const isoDate = getIsoDateFromUi();
-  const cs = getCallsign();
-
-  const att = buildAttachmentSummary(files);
-
-  return [
-    "Moin an den Einsatz,",
-    "",
-    `anbei die Legs und das ORM für ${isoDate}${cs ? ` (${cs})` : ""}.`,
-    `Wetter ist gecheckt, Wx-Nr.: ${nr || "-"}, VOID: ${voidv || "-"}, Initials: ${init || "-"}.`,
-    "",
-    att.text,
-    "",
-    "Grüße aus Laage",
-    "",
-  ].join("\r\n");
+function buildSubject({ isoDate, cs, logCount }) {
+  const csPart = cs ? ` ${cs}` : "";
+  const logsPart = logCount > 0 ? ` +${logCount} Logs` : "";
+  return `Flight Planning ${isoDate}${csPart}${logsPart}`;
 }
 
+function buildEmlFilename({ isoDate, cs }) {
+  const csPart = cs ? `-${sanitizeFilePart(cs)}` : "";
+  return `EO-Mail-${sanitizeFilePart(isoDate)}${csPart}.eml`;
+}
+
+// ------------------ MIME helpers ------------------
 function toBase64(uint8) {
   let binary = "";
   const chunkSize = 0x8000;
@@ -221,7 +185,6 @@ async function buildEml({ to, subject, body, files }) {
   const now = new Date();
   const msgId = `<fp-${now.getTime()}-${Math.random().toString(16).slice(2)}@local>`;
 
-  // WICHTIG: From + Date + Message-ID erhöhen Kompatibilität deutlich
   const headers = [
     `From: Flight Planning <no-reply@local>`,
     `To: ${to}`,
@@ -231,7 +194,6 @@ async function buildEml({ to, subject, body, files }) {
     `MIME-Version: 1.0`,
     `Content-Type: multipart/mixed; boundary="${boundary}"`,
     ``,
-    // “Preamble” – manche Clients mögen das
     `This is a multi-part message in MIME format.`,
     ``,
   ].join("\r\n");
@@ -271,10 +233,27 @@ async function buildEml({ to, subject, body, files }) {
     ``,
   ].join("\r\n");
 
-  // WICHTIG: Parts sauber mit CRLF trennen
   return headers + textPart + attachmentParts.join("\r\n") + "\r\n" + end;
 }
 
+// ------------------ Picker ------------------
+async function pickFilesViaDialog() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.multiple = true;
+  input.style.display = "none";
+  document.body.appendChild(input);
+
+  const files = await new Promise((resolve) => {
+    input.onchange = () => resolve(Array.from(input.files || []));
+    input.click();
+  });
+
+  input.remove();
+  return files;
+}
+
+// ------------------ Main action ------------------
 export async function handleMailEOClick(mode = "auto") {
   const to = getEmailRecipient();
   if (!to) {
@@ -283,27 +262,37 @@ export async function handleMailEOClick(mode = "auto") {
   }
 
   let files = [];
-
   if (mode === "picker") {
     files = await pickFilesViaDialog();
-    if (!files.length) return; // Nutzer hat abgebrochen
+    if (!files.length) return;
   } else {
-    // default: auto
     files = await collectAttachments();
     if (!files.length) {
       alert("Keine Anhänge vorhanden. Bitte ORM speichern (und später Logs erzeugen/importieren).");
       return;
     }
   }
+
+  // ✅ ORM immer zuerst (unabhängig von ForeFlight)
   files = sortFilesOrmFirst(files);
-  
+
   const isoDate = getIsoDateFromUi();
   const cs = getCallsign();
 
   const { logCount } = buildAttachmentSummary(files);
   const subject = buildSubject({ isoDate, cs, logCount });
 
-  const body = buildBodyText(files);
+  const body = [
+    "Moin an den Einsatz,",
+    "",
+    `anbei die Legs und das ORM für ${isoDate}${cs ? ` (${cs})` : ""}.`,
+    `Wetter ist gecheckt, Wx-Nr.: ${getWxValues().nr || "-"}, VOID: ${getWxValues().voidv || "-"}, Initials: ${getWxValues().init || "-"}.`,
+    "",
+    buildAttachmentSummary(files).text,
+    "",
+    "Grüße aus Laage",
+    "",
+  ].join("\r\n");
 
   const eml = await buildEml({ to, subject, body, files });
 
