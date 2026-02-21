@@ -70,6 +70,24 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
 
   show(defaultView);
 }
+
+async function tryAutoLoadConfig() {
+  const pass = getConfigPassword();
+  if (!pass) return;
+
+  try {
+    const cfg = await loadConfig({ force: true });
+    applyConfigToSettings(cfg);
+    applyChecklistContacts(cfg);
+
+    // optional Status anzeigen
+    const status = document.getElementById("cfgStatus");
+    if (status) status.textContent = "OK ✓ (auto)";
+  } catch (e) {
+    console.warn("Auto config load failed:", e?.message || e);
+  }
+}
+
 // ---------- FDL ----------
 const LS_FDL_SELECTED = "fp.fdl.selected";
 
@@ -264,7 +282,7 @@ map.on("click", (e) => {
       tel.textContent = opt?.dataset?.tel || "";
 
       localStorage.setItem(LS_FDL_SELECTED, sel.value);
-      
+
       applyFdlToHeader({ name: sel.value, tel: opt?.dataset?.tel || "" });
     };
 
@@ -274,7 +292,9 @@ map.on("click", (e) => {
 
   // nach Includes: Settings sind im DOM
   wireConfigSettings();
+  tryAutoLoadConfig();
   window.addEventListener("fp:includes-loaded", wireConfigSettings);
+  window.addEventListener("fp:includes-loaded", tryAutoLoadConfig);
 
   try {
     await loadAirfields();
