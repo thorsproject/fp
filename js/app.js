@@ -171,9 +171,12 @@ map.on("click", (e) => {
         await loadConfig({ force: true });
         setStatus("OK ✓");
       } catch (e) {
-        if (String(e.message) === "CONFIG_PASS_MISSING") setStatus("Passwort fehlt");
-        else if (String(e.message) === "CONFIG_PASS_WRONG") setStatus("Passwort falsch");
-        else setStatus("Fehler");
+        const msg = String(e?.message || e);
+
+        if (msg === "CONFIG_PASS_MISSING") setStatus("Passwort fehlt");
+        else if (msg === "CONFIG_PASS_WRONG") setStatus("Passwort falsch");
+        else setStatus(msg); // <-- zeigt z.B. 404 oder Formatfehler
+
         console.error(e);
       }
     });
