@@ -9,6 +9,7 @@
         "-lc",
         "read -s -p 'FP_CONFIG_PASS: ' FP_CONFIG_PASS; echo; FP_CONFIG_PASS=\"$FP_CONFIG_PASS\" node tools/config-crypto.mjs enc data/config.json data/config.enc"
       ],
+      "presentation": { "reveal": "always" },
       "problemMatcher": []
     },
     {
@@ -19,6 +20,7 @@
         "-lc",
         "read -s -p 'FP_CONFIG_PASS: ' FP_CONFIG_PASS; echo; FP_CONFIG_PASS=\"$FP_CONFIG_PASS\" node tools/config-crypto.mjs dec data/config.enc data/config.json"
       ],
+      "presentation": { "reveal": "always" },
       "problemMatcher": []
     }
   ]
