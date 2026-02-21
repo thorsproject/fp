@@ -190,6 +190,15 @@ map.on("click", (e) => {
     }
   }
 
+  function setConfigBadge(on, text = "") {
+    const el = document.getElementById("configBadge");
+    if (!el) return;
+
+    el.classList.toggle("is-on", !!on);
+    el.classList.toggle("is-off", !on);
+    el.textContent = text || (on ? "Config: OK" : "Config: OFF");
+  }
+
   // ----- CONFIG (Team-Passwort) wiring -----
   function wireConfigSettings() {
     const passEl = document.getElementById("cfgPass");
@@ -212,6 +221,7 @@ map.on("click", (e) => {
         const cfg = await loadConfig({ force: true });
         applyConfigToSettings(cfg);
         applyChecklistContacts(cfg);
+        setConfigBadge(true, "Config: OK");
         setStatus("OK ✓");
       } catch (e) {
         const msg = String(e?.message || e);
@@ -284,6 +294,8 @@ map.on("click", (e) => {
       const cfg = await loadConfig({ force: true });
       applyConfigToSettings(cfg);
       applyChecklistContacts(cfg);
+      setConfigBadge(true, "Config: OK");
+      setConfigBadge(false, "Config: OFF");
       setStatus("OK ✓ (auto)");
     } catch (e) {
       const msg = String(e?.message || e);

@@ -102,3 +102,20 @@
   background: transparent;
   padding-left: 0;
 }
+
+.config-badge{
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  display: inline-block;
+  user-select: none;
+  opacity: 0.9;
+}
+
+.config-badge.is-off{
+  border: 1px solid currentColor;
+}
+
+.config-badge.is-on{
+  font-weight: 600;
+}
