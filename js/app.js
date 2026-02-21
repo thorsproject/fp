@@ -166,6 +166,18 @@ map.on("click", (e) => {
     }
   }
 
+  function applyChecklistContacts(config) {
+    // EO Mail
+    const mail = (config?.eoEmail || "").trim();
+    const emailEl = document.querySelector(".cg-row .email");
+    if (emailEl && mail) emailEl.textContent = mail;
+
+    // Phoenix URL
+    const phoenix = (config?.phoenixUrl || "").trim();
+    const intranetEl = document.querySelector(".cg-row .intranet");
+    if (intranetEl && phoenix) intranetEl.textContent = phoenix;
+  }
+
   // ----- CONFIG (Team-Passwort) wiring -----
   function wireConfigSettings() {
     const passEl = document.getElementById("cfgPass");
@@ -187,6 +199,7 @@ map.on("click", (e) => {
       try {
         const cfg = await loadConfig({ force: true });
         applyConfigToSettings(cfg);
+        applyChecklistContacts(cfg);
         setStatus("OK ✓");
       } catch (e) {
         const msg = String(e?.message || e);
