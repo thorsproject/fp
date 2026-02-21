@@ -1,0 +1,11 @@
+{
+  "eoEmail": "eo@firma.de",
+  "phoenixUrl": "https://phoenix.intranet.local/",
+  "fdlList": [
+    { "name": "FDL A", "tel": "+49 123456" },
+    { "name": "FDL B", "tel": "+49 987654" }
+  ],
+  "defaults": {
+    "fdlName": "FDL A"
+  }
+}

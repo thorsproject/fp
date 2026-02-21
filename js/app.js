@@ -11,6 +11,7 @@ document.addEventListener("click", (e) => {
   });
 });
 
+import { loadConfig, setConfigPassword, getConfigPassword, clearConfigCache } from "./config_store.js";
 import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
 import { initLegActivation } from "./legs.js";
@@ -148,7 +149,48 @@ map.on("click", (e) => {
   }
   window.dispatchEvent(new Event("fp:includes-loaded"));
 
-  try {
+    // ----- CONFIG (Team-Passwort) wiring -----
+  function wireConfigSettings() {
+    const passEl = document.getElementById("cfgPass");
+    const btnLoad = document.getElementById("btnCfgLoad");
+    const btnClear = document.getElementById("btnCfgClearPass");
+    const status = document.getElementById("cfgStatus");
+
+    if (!passEl || !btnLoad || !btnClear) return;
+
+    // initial: gespeichertes Passwort setzen (ohne es anzuzeigen)
+    passEl.value = getConfigPassword();
+
+    const setStatus = (t) => { if (status) status.textContent = t || ""; };
+
+    btnLoad.addEventListener("click", async () => {
+      setStatus("Lade…");
+      setConfigPassword(passEl.value.trim());
+      clearConfigCache();
+      try {
+        await loadConfig({ force: true });
+        setStatus("OK ✓");
+      } catch (e) {
+        if (String(e.message) === "CONFIG_PASS_MISSING") setStatus("Passwort fehlt");
+        else if (String(e.message) === "CONFIG_PASS_WRONG") setStatus("Passwort falsch");
+        else setStatus("Fehler");
+        console.error(e);
+      }
+    });
+
+    btnClear.addEventListener("click", () => {
+      passEl.value = "";
+      setConfigPassword("");
+      clearConfigCache();
+      setStatus("gelöscht");
+    });
+  }
+
+  // nach Includes: Settings sind im DOM
+  wireConfigSettings();
+  window.addEventListener("fp:includes-loaded", wireConfigSettings);
+
+try {
     await loadAirfields();
     buildAirfieldsDatalist();
     attachDatalistToAeroInputs();
