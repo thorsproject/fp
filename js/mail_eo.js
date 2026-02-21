@@ -48,6 +48,12 @@ function safeFilename(name) {
   return (name || "attachment").replace(/[\/\\?%*:|"<>]/g, "_").trim();
 }
 
+function encodeHeaderUTF8(str) {
+  const bytes = new TextEncoder().encode(str);
+  const b64 = toBase64(bytes);
+  return `=?UTF-8?B?${b64}?=`;
+}
+
 function textToBase64(str) {
   const u8 = new TextEncoder().encode(str);
   return wrapBase64(toBase64(u8));
@@ -62,7 +68,7 @@ async function buildEml({ to, subject, body, files }) {
   const headers = [
     `From: Flight Planning <no-reply@local>`,
     `To: ${to}`,
-    `Subject: ${subject}`,
+    `Subject: ${encodeHeaderUTF8(subject)}`,
     `Date: ${now.toUTCString()}`,
     `Message-ID: ${msgId}`,
     `MIME-Version: 1.0`,
