@@ -145,14 +145,14 @@ export async function handleMailEOClick() {
   const subject = "Flight Planning Package";
   const body = buildBodyText();
   // Debug.Option
-  console.log("BODY STRING:");
-  console.log(body);
+  // console.log("BODY STRING:");
+  // console.log(body);
   // Ende Debug.Option
   const eml = await buildEml({ to, subject, body, files });
 
   // Debug.Option
-  console.log("EML preview:");
-  console.log(eml.substring(0, 1000)); // nur Anfang anzeigen
+  // console.log("EML preview:");
+  // console.log(eml.substring(0, 1000)); // nur Anfang anzeigen
   // Debug.Option Ende
 
   const blob = new Blob([eml], { type: "message/rfc822" });
@@ -166,7 +166,4 @@ export async function handleMailEOClick() {
   a.remove();
 
   URL.revokeObjectURL(url);
-
-  // Hinweis (optional)
-  // alert("EO-Mail (.eml) erstellt. Öffnen, senden, danach in der Checklist abhaken.");
 }
