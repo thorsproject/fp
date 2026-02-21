@@ -168,7 +168,8 @@ map.on("click", (e) => {
       setConfigPassword(passEl.value.trim());
       clearConfigCache();
       try {
-        await loadConfig({ force: true });
+        const cfg = await loadConfig({ force: true });
+        applyConfigToSettings(cfg);
         setStatus("OK ✓");
       } catch (e) {
         const msg = String(e?.message || e);
@@ -189,11 +190,42 @@ map.on("click", (e) => {
     });
   }
 
+  function applyConfigToSettings(config) {
+    // FDL Dropdown
+    const sel = document.getElementById("fdlSelect");
+    const tel = document.getElementById("fdlTel");
+    if (!sel || !tel) return;
+
+    const list = Array.isArray(config?.fdlList) ? config.fdlList : [];
+    sel.innerHTML = "";
+
+    for (const item of list) {
+      const opt = document.createElement("option");
+      opt.value = item.name || "";
+      opt.textContent = item.name || "(ohne Name)";
+      opt.dataset.tel = item.tel || "";
+      sel.appendChild(opt);
+    }
+
+    // Default auswählen (falls vorhanden)
+    const def = config?.defaults?.fdlName || "";
+    if (def) sel.value = def;
+
+    // Tel anzeigen
+    const showTel = () => {
+      const opt = sel.selectedOptions?.[0];
+      tel.textContent = opt?.dataset?.tel || "";
+    };
+
+    sel.addEventListener("change", showTel);
+    showTel();
+  }
+
   // nach Includes: Settings sind im DOM
   wireConfigSettings();
   window.addEventListener("fp:includes-loaded", wireConfigSettings);
 
-try {
+  try {
     await loadAirfields();
     buildAirfieldsDatalist();
     attachDatalistToAeroInputs();
