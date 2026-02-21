@@ -1,7 +1,83 @@
 // js/mail_eo.js
 // Erstellt eine .eml (RFC822) inkl. Attachments -> Nutzer öffnet sie im Mailprogramm und sendet selbst.
+import { collectAttachments , hasAttachment } from "./attachments.js";
+
+const LS_MAIL_MODE = "fp.mail_eo.mode"; // "auto" | "picker"
+
+export function getMailMode() {
+  // 1) Checkbox gewinnt, wenn vorhanden
+  const cb = document.getElementById("mailEoUsePicker");
+  if (cb) return cb.checked ? "picker" : "auto";
+
+  // 2) Fallback auf localStorage
+  return localStorage.getItem(LS_MAIL_MODE) === "picker" ? "picker" : "auto";
+}
+
+function setMailMode(mode) {
+  localStorage.setItem(LS_MAIL_MODE, mode);
+}
+
+function setMailButtonState() {
+  const btn = document.getElementById("btnMailEO");
+  if (!btn) return;
+
+  const mode = getMailMode();
+  const ready = mode === "picker" ? true : hasAttachment("orm");
+
+  btn.disabled = !ready;
+  btn.classList.toggle("is-disabled", !ready);
+  btn.title =
+    mode === "picker"
+      ? "EO-Mail erstellen (Dateien manuell auswählen)"
+      : ready
+        ? "EO-Mail erstellen"
+        : "Bitte zuerst ORM speichern, dann Mail EO senden.";
+}
+
+function wireMailModeCheckbox() {
+  const cb = document.getElementById("mailEoUsePicker");
+  if (!cb || cb.dataset.wired === "1") return;
+
+  cb.checked = localStorage.getItem(LS_MAIL_MODE) === "picker";
+
+  cb.addEventListener("change", () => {
+    localStorage.setItem(LS_MAIL_MODE, cb.checked ? "picker" : "auto");
+    setMailButtonState();
+  });
+
+  cb.dataset.wired = "1";
+}
+
+// 1) falls Settings schon im DOM sind
+wireMailModeCheckbox();
+setMailButtonState();
+
+// 2) sobald includes nachgeladen wurden
+window.addEventListener("fp:includes-loaded", () => {
+  wireMailModeCheckbox();
+  setMailButtonState();
+});
+
+// 3) wenn Attachments sich ändern
+window.addEventListener("fp:attachments-changed", setMailButtonState);
 
 function q(sel) { return document.querySelector(sel); }
+
+async function pickFilesViaDialog() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.multiple = true;
+  input.style.display = "none";
+  document.body.appendChild(input);
+
+  const files = await new Promise((resolve) => {
+    input.onchange = () => resolve(Array.from(input.files || []));
+    input.click();
+  });
+
+  input.remove();
+  return files;
+}
 
 function getEmailRecipient() {
   // <span class="email">xxx@abc.de</span>
@@ -118,42 +194,31 @@ async function buildEml({ to, subject, body, files }) {
   return headers + textPart + attachmentParts.join("\r\n") + "\r\n" + end;
 }
 
-// Klick-Handler (ohne Auto-CHECK)
-export async function handleMailEOClick() {
+export async function handleMailEOClick(mode = "auto") {
   const to = getEmailRecipient();
   if (!to) {
     alert("Kein Empfänger gefunden (Element .email fehlt/leer).");
     return;
   }
 
-  // OS-Dateiauswahl (Mac/Windows)
-  const input = document.createElement("input");
-  input.type = "file";
-  input.multiple = true;
-  input.style.display = "none";
-  document.body.appendChild(input);
+  let files = [];
 
-  const files = await new Promise((resolve) => {
-    input.onchange = () => resolve(Array.from(input.files || []));
-    input.click();
-  });
-
-  input.remove();
-
-  if (!files.length) return; // abgebrochen
+  if (mode === "picker") {
+    files = await pickFilesViaDialog();
+    if (!files.length) return; // Nutzer hat abgebrochen
+  } else {
+    // default: auto
+    files = await collectAttachments();
+    if (!files.length) {
+      alert("Keine Anhänge vorhanden. Bitte ORM speichern (und später Logs erzeugen/importieren).");
+      return;
+    }
+  }
 
   const subject = "Flight Planning Package";
   const body = buildBodyText();
-  // Debug.Option
-  // console.log("BODY STRING:");
-  // console.log(body);
-  // Ende Debug.Option
-  const eml = await buildEml({ to, subject, body, files });
 
-  // Debug.Option
-  // console.log("EML preview:");
-  // console.log(eml.substring(0, 1000)); // nur Anfang anzeigen
-  // Debug.Option Ende
+  const eml = await buildEml({ to, subject, body, files });
 
   const blob = new Blob([eml], { type: "message/rfc822" });
   const url = URL.createObjectURL(blob);

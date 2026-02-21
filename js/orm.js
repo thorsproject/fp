@@ -1,5 +1,7 @@
 // js/orm.js
 import { viewerUrl } from "./path.js";
+import { registerAttachment } from "./attachments.js";
+import { removeAttachment } from "./attachments.js";
 
 let lastAutofill = { cs: null, dateIso: null };
 let reAutofillTimer = null;
@@ -389,6 +391,7 @@ export function initOrmChecklist() {
     frame.src = "about:blank";
     setHint("");
     isOpen = false;
+    removeAttachment("orm");
   }
 
   async function saveOrm() {
@@ -429,6 +432,13 @@ export function initOrmChecklist() {
 
         const bytes = await getEditedPdfBytesFromViewer(frame);
 
+        // ✅ ORM für Mail EO registrieren (aus den finalen Bytes)
+        registerAttachment("orm", {
+          name: filename,
+          type: "application/pdf",
+          getArrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+        });
+
         const writable = await handle.createWritable();
 
         await writable.write(bytes);
@@ -459,6 +469,12 @@ export function initOrmChecklist() {
     try {
 
       const bytes = await getEditedPdfBytesFromViewer(frame);
+
+      registerAttachment("orm", {
+        name: filename,
+        type: "application/pdf",
+        getArrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+      });
 
       downloadPdfBytes(bytes, filename);
 

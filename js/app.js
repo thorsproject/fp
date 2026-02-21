@@ -1,11 +1,11 @@
 // ------------------ SETUP ------------------
 // eMail an EO
-import { handleMailEOClick } from "./mail_eo.js";
+import { handleMailEOClick, getMailMode } from "./mail_eo.js";
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("#btnMailEO");
   if (!btn) return;
 
-  handleMailEOClick().catch((err) => {
+  handleMailEOClick(getMailMode()).catch((err) => {
     console.error(err);
     alert("Mail-Erstellung fehlgeschlagen.");
   });
@@ -146,6 +146,8 @@ map.on("click", (e) => {
     alert("Include-Laden fehlgeschlagen:\n" + (e?.message || e));
     return;
   }
+  window.dispatchEvent(new Event("fp:includes-loaded"));
+
   try {
     await loadAirfields();
     buildAirfieldsDatalist();

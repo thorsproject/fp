@@ -2,6 +2,7 @@
 
 async function loadIncludes(root = document) {
   const nodes = Array.from(root.querySelectorAll("[data-include]"));
+
   await Promise.all(nodes.map(async (el) => {
     const url = el.getAttribute("data-include");
     const res = await fetch(url, { cache: "no-store" });
@@ -9,4 +10,7 @@ async function loadIncludes(root = document) {
     el.innerHTML = await res.text();
     el.removeAttribute("data-include");
   }));
+
+  // ✅ Signal: Includes sind (für diesen root) fertig geladen
+  window.dispatchEvent(new CustomEvent("fp:includes-loaded", { detail: { root } }));
 }
