@@ -64,6 +64,7 @@
       <!-- optional: unsichtbarer file input -->
       <input id="importFile" type="file" accept="application/json" hidden>
     </nav>
+    <div id="configBadge" class="config-badge is-off" title="Config Status">Config: OFF</div> <!-- Spalte 6 leer -->
     <div class="save-indicator" id="saveIndicator" aria-live="polite"></div>
   </header>
 
@@ -86,7 +87,7 @@
               <div><input type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
               <div class="label aero-label">FDL</div> <!-- Spalte 4 -->
               <div><input type="text" id="FDLinput" readonly tabindex="-1"></div> <!-- Spalte 5 -->
-              <div id="configBadge" class="config-badge is-off" title="Config Status">Config: OFF</div> <!-- Spalte 6 leer -->
+              <div></div> <!-- Spalte 6 leer -->
 
               <!-- Zeile 2 -->
               <div></div> <!-- Spalte 1 leer -->
