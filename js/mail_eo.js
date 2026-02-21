@@ -90,16 +90,89 @@ function getWxValues() {
   return { nr, voidv: v, init: i };
 }
 
-function buildBodyText() {
+function sanitizeFilePart(s) {
+  return String(s || "")
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w\-]+/g, "")
+    .slice(0, 32) || "NA";
+}
+
+function getCallsign() {
+  return (document.getElementById("callSignDisplay")?.textContent || "").trim();
+}
+
+function toIsoDate(raw) {
+  const s = String(raw || "").trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // dd.mm.yyyy
+  let m = s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  // dd.mm.yy
+  m = s.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  // fallback: heute
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getIsoDateFromUi() {
+  const raw = document.getElementById("dateInput")?.value || "";
+  return toIsoDate(raw);
+}
+
+function looksLikeOrmFile(file) {
+  const n = (file?.name || "").toLowerCase();
+  return n.startsWith("orm-") || n.includes("ormblatt") || n.includes("orm");
+}
+
+function buildSubject({ isoDate, cs, logCount }) {
+  const csPart = cs ? ` ${cs}` : "";
+  const logsPart = logCount > 0 ? ` +${logCount} Logs` : "";
+  return `Flight Planning ${isoDate}${csPart}${logsPart}`;
+}
+
+function buildEmlFilename({ isoDate, cs }) {
+  const csPart = cs ? `-${sanitizeFilePart(cs)}` : "";
+  return `EO-Mail-${sanitizeFilePart(isoDate)}${csPart}.eml`;
+}
+
+function buildAttachmentSummary(files) {
+  const names = files.map(f => `- ${f.name}`);
+  const ormCount = files.filter(looksLikeOrmFile).length;
+  const logCount = Math.max(0, files.length - ormCount);
+
+  return {
+    ormCount,
+    logCount,
+    text: [
+      "Anhänge:",
+      ...names,
+      "",
+      `ORM: ${ormCount} | Logs: ${logCount} | Gesamt: ${files.length}`,
+    ].join("\r\n")
+  };
+}
+
+function buildBodyText(files = []) {
   const { nr, voidv, init } = getWxValues();
+  const isoDate = getIsoDateFromUi();
+  const cs = getCallsign();
+
+  const att = buildAttachmentSummary(files);
+
   return [
     "Moin an den Einsatz,",
     "",
-    "anbei die Legs und das ORM für heute.",
+    `anbei die Legs und das ORM für ${isoDate}${cs ? ` (${cs})` : ""}.`,
     `Wetter ist gecheckt, Wx-Nr.: ${nr || "-"}, VOID: ${voidv || "-"}, Initials: ${init || "-"}.`,
     "",
-    "Grüße aus Laage",
+    att.text,
     "",
+    "Grüße aus Laage",
     "",
   ].join("\r\n");
 }
@@ -214,8 +287,13 @@ export async function handleMailEOClick(mode = "auto") {
     }
   }
 
-  const subject = "Flight Planning Package";
-  const body = buildBodyText();
+  const isoDate = getIsoDateFromUi();
+  const cs = getCallsign();
+
+  const { logCount } = buildAttachmentSummary(files);
+  const subject = buildSubject({ isoDate, cs, logCount });
+
+  const body = buildBodyText(files);
 
   const eml = await buildEml({ to, subject, body, files });
 
@@ -224,7 +302,7 @@ export async function handleMailEOClick(mode = "auto") {
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = `EO-Mail-${new Date().toISOString().slice(0, 10)}.eml`;
+  a.download = buildEmlFilename({ isoDate, cs });
   document.body.appendChild(a);
   a.click();
   a.remove();
