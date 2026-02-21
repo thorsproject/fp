@@ -84,3 +84,21 @@
   color: #ff8080;
   margin-top: 2px;
 }
+
+#FDLinput[readonly],
+#TELinput[readonly]{
+  cursor: default;
+  opacity: 1;
+}
+
+#FDLinput[readonly]:focus,
+#TELinput[readonly]:focus{
+  outline: none;
+  box-shadow: none;
+}
+#FDLinput[readonly],
+#TELinput[readonly]{
+  border-color: transparent;
+  background: transparent;
+  padding-left: 0;
+}
