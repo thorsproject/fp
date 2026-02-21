@@ -24,6 +24,8 @@ function buildBodyText() {
     `Wetter ist gecheckt, Wx-Nr.: ${nr || "-"}, VOID: ${voidv || "-"}, Initials: ${init || "-"}.`,
     "",
     "Grüße aus Laage",
+    "",
+    "",
   ].join("\r\n");
 }
 
