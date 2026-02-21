@@ -1,7 +1,6 @@
 // js/orm.js
 import { viewerUrl } from "./path.js";
 import { registerAttachment } from "./attachments.js";
-import { removeAttachment } from "./attachments.js";
 
 let lastAutofill = { cs: null, dateIso: null };
 let reAutofillTimer = null;
@@ -496,10 +495,7 @@ export function initOrmChecklist() {
     }
   }
 
-  btnOpen.addEventListener("click", () => {
-    if (!isOpen) openOrm();
-    else overlay.classList.remove("is-hidden"); // falls du "reopen" willst
-  });
+  btnOpen.addEventListener("click", openOrm);
 
   btnSave.addEventListener("click", () => {
     if (isOpen) saveOrm();  // deine bestehende saveOrm() kann bleiben (sie nutzt frame)

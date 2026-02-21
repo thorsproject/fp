@@ -41,22 +41,21 @@ function wireMailModeCheckbox() {
   cb.checked = localStorage.getItem(LS_MAIL_MODE) === "picker";
 
   cb.addEventListener("change", () => {
-    localStorage.setItem(LS_MAIL_MODE, cb.checked ? "picker" : "auto");
+    setMailMode(cb.checked ? "picker" : "auto");
     setMailButtonState();
   });
 
   cb.dataset.wired = "1";
 }
 
-// 1) falls Settings schon im DOM sind
-wireMailModeCheckbox();
-setMailButtonState();
-
-// 2) sobald includes nachgeladen wurden
-window.addEventListener("fp:includes-loaded", () => {
+function refreshMailUi() {
   wireMailModeCheckbox();
   setMailButtonState();
-});
+}
+
+refreshMailUi();
+window.addEventListener("fp:includes-loaded", refreshMailUi);
+window.addEventListener("fp:attachments-changed", setMailButtonState);
 
 // 3) wenn Attachments sich ändern
 window.addEventListener("fp:attachments-changed", setMailButtonState);
