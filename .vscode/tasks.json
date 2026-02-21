@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Config: Encrypt (config.json -> config.enc)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "read -s -p 'FP_CONFIG_PASS: ' FP_CONFIG_PASS; echo; FP_CONFIG_PASS=\"$FP_CONFIG_PASS\" node tools/config-crypto.mjs enc data/config.json data/config.enc"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Config: Decrypt (config.enc -> config.json)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "read -s -p 'FP_CONFIG_PASS: ' FP_CONFIG_PASS; echo; FP_CONFIG_PASS=\"$FP_CONFIG_PASS\" node tools/config-crypto.mjs dec data/config.enc data/config.json"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
