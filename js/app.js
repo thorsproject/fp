@@ -172,10 +172,19 @@ map.on("click", (e) => {
     const emailEl = document.querySelector(".cg-row .email");
     if (emailEl && mail) emailEl.textContent = mail;
 
-    // Phoenix URL
+    // Phoenix URL klickbar machen
     const phoenix = (config?.phoenixUrl || "").trim();
     const intranetEl = document.querySelector(".cg-row .intranet");
-    if (intranetEl && phoenix) intranetEl.textContent = phoenix;
+
+    if (intranetEl && phoenix) {
+      intranetEl.textContent = phoenix;
+
+      // klickbar machen
+      intranetEl.style.cursor = "pointer";
+      intranetEl.onclick = () => {
+        window.open(phoenix, "_blank", "noopener");
+      };
+    }
   }
 
   // ----- CONFIG (Team-Passwort) wiring -----
