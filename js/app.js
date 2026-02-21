@@ -70,6 +70,8 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
 
   show(defaultView);
 }
+// ---------- FDL ----------
+const LS_FDL_SELECTED = "fp.fdl.selected";
 
 // ---------- Map ----------
 const map = createMap();
@@ -247,14 +249,22 @@ map.on("click", (e) => {
     }
 
     // Default auswählen (falls vorhanden)
+    const saved = localStorage.getItem(LS_FDL_SELECTED) || "";
     const def = config?.defaults?.fdlName || "";
-    if (def) sel.value = def;
+
+    if (saved && [...sel.options].some(o => o.value === saved)) {
+      sel.value = saved;
+    } else if (def && [...sel.options].some(o => o.value === def)) {
+      sel.value = def;
+    }
 
     // Tel anzeigen
     const showTel = () => {
       const opt = sel.selectedOptions?.[0];
       tel.textContent = opt?.dataset?.tel || "";
 
+      localStorage.setItem(LS_FDL_SELECTED, sel.value);
+      
       applyFdlToHeader({ name: sel.value, tel: opt?.dataset?.tel || "" });
     };
 
