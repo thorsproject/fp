@@ -149,7 +149,24 @@ map.on("click", (e) => {
   }
   window.dispatchEvent(new Event("fp:includes-loaded"));
 
-    // ----- CONFIG (Team-Passwort) wiring -----
+  function applyFdlToHeader({ name = "", tel = "" } = {}) {
+    const fdlEl = document.getElementById("FDLinput");
+    const telEl = document.getElementById("TELinput");
+
+    if (fdlEl) {
+      fdlEl.value = name;
+      fdlEl.dispatchEvent(new Event("input", { bubbles: true }));
+      fdlEl.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    if (telEl) {
+      telEl.value = tel;
+      telEl.dispatchEvent(new Event("input", { bubbles: true }));
+      telEl.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+
+  // ----- CONFIG (Team-Passwort) wiring -----
   function wireConfigSettings() {
     const passEl = document.getElementById("cfgPass");
     const btnLoad = document.getElementById("btnCfgLoad");
@@ -215,6 +232,8 @@ map.on("click", (e) => {
     const showTel = () => {
       const opt = sel.selectedOptions?.[0];
       tel.textContent = opt?.dataset?.tel || "";
+
+      applyFdlToHeader({ name: sel.value, tel: opt?.dataset?.tel || "" });
     };
 
     sel.addEventListener("change", showTel);
