@@ -295,7 +295,6 @@ map.on("click", (e) => {
       applyConfigToSettings(cfg);
       applyChecklistContacts(cfg);
       setConfigBadge(true, "Config: OK");
-      setConfigBadge(false, "Config: OFF");
       setStatus("OK ✓ (auto)");
     } catch (e) {
       const msg = String(e?.message || e);
