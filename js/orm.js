@@ -317,6 +317,10 @@ function downloadPdfBytes(bytes, filename) {
   URL.revokeObjectURL(url);
 }
 
+function u8ToArrayBuffer(u8) {
+  return u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+}
+
 // ---------- MAIN ----------
 export function initOrmChecklist() {
 
@@ -432,21 +436,18 @@ export function initOrmChecklist() {
 
         const bytes = await getEditedPdfBytesFromViewer(frame);
 
-        // ✅ ORM für Mail EO registrieren (aus den finalen Bytes)
+        // ✅ ORM für Mail EO registrieren (finale Bytes)
         registerAttachment("orm", {
           name: filename,
           type: "application/pdf",
-          getArrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+          getArrayBuffer: async () => u8ToArrayBuffer(bytes),
         });
 
         const writable = await handle.createWritable();
-
         await writable.write(bytes);
-
         await writable.close();
 
         setHint("Gespeichert.");
-
         closeOrm();
 
         // Checklist automatisch abhaken
@@ -470,10 +471,11 @@ export function initOrmChecklist() {
 
       const bytes = await getEditedPdfBytesFromViewer(frame);
 
+      // ✅ ORM für Mail EO registrieren (finale Bytes)
       registerAttachment("orm", {
         name: filename,
         type: "application/pdf",
-        getArrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+        getArrayBuffer: async () => u8ToArrayBuffer(bytes),
       });
 
       downloadPdfBytes(bytes, filename);
