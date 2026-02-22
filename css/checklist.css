@@ -67,11 +67,29 @@
   background: var(--panel);
 }
 
+/* Wx Check Inputs sauber untereinander */
+.cg-row .cg-action input{
+  display: block;
+  width: 100%;
+  margin: 2px 0;
+  box-sizing: border-box;
+}
+
+/* Buttons ORM+EO gleiche Breite und Ausrichtung */
+.cg-row .cg-action button{
+  display: inline-block;
+  margin: 2px 0;
+}
+
 .cg-head{
   opacity:0.85;
   font-weight:800;
   font-size:12px;
   padding:8px 10px;
+}
+
+.cg-toggle{
+  width: 80px; /* Spaltenbreite ToggleButton */
 }
 
 .cg-todo{ font-weight:800; }
@@ -118,6 +136,13 @@
   width: 140px;
   border-radius: 10px;
   font-weight: 900;
+}
+
+/* Breite der Toggle Buttons */
+button.tb{
+  font-size: 10px;
+  padding: 1px 5px;
+  height: 20px;
 }
 
 .tb.is-checked{
