@@ -1,12 +1,12 @@
-          <div class="frame fuel-card panel-container" id="fuelPanel">
-            <div class="fuel-head panel-header">
-              <p class="view-title">Fuel Planning</p>
+          <div class="c-panel c-panel--stack" id="fuelPanel">
+            <div class="c-panel__head">
+              <h2 class="c-title">Fuel Planning</h2>
 
               <div class="fuel-controls">
                 <label class="fuel-chip">
                   Standard Block Fuel
                   <button type="button"
-                          class="fuelToggle"
+                          class="c-btn fuelToggle"
                           data-field="std_block"
                           data-state="on">
                     ON
@@ -21,7 +21,7 @@
                 <label class="fuel-chip">
                   Aux Tanks
                   <button type="button"
-                          class="fuelToggle"
+                          class="c-btn fuelToggle"
                           data-field="aux_on"
                           data-state="on">
                     26.4 USG
@@ -30,7 +30,7 @@
               </div>
             </div>
 
-            <div class="panel-body">
+            <div class="c-panel__body">
               <!-- GRID HEADER -->
               <div class="fuel-grid fuel-header">
                 <div class="c-desc">ITEM</div>
@@ -215,11 +215,11 @@
             </div>
 
             <!-- BUTTON BOTTOM PANEL -->
-            <div class="panel-footer">
-              <div class="panel-footer-buttons">
-                <button class="fuelbtnReset" data-action="reset-fuel">Reset Fuel Inputs</button>
-                <button class="fuelbtnReset" data-action="reset-legfuel">Reset Leg Fuel</button>
-                <button class="fuelbtnReset" data-action="reset-compfuel">Reset Company Fuel</button>
-                <button class="fuelbtnReset" data-action="reset-altfuel">Reset Alternate Fuel</button>
+            <div class="c-panel__foot">
+              <div class="c-btnGroup">
+                <button class="c-btn c-btn--ghost" data-action="reset-fuel">Reset Fuel Inputs</button>
+                <button class="c-btn c-btn--ghost" data-action="reset-legfuel">Reset Leg Fuel</button>
+                <button class="c-btn c-btn--ghost" data-action="reset-compfuel">Reset Company Fuel</button>
+                <button class="c-btn c-btn--ghost" data-action="reset-altfuel">Reset Alternate Fuel</button>
               </div>
             </div>

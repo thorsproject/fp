@@ -1,110 +1,49 @@
 /* =========================================================
    QUICK NAV
    ---------------------------------------------------------
-   [UTIL:VISIBILITY]
+   [UTIL:STATES]
    [UTIL:TEXT]
-   [UTIL:ALIGN]
+   [UTIL:FLEX]
    [UTIL:SPACING]
    [UTIL:INTERACTION]
    ========================================================= */
 
-/* =========================================================
-   [UTIL:VISIBILITY]
-   ========================================================= */
-.show {
-  display: block !important;
-}
+/* STATES */
+.is-hidden { display: none !important; }
+.is-invisible { visibility: hidden !important; }
+.is-disabled { opacity: 0.5; pointer-events: none; }
 
-/* =========================================================
-   [UTIL] Visibility helpers
-   ========================================================= */
-.is-hidden {
-  display: none !important;
-}
+/* TEXT */
+.u-text-left   { text-align: left !important; }
+.u-text-center { text-align: center !important; }
+.u-text-right  { text-align: right !important; }
 
-.is-invisible {
-  visibility: hidden !important;
-}
+.u-text-muted  { color: var(--muted) !important; }
+.u-text-accent { color: var(--accent) !important; }
+.u-text-danger { color: var(--danger) !important; }
 
-.is-disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
+.u-text-bold   { font-weight: 700 !important; }
+.u-text-normal { font-weight: 400 !important; }
 
-/* =========================================================
-   [UTIL:TEXT]
-   ========================================================= */
+/* FLEX */
+.u-flex { display: flex !important; }
+.u-flex-row { display:flex !important; flex-direction: row !important; }
+.u-flex-col { display:flex !important; flex-direction: column !important; }
+.u-flex-center { display:flex !important; align-items:center !important; justify-content:center !important; }
+.u-flex-between { display:flex !important; justify-content: space-between !important; align-items:center !important; }
 
-.text-left   { text-align: left !important; }
-.text-center { text-align: center !important; }
-.text-right  { text-align: right !important; }
+/* SPACING */
+.u-mt-4 { margin-top: 4px !important; }
+.u-mt-8 { margin-top: 8px !important; }
+.u-mt-12 { margin-top: 12px !important; }
 
-.text-muted  { color: var(--muted) !important; }
-.text-accent { color: var(--accent) !important; }
-.text-danger { color: var(--danger) !important; }
+.u-mb-4 { margin-bottom: 4px !important; }
+.u-mb-8 { margin-bottom: 8px !important; }
 
-.text-bold   { font-weight: 700 !important; }
-.text-normal { font-weight: 400 !important; }
+.u-p-4 { padding: 4px !important; }
+.u-p-8 { padding: 8px !important; }
 
-
-/* =========================================================
-   [UTIL:ALIGN]
-   ========================================================= */
-
-.flex {
-  display: flex !important;
-}
-
-.flex-row {
-  display: flex !important;
-  flex-direction: row !important;
-}
-
-.flex-col {
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-.flex-center {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.flex-between {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-}
-
-
-/* =========================================================
-   [UTIL:SPACING]
-   ========================================================= */
-
-.mt-4 { margin-top: 4px !important; }
-.mt-8 { margin-top: 8px !important; }
-.mt-12 { margin-top: 12px !important; }
-
-.mb-4 { margin-bottom: 4px !important; }
-.mb-8 { margin-bottom: 8px !important; }
-
-.p-4 { padding: 4px !important; }
-.p-8 { padding: 8px !important; }
-
-
-/* =========================================================
-   [UTIL:INTERACTION]
-   ========================================================= */
-
-.cursor-pointer {
-  cursor: pointer !important;
-}
-
-.no-select {
-  user-select: none !important;
-}
-
-.click-through {
-  pointer-events: none !important;
-}
+/* INTERACTION */
+.u-cursor-pointer { cursor: pointer !important; }
+.u-no-select { user-select: none !important; }
+.u-click-through { pointer-events: none !important; }

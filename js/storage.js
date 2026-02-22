@@ -192,7 +192,7 @@ function buildFilename(base) {
 // ---------- Export Funktion Ende ---------- //
 
 function legFrames() {
-  return qsa("#legsContainer .frame");
+  return qsa("#legsContainer .c-panel");
 }
 
 function captureRoute() {
@@ -448,15 +448,20 @@ export function initAutosave({ delay = 300 } = {}) {
 
   // Toggles/Resets -> nach UI Update speichern (debounced reicht)
   document.addEventListener("click", (e) => {
-    if (
-      e.target.closest(".legToggle") ||
-      e.target.closest(".fuelToggle") ||
-      e.target.closest(".routebtnReset") ||
-      e.target.closest(".fuelbtnReset")
-    ) {
-      scheduleSave(0); // sofort (aber trotzdem dirty-guarded)
-    }
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    const isToggle =
+      btn.classList.contains("legToggle") ||
+      btn.classList.contains("fuelToggle");
+
+    const isReset =
+      typeof btn.dataset.action === "string" &&
+      btn.dataset.action.startsWith("reset-");
+
+    if (isToggle || isReset) scheduleSave(0);
   }, { passive: true });
+
   window.addEventListener("beforeunload", (e) => {
     if (!isDirty) return;
     e.preventDefault();

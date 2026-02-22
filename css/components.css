@@ -1,11 +1,12 @@
 /* =========================================================
    QUICK NAV (Strg+F)
    ---------------------------------------------------------
-   [UI]            Generic elements (frame, inputs, buttons)
-   [UTIL]          Small helper classes (negative, warnings)
+   []            
+   []            
    ========================================================= */
 
-.frame {
+/* PANEL */
+.c-panel{
   border: 1px solid var(--border);
   background: var(--panel);
   padding: 10px;
@@ -13,15 +14,60 @@
   border-radius: 5px;
 }
 
-/* Labels */
-.label {
-  font-weight: bold;
+.c-panel--stack{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.c-panel__head{
+  flex-shrink: 0;
+  margin-bottom: 10px;
+}
+
+.c-panel__body{
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.c-panel__foot{
+  margin-top: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* Buttons im Footer wie bisher */
+.c-btnGroup{
+  padding: 0 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* TYPO */
+.c-title{
+  margin: 0 0 8px 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.c-subtitle{
+  margin: 0;
+  color: var(--text);
+}
+
+.c-label{
+  font-weight: 700;
   font-size: 11px;
   color: var(--muted);
 }
 
-/* Inputs / selects */
-input, select {
+/* INPUTS */
+.c-input,
+.c-select{
   width: 95%;
   padding: 5px;
   background: #0f141a;
@@ -29,44 +75,76 @@ input, select {
   font-size: 13px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  box-sizing: border-box;
 }
-input:focus, select:focus {
+
+.c-input:focus,
+.c-select:focus{
   outline: none;
   border-color: var(--accent);
 }
 
-/* Disabled input style */
-input:disabled {
+.c-input:disabled{
   background: #2a2f36;
   color: #aaa;
   cursor: not-allowed;
 }
 
-/* Generic buttons (default) */
-button {
+/* BUTTONS */
+.c-btn{
   padding: 5px 10px;
-  margin-right: 5px;
-  background: var(--accent);
   border: none;
   border-radius: 4px;
   cursor: pointer;
   color: #000;
-  font-weight: bold;
+  font-weight: 700;
+  background: var(--accent);
 }
-button:hover { background: #00aacc; }
+
+.c-btn:hover{ background: #00aacc; }
+
+.c-btn--ghost{
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.c-btn--ghost:hover{ border-color: var(--accent); }
+
+.c-btn--danger{
+  background: var(--danger);
+  color: #fff;
+}
+.c-btn--danger:hover{ filter: brightness(0.9); }
+
+.c-btn--sm{
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* TABS (Topbar) */
+.c-btn--tab{
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.c-btn--tab:hover{ border-color: var(--accent); }
+
+.c-btn--tab.is-active{
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
 
 /* UX: clamp flash */
-input.was-clamped {
+.c-input.was-clamped{
   box-shadow: 0 0 0 2px rgba(209, 17, 17, 0.6);
 }
 
-/* Utilities */
-.fuel-negative { color: var(--danger); font-weight: 700; }
-
-/* Save-Indicator */
-.save-indicator{
-  margin-left:auto;                 /* drückt ihn nach rechts */
+/* Save Indicator (Komponente) */
+.c-saveIndicator{
+  margin-left:auto;
   font-size:12px;
   font-weight:800;
   color: var(--muted);
@@ -79,18 +157,18 @@ input.was-clamped {
   user-select:none;
 }
 
-/* Zustände */
-.save-indicator.is-dirty{
-  color:#ffb300;                     /* “Änderungen…” */
+.c-saveIndicator.is-dirty{
+  color:#ffb300;
   border-color: rgba(255,179,0,.45);
 }
-
-.save-indicator.is-saved{
-  color:#00ffcc;                     /* “Gespeichert” */
+.c-saveIndicator.is-saved{
+  color:#00ffcc;
   border-color: rgba(0,255,204,.35);
 }
-
-.save-indicator.is-error{
+.c-saveIndicator.is-error{
   color:#ff8080;
   border-color: rgba(255,128,128,.45);
 }
+
+/* kleine Spezial-Utility (eigentlich später in utils) */
+.fuel-negative{ color: var(--danger); font-weight: 700; }

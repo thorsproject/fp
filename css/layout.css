@@ -4,74 +4,10 @@
    [TOPBAR]        Fixed header + top navigation buttons
    [LAYOUT]        2-column layout (route left, content right)
    [VIEWS]         View switching helpers
-   [PANEL FOOTER]  View Reset-Footer
    ========================================================= */
 
-/* =========================================
-   PANEL SYSTEM
-   Standardstruktur für alle Panels
-   ========================================= */
-/* gemeinsame Variable */
-:root{
-  --panel-gutter: 10px;
-}
-
-/*
-Panel Container
-Hauptcontainer eines Panels
-*/
-.panel-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0; /* wichtig für Scrollverhalten */
-}
-
-/*
-Panel Header
-z.B. "Fuel Planning" + Controls
-*/
-.panel-header {
-  flex-shrink: 0;
-  margin-bottom: 10px;   /* ← erzeugt sauberen Abstand */
-}
-
-/*
-Panel Body
-scrollbarer Hauptbereich
-*/
-.panel-body {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-}
-
-/* Letzter Inhalt-Frame im Panel-Body: kein Abstand nach unten */
-.panel-body .frame:last-child{
-  margin-bottom: 0;
-}
-
-/* =========================================
-   FLOATING PANEL FOOTER (schwebend)
-   ========================================= */
-
-.panel-footer {
-  margin-top: auto;     /* nach unten drücken */
-  padding: 0;           /* keine Innenabstände */
-  border: 0;            /* keine Linie */
-  background: transparent;
-}
-
-/* Buttons im Footer auf gleicher Innenkante wie .frame-Inhalt (padding:10px) */
-.panel-footer-buttons {
-  padding: 0 10px;      /* links/rechts exakt wie .frame padding */
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-   /* ---------- TOPBAR ---------- */
-.topbar {
+/* TOPBAR */
+.l-topbar{
   height: 50px;
   background: var(--panel);
   color: var(--accent);
@@ -79,19 +15,18 @@ scrollbarer Hauptbereich
   align-items: center;
   gap: 14px;
   padding: 0 10px;
-  box-sizing: border-box;
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 9999;
 }
 
-.topbar-title{
+.l-topbar__title{
   font-size: 24px;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.topbar-nav{
+.l-topbar__nav{
   display: flex;
   gap: 8px;
   align-items: center;
@@ -99,70 +34,41 @@ scrollbarer Hauptbereich
   padding-bottom: 2px;
 }
 
-/* ----- Buttons oben ----- */
-.topbtn{
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  cursor: pointer;
-  font-weight: 700;
-}
-.topbtn:hover{ border-color: var(--accent); }
-.topbtn.active{
-  background: var(--accent);
-  color: #000;
-  border-color: var(--accent);
-}
-
-/* =========================================
-   APP LAYOUT
-   Universeller Footer für Panels (Reset, Save, Export, etc.)
-   Immer am unteren Rand des Panels
-   ========================================= */
-.views, .layout {
+/* APP LAYOUT */
+.l-views,
+.l-shell{
   padding-top: 60px; /* Platz für fixed Topbar */
 }
 
-.layout{
+.l-shell{
   display: flex;
   gap: 10px;
   padding: 10px;
-  box-sizing: border-box;
 }
 
-/* Left: Route Panel */
-.route-panel{
+.l-sidebar{
   width: 530px;
   height: calc(100vh - 60px - 20px);
   overflow-y: hidden;
-  border-right: 0;
   padding-right: var(--panel-gutter);
-  box-sizing: border-box;
 }
 
-/* Right: Content Panel */
-.content-panel{
+.l-main{
   flex: 1;
   min-width: 0;
   height: calc(100vh - 60px - 20px);
   overflow: hidden;
   padding-left: var(--panel-gutter);
-  box-sizing: border-box;
   position: relative;
 }
 
-.route-panel,
-.panel-body{
+.l-sidebar,
+.c-panel__body{
   scrollbar-gutter: stable;
 }
 
-/* =========================================
-   VIEWS
-   ========================================= */
+/* VIEWS 
+Hinweis: Ich lasse .view als Namen drin, weil du damit sehr wahrscheinlich in JS arbeitest.
+Wenn du es “perfekt” willst, können wir später auch .view → l-view machen – aber dann musst du definitiv JS anfassen.*/
 .view{ display:none; height:100%; }
 .view.is-active{ display:block; height:100%; }
-
-.view-title{ margin:0 0 8px 0; color: var(--muted); }
-.view-sub{ margin:0; color: var(--text); }

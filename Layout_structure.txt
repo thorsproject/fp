@@ -1,0 +1,19 @@
+Layout (nur Struktur)
+l-*
+  - l-topbar, l-topbar__title, l-topbar__nav
+  - l-views
+  - l-shell, l-sidebar, l-main
+
+Komponenten (UI-Bausteine)
+c-*
+  - Panel: c-panel, c-panel__head, c-panel__body, c-panel__foot
+  - Typo: c-title, c-subtitle, c-label
+  - Form: c-input, c-select, c-field, c-field__label
+  - Buttons: c-btn, c-btn--tab, c-btn--danger, c-btn--ghost, c-btn--sm
+  - Gruppen: c-btnGroup
+  - Chip/Toggle (optional später): c-chip, c-toggle
+
+Utilities/States
+  - States bleiben wie bei dir: is-hidden, is-active, is-disabled, …
+  - Utilities konsequent u-* (statt text-muted, flex, etc.)
+  

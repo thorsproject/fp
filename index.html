@@ -50,75 +50,75 @@
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="topbar-title">FLIGHT PLANNING V0.1</div>
+  <header class="l-topbar">
+    <div class="l-topbar__title">FLIGHT PLANNING V0.1</div>
     <!-- BUTTON TOPNAV -->
-    <nav class="topbar-nav" id="topNav">
-      <button type="button" class="topbtn active" data-view="view-map">MAP</button>
-      <button type="button" class="topbtn" data-view="view-checklist">Checklist</button>
-      <button type="button" class="topbtn" data-view="view-fuel">FUEL Planning</button>
-      <button type="button" class="topbtn" data-view="view-performance">PERFORMANCE</button>
-      <button type="button" class="topbtn" data-view="view-settings">Settings</button>
-      <button type="button" class="topbtn" data-action="export-data">Export JSON</button>
-      <button type="button" class="topbtn" data-action="import-data">Import JSON</button>
+    <nav class="l-topbar__nav" id="topNav">
+      <button type="button" class="c-btn c-btn--tab is-active" data-view="view-map">MAP</button>
+      <button type="button" class="c-btn c-btn--tab" data-view="view-checklist">Checklist</button>
+      <button type="button" class="c-btn c-btn--tab" data-view="view-fuel">FUEL Planning</button>
+      <button type="button" class="c-btn c-btn--tab" data-view="view-performance">PERFORMANCE</button>
+      <button type="button" class="c-btn c-btn--tab" data-view="view-settings">Settings</button>
+      <button type="button" class="c-btn c-btn--ghost" data-action="export-data">Export JSON</button>
+      <button type="button" class="c-btn c-btn--ghost" data-action="import-data">Import JSON</button>
       <!-- optional: unsichtbarer file input -->
       <input id="importFile" type="file" accept="application/json" hidden>
     </nav>
     <div id="configBadge" class="config-badge is-off" title="Config Status">Config: OFF</div> <!-- Spalte 6 leer -->
-    <div class="save-indicator" id="saveIndicator" aria-live="polite"></div>
+    <div class="c-saveIndicator" id="saveIndicator" aria-live="polite"></div>
   </header>
 
-<div class="views">
+<div class="l-views">
   <!-- VIEW: Route + Map -->
   <section id="view-route" class="view is-active">
-    <div class="layout">
+    <div class="l-shell">
 
       <!----- =======================
               LINKS: ROUTE (1 Panel)
               ======================= ---->
-      <aside class="route-panel">
+      <aside class="l-sidebar">
         <!----- Outer-Frame ----->
-        <div class="frame panel-container" id="routePanel">
-          <div class="panel-header" id="kopfContainer">
+        <div class="c-panel c-panel--stack" id="routePanel">
+          <div class="c-panel__head" id="kopfContainer">
             <div class="master-grid">
               <!-- Zeile 1 -->
               <div></div> <!-- Spalte 1 leer -->
-              <div class="label">DATE</div> <!-- Spalte 2 -->
-              <div><input type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
-              <div class="label aero-label">FDL</div> <!-- Spalte 4 -->
-              <div><input type="text" id="FDLinput" readonly tabindex="-1"></div> <!-- Spalte 5 -->
+              <div class="c-label">DATE</div> <!-- Spalte 2 -->
+              <div><input class="c-input" type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
+              <div class="c-label aero-label">FDL</div> <!-- Spalte 4 -->
+              <div><input class="c-input" type="text" id="FDLinput" readonly tabindex="-1"></div> <!-- Spalte 5 -->
               <div></div> <!-- Spalte 6 leer -->
 
               <!-- Zeile 2 -->
               <div></div> <!-- Spalte 1 leer -->
-              <div class="label">LFZ</div> <!-- Spalte 2 -->
-              <div><select id="lfzSelect"></select></div> <!-- Spalte 3 -->
-              <div class="label aero-label">TEL:</div> <!-- Spalte 4 -->
-              <div><input type="text" id="TELinput" readonly tabindex="-1"></div> <!-- Spalte 5 -->
+              <div class="c-label">LFZ</div> <!-- Spalte 2 -->
+              <div><select class="c-select" id="lfzSelect"></select></div> <!-- Spalte 3 -->
+              <div class="c-label aero-label">TEL:</div> <!-- Spalte 4 -->
+              <div><input class="c-input" type="text" id="TELinput" readonly tabindex="-1"></div> <!-- Spalte 5 -->
               <div></div> <!-- Spalte 6 leer -->
 
               <!-- Zeile 3 -->
               <div></div> <!-- Spalte 1 leer -->
-              <div class="label">CALL SIGN</div> <!-- Spalte 2 -->
+              <div class="c-label">CALL SIGN</div> <!-- Spalte 2 -->
               <div id="callSignDisplay" class="callSignDisplay"></div> <!-- Spalte 3: Anzeige CALL SIGN -->
-              <div class="label aero-label">TAC-CS</div> <!-- Spalte 4 -->
-              <div><select id="tacSelect"></select></div> <!-- Spalte 5 -->
+              <div class="c-label aero-label">TAC-CS</div> <!-- Spalte 4 -->
+              <div><select class="c-select" id="tacSelect"></select></div> <!-- Spalte 5 -->
               <div></div> <!-- Spalte 6 leer -->
             </div>
           </div>
 
           <!-- Body: scrollt (Legs) -->
-          <div class="panel-body">
+          <div class="c-panel__body">
             <!-- FRAME 2-5 - LEGS -->
             <div id="legsContainer" data-include="partials/legs.html"></div>
           </div>
 
           <!-- BUTTON Footer PANEL -->
-          <div class="panel-footer">
-            <div class="panel-footer-buttons">
-              <button class="routebtnReset" data-action="reset-kopf">Reset Kopfdaten</button>
-              <button class="routebtnReset" data-action="reset-times">Reset ETD/ETA</button>
-              <button class="routebtnReset" data-action="reset-aeros">Reset AERODROMES</button>
+          <div class="c-panel__foot">
+            <div class="c-btnGroup">
+              <button class="c-btn c-btn--ghost" data-action="reset-kopf">Reset Kopfdaten</button>
+              <button class="c-btn c-btn--ghost" data-action="reset-times">Reset ETD/ETA</button>
+              <button class="c-btn c-btn--ghost" data-action="reset-aeros">Reset AERODROMES</button>
             </div>
           </div>
         </div>
@@ -130,7 +130,7 @@
       <!----- =======================
               RECHTS: Content Panel
               ======================= ---->
-      <main class="content-panel">
+      <main class="l-main">
 
         <!-- VIEW: MAP -->
         <section id="view-map" class="view is-active">

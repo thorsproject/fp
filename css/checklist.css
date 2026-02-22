@@ -2,7 +2,7 @@
    Checklist – Modern Layout
    ========================= */
 
-/* ============ ORM Overlay (Full-bleed) ============ */
+/* ========== ORM Overlay (Full-bleed) ========== */
 .orm-overlay{
   position: fixed;
   inset: 0;                 /* top/right/bottom/left:0 */
@@ -33,8 +33,8 @@
   display: block;
   background: transparent;
 }
-/* ==================================================== */
-
+/* ============================================== */
+/* ========== Style Checklist generell ========== */
 .checklist-card{
   display:flex;
   flex-direction:column;
@@ -59,6 +59,8 @@
   flex-direction:column;
   gap:8px;
 }
+/* ============================================== */
+
 
 /* Grundlayout je Zeile: Grid statt "irgendwie nebeneinander" */
 .cg-row{

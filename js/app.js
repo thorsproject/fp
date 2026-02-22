@@ -47,13 +47,13 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
   const nav = document.getElementById("topNav");
   if (!nav) return;
 
-  const buttons = Array.from(nav.querySelectorAll(".topbtn"));
+  const buttons = Array.from(nav.querySelectorAll(".c-btn--tab"));
 
   // ✅ nur die rechten Views (Map/Checklist/Fuel/Performance/Settings)
-  const views = Array.from(document.querySelectorAll(".content-panel .view"));
+  const views = Array.from(document.querySelectorAll(".l-main .view"));
 
   function show(viewId) {
-    buttons.forEach((b) => b.classList.toggle("active", b.dataset.view === viewId));
+    buttons.forEach((b) => b.classList.toggle("is-active", b.dataset.view === viewId));
     views.forEach((v) => v.classList.toggle("is-active", v.id === viewId));
 
     // Leaflet: wenn Map wieder sichtbar wird -> Größe neu berechnen
@@ -63,8 +63,9 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
   }
 
   nav.addEventListener("click", (e) => {
-    const btn = e.target.closest(".topbtn");
+    const btn = e.target.closest(".c-btn--tab");
     if (!btn) return;
+    if (!btn.dataset.view) return; 
     show(btn.dataset.view);
   });
 

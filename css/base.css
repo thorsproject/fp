@@ -13,6 +13,8 @@
   --accent: #00d4ff;
   --mint: #00ffcc;
   --danger: #d11;
+
+  --panel-gutter: 10px;
 }
 
 html, body {
