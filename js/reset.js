@@ -94,9 +94,10 @@ function resetKopf(btn) {
   const scope = document.getElementById("kopfContainer") || document;
 
   const date = scope.querySelector("#dateInput");
-  const fdl  = scope.querySelector("#FDLinput");
-  const tel  = scope.querySelector("#TELinput");
-  clearInputs([date, fdl, tel]);
+  clearInputs([date]);
+  // const fdl  = scope.querySelector("#FDLinput");
+  // const tel  = scope.querySelector("#TELinput");
+  // clearInputs([date, fdl, tel]);
 
   const lfz = scope.querySelector("#lfzSelect");
   const tac = scope.querySelector("#tacSelect");
