@@ -75,6 +75,11 @@
   box-sizing: border-box;
 }
 
+/* Action-Spalte linksbündig */
+.cg-row .cg-action{
+  text-align: left;
+}
+
 /* Buttons ORM+EO gleiche Breite und Ausrichtung */
 .cg-row .cg-action button{
   display: inline-block;
@@ -89,7 +94,7 @@
 }
 
 .cg-toggle{
-  width: 80px; /* Spaltenbreite ToggleButton */
+  width: 50px; /* Spaltenbreite ToggleButton */
 }
 
 .cg-todo{ font-weight:800; }
