@@ -5,10 +5,10 @@ export function initLegActivation({ onChange } = {}) {
   function getLegFrame(legNum) {
     if (legNum === 1) {
       // Leg 1 hat keinen Toggle → wir nehmen das erste Leg-Frame
-      return document.querySelector("#legsContainer .frame:nth-of-type(1)");
+      return document.querySelector("#legsContainer .c-panel:nth-of-type(1)");
     }
     const btn = document.querySelector(`.legToggle[data-leg="${legNum}"]`);
-    return btn ? btn.closest(".frame") : null;
+    return btn ? btn.closest(".c-panel") : null;
   }
 
   function setLegState(legNum, state) {
@@ -141,8 +141,8 @@ function resetFromAndEtdFromPrev(legNum) {
 
 // Toggle-Klick
 document.addEventListener("click", (e) => {
-  const btn = e.target;
-  if (!btn.classList?.contains("legToggle")) return;
+  const btn = e.target.closest?.(".legToggle");
+  if (!btn) return;
 
   const legNum = Number(btn.dataset.leg);
   const isActive = btn.dataset.state === "active";
@@ -166,7 +166,7 @@ document.addEventListener("change", (e) => {
   const isEta = e.target.classList.contains("eta");
   if (!isTo && !isEta) return;
 
-  const frame = e.target.closest(".frame");
+  const frame = e.target.closest(".c-panel");
   if (!frame) return;
 
   // Leg-Nummer aus Toggle-Button im selben Frame ableiten:
