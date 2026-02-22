@@ -1,175 +1,122 @@
+/* =========================
+   Checklist – Modern Layout
+   ========================= */
 
-/* ============ ORM Overlay (Full-bleed) ============ */
-.orm-overlay{
-  position: fixed;
-  inset: 0;                 /* top/right/bottom/left:0 */
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);    /* oder transparent */
-}
-
-.orm-overlay-bar{
-  flex: 0 0 auto;
-  display: flex;
+/* Grundlayout je Zeile: Grid statt "irgendwie nebeneinander" */
+.cg-row{
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1.3fr 1.6fr 1.2fr 90px; /* letzte Spalte Toggle */
+  gap: 10px;
   align-items: center;
-  gap: 8px;
-  padding: 10px;
 
-  background: rgba(15, 20, 26, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 10px 12px;
   border-bottom: 1px solid rgba(255,255,255,0.10);
 }
 
-.orm-overlay-frame{
-  flex: 1 1 auto;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  display: block;
-  background: transparent;
+/* Optional: wenn du hellen Hintergrund hast, nimm rgba(0,0,0,0.08) */
+.cg-row:hover{
+  background: rgba(255,255,255,0.04);
 }
 
-.checklist-card{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+/* Typo/Spacing */
+.cg-todo{
+  font-weight: 600;
+  letter-spacing: .2px;
 }
 
-.check-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
+.cg-contacts,
+.cg-details{
+  opacity: .95;
 }
 
-.check-title{
-  margin:0;
-  font-size:18px;
-  letter-spacing:0.4px;
+.cg-status{
+  opacity: .85;
+  font-size: 12px;
 }
 
-.check-grid{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.cg-row{
-  display:grid;
-  grid-template-columns: 1.4fr 1.4fr 1.2fr 1.2fr 1.4fr 140px;
-  gap:10px;
-  align-items:center;
-  padding:10px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background: var(--panel);
-}
-
-/* Wx Check Inputs sauber untereinander */
-.cg-row .cg-action input{
-  display: block;
-  width: 100%;
-  margin: 2px 0;
-  box-sizing: border-box;
-}
-
-/* Action-Spalte linksbündig */
-.cg-row .cg-action{
+/* Actions & Inputs sauber linksbündig und untereinander */
+.cg-action{
   text-align: left;
 }
 
-/* Buttons ORM+EO gleiche Breite und Ausrichtung */
-.cg-row .cg-action button{
-  display: inline-block;
-  margin: 2px 0;
+/* Inputs in cg-action untereinander, gleich breit */
+.cg-action input,
+.cg-action select,
+.cg-action textarea{
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 3px 0;
 }
 
-.cg-head{
-  opacity:0.85;
-  font-weight:800;
-  font-size:12px;
-  padding:8px 10px;
-}
-
-.cg-toggle{
-  width: 50px; /* Spaltenbreite ToggleButton */
-}
-
-.cg-todo{ font-weight:800; }
-.cg-status{ color: var(--muted); font-size:12px; }
-
-.cg-contacts{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
-
-.chip{
-  padding:6px 10px;
-  border-radius:999px;
-  background: #0f141a;
-  border:1px solid var(--border);
-  color: var(--mint);
-  font-weight:800;
-}
-
-.muted{ color: var(--muted); }
-
-.mini-field{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:11px;
-  color: var(--muted);
-  font-weight:800;
-}
-
-.mini-input{
-  width:90px;
-  padding:6px 8px;
-}
-
-.email{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size:12px;
-  color: var(--mint);
-}
-
-.tb{
-  width: 140px;
+/* Buttons in cg-action: volle Breite (wirkt ordentlich) */
+.cg-action button{
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 3px 0;
+  padding: 7px 10px;
   border-radius: 10px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
-/* Breite der Toggle Buttons */
+/* Disabled Buttons klar erkennbar */
+.cg-action button:disabled,
+.cg-action button.is-disabled{
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* Toggle-Spalte kompakt */
+.cg-toggle{
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* CHECK/UNCHECK kleiner und sauber */
 button.tb{
   font-size: 10px;
-  padding: 1px 5px;
-  height: 20px;
+  padding: 2px 6px;
+  min-width: 74px;
+  height: 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: .2px;
 }
 
-.tb.is-checked{
-  background: #00ff51;
+/* E-Mail und Phoenix optisch als "chip" */
+.cg-contacts .email,
+.cg-contacts .intranet{
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  font-size: 12px;
 }
 
-.check-toast{
-  padding:8px 10px;
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:10px;
-  background: rgba(15, 20, 26, 0.85);
-  color: var(--mint);
-  font-weight:800;
-}
-.check-footer{
-  display:flex;
-  gap:10px;
-  justify-content:flex-end;
-  margin-top:10px;
+/* Phoenix sieht klickbar aus (du setzt onclick in JS) */
+.cg-contacts .intranet{
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-#btnMailEO.is-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Muted Text */
+.muted{
+  opacity: .65;
+  font-size: 12px;
+}
+
+/* Responsive: auf schmalen Screens umbrechen */
+@media (max-width: 900px){
+  .cg-row{
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .cg-toggle{
+    justify-content: flex-start;
+  }
+  .cg-action button{
+    width: auto;
+  }
 }
