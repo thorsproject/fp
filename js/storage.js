@@ -1,29 +1,26 @@
 // js/storage.js// Lesen: qs/qsa aus ui/dom.js
 // Schreiben: setValue aus ui/ui.js
 // Lesen: readValue aus ui/read.js
+// Strings aus ui/selectors.js
 // Keine eigenen qs/qsa/getValue/setValue mehr in storage.js
 // Optional: getInputValue(el) als kleine lokale Helper-Funktion (weil ui/ui.js absichtlich nur Schreibfunktionen enthält)
 
-import { qs, qsa } from "./ui/dom.js";
-import { setValue } from "./ui/ui.js";
-import { readValue } from "./ui/read.js";
+import { qs, qsa, readValue, setValue, SEL } from "./ui/index.js";
 
 const KEY = "fp.v2"; // bei Breaking Changes erhöhen (v2, v3...)
 const SCHEMA_VERSION = 2;
-const LEGACY_KEYS = ["fp.v1"]; //  alte Keys mit prüfen
+const LEGACY_KEYS = ["fp.v1"]; // alte Keys mit prüfen
 const EXPORT_COUNTER_KEY = "fp.exportCounter";
 const LAST_AUTOEXPORT_KEY = "fp.lastAutoExportBase";
 
 // ---------- MIGRATION PIPELINE ---------- //
 function normalizeIncoming(obj) {
   if (!obj || typeof obj !== "object") return null;
-  // wenn v fehlt, ist es “v0” (deine ganz frühen Daten)
-  if (!("v" in obj)) obj.v = 0;
+  if (!("v" in obj)) obj.v = 0; // wenn v fehlt, ist es “v0”
   return obj;
 }
 
 function migrateToV1(d) {
-  // Beispiel: früher hieß route.head.date evtl. route.date
   if (!d.route?.head && d.route) {
     d.route.head = d.route.head || {};
   }
@@ -31,11 +28,7 @@ function migrateToV1(d) {
 }
 
 function migrateToV2(d) {
-  // Beispiel: du willst ab v2 "fuel.finres" immer garantiert setzen
   if (d.fuel && !d.fuel.finres) d.fuel.finres = "IFR";
-
-  // Beispiel: du willst toggles immer "on/off" statt "active/inactive"
-  // (nur als Demo – bei dir aktuell nicht nötig)
   return { ...d, v: 2 };
 }
 
@@ -49,9 +42,8 @@ function migrate(data) {
     else throw new Error("Keine Migration definiert für v=" + d.v);
   }
 
-  // Optional: hier final noch “Defaults” setzen
-  d.route = d.route || { head:{}, legs:[], toggles:{} };
-  d.fuel  = d.fuel  || {};
+  d.route = d.route || { head: {}, legs: [], toggles: {} };
+  d.fuel = d.fuel || {};
   return d;
 }
 // ---------- MIGRATION PIPELINE ENDE ---------- //
@@ -99,13 +91,12 @@ function setApplying(on) {
   isApplying = on;
 }
 
-
 function scheduleSave(delay = 300) {
   if (isApplying) return;
-  
+
   isDirty = true;
   setSaveIndicator("dirty", "Änderungen…");
-  
+
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     if (isApplying) return;
@@ -116,7 +107,7 @@ function scheduleSave(delay = 300) {
 
 // ---------- SAVE INDICATOR ---------- //
 function setSaveIndicator(state, msg = "") {
-  const el = document.getElementById("saveIndicator");
+  const el = qs(SEL.topbar.saveIndicator);
   if (!el) return;
 
   el.classList.remove("is-dirty", "is-saved", "is-error");
@@ -135,12 +126,14 @@ function setSaveIndicator(state, msg = "") {
   }
 }
 // ---------- SAVE INDICATOR ENDE ---------- //
-function safeParse(json, fallback = null) {
-  try { return JSON.parse(json); } catch { return fallback; }
-}
 
-// ---------- eMail EO-Funktion ---------- //
-// kommt später //
+function safeParse(json, fallback = null) {
+  try {
+    return JSON.parse(json);
+  } catch {
+    return fallback;
+  }
+}
 
 // ---------- Export-Funktion ---------- //
 function sanitizeFilePart(s) {
@@ -152,20 +145,17 @@ function sanitizeFilePart(s) {
 }
 
 function getDateForFilename() {
-  const el = document.getElementById("dateInput");
-  const raw = el?.value?.trim() || "";
-
+  const raw = String(readValue(SEL.route.dateInput) || "").trim();
   const m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
   if (m) {
     const [, dd, mm, yy] = m;
     return `20${yy}-${mm}-${dd}`;
   }
-
   return new Date().toISOString().slice(0, 10);
 }
 
 function getCallsignForFilename() {
-  const el = document.getElementById("callSignDisplay");
+  const el = qs(SEL.route.callsignDisplay);
   return el?.textContent?.trim() || "CALLSIGN";
 }
 
@@ -180,28 +170,29 @@ function buildFilename(base) {
 }
 // ---------- Export Funktion Ende ---------- //
 
+// ---------- ROUTE ----------
 function legFrames() {
-  return qsa("#legsContainer .c-panel");
+  return qsa(SEL.legs.frames);
 }
 
 function captureRoute() {
   const route = {
     head: {
-      date: readValue("#dateInput"),
-      lfz: readValue(qs("#lfzSelect")),
-      tac: readValue(qs("#tacSelect")),
+      date: readValue(SEL.route.dateInput),
+      lfz: readValue(SEL.route.lfzSelect),
+      tac: readValue(SEL.route.tacSelect),
     },
     legs: [],
     toggles: {},
   };
 
   // Leg Toggles (2–4)
-  qsa(".legToggle[data-leg]").forEach((btn) => {
+  qsa(`${SEL.legs.toggle}[data-leg]`).forEach((btn) => {
     route.toggles[String(btn.dataset.leg)] = btn.dataset.state || "active";
   });
 
-  // Legs: Reihenfolge = 1..4 über DOM (dein Aufbau ist konstant)
-  const frames = legFrames(); // 4 frames
+  // Legs: Reihenfolge = 1..4 über DOM
+  const frames = legFrames();
   frames.forEach((frame, idx) => {
     const legNum = idx + 1;
     route.legs.push({
@@ -218,115 +209,115 @@ function captureRoute() {
   return route;
 }
 
+function applyLegToggleToFrame(btn, state) {
+  if (!btn) return;
+
+  const frame = btn.closest(".c-panel");
+  const inactive = state === "inactive";
+
+  btn.dataset.state = state;
+  btn.textContent = inactive ? "INACTIVE" : "ACTIVE";
+  btn.classList.toggle("inactive", inactive);
+
+  if (frame) {
+    frame.classList.toggle("inactiveFields", inactive);
+    qsa(".legField", frame).forEach((f) => {
+      f.disabled = inactive;
+    });
+  }
+}
+
 function applyRoute(route) {
   if (!route) return;
 
   // Kopf
-  setValue("#dateInput", route.head?.date);
+  setValue(SEL.route.dateInput, route.head?.date, { emit: true });
 
-  // selects: erst setzen, wenn Optionen evtl. async geladen wurden.
-  // -> wir setzen sofort UND nochmal später (siehe init)
-  setValue("#lfzSelect", route.head?.lfz);
-  setValue("#tacSelect", route.head?.tac);
+  // selects: setzen (Options können async kommen; dein app.js macht safety reload)
+  setValue(SEL.route.lfzSelect, route.head?.lfz, { emit: true });
+  setValue(SEL.route.tacSelect, route.head?.tac, { emit: true });
 
   // Legs
   const frames = legFrames();
   (route.legs || []).forEach((l, idx) => {
     const frame = frames[idx];
     if (!frame) return;
-    setValue("input.etd", frame, l.etd);
-    setValue("input.eta", frame, l.eta);
-    setValue("input.aeroFrom", frame, l.aeroFrom);
-    setValue("input.aeroTo", frame, l.aeroTo);
+
+    setValue(qs("input.etd", frame), l.etd, { emit: true });
+    setValue(qs("input.eta", frame), l.eta, { emit: true });
+    setValue(qs("input.aeroFrom", frame), l.aeroFrom, { emit: true });
+    setValue(qs("input.aeroTo", frame), l.aeroTo, { emit: true });
 
     const alts = qsa("input.alt", frame);
-    setValue(alts[0], l.alt1);
-    setValue(alts[1], l.alt2);
+    setValue(alts[0], l.alt1, { emit: true });
+    setValue(alts[1], l.alt2, { emit: true });
   });
 
-  // Toggles
+  // Toggles inkl. Field-Disable (wichtig!)
   Object.entries(route.toggles || {}).forEach(([leg, state]) => {
-    const btn = qs(`.legToggle[data-leg="${leg}"]`);
+    const btn = qs(SEL.legs.toggleByLeg(leg));
     if (!btn) return;
-    btn.dataset.state = state;
-    btn.textContent = state === "inactive" ? "INACTIVE" : "ACTIVE";
-    btn.classList.toggle("inactive", state === "inactive");
-  });
-
-  // Diese Schleife könntest du künftig weglassen, weil setValue schon emit macht.
-  // Aber sie schadet nicht – höchstens doppelte Events.
-  // Events triggern, damit Berechnungen/Validation reagieren
-  qsa("#routePanel input, #routePanel select").forEach((el) => {
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
+    applyLegToggleToFrame(btn, state);
   });
 }
 
+// ---------- FUEL ----------
 function captureFuel() {
-  const panel = qs("#fuelPanel");
+  const panel = qs(SEL.fuel.panel);
   if (!panel) return null;
 
   const fuel = {
     toggles: {
-      std_block: qs(`.fuelToggle[data-field="std_block"]`, panel)?.dataset.state || "off",
-      aux_on: qs(`.fuelToggle[data-field="aux_on"]`, panel)?.dataset.state || "off",
+      std_block: qs(SEL.fuel.toggleStd, panel)?.dataset.state || "off",
+      aux_on: qs(SEL.fuel.toggleAux, panel)?.dataset.state || "off",
     },
-    main_usg: readValue(qs(`[data-field="main_usg"]`, panel)),
+    main_usg: readValue(qs(SEL.fuel.mainInput, panel)),
     trip: {
-      1: readValue(qs(`[data-trip-usg="1"]`, panel)),
-      2: readValue(qs(`[data-trip-usg="2"]`, panel)),
-      3: readValue(qs(`[data-trip-usg="3"]`, panel)),
-      4: readValue(qs(`[data-trip-usg="4"]`, panel)),
+      1: readValue(qs(SEL.fuel.tripInput(1), panel)),
+      2: readValue(qs(SEL.fuel.tripInput(2), panel)),
+      3: readValue(qs(SEL.fuel.tripInput(3), panel)),
+      4: readValue(qs(SEL.fuel.tripInput(4), panel)),
     },
-    appr_ifr_n: readValue(qs(`[data-field="appr_ifr_n"]`, panel)),
-    appr_vfr_n: readValue(qs(`[data-field="appr_vfr_n"]`, panel)),
-    alt_usg_log: readValue(qs(`[data-field="alt_usg_log"]`, panel)),
-    finres: readValue(qs(`#finres`, panel)) || "IFR",
+    appr_ifr_n: readValue(qs(SEL.fuel.apprIfn, panel)),
+    appr_vfr_n: readValue(qs(SEL.fuel.apprVfr, panel)),
+    alt_usg_log: readValue(qs(SEL.fuel.altInput, panel)),
+    finres: readValue(qs(SEL.fuel.finresSelect, panel)) || "IFR",
   };
 
   return fuel;
 }
 
 function applyFuel(fuel) {
-  const panel = qs("#fuelPanel");
+  const panel = qs(SEL.fuel.panel);
   if (!panel || !fuel) return;
 
-  // Toggles setzen (nur state + Text; deine fuel.js reagiert auf click,
-  // daher anschließend sync über Events)
-  const stdBtn = qs(`.fuelToggle[data-field="std_block"]`, panel);
-  const auxBtn = qs(`.fuelToggle[data-field="aux_on"]`, panel);
+  // Toggles: nur dataset + Text setzen (kein Click, sonst würde es togglen)
+  const stdBtn = qs(SEL.fuel.toggleStd, panel);
+  const auxBtn = qs(SEL.fuel.toggleAux, panel);
 
   if (stdBtn) stdBtn.dataset.state = fuel.toggles?.std_block || stdBtn.dataset.state;
   if (auxBtn) auxBtn.dataset.state = fuel.toggles?.aux_on || auxBtn.dataset.state;
 
   // Inputs
-  setValue(`[data-field="main_usg"]`, panel, fuel.main_usg);
+  setValue(qs(SEL.fuel.mainInput, panel), fuel.main_usg, { emit: true });
 
-  setValue(`[data-trip-usg="1"]`, panel, fuel.trip?.["1"] ?? fuel.trip?.[1]);
-  setValue(`[data-trip-usg="2"]`, panel, fuel.trip?.["2"] ?? fuel.trip?.[2]);
-  setValue(`[data-trip-usg="3"]`, panel, fuel.trip?.["3"] ?? fuel.trip?.[3]);
-  setValue(`[data-trip-usg="4"]`, panel, fuel.trip?.["4"] ?? fuel.trip?.[4]);
+  setValue(qs(SEL.fuel.tripInput(1), panel), fuel.trip?.["1"] ?? fuel.trip?.[1], { emit: true });
+  setValue(qs(SEL.fuel.tripInput(2), panel), fuel.trip?.["2"] ?? fuel.trip?.[2], { emit: true });
+  setValue(qs(SEL.fuel.tripInput(3), panel), fuel.trip?.["3"] ?? fuel.trip?.[3], { emit: true });
+  setValue(qs(SEL.fuel.tripInput(4), panel), fuel.trip?.["4"] ?? fuel.trip?.[4], { emit: true });
 
-  setValue(`[data-field="appr_ifr_n"]`, panel, fuel.appr_ifr_n);
-  setValue(`[data-field="appr_vfr_n"]`, panel, fuel.appr_vfr_n);
-  setValue(`[data-field="alt_usg_log"]`, panel, fuel.alt_usg_log);
+  setValue(qs(SEL.fuel.apprIfn, panel), fuel.appr_ifr_n, { emit: true });
+  setValue(qs(SEL.fuel.apprVfr, panel), fuel.appr_vfr_n, { emit: true });
+  setValue(qs(SEL.fuel.altInput, panel), fuel.alt_usg_log, { emit: true });
 
-  const finres = qs("#finres", panel);
-  if (finres) finres.value = fuel.finres || "IFR";
+  const finres = qs(SEL.fuel.finresSelect, panel);
+  if (finres) setValue(finres, fuel.finres || "IFR", { emit: true });
 
-  // Diese Schleife könntest du künftig weglassen, weil setValue schon emit macht.
-  // Aber sie schadet nicht – höchstens doppelte Events.
-  // Trigger, damit dein fuel.js alles neu berechnet & Toggles-Visuals sauber werden
-  qsa("#fuelPanel input, #fuelPanel select").forEach((el) => {
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-  });
-
-  // Falls du in fuel.js applyVisual() beim Start nutzt:
-  // einmal click-event simulieren wollen wir NICHT (würde togglen),
-  // daher nur change/input reicht.
+  // fuel.js reagiert bei dir auch auf panel-change:
+  panel.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
+// ---------- PUBLIC API ----------
 export function saveAll({ onlyIfChanged = false } = {}) {
   const data = {
     v: SCHEMA_VERSION,
@@ -339,7 +330,6 @@ export function saveAll({ onlyIfChanged = false } = {}) {
     if (onlyIfChanged) {
       const fp = fpOf({ route: data.route, fuel: data.fuel });
       if (fp === lastFP) {
-        // Zustand ist effektiv saved
         isDirty = false;
         setSaveIndicator("saved", "unverändert");
         return;
@@ -358,11 +348,9 @@ export function saveAll({ onlyIfChanged = false } = {}) {
 }
 
 function loadRaw() {
-  // 1) aktueller Key
   const rawCurrent = localStorage.getItem(KEY);
   if (rawCurrent) return rawCurrent;
 
-  // 2) fallback: alte Keys
   for (const k of LEGACY_KEYS) {
     const raw = localStorage.getItem(k);
     if (raw) return raw;
@@ -381,10 +369,9 @@ export function loadAll() {
   // unter aktuellem KEY ablegen
   localStorage.setItem(KEY, JSON.stringify(migrated));
 
-  // optional: alte Keys löschen, wenn sie existieren
+  // optional: alte Keys löschen
   for (const k of LEGACY_KEYS) localStorage.removeItem(k);
 
-  // dann anwenden
   setApplying(true);
   try {
     applyRoute(migrated.route);
@@ -393,7 +380,6 @@ export function loadAll() {
     setTimeout(() => setApplying(false), 0);
   }
 
-  // Fingerprint setzen (ohne t)
   lastFP = fpOf({ route: migrated.route, fuel: migrated.fuel });
   isDirty = false;
   setSaveIndicator("saved", "Geladen");
@@ -416,61 +402,67 @@ export function initAutosave({ delay = 300 } = {}) {
   } catch {
     lastFP = "";
   }
+
   setSaveIndicator("saved", "Bereit");
   setTimeout(() => setSaveIndicator("saved", "Gespeichert"), 500);
 
   // input/change -> debounced save
-  document.addEventListener("input", (e) => {
-    const t = e.target;
-    if (!t) return;
-    // nur echte Inputs/Selects/Textareas
-    if (!(t.matches?.("input, select, textarea"))) return;
-    scheduleSave(delay);
-  }, { passive: true });
+  document.addEventListener(
+    "input",
+    (e) => {
+      const t = e.target;
+      if (!t?.matches?.("input, select, textarea")) return;
+      scheduleSave(delay);
+    },
+    { passive: true }
+  );
 
-  document.addEventListener("change", (e) => {
-    const t = e.target;
-    if (!t) return;
-    if (!(t.matches?.("input, select, textarea"))) return;
-    scheduleSave(delay);
-  }, { passive: true });
+  document.addEventListener(
+    "change",
+    (e) => {
+      const t = e.target;
+      if (!t?.matches?.("input, select, textarea")) return;
+      scheduleSave(delay);
+    },
+    { passive: true }
+  );
 
-  // Toggles/Resets -> nach UI Update speichern (debounced reicht)
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
+  // Toggles/Resets -> nach UI Update speichern
+  document.addEventListener(
+    "click",
+    (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
 
-    const isToggle =
-      btn.classList.contains("legToggle") ||
-      btn.classList.contains("fuelToggle");
+      const isToggle =
+        btn.classList.contains("legToggle") || btn.classList.contains("fuelToggle");
 
-    const isReset =
-      typeof btn.dataset.action === "string" &&
-      btn.dataset.action.startsWith("reset-");
+      const isReset =
+        typeof btn.dataset.action === "string" && btn.dataset.action.startsWith("reset-");
 
-    if (isToggle || isReset) scheduleSave(0);
-  }, { passive: true });
+      if (isToggle || isReset) scheduleSave(0);
+    },
+    { passive: true }
+  );
 
   window.addEventListener("beforeunload", (e) => {
     if (!isDirty) return;
     e.preventDefault();
-    e.returnValue = ""; // Browser zeigt Standard-Warnung
+    e.returnValue = "";
   });
 }
 
+// ---------- Export / Import ----------
 export function exportDataJSON({ auto = false } = {}) {
   const raw = localStorage.getItem(KEY) || JSON.stringify({ t: Date.now() }, null, 2);
 
   const datePart = sanitizeFilePart(getDateForFilename());
-  const csPart   = sanitizeFilePart(getCallsignForFilename());
+  const csPart = sanitizeFilePart(getCallsignForFilename());
   const base = `FP-${datePart}-${csPart}`;
 
-  // --------------------------
-  // AUTO EXPORT GUARD
-  // --------------------------
   if (auto) {
     const last = localStorage.getItem(LAST_AUTOEXPORT_KEY);
-    if (last === base) return; // bereits automatisch exportiert
+    if (last === base) return;
     localStorage.setItem(LAST_AUTOEXPORT_KEY, base);
   }
 
@@ -493,27 +485,22 @@ export function importDataJSONFromText(jsonText, { apply = true } = {}) {
   let obj;
   try {
     obj = JSON.parse(jsonText);
-  } catch (e) {
+  } catch {
     alert("Import fehlgeschlagen: ungültiges JSON.");
     return false;
   }
 
-  // Minimal-Validation: muss wenigstens ein Objekt sein
   if (!obj || typeof obj !== "object") {
     alert("Import fehlgeschlagen: ungültige Datenstruktur.");
     return false;
   }
 
-  // speichern
   const migrated = migrate(obj);
   localStorage.setItem(KEY, JSON.stringify(migrated));
-  if (apply) loadAll();
 
-  // optional direkt anwenden
   if (apply) {
-    // loadAll kommt aus storage.js selbst – also hier direkt aufrufen
     loadAll();
-    setTimeout(loadAll, 400); // safety-reload für selects
+    setTimeout(loadAll, 400); // safety reload für async selects
   }
 
   return true;

@@ -1,17 +1,23 @@
 // js/legs.js
-
-import { isLegAutofillMuted } from "./ui/state.js";
+import { qs, qsa, closest, isLegAutofillMuted, SEL } from "./ui/index.js";
 
 export function initLegActivation({ onChange } = {}) {
   const LEG_MIN = 2;
   const LEG_MAX = 4;
 
+  // ---------- helpers ----------
+  function getLegFrames() {
+    return qsa(SEL.legs.frames);
+  }
+
   function getLegFrame(legNum) {
-    if (legNum === 1) {
-      // Leg 1 hat keinen Toggle → wir nehmen das erste Leg-Panel
-      return document.querySelector("#legsContainer .c-panel:nth-of-type(1)");
-    }
-    const btn = document.querySelector(`.legToggle[data-leg="${legNum}"]`);
+    const frames = getLegFrames();
+    if (!frames.length) return null;
+
+    // Leg 1 hat keinen Toggle → ist immer das erste Panel
+    if (legNum === 1) return frames[0] || null;
+
+    const btn = qs(SEL.legs.toggleByLeg(legNum));
     return btn ? btn.closest(".c-panel") : null;
   }
 
@@ -19,17 +25,18 @@ export function initLegActivation({ onChange } = {}) {
     const frame = getLegFrame(legNum);
     if (!frame) return;
 
-    const btn = frame.querySelector(".legToggle");
+    const btn = qs(SEL.legs.toggle, frame);
     const inactive = state === "inactive";
 
     if (btn) {
       btn.dataset.state = state;
-      btn.textContent = state.toUpperCase();
+      btn.textContent = state.toUpperCase(); // ACTIVE / INACTIVE
+      btn.classList.toggle("inactive", inactive);
     }
 
     frame.classList.toggle("inactiveFields", inactive);
 
-    frame.querySelectorAll(".legField").forEach((f) => {
+    qsa(".legField", frame).forEach((f) => {
       f.disabled = inactive;
     });
   }
@@ -41,9 +48,8 @@ export function initLegActivation({ onChange } = {}) {
     const thisFrame = getLegFrame(legNum);
     if (!prevFrame || !thisFrame) return;
 
-    const prevTo = prevFrame.querySelector("input.aeroTo");
-    const thisFrom = thisFrame.querySelector("input.aeroFrom");
-
+    const prevTo = qs("input.aeroTo", prevFrame);
+    const thisFrom = qs("input.aeroFrom", thisFrame);
     if (!prevTo || !thisFrom) return;
 
     const val = (prevTo.value || "").toUpperCase().trim();
@@ -63,8 +69,8 @@ export function initLegActivation({ onChange } = {}) {
     const thisFrame = getLegFrame(legNum);
     if (!prevFrame || !thisFrame) return;
 
-    const prevETA = prevFrame.querySelector("input.eta");
-    const thisETD = thisFrame.querySelector("input.etd");
+    const prevETA = qs("input.eta", prevFrame);
+    const thisETD = qs("input.etd", thisFrame);
     if (!prevETA || !thisETD) return;
 
     const val = (prevETA.value || "").trim();
@@ -88,11 +94,11 @@ export function initLegActivation({ onChange } = {}) {
       return;
     }
 
-    const prevTo = prevFrame.querySelector("input.aeroTo");
-    const prevETA = prevFrame.querySelector("input.eta");
+    const prevTo  = qs("input.aeroTo", prevFrame);
+    const prevETA = qs("input.eta", prevFrame);
 
-    const thisFrom = thisFrame.querySelector("input.aeroFrom");
-    const thisETD = thisFrame.querySelector("input.etd");
+    const thisFrom = qs("input.aeroFrom", thisFrame);
+    const thisETD  = qs("input.etd", thisFrame);
 
     // ICAO FROM übernehmen
     if (prevTo && thisFrom) {
@@ -120,7 +126,7 @@ export function initLegActivation({ onChange } = {}) {
       const frame = getLegFrame(l);
       if (!frame) continue;
 
-      const btn = frame.querySelector(".legToggle");
+      const btn = qs(SEL.legs.toggle, frame);
       if (btn && btn.dataset.state === "inactive") continue;
 
       copyPrevLegToThis(l);
@@ -138,9 +144,9 @@ export function initLegActivation({ onChange } = {}) {
     }
   }
 
-  // Toggle-Klick
+  // ---------- Toggle-Klick ----------
   document.addEventListener("click", (e) => {
-    const btn = e.target.closest?.(".legToggle");
+    const btn = closest(e.target, SEL.legs.toggle);
     if (!btn) return;
 
     const legNum = Number(btn.dataset.leg);
@@ -158,28 +164,28 @@ export function initLegActivation({ onChange } = {}) {
     if (typeof onChange === "function") onChange();
   });
 
-  // Wenn sich TO (oder ETA) ändert: nächstes Leg hart updaten (wenn aktiv)
+  // ---------- Wenn sich TO (oder ETA) ändert: nächstes Leg hart updaten ----------
   document.addEventListener("change", (e) => {
     if (isLegAutofillMuted()) return;
 
-    const isTo = e.target.classList.contains("aeroTo");
-    const isEta = e.target.classList.contains("eta");
+    const t = e.target;
+    const isTo = t?.classList?.contains("aeroTo");
+    const isEta = t?.classList?.contains("eta");
     if (!isTo && !isEta) return;
 
-    const frame = e.target.closest(".c-panel");
+    const frame = t.closest(".c-panel");
     if (!frame) return;
 
-    // Leg-Nummer aus Toggle-Button im selben Frame ableiten:
+    // Leg-Nummer aus Toggle-Button im selben Frame ableiten
     // Leg1 hat keinen Toggle -> behandeln wir als 1
-    const toggle = frame.querySelector(".legToggle");
+    const toggle = qs(SEL.legs.toggle, frame);
     const thisLegNum = toggle ? Number(toggle.dataset.leg) : 1;
 
     const nextLegNum = thisLegNum + 1;
     if (nextLegNum < 2 || nextLegNum > 4) return;
 
-    // nur wenn nächstes Leg aktiv ist
     const nextFrame = getLegFrame(nextLegNum);
-    const nextBtn = nextFrame?.querySelector(".legToggle");
+    const nextBtn = nextFrame ? qs(SEL.legs.toggle, nextFrame) : null;
     const nextIsInactive = nextBtn && nextBtn.dataset.state === "inactive";
     if (nextIsInactive) return;
 
@@ -190,12 +196,12 @@ export function initLegActivation({ onChange } = {}) {
     if (typeof onChange === "function") onChange();
   });
 
-  // Initialzustand
+  // ---------- Initialzustand ----------
   for (let l = LEG_MIN; l <= LEG_MAX; l++) {
     const frame = getLegFrame(l);
     if (!frame) continue;
 
-    const btn = frame.querySelector(".legToggle");
+    const btn = qs(SEL.legs.toggle, frame);
     const state = btn?.dataset?.state || "active";
     setLegState(l, state);
   }

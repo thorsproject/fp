@@ -1,7 +1,14 @@
 // js/reset.js
+import {
+  qs,
+  qsa,
+  clearValues,
+  setValue,
+  withMuteLegAutofill,
+  SEL,
+} from "./ui/index.js";
 
 import { exportDataJSON, importDataJSONFromFile } from "./storage.js";
-import { withMuteLegAutofill } from "./ui/state.js";
 
 const ACTIONS = {
   // Route
@@ -19,7 +26,7 @@ const ACTIONS = {
   "export-data": handleExport,
   "import-data": handleImport,
 
-  // optional (wenn mal wieder data-action="mail-eo" verwendet wird)
+  // optional legacy
   "mail-eo": () => exportDataJSON({ auto: true }),
 };
 
@@ -32,7 +39,7 @@ export function initResets() {
     const fn = ACTIONS[action];
     if (!fn) return;
 
-    fn(btn); // btn optional reinreichen
+    fn(btn);
   });
 }
 
@@ -42,7 +49,7 @@ function handleExport() {
 }
 
 async function handleImport() {
-  const inp = document.getElementById("importFile");
+  const inp = qs(SEL.io.importFileInput);
   if (!inp) {
     alert("Import nicht möglich: #importFile fehlt im HTML.");
     return;
@@ -69,18 +76,9 @@ async function handleImport() {
 }
 
 // ---------- helpers ----------
-function clearInputs(nodeList) {
-  nodeList.forEach((el) => {
-    if (!el) return;
-    el.value = "";
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-  });
-}
-
 function removeValidation(nodeList) {
-  nodeList.forEach((el) => el.classList.remove("invalid"));
-  document.querySelectorAll(".aero-error, .alt-error").forEach((el) => {
+  nodeList.forEach((el) => el?.classList?.remove?.("invalid"));
+  qsa(".aero-error, .alt-error").forEach((el) => {
     el.textContent = "";
   });
 }
@@ -93,16 +91,14 @@ function flashResetSuccess(btn) {
 
 // ---------- ROUTE ----------
 function resetKopf(btn) {
-  const scope = document.getElementById("kopfContainer") || document;
+  const scope = qs("#kopfContainer") || document;
 
-  const date = scope.querySelector("#dateInput");
-  clearInputs([date]);
-  // const fdl  = scope.querySelector("#FDLinput");
-  // const tel  = scope.querySelector("#TELinput");
-  // clearInputs([date, fdl, tel]);
+  // nur DATE löschen (FDL/TEL bleiben absichtlich aus Settings)
+  setValue(qs(SEL.route.dateInput, scope), "", { emit: true });
 
-  const lfz = scope.querySelector("#lfzSelect");
-  const tac = scope.querySelector("#tacSelect");
+  // Selects zurücksetzen
+  const lfz = qs(SEL.route.lfzSelect, scope);
+  const tac = qs(SEL.route.tacSelect, scope);
 
   if (lfz) {
     lfz.selectedIndex = 0;
@@ -113,7 +109,8 @@ function resetKopf(btn) {
     tac.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  const cs = scope.querySelector("#callSignDisplay");
+  // Callsign Anzeige leeren (ist Text, kein Input)
+  const cs = qs(SEL.route.callsignDisplay, scope);
   if (cs) cs.textContent = "";
 
   flashResetSuccess(btn);
@@ -121,22 +118,27 @@ function resetKopf(btn) {
 
 function resetTimes(btn) {
   withMuteLegAutofill(() => {
-    const etd = document.querySelectorAll("#legsContainer .legField.etd");
-    const eta = document.querySelectorAll("#legsContainer .legField.eta");
-    clearInputs([...etd, ...eta]);
+    const frames = qsa(SEL.legs.frames);
+    const etd = frames.flatMap((f) => qsa(SEL.legs.etd, f));
+    const eta = frames.flatMap((f) => qsa(SEL.legs.eta, f));
+    clearValues([...etd, ...eta], { emit: true });
   });
+
   flashResetSuccess(btn);
 }
 
 function resetAerodromes(btn) {
   withMuteLegAutofill(() => {
-    const aeroFrom = document.querySelectorAll("#legsContainer .legField.aeroFrom");
-    const aeroTo   = document.querySelectorAll("#legsContainer .legField.aeroTo");
-    const alts     = document.querySelectorAll("#legsContainer .legField.alt");
+    const frames = qsa(SEL.legs.frames);
 
-    clearInputs([...aeroFrom, ...aeroTo, ...alts]);
+    const aeroFrom = frames.flatMap((f) => qsa(SEL.legs.aeroFrom, f));
+    const aeroTo   = frames.flatMap((f) => qsa(SEL.legs.aeroTo, f));
+    const alts     = frames.flatMap((f) => qsa(SEL.legs.alt, f));
+
+    clearValues([...aeroFrom, ...aeroTo, ...alts], { emit: true });
     removeValidation([...aeroFrom, ...aeroTo, ...alts]);
   });
+
   flashResetSuccess(btn);
 }
 
@@ -146,53 +148,51 @@ function resetFuelInputs(btn) {
   resetCompFuelInputs();
   resetAltFuelInputs();
 
-  const panel = document.getElementById("fuelPanel");
+  const panel = qs(SEL.fuel.panel);
   if (!panel) return;
 
-  const finres = panel.querySelector("#finres");
-  if (finres) {
-    finres.value = "IFR";
-    finres.dispatchEvent(new Event("change", { bubbles: true }));
-  }
+  // Final Reserve default
+  setValue(qs(SEL.fuel.finresSelect, panel), "IFR", { emit: true });
 
   setStdBlockOn(panel);
   flashResetSuccess(btn);
 }
 
 function resetLegFuelInputs(btn) {
-  const panel = document.getElementById("fuelPanel");
+  const panel = qs(SEL.fuel.panel);
   if (!panel) return;
 
-  const trip = panel.querySelectorAll(
-    `[data-trip-usg="1"],[data-trip-usg="2"],[data-trip-usg="3"],[data-trip-usg="4"]`
-  );
-  clearInputs(trip);
+  const trip = [1, 2, 3, 4].map((leg) => qs(SEL.fuel.tripInput(leg), panel)).filter(Boolean);
+  clearValues(trip, { emit: true });
+
   flashResetSuccess(btn);
 }
 
 function resetCompFuelInputs(btn) {
-  const panel = document.getElementById("fuelPanel");
+  const panel = qs(SEL.fuel.panel);
   if (!panel) return;
 
-  const ifr = panel.querySelector(`[data-field="appr_ifr_n"]`);
-  const vfr = panel.querySelector(`[data-field="appr_vfr_n"]`);
-  clearInputs([ifr, vfr]);
+  const ifr = qs(SEL.fuel.apprIfn, panel);
+  const vfr = qs(SEL.fuel.apprVfr, panel);
+
+  clearValues([ifr, vfr].filter(Boolean), { emit: true });
   flashResetSuccess(btn);
 }
 
 function resetAltFuelInputs(btn) {
-  const panel = document.getElementById("fuelPanel");
+  const panel = qs(SEL.fuel.panel);
   if (!panel) return;
 
-  const alt = panel.querySelector(`[data-field="alt_usg_log"]`);
-  clearInputs([alt]);
+  const alt = qs(SEL.fuel.altInput, panel);
+  clearValues([alt].filter(Boolean), { emit: true });
+
   flashResetSuccess(btn);
 }
 
 function setStdBlockOn(panel) {
-  const stdBtn  = panel.querySelector(`.fuelToggle[data-field="std_block"]`);
-  const auxBtn  = panel.querySelector(`.fuelToggle[data-field="aux_on"]`);
-  const mainInp = panel.querySelector(`[data-field="main_usg"]`);
+  const stdBtn  = qs(SEL.fuel.toggleStd, panel);
+  const auxBtn  = qs(SEL.fuel.toggleAux, panel);
+  const mainInp = qs(SEL.fuel.mainInput, panel);
 
   if (stdBtn) {
     stdBtn.dataset.state = "on";
@@ -211,5 +211,6 @@ function setStdBlockOn(panel) {
     mainInp.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
+  // fuel.js reagiert auf change im Panel
   panel.dispatchEvent(new Event("change", { bubbles: true }));
 }
