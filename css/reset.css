@@ -4,15 +4,14 @@
    ========================================= */
 
 /* Container (optional, falls du sie einheitlich willst) */
-.routebtn,
-.fuelresbtn {
+.c-btn--ghost {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
 /* Basis-Style für alle Reset Buttons */
-.c-btn c-btn--ghost {
+.c-btn--ghost {
   background: #ff8800;
   color: #000;
   border: none;
@@ -25,24 +24,24 @@
 }
 
 /* Hover */
-.c-btn c-btn--ghost:hover {
+.c-btn--ghost:hover {
   background: #ffa000;
 }
 
 /* Active / Click */
-.c-btn c-btn--ghost:active {
+.c-btn--ghost:active {
   background: #ff6f00;
   transform: translateY(1px);
 }
 
 /* Focus (Keyboard Navigation) */
-.c-btn c-btn--ghost:focus {
+.c-btn--ghost:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.4);
 }
 
 /* Optional: Disabled State */
-.c-btn c-btn--ghost:disabled {
+.c-btn--ghost:disabled {
   background: #555;
   color: #aaa;
   cursor: not-allowed;
