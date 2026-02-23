@@ -8,9 +8,9 @@
 .master-grid{
   display: grid;
   grid-template-columns:
-    45px
+    40px
     80px
-    70px
+    80px
     110px
     70px
     70px;
