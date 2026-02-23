@@ -38,10 +38,14 @@ function minsFromUsg(usg, rate = BURN.NC) {
   return (usg / rate) * 60;
 }
 
+/**
+ * Tolerant: wenn es das data-out im HTML nicht gibt -> kein Fehler.
+ * (Das ist der Fix für dein "cap_usg" Thema und ähnliche Fälle.)
+ */
 function setOut(panel, key, val) {
-  qsa(`[data-out="${key}"]`, panel).forEach((el) => {
-    el.textContent = val;
-  });
+  const els = qsa(`[data-out="${key}"]`, panel);
+  if (!els || els.length === 0) return;
+  els.forEach((el) => (el.textContent = val));
 }
 
 // ---------- Trip (manual USG) from DOM ----------
@@ -81,7 +85,6 @@ function initFuelToggles(panel) {
       if (field === "std_block") {
         btn.textContent = state === "on" ? "ON" : "OFF";
       }
-
       if (field === "aux_on") {
         btn.textContent = state === "on" ? `${CAP.AUX} USG` : "0 USG";
       }
@@ -119,7 +122,8 @@ function initFuelToggles(panel) {
       }
 
       applyVisual();
-      // render happens via listeners (input/change) – aber wir stoßen sauber an:
+      // Render sauber anstoßen (Autosave registriert change)
+      btn.dispatchEvent(new Event("change", { bubbles: true }));
       panel.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
@@ -168,26 +172,33 @@ function initMainClamp(panel) {
       }
 
       mainInp.dispatchEvent(new Event("input", { bubbles: true }));
+      mainInp.dispatchEvent(new Event("change", { bubbles: true }));
     }
   };
 
+  // Beim Tippen: nur clampen, wenn klar out-of-range (damit es nicht zittert)
   mainInp.addEventListener("input", () => {
     const raw = toNum(mainInp.value);
     if (raw > CAP.MAIN_MAX || raw < 0) snap("input");
   });
 
+  // Beim Verlassen immer formatieren (z.B. "44" -> "44,0")
   mainInp.addEventListener("blur", () => snap("blur"));
 }
 
+// ---------- model ----------
 function read(panel) {
   const profile = (readValue(qs(SEL.fuel.finresSelect, panel)) || "IFR").toUpperCase();
   const auxOn = qs(`.fuelToggle[data-field="aux_on"]`, panel)?.dataset.state === "on";
 
+  // MAIN clamp (dein 50-USG Thema)
   const mainRaw = toNum(readValue(qs(SEL.fuel.mainInput, panel)));
   const mainUsg = Math.min(Math.max(mainRaw, 0), CAP.MAIN_MAX);
 
+  // cap bleibt drin (intern), auch wenn nicht angezeigt
+  const cap = CAP.MAIN_MAX + (auxOn ? CAP.AUX : 0);
+
   const blockUsgIn = mainUsg + (auxOn ? CAP.AUX : 0);
-  // const cap = CAP.MAIN_MAX + (auxOn ? CAP.AUX : 0);
 
   // Trip (nur aktive Legs)
   const { tripUsgSum, tripMinSum } = readTripFromDOM(panel);
@@ -202,7 +213,7 @@ function read(panel) {
   // Contingency (nur USG relevant, Zeit NICHT addieren)
   const contUsg = 0.05 * (tripUsgSum + companyUsg);
 
-  // Alternate (USG Log + extra), Zeit automatisch NC
+  // Alternate (USG Log + 2.0), Zeit automatisch NC
   const altLogUsg = toNum(readValue(qs(SEL.fuel.altInput, panel)));
   const altUsg = altLogUsg + FIX.ALT_EXTRA_USG;
   const altMin = minsFromUsg(altUsg, BURN.NC);
@@ -240,7 +251,7 @@ function read(panel) {
   const bingoUsg = altUsg + resUsg;
   const minblUsg = plannedUsg + taxiUsg;
 
-  // CO2: (wie vorher definiert)
+  // CO2 (wie vorher definiert)
   const co2Kgs =
     (tripCompanyUsg + contUsg + taxiUsg) *
     FIX.USG_LIT *
@@ -248,10 +259,9 @@ function read(panel) {
     FIX.CO2_PER_KG_FUEL;
 
   return {
-    // cap,
+    cap,
     mainUsg,
     auxOn,
-
     blockUsgIn,
 
     tripUsgSum,
@@ -291,10 +301,9 @@ function read(panel) {
   };
 }
 
+// ---------- render ----------
 function render(panel) {
   const d = read(panel);
-
-  // setOut(panel, "cap_usg", d.cap.toFixed(1));
 
   setOut(panel, "trip_usg_sum", d.tripUsgSum.toFixed(1));
   setOut(panel, "trip_time_sum", fmtHHMM(d.tripMinSum));
@@ -353,6 +362,7 @@ function render(panel) {
   setOut(panel, "co2fp_kgs", `${d.co2Kgs.toFixed(0)} kg`);
 }
 
+// ---------- main ----------
 export function initFuelPlanning() {
   const panel = qs(SEL.fuel.panel) || qs("#fuelPanel");
   if (!panel) return;
