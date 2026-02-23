@@ -26,10 +26,10 @@
 /* ----------------------------------------- */
 
 /* Column 6 spacing helper */
-.frame .master-grid .col6 { margin-left: 15px; }
+.frame .master-grid .col6 { margin-left: 10px; }
 
 /* Specific widths */
-#lfzSelect, #tacSelect { width: 80px; }
+#lfzSelect, #tacSelect { width: 85px; }
 #FDLinput, #TELinput { width: 165px; }
 
 /* Route inputs exakte Spaltenbreite */
