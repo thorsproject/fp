@@ -68,7 +68,7 @@
 /* INPUTS */
 .c-input,
 .c-select{
-  width: 85%; /* alter Wert: 95 % */
+  width: 95%; /* alter Wert: 95 % */
   padding: 5px;
   background: #0f141a;
   color: var(--mint);
