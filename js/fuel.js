@@ -187,7 +187,7 @@ function read(panel) {
   const mainUsg = Math.min(Math.max(mainRaw, 0), CAP.MAIN_MAX);
 
   const blockUsgIn = mainUsg + (auxOn ? CAP.AUX : 0);
-  const cap = CAP.MAIN_MAX + (auxOn ? CAP.AUX : 0);
+  // const cap = CAP.MAIN_MAX + (auxOn ? CAP.AUX : 0);
 
   // Trip (nur aktive Legs)
   const { tripUsgSum, tripMinSum } = readTripFromDOM(panel);
