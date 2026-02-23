@@ -29,7 +29,7 @@
 .frame .master-grid .col6 { margin-left: 10px; }
 
 /* Specific widths */
-#lfzSelect, #tacSelect { width: 85px; }
+#lfzSelect, #tacSelect { width: 80px; }
 #FDLinput, #TELinput { width: 165px; }
 
 /* Route inputs exakte Spaltenbreite */
@@ -37,7 +37,7 @@
 .master-grid input.aero,
 .master-grid input.alt,
 #dateInput {
-  width: 70px;              /* echte Spaltenbreite */
+  width: 60px;              /* echte Spaltenbreite */
   transform: scaleX(1.14);  /* Input wird nur visuell auf ~80px gestreckt */
   transform-origin: left center;  /* Stretch beginnt links → perfekte Ausrichtung */
   will-change: transform;   /* hilft dem Browser bei Rendering-Optimierung */
