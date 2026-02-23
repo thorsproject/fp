@@ -1,5 +1,6 @@
 // js/reset.js
 import { exportDataJSON, importDataJSONFromFile } from "./storage.js";
+import { setLegAutofillMuted } from "./legs.js";
 
 const ACTIONS = {
   // Route
@@ -118,9 +119,15 @@ function resetKopf(btn) {
 }
 
 function resetTimes(btn) {
-  const etd = document.querySelectorAll("#legsContainer .legField.etd");
-  const eta = document.querySelectorAll("#legsContainer .legField.eta");
-  clearInputs([...etd, ...eta]);
+  setLegAutofillMuted(true);
+  try {
+    const etd = document.querySelectorAll("#legsContainer .legField.etd");
+    const eta = document.querySelectorAll("#legsContainer .legField.eta");
+    clearInputs([...etd, ...eta]);
+  } finally {
+    // microtask: erst nachdem alle change/input Events durch sind
+    queueMicrotask(() => setLegAutofillMuted(false));
+  }
   flashResetSuccess(btn);
 }
 

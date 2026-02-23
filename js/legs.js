@@ -1,10 +1,22 @@
+// js/legs.js
+
+let LEG_AUTOFILL_MUTED = false;
+
+/**
+ * Wenn true: Autokopieren (ETA->ETD, TO->FROM etc.) wird unterdrückt.
+ * Nutzen wir z.B. beim Reset, damit die Kaskade nicht sofort wieder ETDs füllt.
+ */
+export function setLegAutofillMuted(on) {
+  LEG_AUTOFILL_MUTED = !!on;
+}
+
 export function initLegActivation({ onChange } = {}) {
   const LEG_MIN = 2;
   const LEG_MAX = 4;
 
   function getLegFrame(legNum) {
     if (legNum === 1) {
-      // Leg 1 hat keinen Toggle → wir nehmen das erste Leg-Frame
+      // Leg 1 hat keinen Toggle → wir nehmen das erste Leg-Panel
       return document.querySelector("#legsContainer .c-panel:nth-of-type(1)");
     }
     const btn = document.querySelector(`.legToggle[data-leg="${legNum}"]`);
@@ -53,67 +65,63 @@ export function initLegActivation({ onChange } = {}) {
   }
 
   function copyPrevTimesToThis(legNum, force = false) {
-  if (legNum < 2) return;
+    if (legNum < 2) return;
 
-  const prevFrame = getLegFrame(legNum - 1);
-  const thisFrame = getLegFrame(legNum);
-  if (!prevFrame || !thisFrame) return;
+    const prevFrame = getLegFrame(legNum - 1);
+    const thisFrame = getLegFrame(legNum);
+    if (!prevFrame || !thisFrame) return;
 
-  const prevETA = prevFrame.querySelector("input.eta");
-  const thisETD = thisFrame.querySelector("input.etd");
-  if (!prevETA || !thisETD) return;
+    const prevETA = prevFrame.querySelector("input.eta");
+    const thisETD = thisFrame.querySelector("input.etd");
+    if (!prevETA || !thisETD) return;
 
-  const val = (prevETA.value || "").trim();
-  if (!val) return;
+    const val = (prevETA.value || "").trim();
+    if (!val) return;
 
-  if (force || !thisETD.value.trim()) {
-    thisETD.value = val;
-    thisETD.dispatchEvent(new Event("input", { bubbles: true }));
-    thisETD.dispatchEvent(new Event("change", { bubbles: true }));
-  }
-}
-
-function resetFromAndEtdFromPrev(legNum) {
-  if (legNum < 2) return;
-
-  const prevFrame = getLegFrame(legNum - 1);
-  const thisFrame = getLegFrame(legNum);
-
-  if (!prevFrame || !thisFrame) {
-    console.warn("[LEG RESET] frames not found", { legNum, prevFrame: !!prevFrame, thisFrame: !!thisFrame });
-    return;
-  }
-
-  const prevTo = prevFrame.querySelector("input.aeroTo");
-  const prevETA = prevFrame.querySelector("input.eta");
-
-  const thisFrom = thisFrame.querySelector("input.aeroFrom");
-  const thisETD = thisFrame.querySelector("input.etd");
-
-  console.log("[LEG RESET] selectors", {
-    prevTo: !!prevTo, prevETA: !!prevETA, thisFrom: !!thisFrom, thisETD: !!thisETD
-  });
-
-  // ICAO FROM übernehmen
-  if (prevTo && thisFrom) {
-    const icao = (prevTo.value || "").toUpperCase().trim();
-    if (icao) {
-      thisFrom.value = icao;
-      thisFrom.dispatchEvent(new Event("input", { bubbles: true }));
-      thisFrom.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-  }
-
-  // ETD übernehmen = ETA vom Vorleg
-  if (prevETA && thisETD) {
-    const t = (prevETA.value || "").trim();
-    if (t) {
-      thisETD.value = t;
+    if (force || !thisETD.value.trim()) {
+      thisETD.value = val;
       thisETD.dispatchEvent(new Event("input", { bubbles: true }));
       thisETD.dispatchEvent(new Event("change", { bubbles: true }));
     }
   }
-}
+
+  function resetFromAndEtdFromPrev(legNum) {
+    if (legNum < 2) return;
+
+    const prevFrame = getLegFrame(legNum - 1);
+    const thisFrame = getLegFrame(legNum);
+
+    if (!prevFrame || !thisFrame) {
+      console.warn("[LEG RESET] frames not found", { legNum, prevFrame: !!prevFrame, thisFrame: !!thisFrame });
+      return;
+    }
+
+    const prevTo = prevFrame.querySelector("input.aeroTo");
+    const prevETA = prevFrame.querySelector("input.eta");
+
+    const thisFrom = thisFrame.querySelector("input.aeroFrom");
+    const thisETD = thisFrame.querySelector("input.etd");
+
+    // ICAO FROM übernehmen
+    if (prevTo && thisFrom) {
+      const icao = (prevTo.value || "").toUpperCase().trim();
+      if (icao) {
+        thisFrom.value = icao;
+        thisFrom.dispatchEvent(new Event("input", { bubbles: true }));
+        thisFrom.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+
+    // ETD übernehmen = ETA vom Vorleg
+    if (prevETA && thisETD) {
+      const t = (prevETA.value || "").trim();
+      if (t) {
+        thisETD.value = t;
+        thisETD.dispatchEvent(new Event("input", { bubbles: true }));
+        thisETD.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+  }
 
   function fillChain() {
     for (let l = LEG_MIN; l <= LEG_MAX; l++) {
@@ -125,7 +133,6 @@ function resetFromAndEtdFromPrev(legNum) {
 
       copyPrevLegToThis(l);
       copyPrevTimesToThis(l);
-
     }
   }
 
@@ -139,56 +146,57 @@ function resetFromAndEtdFromPrev(legNum) {
     }
   }
 
-// Toggle-Klick
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest?.(".legToggle");
-  if (!btn) return;
+  // Toggle-Klick
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest?.(".legToggle");
+    if (!btn) return;
 
-  const legNum = Number(btn.dataset.leg);
-  const isActive = btn.dataset.state === "active";
-  const newState = isActive ? "inactive" : "active";
+    const legNum = Number(btn.dataset.leg);
+    const isActive = btn.dataset.state === "active";
+    const newState = isActive ? "inactive" : "active";
 
-  applyCascade(legNum, newState);
-  fillChain();
+    applyCascade(legNum, newState);
+    fillChain();
 
-  // 👉 Wenn gerade aktiviert wurde → Reset FROM + ETD
-  if (newState === "active") {
-    console.log("[LEG RESET] activating leg", legNum);
-    resetFromAndEtdFromPrev(legNum);
-  }
+    // Wenn gerade aktiviert wurde → Reset FROM + ETD
+    if (newState === "active") {
+      resetFromAndEtdFromPrev(legNum);
+    }
 
-  if (typeof onChange === "function") onChange();
-});
+    if (typeof onChange === "function") onChange();
+  });
 
-// Wenn sich TO (oder ETA) ändert: nächstes Leg hart updaten (wenn aktiv)
-document.addEventListener("change", (e) => {
-  const isTo = e.target.classList.contains("aeroTo");
-  const isEta = e.target.classList.contains("eta");
-  if (!isTo && !isEta) return;
+  // Wenn sich TO (oder ETA) ändert: nächstes Leg hart updaten (wenn aktiv)
+  document.addEventListener("change", (e) => {
+    if (LEG_AUTOFILL_MUTED) return;
 
-  const frame = e.target.closest(".c-panel");
-  if (!frame) return;
+    const isTo = e.target.classList.contains("aeroTo");
+    const isEta = e.target.classList.contains("eta");
+    if (!isTo && !isEta) return;
 
-  // Leg-Nummer aus Toggle-Button im selben Frame ableiten:
-  // Leg1 hat keinen Toggle -> behandeln wir als 1
-  const toggle = frame.querySelector(".legToggle");
-  const thisLegNum = toggle ? Number(toggle.dataset.leg) : 1;
+    const frame = e.target.closest(".c-panel");
+    if (!frame) return;
 
-  const nextLegNum = thisLegNum + 1;
-  if (nextLegNum < 2 || nextLegNum > 4) return;
+    // Leg-Nummer aus Toggle-Button im selben Frame ableiten:
+    // Leg1 hat keinen Toggle -> behandeln wir als 1
+    const toggle = frame.querySelector(".legToggle");
+    const thisLegNum = toggle ? Number(toggle.dataset.leg) : 1;
 
-  // nur wenn nächstes Leg aktiv ist
-  const nextFrame = getLegFrame(nextLegNum);
-  const nextBtn = nextFrame?.querySelector(".legToggle");
-  const nextIsInactive = nextBtn && nextBtn.dataset.state === "inactive";
-  if (nextIsInactive) return;
+    const nextLegNum = thisLegNum + 1;
+    if (nextLegNum < 2 || nextLegNum > 4) return;
 
-  // erst normal, dann hart setzen
-  fillChain();
-  resetFromAndEtdFromPrev(nextLegNum);
+    // nur wenn nächstes Leg aktiv ist
+    const nextFrame = getLegFrame(nextLegNum);
+    const nextBtn = nextFrame?.querySelector(".legToggle");
+    const nextIsInactive = nextBtn && nextBtn.dataset.state === "inactive";
+    if (nextIsInactive) return;
 
-  if (typeof onChange === "function") onChange();
-});
+    // erst normal, dann hart setzen
+    fillChain();
+    resetFromAndEtdFromPrev(nextLegNum);
+
+    if (typeof onChange === "function") onChange();
+  });
 
   // Initialzustand
   for (let l = LEG_MIN; l <= LEG_MAX; l++) {
