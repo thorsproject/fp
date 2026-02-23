@@ -294,7 +294,7 @@ function read(panel) {
 function render(panel) {
   const d = read(panel);
 
-  setOut(panel, "cap_usg", d.cap.toFixed(1));
+  // setOut(panel, "cap_usg", d.cap.toFixed(1));
 
   setOut(panel, "trip_usg_sum", d.tripUsgSum.toFixed(1));
   setOut(panel, "trip_time_sum", fmtHHMM(d.tripMinSum));
