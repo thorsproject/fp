@@ -14,6 +14,7 @@ document.addEventListener("click", (e) => {
 import { loadConfig, setConfigPassword, getConfigPassword, clearConfigCache } from "./config_store.js";
 import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
+import { setText } from "./ui/ui.js";
 import { initLegActivation } from "./legs.js";
 import { createMap } from "./map.js";
 import {
@@ -154,11 +155,8 @@ map.on("click", (e) => {
   window.dispatchEvent(new Event("fp:includes-loaded"));
 
   function applyFdlToHeader({ name = "", tel = "" } = {}) {
-    const fdlEl = document.getElementById("FDLoutput");
-    const telEl = document.getElementById("TELoutput");
-
-    if (fdlEl) fdlEl.textContent = name || "";
-    if (telEl) telEl.textContent = tel || "";
+    setText("#FDLoutput", name);
+    setText("#TELoutput", tel);
   }
 
   function applyChecklistContacts(config) {

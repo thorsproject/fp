@@ -1,14 +1,6 @@
 // js/legs.js
 
-let LEG_AUTOFILL_MUTED = false;
-
-/**
- * Wenn true: Autokopieren (ETA->ETD, TO->FROM etc.) wird unterdrückt.
- * Nutzen wir z.B. beim Reset, damit die Kaskade nicht sofort wieder ETDs füllt.
- */
-export function setLegAutofillMuted(on) {
-  LEG_AUTOFILL_MUTED = !!on;
-}
+import { isLegAutofillMuted } from "./ui/state.js";
 
 export function initLegActivation({ onChange } = {}) {
   const LEG_MIN = 2;
@@ -168,7 +160,7 @@ export function initLegActivation({ onChange } = {}) {
 
   // Wenn sich TO (oder ETA) ändert: nächstes Leg hart updaten (wenn aktiv)
   document.addEventListener("change", (e) => {
-    if (LEG_AUTOFILL_MUTED) return;
+    if (isLegAutofillMuted()) return;
 
     const isTo = e.target.classList.contains("aeroTo");
     const isEta = e.target.classList.contains("eta");

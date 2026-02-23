@@ -1,6 +1,7 @@
 // js/reset.js
+
 import { exportDataJSON, importDataJSONFromFile } from "./storage.js";
-import { setLegAutofillMuted } from "./legs.js";
+import { withMuteLegAutofill } from "./ui/state.js";
 
 const ACTIONS = {
   // Route
@@ -119,31 +120,23 @@ function resetKopf(btn) {
 }
 
 function resetTimes(btn) {
-  setLegAutofillMuted(true);
-  try {
+  withMuteLegAutofill(() => {
     const etd = document.querySelectorAll("#legsContainer .legField.etd");
     const eta = document.querySelectorAll("#legsContainer .legField.eta");
     clearInputs([...etd, ...eta]);
-  } finally {
-    // microtask: erst nachdem alle change/input Events durch sind
-    queueMicrotask(() => setLegAutofillMuted(false));
-  }
+  });
   flashResetSuccess(btn);
 }
 
 function resetAerodromes(btn) {
-  setLegAutofillMuted(true);
-  try {
+  withMuteLegAutofill(() => {
     const aeroFrom = document.querySelectorAll("#legsContainer .legField.aeroFrom");
     const aeroTo   = document.querySelectorAll("#legsContainer .legField.aeroTo");
     const alts     = document.querySelectorAll("#legsContainer .legField.alt");
 
     clearInputs([...aeroFrom, ...aeroTo, ...alts]);
     removeValidation([...aeroFrom, ...aeroTo, ...alts]);
-  } finally {
-    queueMicrotask(() => setLegAutofillMuted(false));
-  }
-
+  });
   flashResetSuccess(btn);
 }
 

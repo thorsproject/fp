@@ -1,4 +1,13 @@
-// js/storage.js
+// js/storage.js// Lesen: qs/qsa aus ui/dom.js
+// Schreiben: setValue aus ui/ui.js
+// Lesen: readValue aus ui/read.js
+// Keine eigenen qs/qsa/getValue/setValue mehr in storage.js
+// Optional: getInputValue(el) als kleine lokale Helper-Funktion (weil ui/ui.js absichtlich nur Schreibfunktionen enthält)
+
+import { qs, qsa } from "./ui/dom.js";
+import { setValue } from "./ui/ui.js";
+import { readValue } from "./ui/read.js";
+
 const KEY = "fp.v2"; // bei Breaking Changes erhöhen (v2, v3...)
 const SCHEMA_VERSION = 2;
 const LEGACY_KEYS = ["fp.v1"]; //  alte Keys mit prüfen
@@ -90,6 +99,7 @@ function setApplying(on) {
   isApplying = on;
 }
 
+
 function scheduleSave(delay = 300) {
   if (isApplying) return;
   
@@ -125,29 +135,8 @@ function setSaveIndicator(state, msg = "") {
   }
 }
 // ---------- SAVE INDICATOR ENDE ---------- //
-
 function safeParse(json, fallback = null) {
   try { return JSON.parse(json); } catch { return fallback; }
-}
-
-function qs(sel, root = document) {
-  return root.querySelector(sel);
-}
-
-function qsa(sel, root = document) {
-  return Array.from(root.querySelectorAll(sel));
-}
-
-function getValue(el) {
-  if (!el) return null;
-  if (el.type === "checkbox") return !!el.checked;
-  return el.value ?? "";
-}
-
-function setValue(el, val) {
-  if (!el) return;
-  if (el.type === "checkbox") el.checked = !!val;
-  else el.value = val ?? "";
 }
 
 // ---------- eMail EO-Funktion ---------- //
@@ -198,9 +187,9 @@ function legFrames() {
 function captureRoute() {
   const route = {
     head: {
-      date: getValue(qs("#dateInput")),
-      lfz: getValue(qs("#lfzSelect")),
-      tac: getValue(qs("#tacSelect")),
+      date: readValue("#dateInput"),
+      lfz: readValue(qs("#lfzSelect")),
+      tac: readValue(qs("#tacSelect")),
     },
     legs: [],
     toggles: {},
@@ -217,12 +206,12 @@ function captureRoute() {
     const legNum = idx + 1;
     route.legs.push({
       leg: legNum,
-      etd: getValue(qs("input.etd", frame)),
-      eta: getValue(qs("input.eta", frame)),
-      aeroFrom: getValue(qs("input.aeroFrom", frame)),
-      aeroTo: getValue(qs("input.aeroTo", frame)),
-      alt1: getValue(qsa("input.alt", frame)[0]),
-      alt2: getValue(qsa("input.alt", frame)[1]),
+      etd: readValue(qs("input.etd", frame)),
+      eta: readValue(qs("input.eta", frame)),
+      aeroFrom: readValue(qs("input.aeroFrom", frame)),
+      aeroTo: readValue(qs("input.aeroTo", frame)),
+      alt1: readValue(qsa("input.alt", frame)[0]),
+      alt2: readValue(qsa("input.alt", frame)[1]),
     });
   });
 
@@ -233,22 +222,22 @@ function applyRoute(route) {
   if (!route) return;
 
   // Kopf
-  setValue(qs("#dateInput"), route.head?.date);
+  setValue("#dateInput", route.head?.date);
 
   // selects: erst setzen, wenn Optionen evtl. async geladen wurden.
   // -> wir setzen sofort UND nochmal später (siehe init)
-  setValue(qs("#lfzSelect"), route.head?.lfz);
-  setValue(qs("#tacSelect"), route.head?.tac);
+  setValue("#lfzSelect", route.head?.lfz);
+  setValue("#tacSelect", route.head?.tac);
 
   // Legs
   const frames = legFrames();
   (route.legs || []).forEach((l, idx) => {
     const frame = frames[idx];
     if (!frame) return;
-    setValue(qs("input.etd", frame), l.etd);
-    setValue(qs("input.eta", frame), l.eta);
-    setValue(qs("input.aeroFrom", frame), l.aeroFrom);
-    setValue(qs("input.aeroTo", frame), l.aeroTo);
+    setValue("input.etd", frame, l.etd);
+    setValue("input.eta", frame, l.eta);
+    setValue("input.aeroFrom", frame, l.aeroFrom);
+    setValue("input.aeroTo", frame, l.aeroTo);
 
     const alts = qsa("input.alt", frame);
     setValue(alts[0], l.alt1);
@@ -264,6 +253,8 @@ function applyRoute(route) {
     btn.classList.toggle("inactive", state === "inactive");
   });
 
+  // Diese Schleife könntest du künftig weglassen, weil setValue schon emit macht.
+  // Aber sie schadet nicht – höchstens doppelte Events.
   // Events triggern, damit Berechnungen/Validation reagieren
   qsa("#routePanel input, #routePanel select").forEach((el) => {
     el.dispatchEvent(new Event("input", { bubbles: true }));
@@ -280,17 +271,17 @@ function captureFuel() {
       std_block: qs(`.fuelToggle[data-field="std_block"]`, panel)?.dataset.state || "off",
       aux_on: qs(`.fuelToggle[data-field="aux_on"]`, panel)?.dataset.state || "off",
     },
-    main_usg: getValue(qs(`[data-field="main_usg"]`, panel)),
+    main_usg: readValue(qs(`[data-field="main_usg"]`, panel)),
     trip: {
-      1: getValue(qs(`[data-trip-usg="1"]`, panel)),
-      2: getValue(qs(`[data-trip-usg="2"]`, panel)),
-      3: getValue(qs(`[data-trip-usg="3"]`, panel)),
-      4: getValue(qs(`[data-trip-usg="4"]`, panel)),
+      1: readValue(qs(`[data-trip-usg="1"]`, panel)),
+      2: readValue(qs(`[data-trip-usg="2"]`, panel)),
+      3: readValue(qs(`[data-trip-usg="3"]`, panel)),
+      4: readValue(qs(`[data-trip-usg="4"]`, panel)),
     },
-    appr_ifr_n: getValue(qs(`[data-field="appr_ifr_n"]`, panel)),
-    appr_vfr_n: getValue(qs(`[data-field="appr_vfr_n"]`, panel)),
-    alt_usg_log: getValue(qs(`[data-field="alt_usg_log"]`, panel)),
-    finres: getValue(qs(`#finres`, panel)) || "IFR",
+    appr_ifr_n: readValue(qs(`[data-field="appr_ifr_n"]`, panel)),
+    appr_vfr_n: readValue(qs(`[data-field="appr_vfr_n"]`, panel)),
+    alt_usg_log: readValue(qs(`[data-field="alt_usg_log"]`, panel)),
+    finres: readValue(qs(`#finres`, panel)) || "IFR",
   };
 
   return fuel;
@@ -309,20 +300,22 @@ function applyFuel(fuel) {
   if (auxBtn) auxBtn.dataset.state = fuel.toggles?.aux_on || auxBtn.dataset.state;
 
   // Inputs
-  setValue(qs(`[data-field="main_usg"]`, panel), fuel.main_usg);
+  setValue(`[data-field="main_usg"]`, panel, fuel.main_usg);
 
-  setValue(qs(`[data-trip-usg="1"]`, panel), fuel.trip?.["1"] ?? fuel.trip?.[1]);
-  setValue(qs(`[data-trip-usg="2"]`, panel), fuel.trip?.["2"] ?? fuel.trip?.[2]);
-  setValue(qs(`[data-trip-usg="3"]`, panel), fuel.trip?.["3"] ?? fuel.trip?.[3]);
-  setValue(qs(`[data-trip-usg="4"]`, panel), fuel.trip?.["4"] ?? fuel.trip?.[4]);
+  setValue(`[data-trip-usg="1"]`, panel, fuel.trip?.["1"] ?? fuel.trip?.[1]);
+  setValue(`[data-trip-usg="2"]`, panel, fuel.trip?.["2"] ?? fuel.trip?.[2]);
+  setValue(`[data-trip-usg="3"]`, panel, fuel.trip?.["3"] ?? fuel.trip?.[3]);
+  setValue(`[data-trip-usg="4"]`, panel, fuel.trip?.["4"] ?? fuel.trip?.[4]);
 
-  setValue(qs(`[data-field="appr_ifr_n"]`, panel), fuel.appr_ifr_n);
-  setValue(qs(`[data-field="appr_vfr_n"]`, panel), fuel.appr_vfr_n);
-  setValue(qs(`[data-field="alt_usg_log"]`, panel), fuel.alt_usg_log);
+  setValue(`[data-field="appr_ifr_n"]`, panel, fuel.appr_ifr_n);
+  setValue(`[data-field="appr_vfr_n"]`, panel, fuel.appr_vfr_n);
+  setValue(`[data-field="alt_usg_log"]`, panel, fuel.alt_usg_log);
 
   const finres = qs("#finres", panel);
   if (finres) finres.value = fuel.finres || "IFR";
 
+  // Diese Schleife könntest du künftig weglassen, weil setValue schon emit macht.
+  // Aber sie schadet nicht – höchstens doppelte Events.
   // Trigger, damit dein fuel.js alles neu berechnet & Toggles-Visuals sauber werden
   qsa("#fuelPanel input, #fuelPanel select").forEach((el) => {
     el.dispatchEvent(new Event("input", { bubbles: true }));
