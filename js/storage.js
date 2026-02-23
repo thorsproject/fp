@@ -199,8 +199,8 @@ function captureRoute() {
   const route = {
     head: {
       date: getValue(qs("#dateInput")),
-      fdl: getValue(qs("#FDLinput")),
-      tel: getValue(qs("#TELinput")),
+      fdl: qs("#FDLinput")?.textContent || "",
+      tel: qs("#TELinput")?.textContent || "",
       lfz: getValue(qs("#lfzSelect")),
       tac: getValue(qs("#tacSelect")),
     },
@@ -236,8 +236,11 @@ function applyRoute(route) {
 
   // Kopf
   setValue(qs("#dateInput"), route.head?.date);
-  setValue(qs("#FDLinput"), route.head?.fdl);
-  setValue(qs("#TELinput"), route.head?.tel);
+  const fdlEl = qs("#FDLinput");
+  const telEl = qs("#TELinput");
+
+  if (fdlEl) fdlEl.textContent = route.head?.fdl || "";
+  if (telEl) telEl.textContent = route.head?.tel || "";
 
   // selects: erst setzen, wenn Optionen evtl. async geladen wurden.
   // -> wir setzen sofort UND nochmal später (siehe init)

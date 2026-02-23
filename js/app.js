@@ -158,15 +158,11 @@ map.on("click", (e) => {
     const telEl = document.getElementById("TELinput");
 
     if (fdlEl) {
-      fdlEl.value = name;
-      fdlEl.dispatchEvent(new Event("input", { bubbles: true }));
-      fdlEl.dispatchEvent(new Event("change", { bubbles: true }));
+      fdlEl.textContent = name || "";
     }
 
     if (telEl) {
-      telEl.value = tel;
-      telEl.dispatchEvent(new Event("input", { bubbles: true }));
-      telEl.dispatchEvent(new Event("change", { bubbles: true }));
+      telEl.textContent = tel || "";
     }
   }
 
