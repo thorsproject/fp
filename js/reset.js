@@ -132,11 +132,18 @@ function resetTimes(btn) {
 }
 
 function resetAerodromes(btn) {
-  const aeroFrom = document.querySelectorAll("#legsContainer .legField.aeroFrom");
-  const aeroTo   = document.querySelectorAll("#legsContainer .legField.aeroTo");
-  const alts     = document.querySelectorAll("#legsContainer .legField.alt");
-  clearInputs([...aeroFrom, ...aeroTo, ...alts]);
-  removeValidation([...aeroFrom, ...aeroTo, ...alts]);
+  setLegAutofillMuted(true);
+  try {
+    const aeroFrom = document.querySelectorAll("#legsContainer .legField.aeroFrom");
+    const aeroTo   = document.querySelectorAll("#legsContainer .legField.aeroTo");
+    const alts     = document.querySelectorAll("#legsContainer .legField.alt");
+
+    clearInputs([...aeroFrom, ...aeroTo, ...alts]);
+    removeValidation([...aeroFrom, ...aeroTo, ...alts]);
+  } finally {
+    queueMicrotask(() => setLegAutofillMuted(false));
+  }
+
   flashResetSuccess(btn);
 }
 
