@@ -154,16 +154,11 @@ map.on("click", (e) => {
   window.dispatchEvent(new Event("fp:includes-loaded"));
 
   function applyFdlToHeader({ name = "", tel = "" } = {}) {
-    const fdlEl = document.getElementById("FDLinput");
-    const telEl = document.getElementById("TELinput");
+    const fdlEl = document.getElementById("FDLoutput");
+    const telEl = document.getElementById("TELoutput");
 
-    if (fdlEl) {
-      fdlEl.textContent = name || "";
-    }
-
-    if (telEl) {
-      telEl.textContent = tel || "";
-    }
+    if (fdlEl) fdlEl.textContent = name || "";
+    if (telEl) telEl.textContent = tel || "";
   }
 
   function applyChecklistContacts(config) {
