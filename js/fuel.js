@@ -248,7 +248,7 @@ function read(panel) {
     FIX.CO2_PER_KG_FUEL;
 
   return {
-    cap,
+    // cap,
     mainUsg,
     auxOn,
 
