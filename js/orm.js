@@ -270,8 +270,22 @@ function wireOrmAutofill(iframe) {
 // ---------- PDF Export ----------
 async function getEditedPdfBytesFromViewer(iframe) {
   const app = iframe?.contentWindow?.PDFViewerApplication;
-
   if (!app?.pdfDocument) throw new Error("PDF noch nicht geladen.");
+
+  // >>> Commit/flush annotation storage before saving
+  try {
+    const storage = app.pdfDocument.annotationStorage;
+    storage?.onSetModified?.(true);
+
+    app.eventBus?.dispatch?.("annotationstoragechanged", { source: storage });
+    app.pdfViewer?.refresh?.();
+
+    // kleiner Tick, damit PDF.js intern verarbeiten kann
+    await new Promise(r => setTimeout(r, 0));
+  } catch (e) {
+    console.warn("[ORM] flush before save failed", e);
+  }
+  // <<<
 
   if (app.pdfDocument.saveDocument) return await app.pdfDocument.saveDocument();
   if (app.pdfDocument.getData) return await app.pdfDocument.getData();
