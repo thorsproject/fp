@@ -37,8 +37,31 @@ export const SEL = {
   },
 
 
+  // ---------- CHECKLIST ----------
+  checklist: {
+    view: "#view-checklist",
+
+    toast: "#checkToast",
+
+    // toggles
+    toggleBtn: '.tb[data-tb]',
+    toggleByKey: (key) => `.tb[data-tb="${key}"]`,
+
+    // fields
+    fieldAny: "[data-field]",
+    fieldByKey: (key) => `[data-field="${key}"]`,
+
+    // reset buttons
+    resetChecklist: "#btnResetChecklist",
+    resetCheckmarks: "#btnResetCheckmarks",
+    resetWx: "#btnResetWx",
+
+    // phone buttons
+    phoneBtn: ".phone-btn",
+  },
+
+
   // ---------- FUEL ----------
-// js/ui/selectors.js
   fuel: {
     panel: "#fuelPanel",
 

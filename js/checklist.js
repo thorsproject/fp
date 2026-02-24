@@ -1,6 +1,16 @@
 // js/checklist.js
 // Local-only Planning Checklist state (NOT part of fp storage.js)
 
+import { qs, qsa, closest, readValue, setValue, SEL } from "./ui/index.js";
+
+// ---------- Debug-Funktion bei Bedarf ----------
+const DEBUG_CHECKLIST = false; // <- auf true setzen, wenn du Logs willst
+function dlog(...args) {
+  if (!DEBUG_CHECKLIST) return;
+  console.log("[checklist]", ...args);
+}
+// ---------- Debug-Funktion Ende ----------
+
 const STORAGE_KEY = "fp_checklist_v1";
 
 // ---------- Storage helpers ----------
@@ -18,6 +28,7 @@ function writeState(state) {
 
 // ---------- UI helpers ----------
 function applyToggle(btn, checked) {
+  if (!btn) return;
   btn.classList.toggle("is-checked", !!checked);
   btn.textContent = checked ? "CHECK" : "UNCHECK";
 }
@@ -28,9 +39,29 @@ function flashReset(btn) {
   setTimeout(() => btn.classList.remove("reset-success"), 300);
 }
 
+function getScope() {
+  return qs(SEL.checklist.view) || document;
+}
+
+function getToast(scope) {
+  return qs(SEL.checklist.toast, scope) || qs(SEL.checklist.toast);
+}
+
+function showToast(scope, msg) {
+  const toast = getToast(scope);
+  if (!toast) return;
+
+  toast.textContent = msg;
+  toast.classList.remove("is-hidden");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.add("is-hidden"), 2200);
+}
+
 // ---------- Public helper for other modules (orm.js / app.js) ----------
 export function checklistSetToggle(key, checked = true) {
-  const btn = document.querySelector(`.tb[data-tb="${key}"]`);
+  const scope = getScope();
+  const btn =
+    qs(SEL.checklist.toggleByKey(key), scope) || qs(SEL.checklist.toggleByKey(key));
   if (!btn) return;
 
   applyToggle(btn, checked);
@@ -43,32 +74,28 @@ export function checklistSetToggle(key, checked = true) {
 
 // ---------- Main ----------
 export function initChecklistUI() {
-  // Scope to checklist view to avoid side effects in other views
-  const scope = document.getElementById("view-checklist") || document;
-
-  const toast = scope.querySelector("#checkToast") || document.getElementById("checkToast");
-
-  function showToast(msg) {
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.classList.remove("is-hidden");
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => toast.classList.add("is-hidden"), 2200);
-  }
+  const scope = getScope();
 
   // ---------- Restore ----------
   const state = readState();
+  dlog("restore state", state);
   const toggles = state.toggles || {};
   const fields = state.fields || {};
 
-  scope.querySelectorAll(".tb[data-tb]").forEach((tb) => {
+  qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => {
     const key = tb.dataset.tb;
-    if (key in toggles) applyToggle(tb, toggles[key]);
+    if (key in toggles) {
+      dlog("restore toggle", key, toggles[key]);
+      applyToggle(tb, toggles[key]);
+    }
   });
 
-  scope.querySelectorAll("[data-field]").forEach((inp) => {
+  qsa(SEL.checklist.fieldAny, scope).forEach((inp) => {
     const key = inp.dataset.field;
-    if (key in fields) inp.value = fields[key] ?? "";
+    if (key in fields) {
+      dlog("restore field", key, fields[key]);
+      setValue(inp, fields[key] ?? "", { emit: false });
+    }
   });
 
   // ---------- Persist helpers ----------
@@ -87,30 +114,29 @@ export function initChecklistUI() {
   }
 
   // ---------- Reset buttons ----------
-  scope.querySelector("#btnResetChecklist")?.addEventListener("click", (e) => {
-    // wipe whole checklist state
+  qs(SEL.checklist.resetChecklist, scope)?.addEventListener("click", (e) => {
+    dlog("reset checklist");
     localStorage.removeItem(STORAGE_KEY);
 
-    // reset toggles
-    scope.querySelectorAll(".tb[data-tb]").forEach((tb) => applyToggle(tb, false));
-
-    // reset inputs
-    scope.querySelectorAll("[data-field]").forEach((el) => (el.value = ""));
+    qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => applyToggle(tb, false));
+    qsa(SEL.checklist.fieldAny, scope).forEach((el) => setValue(el, "", { emit: false }));
 
     flashReset(e.currentTarget);
   });
 
-  scope.querySelector("#btnResetCheckmarks")?.addEventListener("click", (e) => {
+  qs(SEL.checklist.resetCheckmarks, scope)?.addEventListener("click", (e) => {
+    dlog("reset checkmarks");
     const s = readState();
     s.toggles = {};
     writeState(s);
 
-    scope.querySelectorAll(".tb[data-tb]").forEach((tb) => applyToggle(tb, false));
+    qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => applyToggle(tb, false));
 
     flashReset(e.currentTarget);
   });
 
-  scope.querySelector("#btnResetWx")?.addEventListener("click", (e) => {
+  qs(SEL.checklist.resetWx, scope)?.addEventListener("click", (e) => {
+    dlog("reset wx fields");
     const s = readState();
     s.fields = s.fields || {};
 
@@ -120,19 +146,23 @@ export function initChecklistUI() {
 
     writeState(s);
 
-    scope
-      .querySelectorAll('[data-field="wx_nr"],[data-field="wx_void"],[data-field="wx_init"]')
-      .forEach((el) => (el.value = ""));
+    qsa(
+      `${SEL.checklist.fieldByKey("wx_nr")},${SEL.checklist.fieldByKey("wx_void")},${SEL.checklist.fieldByKey("wx_init")}`,
+      scope
+    ).forEach((el) => setValue(el, "", { emit: false }));
 
     flashReset(e.currentTarget);
   });
 
   // ---------- Toggle click ----------
   scope.addEventListener("click", (e) => {
-    const tb = e.target.closest(".tb[data-tb]");
+    const tb = closest(e.target, SEL.checklist.toggleBtn);
     if (!tb || !scope.contains(tb)) return;
 
     const checked = !tb.classList.contains("is-checked");
+
+    dlog("toggle click", { key: tb.dataset.tb, checked });
+
     applyToggle(tb, checked);
     saveToggle(tb.dataset.tb, checked);
   });
@@ -147,7 +177,7 @@ export function initChecklistUI() {
 
   // INITIALS uppercase + save + wx auto-check
   scope.addEventListener("input", (e) => {
-    const el = e.target.closest("[data-field]");
+    const el = closest(e.target, SEL.checklist.fieldAny);
     if (!el || !scope.contains(el)) return;
 
     // initials: uppercase while typing
@@ -157,12 +187,17 @@ export function initChecklistUI() {
       try { el.setSelectionRange(pos, pos); } catch {}
     }
 
-    debounceSaveField(el.dataset.field, el.value);
+    const fieldKey = el.dataset.field;
+    const value = readValue(el);
+
+    dlog("field input", { key: fieldKey, value });
+
+    debounceSaveField(fieldKey, value);
 
     // Wx auto-check if complete
-    const nr = scope.querySelector('[data-field="wx_nr"]')?.value?.trim();
-    const voidv = scope.querySelector('[data-field="wx_void"]')?.value?.trim();
-    const init = scope.querySelector('[data-field="wx_init"]')?.value?.trim();
+    const nr = String(readValue(qs(SEL.checklist.fieldByKey("wx_nr"), scope)) || "").trim();
+    const voidv = String(readValue(qs(SEL.checklist.fieldByKey("wx_void"), scope)) || "").trim();
+    const init = String(readValue(qs(SEL.checklist.fieldByKey("wx_init"), scope)) || "").trim();
 
     if (nr && voidv && init) {
       checklistSetToggle("wx", true);
@@ -170,20 +205,22 @@ export function initChecklistUI() {
   });
 
   scope.addEventListener("change", (e) => {
-    const el = e.target.closest("[data-field]");
+    const el = closest(e.target, SEL.checklist.fieldAny);
     if (!el || !scope.contains(el)) return;
-    saveField(el.dataset.field, el.value);
+    saveField(el.dataset.field, readValue(el));
   });
 
   // ---------- Phone Buttons ----------
   scope.addEventListener("click", (e) => {
-    const b = e.target.closest(".phone-btn");
+    const b = closest(e.target, SEL.checklist.phoneBtn);
     if (!b || !scope.contains(b)) return;
 
     const label = b.dataset.phoneLabel || b.textContent.trim();
     const phone = b.dataset.phone || "";
     if (!phone) return;
 
-    showToast(`${label}: ${phone}`);
+    dlog("phone click", { label, phone });
+
+    showToast(scope, `${label}: ${phone}`);
   });
 }
