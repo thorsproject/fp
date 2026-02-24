@@ -316,6 +316,23 @@ export function initOrmChecklist() {
   function openOrm() {
     const pdfPath = `data/ORMBlatt.pdf?v=${Date.now()}`;
 
+    // Wichtig: Listener im PARENT-Dokument, bevor der Viewer initialisiert!
+    const onWebViewerLoaded = (ev) => {
+      const w = ev?.detail?.source; // = viewer window
+      const opts = w?.PDFViewerApplicationOptions;
+      if (opts?.set) {
+        opts.set("enableScripting", false);
+
+        // optional (falls euer Build das kennt): verhindert Sandbox-Bundle-Pfad
+        // opts.set("sandboxBundleSrc", null);
+
+        console.log("[ORM] pdfjs: enableScripting=false (set via webviewerloaded)");
+      } else {
+        console.warn("[ORM] pdfjs: PDFViewerApplicationOptions not available on webviewerloaded");
+      }
+    };
+
+    document.addEventListener("webviewerloaded", onWebViewerLoaded, { once: true });
 
     frame.src = viewerUrl(pdfPath, { page: 1, zoom: "page-width" });
 
@@ -335,7 +352,7 @@ export function initOrmChecklist() {
     overlay.setAttribute("aria-hidden", "false");
     setHint("ORM geöffnet (editierbar).");
     isOpen = true;
-  }
+  }  
 
   function closeOrm() {
     if (overlay.contains(document.activeElement)) {
