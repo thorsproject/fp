@@ -272,23 +272,21 @@ async function getEditedPdfBytesFromViewer(iframe) {
   const app = iframe?.contentWindow?.PDFViewerApplication;
   if (!app?.pdfDocument) throw new Error("PDF noch nicht geladen.");
 
-  // >>> Commit/flush annotation storage before saving
-  try {
-    const storage = app.pdfDocument.annotationStorage;
-    storage?.onSetModified?.(true);
+  const doc = app.pdfDocument;
 
-    app.eventBus?.dispatch?.("annotationstoragechanged", { source: storage });
-    app.pdfViewer?.refresh?.();
-
-    // kleiner Tick, damit PDF.js intern verarbeiten kann
-    await new Promise(r => setTimeout(r, 0));
-  } catch (e) {
-    console.warn("[ORM] flush before save failed", e);
+  // bevorzugt: saveDocument mit updateFieldAppearances (falls unterstützt)
+  if (typeof doc.saveDocument === "function") {
+    try {
+      // PDF.js Builds unterstützen teils Optionen
+      return await doc.saveDocument({ updateFieldAppearances: true });
+    } catch (e) {
+      // Fallback: ohne Optionen
+      console.warn("[ORM] saveDocument(opts) failed, retry plain:", e);
+      return await doc.saveDocument();
+    }
   }
-  // <<<
 
-  if (app.pdfDocument.saveDocument) return await app.pdfDocument.saveDocument();
-  if (app.pdfDocument.getData) return await app.pdfDocument.getData();
+  if (typeof doc.getData === "function") return await doc.getData();
 
   throw new Error("PDF Export nicht möglich.");
 }
