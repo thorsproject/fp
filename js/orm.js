@@ -314,8 +314,8 @@ export function initOrmChecklist() {
   }
   
   function openOrm() {
-    const pdfPath = `data/ORMBlatt.pdf?v=${Date.now()}`;
-
+    // const pdfPath = `data/ORMBlatt.pdf?v=${Date.now()}`;
+    const pdfPath = new URL("./data/ORMBlatt.pdf", window.location.href).pathname + `?v=${Date.now()}`;
     // Wichtig: Listener im PARENT-Dokument, bevor der Viewer initialisiert!
     const onWebViewerLoaded = (ev) => {
       const w = ev?.detail?.source; // = viewer window
