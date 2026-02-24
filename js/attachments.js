@@ -8,6 +8,7 @@ function dlog(...args) {
   if (DEBUG_ATTACH) console.log("[attachments]", ...args);
 }
 // ---------- Debug-Option Ende ----------
+
 export async function collectAttachments() {
   const out = [];
   for (const item of ATTACHMENTS.values()) {
@@ -22,7 +23,7 @@ export function hasAttachment(key) {
 }
 
 function emitChanged() {
-  emit(EVT.attachmentsChanged, detail);
+  emit(EVT.attachmentsChanged, { keys: Array.from(registry.keys()) });
 }
 
 export function registerAttachment(key, { name, type, getArrayBuffer }) {
