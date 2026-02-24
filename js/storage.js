@@ -7,6 +7,14 @@
 
 import { qs, qsa, readValue, setValue, SEL } from "./ui/index.js";
 
+// ---------- Debug-Funktion bei Bedarf ----------
+const DEBUG_STORAGE = false; // <- auf true setzen, wenn du Logs willst
+function dlog(...args) {
+  if (!DEBUG_STORAGE) return;
+  console.log("[storage]", ...args);
+}
+// ---------- Debug-Funktion Ende ----------
+
 const KEY = "fp.v2"; // bei Breaking Changes erhöhen (v2, v3...)
 const SCHEMA_VERSION = 2;
 const LEGACY_KEYS = ["fp.v1"]; // alte Keys mit prüfen
@@ -135,6 +143,45 @@ function safeParse(json, fallback = null) {
   }
 }
 
+// ---------- DOM READY GUARDS ----------
+function hasLegsDOM() {
+  // legs kommen aus include -> mindestens 1 Frame vorhanden?
+  return qsa(SEL.legs.frames).length > 0;
+}
+
+function hasFuelDOM() {
+  return !!qs(SEL.fuel.panel);
+}
+
+function isUIReadyForApply() {
+  // applyRoute/applyFuel brauchen beides
+  return hasLegsDOM() && hasFuelDOM();
+}
+
+function retryUntil(fn, { tries = 10, delay = 80, label = "" } = {}) {
+  let n = 0;
+  let didWait = false;
+
+  const tick = () => {
+    const ok = fn();
+    if (ok) {
+      if (didWait) dlog(`${label} applied after retry #${n}`);
+      return;
+    }
+
+    didWait = true;
+
+    if (n === 0) dlog(`${label} waiting for DOM...`);
+    if (++n >= tries) {
+      dlog(`${label} give up after ${tries} tries`);
+      return;
+    }
+    setTimeout(tick, delay);
+  };
+
+  tick();
+}
+
 // ---------- Export-Funktion ---------- //
 function sanitizeFilePart(s) {
   return String(s || "")
@@ -185,6 +232,8 @@ function captureRoute() {
     legs: [],
     toggles: {},
   };
+
+  if (!hasLegsDOM()) return route;
 
   // Leg Toggles (2–4)
   qsa(`${SEL.legs.toggle}[data-leg]`).forEach((btn) => {
@@ -237,6 +286,8 @@ function applyRoute(route) {
   setValue(SEL.route.lfzSelect, route.head?.lfz, { emit: true });
   setValue(SEL.route.tacSelect, route.head?.tac, { emit: true });
 
+  if (!hasLegsDOM()) return;
+
   // Legs
   const frames = legFrames();
   (route.legs || []).forEach((l, idx) => {
@@ -264,7 +315,18 @@ function applyRoute(route) {
 // ---------- FUEL ----------
 function captureFuel() {
   const panel = qs(SEL.fuel.panel);
-  if (!panel) return null;
+  // Wenn Fuel-Panel noch nicht da ist: Default-Struktur liefern
+  if (!panel) {
+    return {
+      toggles: { std_block: "off", aux_on: "off" },
+      main_usg: "",
+      trip: { 1: "", 2: "", 3: "", 4: "" },
+      appr_ifr_n: "",
+      appr_vfr_n: "",
+      alt_usg_log: "",
+      finres: "IFR",
+    };
+  }
 
   const fuel = {
     toggles: {
@@ -358,7 +420,7 @@ function loadRaw() {
   return null;
 }
 
-export function loadAll() {
+export function loadAll({ retryIfMissingDOM = true } = {}) {
   const raw = loadRaw();
   const data = safeParse(raw, null);
   if (!data) return;
@@ -372,17 +434,35 @@ export function loadAll() {
   // optional: alte Keys löschen
   for (const k of LEGACY_KEYS) localStorage.removeItem(k);
 
-  setApplying(true);
-  try {
-    applyRoute(migrated.route);
-    applyFuel(migrated.fuel);
-  } finally {
-    setTimeout(() => setApplying(false), 0);
-  }
+  const applyNow = () => {
+    if (!isUIReadyForApply()) {
+      dlog("DOM status", {
+        legs: hasLegsDOM(),
+        fuel: hasFuelDOM(),
+        legFrames: qsa(SEL.legs.frames).length,
+        fuelPanel: !!qs(SEL.fuel.panel),
+      });
+      return false;
+    }
+    setApplying(true);
+    try {
+      applyRoute(migrated.route);
+      applyFuel(migrated.fuel);
+    } finally {
+      setTimeout(() => setApplying(false), 0);
+    }
 
-  lastFP = fpOf({ route: migrated.route, fuel: migrated.fuel });
-  isDirty = false;
-  setSaveIndicator("saved", "Geladen");
+    lastFP = fpOf({ route: migrated.route, fuel: migrated.fuel });
+    isDirty = false;
+    setSaveIndicator("saved", "Geladen");
+    return true;
+  };
+
+  if (retryIfMissingDOM) {
+    retryUntil(applyNow, { tries: 10, delay: 80, label: "loadAll" });
+  } else {
+    applyNow();
+  }
 }
 
 export function clearAll() {

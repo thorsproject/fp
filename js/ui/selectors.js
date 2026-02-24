@@ -38,12 +38,14 @@ export const SEL = {
 
 
   // ---------- FUEL ----------
+// js/ui/selectors.js
   fuel: {
     panel: "#fuelPanel",
 
     mainInput: '[data-field="main_usg"]',
 
     tripInput: (leg) => `[data-trip-usg="${leg}"]`,
+    tripCells: '.trip[data-trip-leg]',          // ✅ NEU
 
     apprIfn: '[data-field="appr_ifr_n"]',
     apprVfr: '[data-field="appr_vfr_n"]',
@@ -52,8 +54,11 @@ export const SEL = {
 
     finresSelect: "#finres",
 
+    toggleAll: ".fuelToggle",                   // ✅ NEU
     toggleStd: '.fuelToggle[data-field="std_block"]',
     toggleAux: '.fuelToggle[data-field="aux_on"]',
+
+    out: (key) => `[data-out="${key}"]`,         // ✅ NEU (damit setOut nur SEL nutzt)
   },
 
 

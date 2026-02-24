@@ -1,6 +1,14 @@
 // js/legs.js
 import { qs, qsa, closest, isLegAutofillMuted, SEL } from "./ui/index.js";
 
+// ---------- Debug-Funktion bei Bedarf ----------
+const DEBUG_LEGS = false; // <- auf true setzen, wenn du Logs willst
+function dlog(...args) {
+  if (!DEBUG_LEGS) return;
+  console.log("[legs]", ...args);
+}
+// ---------- Debug-Funktion Ende ----------
+
 export function initLegActivation({ onChange } = {}) {
   const LEG_MIN = 2;
   const LEG_MAX = 4;
@@ -18,7 +26,7 @@ export function initLegActivation({ onChange } = {}) {
     if (legNum === 1) return frames[0] || null;
 
     const btn = qs(SEL.legs.toggleByLeg(legNum));
-    return btn ? btn.closest(".c-panel") : null;
+    return btn ? closest(btn, SEL.legs.frames) : null; // <— nutzt eure zentrale Struktur
   }
 
   function setLegState(legNum, state) {
@@ -39,6 +47,8 @@ export function initLegActivation({ onChange } = {}) {
     qsa(".legField", frame).forEach((f) => {
       f.disabled = inactive;
     });
+
+    dlog("setLegState", { legNum, state });
   }
 
   function copyPrevLegToThis(legNum, force = false) {
@@ -59,6 +69,7 @@ export function initLegActivation({ onChange } = {}) {
       thisFrom.value = val;
       thisFrom.dispatchEvent(new Event("input", { bubbles: true }));
       thisFrom.dispatchEvent(new Event("change", { bubbles: true }));
+      dlog("copyPrevLegToThis", { legNum, val });
     }
   }
 
@@ -80,6 +91,7 @@ export function initLegActivation({ onChange } = {}) {
       thisETD.value = val;
       thisETD.dispatchEvent(new Event("input", { bubbles: true }));
       thisETD.dispatchEvent(new Event("change", { bubbles: true }));
+      dlog("copyPrevTimesToThis", { legNum, val });
     }
   }
 
@@ -90,15 +102,19 @@ export function initLegActivation({ onChange } = {}) {
     const thisFrame = getLegFrame(legNum);
 
     if (!prevFrame || !thisFrame) {
-      console.warn("[LEG RESET] frames not found", { legNum, prevFrame: !!prevFrame, thisFrame: !!thisFrame });
+      dlog("resetFromAndEtdFromPrev: frames missing", {
+        legNum,
+        prevFrame: !!prevFrame,
+        thisFrame: !!thisFrame,
+      });
       return;
     }
 
-    const prevTo  = qs("input.aeroTo", prevFrame);
+    const prevTo = qs("input.aeroTo", prevFrame);
     const prevETA = qs("input.eta", prevFrame);
 
     const thisFrom = qs("input.aeroFrom", thisFrame);
-    const thisETD  = qs("input.etd", thisFrame);
+    const thisETD = qs("input.etd", thisFrame);
 
     // ICAO FROM übernehmen
     if (prevTo && thisFrom) {
@@ -107,6 +123,7 @@ export function initLegActivation({ onChange } = {}) {
         thisFrom.value = icao;
         thisFrom.dispatchEvent(new Event("input", { bubbles: true }));
         thisFrom.dispatchEvent(new Event("change", { bubbles: true }));
+        dlog("reset FROM", { legNum, icao });
       }
     }
 
@@ -117,24 +134,32 @@ export function initLegActivation({ onChange } = {}) {
         thisETD.value = t;
         thisETD.dispatchEvent(new Event("input", { bubbles: true }));
         thisETD.dispatchEvent(new Event("change", { bubbles: true }));
+        dlog("reset ETD", { legNum, t });
       }
     }
   }
 
   function fillChain() {
+    dlog("fillChain start");
     for (let l = LEG_MIN; l <= LEG_MAX; l++) {
       const frame = getLegFrame(l);
       if (!frame) continue;
 
       const btn = qs(SEL.legs.toggle, frame);
-      if (btn && btn.dataset.state === "inactive") continue;
+      if (btn && btn.dataset.state === "inactive") {
+        dlog("fillChain skip inactive", { leg: l });
+        continue;
+      }
 
       copyPrevLegToThis(l);
       copyPrevTimesToThis(l);
     }
+    dlog("fillChain end");
   }
 
   function applyCascade(clickedLeg, newState) {
+    dlog("applyCascade", { clickedLeg, newState });
+
     if (newState === "inactive") {
       for (let l = clickedLeg; l <= LEG_MAX; l++) setLegState(l, "inactive");
     }
@@ -150,13 +175,19 @@ export function initLegActivation({ onChange } = {}) {
     if (!btn) return;
 
     const legNum = Number(btn.dataset.leg);
+    if (!Number.isFinite(legNum)) {
+      dlog("toggle click ignored: invalid data-leg", { raw: btn.dataset.leg });
+      return;
+    }
+
     const isActive = btn.dataset.state === "active";
     const newState = isActive ? "inactive" : "active";
+
+    dlog("toggle click", { legNum, from: btn.dataset.state, to: newState });
 
     applyCascade(legNum, newState);
     fillChain();
 
-    // Wenn gerade aktiviert wurde → Reset FROM + ETD
     if (newState === "active") {
       resetFromAndEtdFromPrev(legNum);
     }
@@ -173,11 +204,9 @@ export function initLegActivation({ onChange } = {}) {
     const isEta = t?.classList?.contains("eta");
     if (!isTo && !isEta) return;
 
-    const frame = t.closest(".c-panel");
+    const frame = closest(t, SEL.legs.frames);
     if (!frame) return;
 
-    // Leg-Nummer aus Toggle-Button im selben Frame ableiten
-    // Leg1 hat keinen Toggle -> behandeln wir als 1
     const toggle = qs(SEL.legs.toggle, frame);
     const thisLegNum = toggle ? Number(toggle.dataset.leg) : 1;
 
@@ -189,7 +218,8 @@ export function initLegActivation({ onChange } = {}) {
     const nextIsInactive = nextBtn && nextBtn.dataset.state === "inactive";
     if (nextIsInactive) return;
 
-    // erst normal, dann hart setzen
+    dlog("change cascade", { field: isTo ? "aeroTo" : "eta", thisLegNum, nextLegNum });
+
     fillChain();
     resetFromAndEtdFromPrev(nextLegNum);
 
@@ -197,6 +227,7 @@ export function initLegActivation({ onChange } = {}) {
   });
 
   // ---------- Initialzustand ----------
+  dlog("init start");
   for (let l = LEG_MIN; l <= LEG_MAX; l++) {
     const frame = getLegFrame(l);
     if (!frame) continue;
@@ -207,4 +238,5 @@ export function initLegActivation({ onChange } = {}) {
   }
 
   fillChain();
+  dlog("init done");
 }

@@ -1,3 +1,4 @@
+// app.js
 // ------------------ SETUP ------------------
 // eMail an EO
 import { handleMailEOClick, getMailMode } from "./mail_eo.js";
@@ -160,23 +161,19 @@ map.on("click", (e) => {
   }
 
   function applyChecklistContacts(config) {
-    // EO Mail
+    const scope = document.getElementById("view-checklist") || document;
+
     const mail = (config?.eoEmail || "").trim();
-    const emailEl = document.querySelector(".cg-row .email");
+    const emailEl = scope.querySelector(".email");
     if (emailEl && mail) emailEl.textContent = mail;
 
-    // Phoenix URL klickbar machen
     const phoenix = (config?.phoenixUrl || "").trim();
-    const intranetEl = document.querySelector(".cg-row .intranet");
+    const intranetEl = scope.querySelector(".intranet");
 
     if (intranetEl && phoenix) {
       intranetEl.textContent = phoenix;
-
-      // klickbar machen
       intranetEl.style.cursor = "pointer";
-      intranetEl.onclick = () => {
-        window.open(phoenix, "_blank", "noopener");
-      };
+      intranetEl.onclick = () => window.open(phoenix, "_blank", "noopener");
     }
   }
 
@@ -197,6 +194,12 @@ map.on("click", (e) => {
     const status = document.getElementById("cfgStatus");
 
     if (!passEl || !btnLoad || !btnClear) return;
+
+    // ✅ Guard gegen doppelte Bindings
+    if (btnLoad.dataset.bound === "1") return;
+    btnLoad.dataset.bound = "1";
+    btnClear.dataset.bound = "1";
+    passEl.dataset.bound = "1";
 
     // initial: gespeichertes Passwort setzen (ohne es anzuzeigen)
     passEl.value = getConfigPassword();
@@ -330,8 +333,21 @@ map.on("click", (e) => {
 
   // SAFETY: erst rendern lassen, dann laden
   requestAnimationFrame(() => {
-    loadAll();
+    const hasLegs = document.querySelectorAll("#legsContainer .c-panel").length >= 1;
+    const hasFuel = !!document.getElementById("fuelPanel");
 
+    if (hasLegs && hasFuel) {
+      loadAll();
+    } else {
+      // safety retry (z.B. wenn Includes minimal später im DOM landen)
+      setTimeout(() => {
+        const hasLegs2 = document.querySelectorAll("#legsContainer .c-panel").length >= 1;
+        const hasFuel2 = !!document.getElementById("fuelPanel");
+        if (hasLegs2 && hasFuel2) loadAll();
+      }, 80);
+    }
+
+    // dein select-retry bleibt sinnvoll:
     const lfz = document.querySelector("#lfzSelect");
     const tac = document.querySelector("#tacSelect");
     const needsRetry =

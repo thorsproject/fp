@@ -4,11 +4,21 @@
 import { BURN, FIX, CAP } from "./fuelConstants.js";
 import { qs, qsa, closest, readValue, SEL } from "./ui/index.js";
 
+// ---------- Debug ----------
+const DEBUG_FUEL = false;
+function dlog(...args) {
+  if (!DEBUG_FUEL) return;
+  console.log("[fuel]", ...args);
+}
+
 // ---------- helpers ----------
 function isLegActive(legNum) {
   if (legNum === 1) return true;
-  const btn = qs(`.legToggle[data-leg="${legNum}"]`);
+
+  // ✅ nur SEL
+  const btn = qs(SEL.legs.toggleByLeg(legNum));
   if (!btn) return true;
+
   return btn.dataset.state !== "inactive";
 }
 
@@ -38,100 +48,97 @@ function minsFromUsg(usg, rate = BURN.NC) {
   return (usg / rate) * 60;
 }
 
-/**
- * Tolerant: wenn es das data-out im HTML nicht gibt -> kein Fehler.
- * (Das ist der Fix für dein "cap_usg" Thema und ähnliche Fälle.)
- */
+// ✅ tolerant + nur SEL
 function setOut(panel, key, val) {
-  const els = qsa(`[data-out="${key}"]`, panel);
-  if (!els || els.length === 0) return;
+  const els = qsa(SEL.fuel.out(key), panel);
+  if (!els.length) return;
   els.forEach((el) => (el.textContent = val));
 }
 
-// ---------- Trip (manual USG) from DOM ----------
+// ---------- Trip ----------
 function readTripFromDOM(panel) {
   const tripUsg = [1, 2, 3, 4].map((n) => {
     if (!isLegActive(n)) return 0;
-    const el = qs(`[data-trip-usg="${n}"]`, panel);
+    const el = qs(SEL.fuel.tripInput(n), panel);
     return toNum(readValue(el));
   });
 
   const tripUsgSum = tripUsg.reduce((a, b) => a + b, 0);
-  const tripMinSum = minsFromUsg(tripUsgSum, BURN.NC); // Summe aktive Legs
+  const tripMinSum = minsFromUsg(tripUsgSum, BURN.NC);
 
   return { tripUsg, tripUsgSum, tripMinSum };
 }
 
 function syncTripInputsEnabled(panel) {
-  qsa(".trip[data-trip-leg]", panel).forEach((cell) => {
+  // ✅ passt exakt zu deinem HTML: <div class="c-leg trip" data-trip-leg="X">
+  qsa(SEL.fuel.tripCells, panel).forEach((cell) => {
     const leg = Number(cell.dataset.tripLeg);
     const active = isLegActive(leg);
 
     cell.classList.toggle("inactive", !active);
     qsa("input", cell).forEach((inp) => {
       inp.disabled = !active;
-      // Werte bleiben erhalten, werden nur nicht mitgerechnet
     });
   });
 }
 
-// ---------- Toggle Buttons ----------
+// ---------- Fuel toggles ----------
 function initFuelToggles(panel) {
-  qsa(".fuelToggle", panel).forEach((btn) => {
+  qsa(SEL.fuel.toggleAll, panel).forEach((btn) => {
     function applyVisual() {
       const field = btn.dataset.field;
       const state = btn.dataset.state;
 
-      if (field === "std_block") {
-        btn.textContent = state === "on" ? "ON" : "OFF";
-      }
-      if (field === "aux_on") {
-        btn.textContent = state === "on" ? `${CAP.AUX} USG` : "0 USG";
-      }
+      if (field === "std_block") btn.textContent = state === "on" ? "ON" : "OFF";
+      if (field === "aux_on") btn.textContent = state === "on" ? `${CAP.AUX} USG` : "0 USG";
     }
 
     function toggle() {
       btn.dataset.state = btn.dataset.state === "on" ? "off" : "on";
 
-      const field = btn.dataset.field;
-
-      if (field === "std_block") {
+      if (btn.dataset.field === "std_block") {
         const mainInp = qs(SEL.fuel.mainInput, panel);
-        const auxBtn = qs(`.fuelToggle[data-field="aux_on"]`, panel);
+        const auxBtn = qs(SEL.fuel.toggleAux, panel);
 
         if (btn.dataset.state === "on") {
-          // Standard ON → preset + lock
+          // preset + lock
           if (mainInp) {
             mainInp.value = String(CAP.MAIN_STANDARD.toFixed(1)).replace(".", ",");
             mainInp.disabled = true;
+            mainInp.dispatchEvent(new Event("input", { bubbles: true }));
+            mainInp.dispatchEvent(new Event("change", { bubbles: true }));
           }
 
           // Aux automatisch ON
           if (auxBtn) {
             auxBtn.dataset.state = "on";
-            auxBtn.textContent = `${CAP.AUX} USG`;
           }
         } else {
-          // Standard OFF → unlock + clear
+          // unlock + clear
           if (mainInp) {
             mainInp.disabled = false;
             mainInp.value = "";
             mainInp.focus();
+            mainInp.dispatchEvent(new Event("input", { bubbles: true }));
+            mainInp.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
       }
 
       applyVisual();
-      // Render sauber anstoßen (Autosave registriert change)
+      // autosave + rerender triggern
       btn.dispatchEvent(new Event("change", { bubbles: true }));
       panel.dispatchEvent(new Event("change", { bubbles: true }));
+
+      dlog("toggle", { field: btn.dataset.field, state: btn.dataset.state });
     }
 
     btn.addEventListener("click", toggle);
 
+    // init
     applyVisual();
 
-    // Initial Lock State anwenden
+    // Initial lock, falls std_block = on
     if (btn.dataset.field === "std_block") {
       const mainInp = qs(SEL.fuel.mainInput, panel);
       if (!mainInp) return;
@@ -146,20 +153,19 @@ function initFuelToggles(panel) {
   });
 }
 
-// --- UX: Main Input clamp + snap formatting ---
+// ---------- main clamp ----------
 function initMainClamp(panel) {
   const mainInp = qs(SEL.fuel.mainInput, panel);
   if (!mainInp) return;
 
   const snap = (reason = "") => {
     const rawStr = String(mainInp.value ?? "").trim();
-    if (!rawStr) return; // leer lassen
+    if (!rawStr) return;
 
     const raw = toNum(rawStr);
     if (!Number.isFinite(raw)) return;
 
     const clamped = Math.min(Math.max(raw, 0), CAP.MAIN_MAX);
-
     const shouldWrite = reason === "blur" || Math.abs(clamped - raw) > 0.0001;
 
     if (shouldWrite) {
@@ -173,85 +179,67 @@ function initMainClamp(panel) {
 
       mainInp.dispatchEvent(new Event("input", { bubbles: true }));
       mainInp.dispatchEvent(new Event("change", { bubbles: true }));
+
+      dlog("main clamp", { reason, raw, clamped });
     }
   };
 
-  // Beim Tippen: nur clampen, wenn klar out-of-range (damit es nicht zittert)
   mainInp.addEventListener("input", () => {
     const raw = toNum(mainInp.value);
     if (raw > CAP.MAIN_MAX || raw < 0) snap("input");
   });
 
-  // Beim Verlassen immer formatieren (z.B. "44" -> "44,0")
   mainInp.addEventListener("blur", () => snap("blur"));
 }
 
 // ---------- model ----------
 function read(panel) {
   const profile = (readValue(qs(SEL.fuel.finresSelect, panel)) || "IFR").toUpperCase();
-  const auxOn = qs(`.fuelToggle[data-field="aux_on"]`, panel)?.dataset.state === "on";
+  const auxOn = qs(SEL.fuel.toggleAux, panel)?.dataset.state === "on";
 
-  // MAIN clamp (dein 50-USG Thema)
   const mainRaw = toNum(readValue(qs(SEL.fuel.mainInput, panel)));
   const mainUsg = Math.min(Math.max(mainRaw, 0), CAP.MAIN_MAX);
 
-  // cap bleibt drin (intern), auch wenn nicht angezeigt
   const cap = CAP.MAIN_MAX + (auxOn ? CAP.AUX : 0);
-
   const blockUsgIn = mainUsg + (auxOn ? CAP.AUX : 0);
 
-  // Trip (nur aktive Legs)
   const { tripUsgSum, tripMinSum } = readTripFromDOM(panel);
 
-  // Approaches -> Company Fuel
   const nIFR = clampInt(readValue(qs(SEL.fuel.apprIfn, panel)));
   const nVFR = clampInt(readValue(qs(SEL.fuel.apprVfr, panel)));
 
   const companyUsg = nIFR * FIX.IFR_APPR_USG + nVFR * FIX.VFR_APPR_USG;
   const companyMin = nIFR * FIX.IFR_APPR_MIN + nVFR * FIX.VFR_APPR_MIN;
 
-  // Contingency (nur USG relevant, Zeit NICHT addieren)
   const contUsg = 0.05 * (tripUsgSum + companyUsg);
 
-  // Alternate (USG Log + 2.0), Zeit automatisch NC
   const altLogUsg = toNum(readValue(qs(SEL.fuel.altInput, panel)));
   const altUsg = altLogUsg + FIX.ALT_EXTRA_USG;
   const altMin = minsFromUsg(altUsg, BURN.NC);
 
-  // Final Reserve fixed
   const resUsg = profile === "VFR" ? FIX.RES_VFR_USG : FIX.RES_IFR_USG;
   const resMin = profile === "VFR" ? FIX.RES_VFR_MIN : FIX.RES_IFR_MIN;
 
-  // Taxi fixed (keine Zeit)
   const taxiUsg = FIX.TAXI_USG;
 
-  // Planned Takeoff Fuel (Summe ohne Taxi)
   const plannedUsg = tripUsgSum + companyUsg + contUsg + altUsg + resUsg;
-
-  // Planned Time: Trip + Company + Alternate + Reserve (Cont/Taxi NICHT)
   const plannedMin = tripMinSum + companyMin + altMin + resMin;
 
-  // Takeoff / Extra / Landing
   const takeoffUsg = Math.max(0, blockUsgIn - taxiUsg);
   const extraLrcUsg = takeoffUsg - plannedUsg;
   const extraLrcMin = minsFromUsg(Math.max(0, extraLrcUsg), BURN.LRC);
 
-  // Takeoff Time = Planned Time + Extra LRC Time
   const takeoffMin = plannedMin + extraLrcMin;
 
-  // Landing Fuel Time bei NC
   const landingUsg = blockUsgIn - taxiUsg - (tripUsgSum + companyUsg);
   const landingMin = minsFromUsg(Math.max(0, landingUsg), BURN.NC);
 
-  // Trip + Company line
   const tripCompanyUsg = tripUsgSum + companyUsg;
   const tripCompanyMin = tripMinSum + companyMin;
 
-  // Remaining MISC
   const bingoUsg = altUsg + resUsg;
   const minblUsg = plannedUsg + taxiUsg;
 
-  // CO2 (wie vorher definiert)
   const co2Kgs =
     (tripCompanyUsg + contUsg + taxiUsg) *
     FIX.USG_LIT *
@@ -312,7 +300,7 @@ function render(panel) {
   setOut(panel, "company_time", fmtHHMM(d.companyMin));
 
   setOut(panel, "cont_usg", d.contUsg.toFixed(1));
-  setOut(panel, "cont_time", ""); // bewusst leer
+  setOut(panel, "cont_time", "");
 
   setOut(panel, "alt_usg", d.altUsg.toFixed(1));
   setOut(panel, "alt_time_out", fmtHHMM(d.altMin));
@@ -323,40 +311,35 @@ function render(panel) {
   setOut(panel, "planned_usg", d.plannedUsg.toFixed(1));
   setOut(panel, "planned_time", fmtHHMM(d.plannedMin));
 
-  // Extra Fuel LRC + warning
   setOut(panel, "extra_lrc_usg", d.extraLrcUsg.toFixed(1));
 
-  const warnEl = qs(`[data-out="extra_warn"]`, panel);
+  const warnEl = qs(SEL.fuel.out("extra_warn"), panel);
   if (warnEl) {
     const on = d.extraLrcUsg < 0;
     warnEl.textContent = on ? "ACHTUNG! Fuel nicht ausreichend, Werte korrigieren!" : "";
     warnEl.classList.toggle("is-on", on);
   }
 
-  const extraValEl = qs(`[data-out="extra_lrc_usg"]`, panel);
+  const extraValEl = qs(SEL.fuel.out("extra_lrc_usg"), panel);
   if (extraValEl) extraValEl.classList.toggle("fuel-negative", d.extraLrcUsg < 0);
 
   setOut(panel, "extra_lrc_time", fmtHHMM(d.extraLrcMin));
 
-  // Takeoff / Taxi / Block
   setOut(panel, "takeoff_usg", d.takeoffUsg.toFixed(1));
   setOut(panel, "takeoff_time", fmtHHMM(d.takeoffMin));
 
   setOut(panel, "taxi_usg", d.taxiUsg.toFixed(1));
-  setOut(panel, "taxi_time", ""); // bewusst leer
+  setOut(panel, "taxi_time", "");
 
   setOut(panel, "block_usg_out", d.blockUsgIn.toFixed(1));
-  setOut(panel, "block_time_out", ""); // bewusst leer
+  setOut(panel, "block_time_out", "");
 
-  // Trip + Company
   setOut(panel, "trip_company_usg", d.tripCompanyUsg.toFixed(1));
   setOut(panel, "trip_company_time", fmtHHMM(d.tripCompanyMin));
 
-  // Landing
   setOut(panel, "landing_usg", d.landingUsg.toFixed(1));
   setOut(panel, "landing_time", fmtHHMM(d.landingMin));
 
-  // Fuel MISC
   setOut(panel, "bingo_usg", d.bingoUsg.toFixed(1));
   setOut(panel, "minblock_usg", d.minblUsg.toFixed(1));
   setOut(panel, "co2fp_kgs", `${d.co2Kgs.toFixed(0)} kg`);
@@ -364,7 +347,7 @@ function render(panel) {
 
 // ---------- main ----------
 export function initFuelPlanning() {
-  const panel = qs(SEL.fuel.panel) || qs("#fuelPanel");
+  const panel = qs(SEL.fuel.panel);
   if (!panel) return;
 
   initFuelToggles(panel);
@@ -378,9 +361,9 @@ export function initFuelPlanning() {
   panel.addEventListener("input", syncAndRender);
   panel.addEventListener("change", syncAndRender);
 
-  // Leg toggles (links) beeinflussen Trip-Fuel: daher re-render
+  // Leg toggles beeinflussen Trip-Fuel
   document.addEventListener("click", (e) => {
-    const btn = closest(e.target, ".legToggle");
+    const btn = closest(e.target, SEL.legs.toggle);
     if (!btn) return;
     syncAndRender();
   });
