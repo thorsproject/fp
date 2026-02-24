@@ -4,13 +4,13 @@ import { registerAttachment } from "./attachments.js";
 import { qs, SEL, readValue, readText, setText } from "./ui/index.js";
 import { checklistSetToggle } from "./checklist.js";
 
-// ---------- Debug-Funktion bei Bedarf ----------
-const DEBUG_ORM = true;
+// ---------- Debug optional ----------
+const DEBUG_ORM = false;
 function dlog(...args) {
   if (!DEBUG_ORM) return;
   console.log("[orm]", ...args);
 }
-// ---------- Debug-Funktion Ende ----------
+// -------------------------------
 
 function getRouteScope() {
   return qs(SEL.route.container) || document;
@@ -20,17 +20,41 @@ let lastAutofill = { cs: null, dateIso: null };
 let reAutofillTimer = null;
 
 function sanitizeFilePart(s) {
-  return String(s || "")
-    .trim()
-    .replace(/\s+/g, "_")
-    .replace(/[^\w\-]+/g, "")
-    .slice(0, 32) || "NA";
+  return (
+    String(s || "")
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^\w\-]+/g, "")
+      .slice(0, 32) || "NA"
+  );
+}
+
+function toIsoDateForOrm(scope = document) {
+  const raw0 = readValue(qs(SEL.route.dateInput, scope)) ?? "";
+  const raw = String(raw0).trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+  let m = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  m = raw.match(/^(\d{2})(\d{2})(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  m = raw.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  return new Date().toISOString().slice(0, 10);
 }
 
 function getSuggestedOrmFilename() {
   const scope = getRouteScope();
   const datePart = toIsoDateForOrm(scope);
-  const cs = readText(qs(SEL.route.callsignDisplay, scope)).trim() || "CALLSIGN";
+  const cs =
+    readText(qs(SEL.route.callsignDisplay, scope)).trim() || "CALLSIGN";
   return `ORM-${sanitizeFilePart(datePart)}-${sanitizeFilePart(cs)}.pdf`;
 }
 
@@ -87,45 +111,22 @@ function applyMinimalUiWhenReady(iframe) {
       // Zoom setzen
       const pv = w?.PDFViewerApplication?.pdfViewer;
       if (pv) pv.currentScaleValue = "page-width";
-
       return;
     }
 
-    if (Date.now() - start < maxMs) {
-      requestAnimationFrame(tick);
-    }
+    if (Date.now() - start < maxMs) requestAnimationFrame(tick);
   };
 
   tick();
 }
 
-function toIsoDateForOrm(scope = document) {
-  const raw0 = readValue(qs(SEL.route.dateInput, scope)) ?? "";
-  const raw = String(raw0).trim();
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
-
-  let m = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
-
-  m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
-  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
-
-  m = raw.match(/^(\d{2})(\d{2})(\d{2})$/);
-  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
-
-  m = raw.match(/^(\d{2})(\d{2})(\d{4})$/);
-  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
-
-  return new Date().toISOString().slice(0, 10);
-}
-
+// ---------- DOM Field helpers (Viewer-iframe) ----------
 function setDomFieldValue(iframe, fieldName, value) {
   const doc = iframe.contentDocument;
   if (!doc) return 0;
 
   const esc = (s) =>
-    (window.CSS && CSS.escape) ? CSS.escape(s) : String(s).replace(/"/g, '\\"');
+    window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/"/g, '\\"');
 
   const sels = [
     `input[name="${esc(fieldName)}"]`,
@@ -171,19 +172,19 @@ function getDomFieldValue(iframe, fieldName) {
   return (el?.value ?? "").trim();
 }
 
+// ---------- Autofill ----------
 function setOrmField(iframe, fields, storage, name, value) {
   const currentDomValue = getDomFieldValue(iframe, name);
 
   const canOverwrite =
     !currentDomValue ||
     (name === "CS" && currentDomValue === (lastAutofill.cs ?? "")) ||
-    (name === "Datum1_af_date" && currentDomValue === (lastAutofill.dateIso ?? ""));
+    (name === "Datum1_af_date" &&
+      currentDomValue === (lastAutofill.dateIso ?? ""));
 
   if (!canOverwrite) return false;
 
-  for (const f of fields[name] || []) {
-    storage.setValue(f.id, { value });
-  }
+  for (const f of fields[name] || []) storage.setValue(f.id, { value });
 
   const domHits = setDomFieldValue(iframe, name, value);
   return domHits > 0;
@@ -193,7 +194,6 @@ async function autofillOrmFields(iframe) {
   const app = iframe.contentWindow?.PDFViewerApplication;
   const pdf = app?.pdfDocument;
   const storage = pdf?.annotationStorage;
-
   if (!pdf || !storage) return;
 
   const fields = await pdf.getFieldObjects();
@@ -206,20 +206,17 @@ async function autofillOrmFields(iframe) {
   let okDate = false;
   let okCs = false;
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateIso) && (fields["Datum1_af_date"]?.length)) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateIso) && fields["Datum1_af_date"]?.length) {
     setOrmField(iframe, fields, storage, "Datum1_af_date", dateIso);
     okDate = true;
-  } else {
-    console.warn("[ORM] Datum nicht gesetzt (leer/ungültig/kein Feld):", dateIso);
   }
 
   if (fields["CS"]?.length) {
     setOrmField(iframe, fields, storage, "CS", cs);
     okCs = true;
-  } else {
-    console.warn("[ORM] CS Feld nicht gefunden");
   }
 
+  // mark modified + refresh
   storage.onSetModified?.(true);
   app?.eventBus?.dispatch?.("annotationstoragechanged", { source: storage });
   app?.pdfViewer?.refresh?.();
@@ -249,7 +246,9 @@ function wireOrmAutofill(iframe) {
       setTimeout(() => autofillOrmFields(iframe).catch(console.error), 150);
       setTimeout(() => autofillOrmFields(iframe).catch(console.error), 500);
 
-      setTimeout(() => { scheduled = false; }, 600);
+      setTimeout(() => {
+        scheduled = false;
+      }, 600);
     };
 
     const onAnyRender = () => {
@@ -267,25 +266,13 @@ function wireOrmAutofill(iframe) {
   });
 }
 
-// ---------- PDF Export ----------
+// ---------- Export helpers ----------
 async function getEditedPdfBytesFromViewer(iframe) {
   const app = iframe?.contentWindow?.PDFViewerApplication;
   if (!app?.pdfDocument) throw new Error("PDF noch nicht geladen.");
 
   const doc = app.pdfDocument;
-
-  // bevorzugt: saveDocument mit updateFieldAppearances (falls unterstützt)
-  if (typeof doc.saveDocument === "function") {
-    try {
-      // PDF.js Builds unterstützen teils Optionen
-      return await doc.saveDocument({ updateFieldAppearances: true });
-    } catch (e) {
-      // Fallback: ohne Optionen
-      console.warn("[ORM] saveDocument(opts) failed, retry plain:", e);
-      return await doc.saveDocument();
-    }
-  }
-
+  if (typeof doc.saveDocument === "function") return await doc.saveDocument();
   if (typeof doc.getData === "function") return await doc.getData();
 
   throw new Error("PDF Export nicht möglich.");
@@ -294,24 +281,25 @@ async function getEditedPdfBytesFromViewer(iframe) {
 function downloadPdfBytes(bytes, filename) {
   const blob = new Blob([bytes], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   a.click();
-
   URL.revokeObjectURL(url);
 }
 
-function u8ToArrayBuffer(u8) {
-  return u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+function bytesToArrayBuffer(bytes) {
+  if (bytes instanceof ArrayBuffer) return bytes;
+  if (ArrayBuffer.isView(bytes)) {
+    return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+  }
+  throw new Error("Unsupported bytes type for ArrayBuffer conversion");
 }
 
 // ---------- MAIN ----------
 export function initOrmChecklist() {
   const overlay = qs(SEL.orm.overlay);
   const frame = qs(SEL.orm.frame);
-  const hint = qs(SEL.orm.hint);
 
   const btnOpen = qs(SEL.orm.btnOpen);
   const btnSave = qs(SEL.orm.btnSave);
@@ -324,67 +312,28 @@ export function initOrmChecklist() {
   function setHint(msg = "") {
     setText(SEL.orm.hint, msg);
   }
-  
+
   function openOrm() {
-    // const pdfPath = `data/ORMBlatt.pdf?v=${Date.now()}`;
-    const pdfPath = new URL("./data/ORMBlatt.pdf", window.location.href).pathname + `?v=${Date.now()}`;
-    // Wichtig: Listener im PARENT-Dokument, bevor der Viewer initialisiert!
+    // GH-Pages-sicherer Pfad
+    const pdfPath =
+      new URL("./data/ORMBlatt.pdf", window.location.href).pathname +
+      `?v=${Date.now()}`;
+
+    // Muss vor Viewer init passieren
     const onWebViewerLoaded = (ev) => {
-      const w = ev?.detail?.source; // = viewer window
+      const w = ev?.detail?.source;
       const opts = w?.PDFViewerApplicationOptions;
       if (opts?.set) {
         opts.set("enableScripting", false);
-
-        // optional (falls euer Build das kennt): verhindert Sandbox-Bundle-Pfad
-        // opts.set("sandboxBundleSrc", null);
-
-        console.log("[ORM] pdfjs: enableScripting=false (set via webviewerloaded)");
-      } else {
-        console.warn("[ORM] pdfjs: PDFViewerApplicationOptions not available on webviewerloaded");
       }
     };
-
     document.addEventListener("webviewerloaded", onWebViewerLoaded, { once: true });
 
+    // Viewer laden
     frame.src = viewerUrl(pdfPath, { page: 1, zoom: "page-width" });
+
+    // Nach load: UI + Autofill verdrahten
     frame.addEventListener("load", () => {
-      dlog("iframe load fired");
-      try {
-        const w = frame.contentWindow;
-        dlog("iframe location", w?.location?.href);
-        dlog("PDFViewerApplication exists?", !!w?.PDFViewerApplication);
-        dlog("pdfDocument exists?", !!w?.PDFViewerApplication?.pdfDocument);
-      } catch (e) {
-        console.error("[orm] iframe access error", e);
-      }
-    }, { once: true });
-
-    frame.addEventListener("load", () => {
-
-      const app = frame.contentWindow?.PDFViewerApplication;
-
-      app?.initializedPromise?.then(() => {
-
-        const app = frame.contentWindow?.PDFViewerApplication;
-        if (!app) return;
-
-        // Wenn das Dokument schon da ist → direkt loggen
-        const logDocInfo = () => {
-          console.log("[ORM] saveDocument length", app.pdfDocument?.saveDocument?.length);
-          console.log("[ORM] has saveDocument", typeof app.pdfDocument?.saveDocument);
-          console.log("[ORM] annotationStorage", app.pdfDocument?.annotationStorage);
-        };
-
-        // Falls noch nicht da → auf PDF.js Event warten
-        if (app.pdfDocument) {
-          logDocInfo();
-        } else {
-          app.eventBus?.on?.("documentloaded", logDocInfo);
-          // optional auch:
-          app.eventBus?.on?.("pagesloaded", logDocInfo);
-        }
-      });      
-
       applyMinimalUiWhenReady(frame);
       wireOrmAutofill(frame);
 
@@ -393,14 +342,10 @@ export function initOrmChecklist() {
     }, { once: true });
 
     overlay.classList.remove("is-hidden");
-    dlog("openOrm: overlay hidden?", overlay.classList.contains("is-hidden"));
-    dlog("openOrm: overlay rect", overlay.getBoundingClientRect());
-    dlog("openOrm: frame rect", frame.getBoundingClientRect());
-    dlog("openOrm: frame src", frame.src);
     overlay.setAttribute("aria-hidden", "false");
-    setHint("ORM geöffnet (editierbar).");
+
     isOpen = true;
-  }  
+  }
 
   function closeOrm() {
     if (overlay.contains(document.activeElement)) {
@@ -409,7 +354,9 @@ export function initOrmChecklist() {
     qs(SEL.orm.btnOpen)?.focus();
 
     const app = frame.contentWindow?.PDFViewerApplication;
-    try { app?.pdfDocument?.annotationStorage?.resetModified?.(); } catch {}
+    try {
+      app?.pdfDocument?.annotationStorage?.resetModified?.();
+    } catch {}
 
     overlay.classList.add("is-hidden");
     overlay.setAttribute("aria-hidden", "true");
@@ -422,15 +369,17 @@ export function initOrmChecklist() {
     if (!isOpen) return false;
 
     const modified =
-      frame.contentWindow?.PDFViewerApplication?.pdfDocument
-        ?.annotationStorage?.modified;
+      frame.contentWindow?.PDFViewerApplication?.pdfDocument?.annotationStorage
+        ?.modified;
 
     if (!modified) {
       closeOrm();
       return true;
     }
 
-    const ok = confirm("ORM schließen?\n\nNicht gespeicherte Änderungen gehen verloren.");
+    const ok = confirm(
+      "ORM schließen?\n\nNicht gespeicherte Änderungen gehen verloren."
+    );
     if (!ok) return false;
 
     closeOrm();
@@ -442,16 +391,19 @@ export function initOrmChecklist() {
 
     const filename = getSuggestedOrmFilename();
 
+    // Modern Save Picker
     if ("showSaveFilePicker" in window) {
       let handle;
 
       try {
         handle = await showSaveFilePicker({
           suggestedName: filename,
-          types: [{
-            description: "PDF",
-            accept: { "application/pdf": [".pdf"] }
-          }]
+          types: [
+            {
+              description: "PDF",
+              accept: { "application/pdf": [".pdf"] },
+            },
+          ],
         });
       } catch (e) {
         if (e?.name === "AbortError") {
@@ -463,40 +415,25 @@ export function initOrmChecklist() {
       }
 
       try {
-        // DEBUG: prüfen, ob die Werte im Viewer-DOM wirklich drin sind
-        const csNow = getDomFieldValue(frame, "CS");
-        const dateNow = getDomFieldValue(frame, "Datum1_af_date");
-        console.log("[ORM] pre-save DOM values", { csNow, dateNow });
-        const app = frame.contentWindow?.PDFViewerApplication;
-
-        console.log("[ORM] saveDocument length",
-          app?.pdfDocument?.saveDocument?.length);
-
-        console.log("[ORM] annotationStorage",
-          app?.pdfDocument?.annotationStorage);
-
         const bytes = await getEditedPdfBytesFromViewer(frame);
-        // DEBUG START
-        const u8 = bytes instanceof ArrayBuffer
-          ? new Uint8Array(bytes)
-          : new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-
-        console.log("[ORM] bytes", u8.length, "head", String.fromCharCode(...u8.slice(0,5)));
-        // DEBUG END
-        registerAttachment("orm", {
-          name: filename,
-          type: "application/pdf",
-          getArrayBuffer: async () => u8ToArrayBuffer(bytes),
-        });
 
         const writable = await handle.createWritable();
         await writable.write(bytes);
         await writable.close();
 
-        setHint("Gespeichert.");
-        closeOrm();
+        // Attachment erst nach erfolgreichem Schreiben registrieren
+        registerAttachment("orm", {
+          name: filename,
+          type: "application/pdf",
+          getArrayBuffer: async () => bytesToArrayBuffer(bytes),
+        });
 
         checklistSetToggle("orm", true);
+
+        // Warnhinweis nach Save
+        setHint("Gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
+
+        closeOrm();
         return;
       } catch (e) {
         console.error(e);
@@ -505,28 +442,20 @@ export function initOrmChecklist() {
       }
     }
 
-    // fallback download
+    // Fallback Download
     try {
-      // DEBUG: prüfen, ob die Werte im Viewer-DOM wirklich drin sind
-      const csNow = getDomFieldValue(frame, "CS");
-      const dateNow = getDomFieldValue(frame, "Datum1_af_date");
-      console.log("[ORM] pre-save DOM values", { csNow, dateNow });
       const bytes = await getEditedPdfBytesFromViewer(frame);
-      // DEBUG START
-      const u8 = bytes instanceof ArrayBuffer
-        ? new Uint8Array(bytes)
-        : new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 
-      console.log("[ORM] bytes", u8.length, "head", String.fromCharCode(...u8.slice(0,5)));
-      // DEBUG END
       registerAttachment("orm", {
         name: filename,
         type: "application/pdf",
-        getArrayBuffer: async () => u8ToArrayBuffer(bytes),
+        getArrayBuffer: async () => bytesToArrayBuffer(bytes),
       });
 
       downloadPdfBytes(bytes, filename);
-      setHint("Download gestartet.");
+      checklistSetToggle("orm", true);
+
+      setHint("Download gestartet. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
     } catch (e) {
       console.error(e);
       setHint("Speichern nicht möglich.");
