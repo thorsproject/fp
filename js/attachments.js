@@ -23,7 +23,7 @@ export function hasAttachment(key) {
 }
 
 function emitChanged() {
-  emit(EVT.attachmentsChanged, { keys: Array.from(registry.keys()) });
+  emit(EVT.attachmentsChanged,);
 }
 
 export function registerAttachment(key, { name, type, getArrayBuffer }) {
