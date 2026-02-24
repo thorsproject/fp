@@ -328,6 +328,10 @@ export function initOrmChecklist() {
     }, { once: true });
 
     overlay.classList.remove("is-hidden");
+    dlog("openOrm: overlay hidden?", overlay.classList.contains("is-hidden"));
+    dlog("openOrm: overlay rect", overlay.getBoundingClientRect());
+    dlog("openOrm: frame rect", frame.getBoundingClientRect());
+    dlog("openOrm: frame src", frame.src);
     overlay.setAttribute("aria-hidden", "false");
     setHint("ORM geöffnet (editierbar).");
     isOpen = true;
