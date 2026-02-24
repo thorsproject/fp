@@ -48,6 +48,35 @@ function minsFromUsg(usg, rate = BURN.NC) {
   return (usg / rate) * 60;
 }
 
+function syncFuelToggleUI(panel) {
+  const stdBtn  = qs(SEL.fuel.toggleStd, panel);
+  const auxBtn  = qs(SEL.fuel.toggleAux, panel);
+  const mainInp = qs(SEL.fuel.mainInput, panel);
+
+  if (!stdBtn || !auxBtn || !mainInp) return;
+
+  const stdOn = stdBtn.dataset.state === "on";
+  const auxOn = auxBtn.dataset.state === "on";
+
+  // Button-Texte IMMER aus data-state ableiten
+  stdBtn.textContent = stdOn ? "ON" : "OFF";
+  auxBtn.textContent = auxOn ? `${CAP.AUX} USG` : "0 USG";
+
+  // MAIN Lock/Unlock aus std_block ableiten
+  if (stdOn) {
+    // Standard ON => preset + lock
+    mainInp.value = String(CAP.MAIN_STANDARD.toFixed(1)).replace(".", ",");
+    mainInp.disabled = true;
+
+    // Aux automatisch ON (Company-Vorgabe)
+    auxBtn.dataset.state = "on";
+    auxBtn.textContent = `${CAP.AUX} USG`;
+  } else {
+    // Standard OFF => unlock, Wert NICHT löschen
+    mainInp.disabled = false;
+  }
+}
+
 // ✅ tolerant + nur SEL
 function setOut(panel, key, val) {
   const els = qsa(SEL.fuel.out(key), panel);
@@ -354,6 +383,7 @@ export function initFuelPlanning() {
   initMainClamp(panel);
 
   function syncAndRender() {
+    syncFuelToggleUI(panel);
     syncTripInputsEnabled(panel);
     render(panel);
   }
@@ -367,6 +397,6 @@ export function initFuelPlanning() {
     if (!btn) return;
     syncAndRender();
   });
-
+  syncFuelToggleUI(panel);
   syncAndRender();
 }
