@@ -440,6 +440,10 @@ export function initOrmChecklist() {
       }
 
       try {
+        // DEBUG: prüfen, ob die Werte im Viewer-DOM wirklich drin sind
+        const csNow = getDomFieldValue(frame, "CS");
+        const dateNow = getDomFieldValue(frame, "Datum1_af_date");
+        console.log("[ORM] pre-save DOM values", { csNow, dateNow });
         const bytes = await getEditedPdfBytesFromViewer(frame);
         // DEBUG START
         const u8 = bytes instanceof ArrayBuffer
@@ -472,6 +476,10 @@ export function initOrmChecklist() {
 
     // fallback download
     try {
+      // DEBUG: prüfen, ob die Werte im Viewer-DOM wirklich drin sind
+      const csNow = getDomFieldValue(frame, "CS");
+      const dateNow = getDomFieldValue(frame, "Datum1_af_date");
+      console.log("[ORM] pre-save DOM values", { csNow, dateNow });
       const bytes = await getEditedPdfBytesFromViewer(frame);
       // DEBUG START
       const u8 = bytes instanceof ArrayBuffer
