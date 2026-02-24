@@ -22,28 +22,6 @@ See https://github.com/adobe-type-tools/cmap-resources
 -->
 <html dir="ltr" mozdisallowselectionprint>
   <head>
-    <script>
-      (function () {
-        function disableScripting() {
-          const opts = window.PDFViewerApplicationOptions;
-          if (opts && typeof opts.set === "function") {
-            opts.set("enableScripting", false);
-            console.log("[pdfjs] enableScripting=false");
-            return true;
-          }
-          return false;
-        }
-
-        // 1) sofort versuchen (für Builds, wo Options schon früh existieren)
-        if (disableScripting()) return;
-
-        // 2) nochmal beim DOMContentLoaded (falls viewer.mjs später Options anlegt)
-        document.addEventListener("DOMContentLoaded", () => disableScripting(), { once: true });
-
-        // 3) und zusätzlich beim webviewerloaded (falls vorhanden)
-        document.addEventListener("webviewerloaded", () => disableScripting(), { once: true });
-      })();
-    </script>    
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="google" content="notranslate" />

@@ -5,7 +5,7 @@ import { qs, SEL, readValue, readText, setText } from "./ui/index.js";
 import { checklistSetToggle } from "./checklist.js";
 
 // ---------- Debug-Funktion bei Bedarf ----------
-const DEBUG_ORM = false;
+const DEBUG_ORM = true;
 function dlog(...args) {
   if (!DEBUG_ORM) return;
   console.log("[orm]", ...args);
@@ -315,6 +315,44 @@ export function initOrmChecklist() {
 
   function openOrm() {
     const pdfPath = `data/ORMBlatt.pdf?v=${Date.now()}`;
+
+    // ---------- Wichtig: Listener im PARENT-Dokument, bevor der Viewer initialisiert! ----------
+    const onWebViewerLoaded = (ev) => {
+      const w = ev?.detail?.source; // = viewer window
+      const opts = w?.PDFViewerApplicationOptions;
+      if (opts?.set) {
+        opts.set("enableScripting", false);
+
+        // optional (falls euer Build das kennt): verhindert Sandbox-Bundle-Pfad
+        // opts.set("sandboxBundleSrc", null);
+
+        console.log("[ORM] pdfjs: enableScripting=false (set via webviewerloaded)");
+      } else {
+        console.warn("[ORM] pdfjs: PDFViewerApplicationOptions not available on webviewerloaded");
+      }
+    };
+
+    document.addEventListener("webviewerloaded", onWebViewerLoaded, { once: true });
+    // ------------------------------ Ende ------------------------------
+
+    frame.src = viewerUrl(pdfPath, { page: 1, zoom: "page-width" });
+
+    frame.addEventListener("load", () => {
+      applyMinimalUiWhenReady(frame);
+      wireOrmAutofill(frame);
+
+      setTimeout(() => autofillOrmFields(frame), 300);
+      setTimeout(() => autofillOrmFields(frame), 900);
+    }, { once: true });
+
+    overlay.classList.remove("is-hidden");
+    overlay.setAttribute("aria-hidden", "false");
+    setHint("ORM geöffnet (editierbar).");
+    isOpen = true;
+  }  
+  function openOrm() {
+    const pdfPath = `data/ORMBlatt.pdf?v=${Date.now()}`;
+
 
     frame.src = viewerUrl(pdfPath, { page: 1, zoom: "page-width" });
 
