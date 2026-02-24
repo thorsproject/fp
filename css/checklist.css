@@ -1,182 +1,109 @@
 /* =========================
-   Checklist – Modern Layout
+   CHECKLIST GRID (cg-*)
    ========================= */
 
-/* ========== ORM Overlay (Full-bleed) ========== */
-.orm-overlay{
-  position: fixed;
-  inset: 0;                 /* top/right/bottom/left:0 */
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);    /* oder transparent */
-}
-
-.orm-overlay-bar{
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-
-  background: rgba(15, 20, 26, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.10);
-}
-
-.orm-overlay-frame{
-  flex: 1 1 auto;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  display: block;
-  background: transparent;
-}
-/* ============================================== */
-/* ========== Style Checklist generell ========== */
-.checklist-card{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.check-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.check-title{
-  margin:0;
-  font-size:18px;
-  letter-spacing:0.4px;
-}
-
-.check-grid{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-/* ============================================== */
-
-
-/* Grundlayout je Zeile: Grid statt "irgendwie nebeneinander" */
-.cg-row{
+#view-checklist .check-grid{
   display: grid;
-  grid-template-columns: 1.2fr 1.2fr 1.3fr 1.6fr 1.2fr 90px; /* letzte Spalte Toggle */
   gap: 10px;
+}
+
+/* Jede Zeile als 6-Spalten-Raster */
+#view-checklist .cg-row{
+  display: grid;
+  grid-template-columns: 1.4fr 1.2fr 1.2fr 1.4fr 1.3fr auto; /* ToDo | Kontakt | Aktion | Details | Status | Toggle */
+  gap: 10px 12px;
   align-items: center;
-
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.10);
 }
 
-/* Optional: wenn du hellen Hintergrund hast, nimm rgba(0,0,0,0.08) */
-.cg-row:hover{
-  background: rgba(255,255,255,0.04);
+/* Header-Zeile */
+#view-checklist .cg-row.cg-head{
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 8px 10px;
+  font-weight: 700;
+  opacity: .9;
+  background: rgba(0,0,0,.25);
+  border-radius: 12px;
 }
 
-/* Typo/Spacing */
-.cg-todo{
-  font-weight: 600;
-  letter-spacing: .2px;
+/* Zellen dürfen schrumpfen (verhindert Überlauf) */
+#view-checklist .cg-row > *{ min-width: 0; }
+
+/* Status-Spalte etwas ruhiger */
+#view-checklist .cg-status{
+  opacity: .9;
 }
 
-.cg-contacts,
-.cg-details{
+/* Muted helper */
+#view-checklist .muted{
+  opacity: .6;
+}
+
+/* =========================
+   WX CHECK: Inputs untereinander
+   ========================= */
+
+/* cg-action ist Spalte 3; dort sollen die mini-field Labels untereinander */
+#view-checklist .cg-action{
+  display: grid;
+  gap: 8px;
+}
+
+/* jedes mini-field: Label oben, Input darunter */
+#view-checklist .mini-field{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 1.1;
   opacity: .95;
 }
 
-.cg-status{
-  opacity: .85;
-  font-size: 12px;
-}
-
-/* Actions & Inputs sauber linksbündig und untereinander */
-.cg-action{
-  text-align: left;
-}
-
-/* Inputs in cg-action untereinander, gleich breit */
-.cg-action input,
-.cg-action select,
-.cg-action textarea{
-  display: block;
+/* Inputs volle Breite, kein “springen” */
+#view-checklist .mini-field .c-input{
   width: 100%;
   box-sizing: border-box;
-  margin: 3px 0;
 }
 
-/* Buttons in cg-action: volle Breite (wirkt ordentlich) */
-.cg-action button{
-  display: block;
+/* =========================
+   ORM / MAIL Buttons bündig
+   ========================= */
+
+/* In cg-action steckt jeweils nur ein Button (#btnOrm / #btnMailEO) -> 100% Breite */
+#view-checklist .cg-action > button{
   width: 100%;
   box-sizing: border-box;
-  margin: 3px 0;
-  padding: 7px 10px;
+  height: 34px;             /* einheitliche Höhe */
   border-radius: 10px;
-  font-weight: 600;
 }
 
-/* Disabled Buttons klar erkennbar */
-.cg-action button:disabled,
-.cg-action button.is-disabled{
-  opacity: .5;
-  cursor: not-allowed;
+/* Falls du noch Default-Button Styles hast, die anders aussehen */
+#view-checklist #btnOrm,
+#view-checklist #btnMailEO{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Toggle-Spalte kompakt */
-.cg-toggle{
+/* =========================
+   Toggle Buttons kleiner
+   ========================= */
+
+#view-checklist .cg-toggle{
   display: flex;
   justify-content: flex-end;
 }
 
-/* CHECK/UNCHECK kleiner und sauber */
-button.tb{
-  font-size: 10px;
-  padding: 2px 6px;
-  min-width: 74px;
-  height: 22px;
-  border-radius: 999px;
-  font-weight: 700;
-  letter-spacing: .2px;
+/* deine Toggle sind: .c-btn.c-btn--ghost.c-btn--sm[data-tb] */
+#view-checklist .cg-toggle .c-btn--sm{
+  padding: 5px 8px;
+  font-size: 11px;
+  line-height: 1.05;
+  border-radius: 10px;
 }
 
-/* E-Mail und Phoenix optisch als "chip" */
-.cg-contacts .email,
-.cg-contacts .intranet{
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  font-size: 12px;
-}
-
-/* Phoenix sieht klickbar aus (du setzt onclick in JS) */
-.cg-contacts .intranet{
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-/* Muted Text */
-.muted{
-  opacity: .65;
-  font-size: 12px;
-}
-
-/* Responsive: auf schmalen Screens umbrechen */
-@media (max-width: 900px){
-  .cg-row{
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-  .cg-toggle{
-    justify-content: flex-start;
-  }
-  .cg-action button{
-    width: auto;
-  }
+/* Optional: damit sie “kompakter” wirken */
+#view-checklist .cg-toggle .c-btn--sm{
+  min-height: 28px;
 }
