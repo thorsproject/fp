@@ -4,6 +4,7 @@ export const SEL = {
 
   // ---------- ROUTE HEADER ----------
   route: {
+    kopfContainer: "#kopfContainer",
     container: "#routePanel",
 
     dateInput: "#dateInput",
@@ -108,6 +109,14 @@ export const SEL = {
     saveIndicator: "#saveIndicator",
 
     configBadge: "#configBadge",
+  },
+
+
+  // ---------- RESET ----------
+  reset: {
+    // Validation messages
+    aeroError: ".aero-error",
+    altError: ".alt-error",
   },
 
 

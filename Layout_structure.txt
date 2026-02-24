@@ -16,4 +16,42 @@ c-*
 Utilities/States
   - States bleiben wie bei dir: is-hidden, is-active, is-disabled, …
   - Utilities konsequent u-* (statt text-muted, flex, etc.)
-  
+
+Ich arbeite an meiner Flight-Planning Web-App mit PDF.js-ORM, Checklist und Mail-EO Funktion.
+Kurz der aktuelle Stand, damit du selbst sicher sein kannst, dass alles konsistent ist:
+
+Zentrale Architektur (jetzt korrekt umgesetzt):
+
+Selectors zentral:
+js/ui/selectors.js → einzige Quelle für alle Selector-Strings (SEL.*)
+
+DOM Zugriff zentral:
+js/ui/dom.js → qs, qsa, closest
+
+Lesen / Schreiben getrennt:
+js/ui/read.js → lesen (readValue etc.)
+js/ui/ui.js → schreiben (setValue, setText, etc.)
+
+Module sauber angepasst:
+✅ fuel.js → nutzt SEL.fuel.*
+✅ storage.js → nutzt SEL.* + DOM guards + retry
+✅ checklist.js → nutzt SEL.checklist.*
+✅ legs.js → nutzt SEL.legs.*
+✅ app.js → orchestriert nur noch, keine direkten DOM-Strings nötig
+
+Debug-System konsistent:
+überall gleiches Muster:
+
+const DEBUG_X = false;
+function dlog(...args) {
+  if (!DEBUG_X) return;
+  console.log("[module]", ...args);
+}
+
+Wichtigster Effekt davon:
+Du kannst jetzt jederzeit z.B. den Toggle-Selector ändern in:
+toggleBtn: '.tb[data-tb]'
+
+und kein einziges anderes File anfassen müssen.
+
+Wenn du als nächstes ein Modul weiter vereinheitlichen willst (z.B. reset.js, orm.js oder mail_eo.js), sag einfach welches.

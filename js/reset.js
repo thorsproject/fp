@@ -10,6 +10,12 @@ import {
 
 import { exportDataJSON, importDataJSONFromFile } from "./storage.js";
 
+const DEBUG_RESET = false;
+function dlog(...args) {
+  if (!DEBUG_RESET) return;
+  console.log("[reset]", ...args);
+}
+
 const ACTIONS = {
   // Route
   "reset-kopf": resetKopf,
@@ -39,6 +45,7 @@ export function initResets() {
     const fn = ACTIONS[action];
     if (!fn) return;
 
+    dlog("action:", action);
     fn(btn);
   });
 }
@@ -51,12 +58,14 @@ function handleExport() {
 async function handleImport() {
   const inp = qs(SEL.io.importFileInput);
   if (!inp) {
-    alert("Import nicht möglich: #importFile fehlt im HTML.");
+    alert("Import nicht möglich: Import-Input fehlt im HTML.");
     return;
   }
 
+  // einmalig “arming”: onchange nicht stapeln
   inp.value = "";
-  inp.onchange = async () => {
+
+  const onPick = async () => {
     const file = inp.files?.[0];
     if (!file) return;
 
@@ -72,13 +81,18 @@ async function handleImport() {
     }
   };
 
+  // nur einmal feuern pro Klick auf Import
+  inp.addEventListener("change", onPick, { once: true });
   inp.click();
 }
 
 // ---------- helpers ----------
-function removeValidation(nodeList) {
-  nodeList.forEach((el) => el?.classList?.remove?.("invalid"));
-  qsa(".aero-error, .alt-error").forEach((el) => {
+function removeValidation() {
+  // invalid-marker entfernen
+  qsa(".invalid").forEach((el) => el.classList.remove("invalid"));
+
+  // error labels leeren (zentralisierte selector)
+  qsa(`${SEL.reset.aeroError}, ${SEL.reset.altError}`).forEach((el) => {
     el.textContent = "";
   });
 }
@@ -89,9 +103,17 @@ function flashResetSuccess(btn) {
   setTimeout(() => btn.classList.remove("reset-success"), 220);
 }
 
+function getFuelPanel() {
+  return qs(SEL.fuel.panel);
+}
+
+function legsFrames() {
+  return qsa(SEL.legs.frames);
+}
+
 // ---------- ROUTE ----------
 function resetKopf(btn) {
-  const scope = qs("#kopfContainer") || document;
+  const scope = qs(SEL.reset.kopfContainer) || document;
 
   // nur DATE löschen (FDL/TEL bleiben absichtlich aus Settings)
   setValue(qs(SEL.route.dateInput, scope), "", { emit: true });
@@ -100,14 +122,8 @@ function resetKopf(btn) {
   const lfz = qs(SEL.route.lfzSelect, scope);
   const tac = qs(SEL.route.tacSelect, scope);
 
-  if (lfz) {
-    lfz.selectedIndex = 0;
-    lfz.dispatchEvent(new Event("change", { bubbles: true }));
-  }
-  if (tac) {
-    tac.selectedIndex = 0;
-    tac.dispatchEvent(new Event("change", { bubbles: true }));
-  }
+  resetSelect(lfz);
+  resetSelect(tac);
 
   // Callsign Anzeige leeren (ist Text, kein Input)
   const cs = qs(SEL.route.callsignDisplay, scope);
@@ -116,9 +132,15 @@ function resetKopf(btn) {
   flashResetSuccess(btn);
 }
 
+function resetSelect(sel) {
+  if (!sel) return;
+  sel.selectedIndex = 0;
+  sel.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
 function resetTimes(btn) {
   withMuteLegAutofill(() => {
-    const frames = qsa(SEL.legs.frames);
+    const frames = legsFrames();
     const etd = frames.flatMap((f) => qsa(SEL.legs.etd, f));
     const eta = frames.flatMap((f) => qsa(SEL.legs.eta, f));
     clearValues([...etd, ...eta], { emit: true });
@@ -129,14 +151,14 @@ function resetTimes(btn) {
 
 function resetAerodromes(btn) {
   withMuteLegAutofill(() => {
-    const frames = qsa(SEL.legs.frames);
+    const frames = legsFrames();
 
     const aeroFrom = frames.flatMap((f) => qsa(SEL.legs.aeroFrom, f));
-    const aeroTo   = frames.flatMap((f) => qsa(SEL.legs.aeroTo, f));
-    const alts     = frames.flatMap((f) => qsa(SEL.legs.alt, f));
+    const aeroTo = frames.flatMap((f) => qsa(SEL.legs.aeroTo, f));
+    const alts = frames.flatMap((f) => qsa(SEL.legs.alt, f));
 
     clearValues([...aeroFrom, ...aeroTo, ...alts], { emit: true });
-    removeValidation([...aeroFrom, ...aeroTo, ...alts]);
+    removeValidation();
   });
 
   flashResetSuccess(btn);
@@ -144,11 +166,12 @@ function resetAerodromes(btn) {
 
 // ---------- FUEL ----------
 function resetFuelInputs(btn) {
-  resetLegFuelInputs();
-  resetCompFuelInputs();
-  resetAltFuelInputs();
+  // Hier NICHT flashen in den Sub-Resets -> nur einmal am Ende.
+  resetLegFuelInputs(null);
+  resetCompFuelInputs(null);
+  resetAltFuelInputs(null);
 
-  const panel = qs(SEL.fuel.panel);
+  const panel = getFuelPanel();
   if (!panel) return;
 
   // Final Reserve default
@@ -159,39 +182,44 @@ function resetFuelInputs(btn) {
 }
 
 function resetLegFuelInputs(btn) {
-  const panel = qs(SEL.fuel.panel);
+  const panel = getFuelPanel();
   if (!panel) return;
 
-  const trip = [1, 2, 3, 4].map((leg) => qs(SEL.fuel.tripInput(leg), panel)).filter(Boolean);
+  const trip = [1, 2, 3, 4]
+    .map((leg) => qs(SEL.fuel.tripInput(leg), panel))
+    .filter(Boolean);
+
   clearValues(trip, { emit: true });
 
-  flashResetSuccess(btn);
+  // nur wenn direkt geklickt wurde
+  if (btn) flashResetSuccess(btn);
 }
 
 function resetCompFuelInputs(btn) {
-  const panel = qs(SEL.fuel.panel);
+  const panel = getFuelPanel();
   if (!panel) return;
 
   const ifr = qs(SEL.fuel.apprIfn, panel);
   const vfr = qs(SEL.fuel.apprVfr, panel);
 
   clearValues([ifr, vfr].filter(Boolean), { emit: true });
-  flashResetSuccess(btn);
+
+  if (btn) flashResetSuccess(btn);
 }
 
 function resetAltFuelInputs(btn) {
-  const panel = qs(SEL.fuel.panel);
+  const panel = getFuelPanel();
   if (!panel) return;
 
   const alt = qs(SEL.fuel.altInput, panel);
   clearValues([alt].filter(Boolean), { emit: true });
 
-  flashResetSuccess(btn);
+  if (btn) flashResetSuccess(btn);
 }
 
 function setStdBlockOn(panel) {
-  const stdBtn  = qs(SEL.fuel.toggleStd, panel);
-  const auxBtn  = qs(SEL.fuel.toggleAux, panel);
+  const stdBtn = qs(SEL.fuel.toggleStd, panel);
+  const auxBtn = qs(SEL.fuel.toggleAux, panel);
   const mainInp = qs(SEL.fuel.mainInput, panel);
 
   if (stdBtn) {
