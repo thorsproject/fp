@@ -2,7 +2,7 @@
 // Erstellt eine .eml (RFC822) inkl. Attachments -> Nutzer öffnet sie im Mailprogramm und sendet selbst.
 
 import { collectAttachments, hasAttachment } from "./attachments.js";
-import { qs, qsa, SEL, readText, readValue, setDisabled, toggleClass } from "./ui/index.js";
+import { qs, qsa, SEL, readText, readValue, setDisabled, toggleClass, EVT, on } from "./ui/index.js";
 
 const LS_MAIL_MODE = "fp.mail_eo.mode"; // "auto" | "picker"
 
@@ -79,10 +79,10 @@ export function initMailEO() {
   refreshMailUi();
 
   // Nach Includes (Settings kommt per Partial)
-  window.addEventListener("fp:includes-loaded", refreshMailUi);
-
+  on(EVT.includesLoaded, refreshMailUi);
+  
   // Wenn Attachments sich ändern (ORM gespeichert etc.)
-  window.addEventListener("fp:attachments-changed", setMailButtonState);
+  on(EVT.attachmentsChanged, setMailButtonState);
 }
 
 // ------------------ Helpers ------------------

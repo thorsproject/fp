@@ -2,8 +2,8 @@
 // ------------------ SETUP ------------------
 // eMail an EO
 import { initMailEO } from "./mail_eo.js";
-import { qs, SEL, setText } from "./ui/index.js";
 
+import { qs, SEL, setText, EVT, emit, on } from "./ui/index.js";
 import { loadConfig, setConfigPassword, getConfigPassword, clearConfigCache } from "./config_store.js";
 import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
@@ -144,8 +144,7 @@ map.on("click", (e) => {
     alert("Include-Laden fehlgeschlagen:\n" + (e?.message || e));
     return;
   }
-  window.dispatchEvent(new Event("fp:includes-loaded"));
-
+  emit(EVT.includesLoaded);
   function applyFdlToHeader({ name = "", tel = "" } = {}) {
     setText("#FDLoutput", name);
     setText("#TELoutput", tel);
@@ -291,8 +290,8 @@ map.on("click", (e) => {
   // nach Includes: Settings sind im DOM
   wireConfigSettings();
   tryAutoLoadConfig();
-  window.addEventListener("fp:includes-loaded", wireConfigSettings);
-  window.addEventListener("fp:includes-loaded", tryAutoLoadConfig);
+  on(EVT.includesLoaded, wireConfigSettings);
+  on(EVT.includesLoaded, tryAutoLoadConfig);
 
   try {
     await loadAirfields();
