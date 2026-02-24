@@ -137,8 +137,10 @@
 .c-btn--danger:hover{ filter: brightness(0.9); }
 
 .c-btn--sm{
-  padding: 4px 8px;
+  padding: 6px 10px;
   font-size: 12px;
+  line-height: 1.1;
+  border-radius: 10px;
 }
 
 /* TABS (Topbar) */
