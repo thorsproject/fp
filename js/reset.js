@@ -22,6 +22,11 @@ const ACTIONS = {
   "reset-times": resetTimes,
   "reset-aeros": resetAerodromes,
 
+  // Checklist
+  "reset-checklist": resetChecklist,
+  "reset-checkmarks": resetChecklistCheckmarks,
+  "reset-wx": resetChecklistWx,
+
   // Fuel
   "reset-fuel": resetFuelInputs,
   "reset-legfuel": resetLegFuelInputs,
@@ -43,7 +48,10 @@ export function initResets() {
 
     const action = btn.dataset.action;
     const fn = ACTIONS[action];
-    if (!fn) return;
+    if (!fn) {
+      console.warn("[reset] unknown action:", action);
+      return;
+    }
 
     dlog("action:", action);
     fn(btn);
@@ -160,6 +168,80 @@ function resetAerodromes(btn) {
     clearValues([...aeroFrom, ...aeroTo, ...alts], { emit: true });
     removeValidation();
   });
+
+  flashResetSuccess(btn);
+}
+
+// ---------- CHECKLIST ----------
+const CHECKLIST_STORAGE_KEY = "fp_checklist_v1";
+
+function getChecklistScope() {
+  return qs(SEL.checklist.view) || document;
+}
+
+function readChecklistState() {
+  try {
+    return JSON.parse(localStorage.getItem(CHECKLIST_STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function writeChecklistState(state) {
+  localStorage.setItem(CHECKLIST_STORAGE_KEY, JSON.stringify(state));
+}
+
+function applyChecklistToggle(btn, checked) {
+  if (!btn) return;
+  btn.classList.toggle("is-checked", !!checked);
+  btn.textContent = checked ? "CHECK" : "UNCHECK";
+}
+
+function resetChecklist(btn) {
+  // alles: Storage weg + UI zurück
+  localStorage.removeItem(CHECKLIST_STORAGE_KEY);
+
+  const scope = getChecklistScope();
+
+  // toggles off
+  qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => applyChecklistToggle(tb, false));
+
+  // fields leer (emit:false, damit wx auto-check nicht gleich wieder feuert)
+  qsa(SEL.checklist.fieldAny, scope).forEach((el) => setValue(el, "", { emit: false }));
+
+  flashResetSuccess(btn);
+}
+
+function resetChecklistCheckmarks(btn) {
+  const s = readChecklistState();
+  s.toggles = {};
+  writeChecklistState(s);
+
+  const scope = getChecklistScope();
+  qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => applyChecklistToggle(tb, false));
+
+  flashResetSuccess(btn);
+}
+
+function resetChecklistWx(btn) {
+  const scope = getChecklistScope();
+
+  const s = readChecklistState();
+  s.fields = s.fields || {};
+  delete s.fields.wx_nr;
+  delete s.fields.wx_void;
+  delete s.fields.wx_init;
+
+  s.toggles = s.toggles || {};
+  s.toggles.wx = false;
+
+  writeChecklistState(s);
+
+  ["wx_nr", "wx_void", "wx_init"].forEach((k) => {
+    setValue(qs(SEL.checklist.fieldByKey(k), scope), "", { emit: false });
+  });
+
+  applyChecklistToggle(qs(SEL.checklist.toggleByKey("wx"), scope), false);
 
   flashResetSuccess(btn);
 }

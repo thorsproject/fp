@@ -27,7 +27,7 @@ function writeState(state) {
 }
 
 // ---------- UI helpers ----------
-function applyToggle(btn, checked) {
+export function checklistApplyToggle(btn, checked) {
   if (!btn) return;
   btn.classList.toggle("is-checked", !!checked);
   btn.textContent = checked ? "CHECK" : "UNCHECK";
@@ -64,12 +64,29 @@ export function checklistSetToggle(key, checked = true) {
     qs(SEL.checklist.toggleByKey(key), scope) || qs(SEL.checklist.toggleByKey(key));
   if (!btn) return;
 
-  applyToggle(btn, checked);
+  checklistApplyToggle(btn, checked);
 
   const s = readState();
   s.toggles = s.toggles || {};
   s.toggles[key] = !!checked;
   writeState(s);
+}
+
+export function checklistResetUI({ resetToggles = false, resetFields = [] } = {}) {
+  const scope = getScope();
+
+  if (resetToggles) {
+    qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => checklistApplyToggle(tb, false));
+  }
+
+  if (resetFields === "all") {
+    qsa(SEL.checklist.fieldAny, scope).forEach((el) => setValue(el, "", { emit: false }));
+  } else if (Array.isArray(resetFields) && resetFields.length) {
+    resetFields
+      .map((k) => qs(SEL.checklist.fieldByKey(k), scope))
+      .filter(Boolean)
+      .forEach((el) => setValue(el, "", { emit: false }));
+  }
 }
 
 // ---------- Main ----------
@@ -86,7 +103,7 @@ export function initChecklistUI() {
     const key = tb.dataset.tb;
     if (key in toggles) {
       dlog("restore toggle", key, toggles[key]);
-      applyToggle(tb, toggles[key]);
+      checklistApplyToggle(tb, toggles[key]);
     }
   });
 
@@ -113,47 +130,6 @@ export function initChecklistUI() {
     writeState(s);
   }
 
-  // ---------- Reset buttons ----------
-  qs(SEL.checklist.resetChecklist, scope)?.addEventListener("click", (e) => {
-    dlog("reset checklist");
-    localStorage.removeItem(STORAGE_KEY);
-
-    qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => applyToggle(tb, false));
-    qsa(SEL.checklist.fieldAny, scope).forEach((el) => setValue(el, "", { emit: false }));
-
-    flashReset(e.currentTarget);
-  });
-
-  qs(SEL.checklist.resetCheckmarks, scope)?.addEventListener("click", (e) => {
-    dlog("reset checkmarks");
-    const s = readState();
-    s.toggles = {};
-    writeState(s);
-
-    qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => applyToggle(tb, false));
-
-    flashReset(e.currentTarget);
-  });
-
-  qs(SEL.checklist.resetWx, scope)?.addEventListener("click", (e) => {
-    dlog("reset wx fields");
-    const s = readState();
-    s.fields = s.fields || {};
-
-    delete s.fields.wx_nr;
-    delete s.fields.wx_void;
-    delete s.fields.wx_init;
-
-    writeState(s);
-
-    qsa(
-      `${SEL.checklist.fieldByKey("wx_nr")},${SEL.checklist.fieldByKey("wx_void")},${SEL.checklist.fieldByKey("wx_init")}`,
-      scope
-    ).forEach((el) => setValue(el, "", { emit: false }));
-
-    flashReset(e.currentTarget);
-  });
-
   // ---------- Toggle click ----------
   scope.addEventListener("click", (e) => {
     const tb = closest(e.target, SEL.checklist.toggleBtn);
@@ -163,7 +139,7 @@ export function initChecklistUI() {
 
     dlog("toggle click", { key: tb.dataset.tb, checked });
 
-    applyToggle(tb, checked);
+    checklistApplyToggle(tb, checked);
     saveToggle(tb.dataset.tb, checked);
   });
 

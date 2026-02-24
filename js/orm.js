@@ -2,11 +2,18 @@
 import { viewerUrl } from "./path.js";
 import { registerAttachment } from "./attachments.js";
 import { qs, SEL, readValue, readText, setText } from "./ui/index.js";
+import { checklistSetToggle } from "./checklist.js";
 
+// ---------- Debug-Funktion bei Bedarf ----------
 const DEBUG_ORM = false;
 function dlog(...args) {
   if (!DEBUG_ORM) return;
   console.log("[orm]", ...args);
+}
+// ---------- Debug-Funktion Ende ----------
+
+function getRouteScope() {
+  return qs(SEL.route.container) || document;
 }
 
 let lastAutofill = { cs: null, dateIso: null };
@@ -21,14 +28,9 @@ function sanitizeFilePart(s) {
 }
 
 function getSuggestedOrmFilename() {
-  const date = readValue(qs(SEL.route.dateInput))?.trim() || "";
-  const cs = readText(qs(SEL.route.callsignDisplay))?.trim() || "CALLSIGN";
-
-  const m = date.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
-  const datePart = m
-    ? `20${m[3]}-${m[2]}-${m[1]}`
-    : new Date().toISOString().slice(0, 10);
-
+  const scope = getRouteScope();
+  const datePart = toIsoDateForOrm(scope);
+  const cs = readText(qs(SEL.route.callsignDisplay, scope)).trim() || "CALLSIGN";
   return `ORM-${sanitizeFilePart(datePart)}-${sanitizeFilePart(cs)}.pdf`;
 }
 
@@ -97,8 +99,8 @@ function applyMinimalUiWhenReady(iframe) {
   tick();
 }
 
-function toIsoDateForOrm() {
-  const raw0 = readValue(qs(SEL.route.dateInput)) ?? "";
+function toIsoDateForOrm(scope = document) {
+  const raw0 = readValue(qs(SEL.route.dateInput, scope)) ?? "";
   const raw = String(raw0).trim();
 
   if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
@@ -197,8 +199,9 @@ async function autofillOrmFields(iframe) {
   const fields = await pdf.getFieldObjects();
   if (!fields) return;
 
-  const dateIso = toIsoDateForOrm();
-  const cs = readText(qs(SEL.route.callsignDisplay))?.trim() || "";
+  const scope = getRouteScope();
+  const dateIso = toIsoDateForOrm(scope);
+  const cs = readText(qs(SEL.route.callsignDisplay, scope)).trim() || "";
 
   let okDate = false;
   let okCs = false;
@@ -307,7 +310,7 @@ export function initOrmChecklist() {
   let isOpen = false;
 
   function setHint(msg = "") {
-    setText(hint, msg);
+    setText(SEL.orm.hint, msg);
   }
 
   function openOrm() {
@@ -405,7 +408,7 @@ export function initOrmChecklist() {
         setHint("Gespeichert.");
         closeOrm();
 
-        import("./checklist.js").then((m) => m.checklistSetToggle("orm", true));
+        checklistSetToggle("orm", true);
         return;
       } catch (e) {
         console.error(e);
