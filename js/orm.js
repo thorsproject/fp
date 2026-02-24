@@ -365,15 +365,24 @@ export function initOrmChecklist() {
 
       app?.initializedPromise?.then(() => {
 
-        console.log("[ORM] saveDocument length",
-          app.pdfDocument?.saveDocument?.length);
+        const app = frame.contentWindow?.PDFViewerApplication;
+        if (!app) return;
 
-        console.log("[ORM] has saveDocument",
-          typeof app.pdfDocument?.saveDocument);
+        // Wenn das Dokument schon da ist → direkt loggen
+        const logDocInfo = () => {
+          console.log("[ORM] saveDocument length", app.pdfDocument?.saveDocument?.length);
+          console.log("[ORM] has saveDocument", typeof app.pdfDocument?.saveDocument);
+          console.log("[ORM] annotationStorage", app.pdfDocument?.annotationStorage);
+        };
 
-        console.log("[ORM] annotationStorage",
-          app.pdfDocument?.annotationStorage);
-
+        // Falls noch nicht da → auf PDF.js Event warten
+        if (app.pdfDocument) {
+          logDocInfo();
+        } else {
+          app.eventBus?.on?.("documentloaded", logDocInfo);
+          // optional auch:
+          app.eventBus?.on?.("pagesloaded", logDocInfo);
+        }
       });      
 
       applyMinimalUiWhenReady(frame);
