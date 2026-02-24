@@ -284,38 +284,67 @@
 }
 
 /* =========================================================
-   ORM OVERLAY – ohne HTML-Änderung
-   macht #ormWrap fullscreen + #ormFrame groß
+   ORM OVERLAY (Vollbild)
+   benutzt vorhandenes HTML:
+   #ormOverlay, .orm-overlay, .orm-overlay-bar, .orm-overlay-frame
    ========================================================= */
 
-#ormWrap.orm-wrap{
+#ormOverlay.orm-overlay{
   position: fixed;
   inset: 0;
-  z-index: 10000;           /* über Topbar (9999) */
-  padding: 10px;
-  background: rgba(0,0,0,.45);
-
-  /* layout: iframe füllt den Rest */
+  z-index: 10000;                 /* über Topbar (9999) */
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding: 10px;
+
+  background: rgba(0,0,0,.45);
 }
 
-/* kompatibel mit utils.css */
-#ormWrap.orm-wrap.is-hidden{
+/* versteckt bleibt versteckt (kompatibel mit utils.css) */
+#ormOverlay.orm-overlay.is-hidden{
   display: none !important;
 }
 
-/* Falls du oben Buttons/Hint im Wrap hast:
-   alles außer iframe bleibt “auto”, iframe nimmt Rest */
-#ormWrap.orm-wrap > :not(#ormFrame){
+/* Bar oben */
+#ormOverlay .orm-overlay-bar{
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 10px;
 }
 
-/* iframe: füllt Resthöhe */
-#ormFrame.orm-frame{
+/* Buttons optisch an eure c-btn angleichen, ohne HTML zu ändern */
+#ormOverlay .orm-overlay-bar button{
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+  background: var(--accent);
+  color: #000;
+}
+#ormOverlay .orm-overlay-bar button:hover{
+  filter: brightness(0.9);
+}
+
+/* Hint rechts */
+#ormOverlay .orm-overlay-bar .hint{
+  margin-left: auto;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* iframe nimmt den Rest ein */
+#ormFrameOverlay.orm-overlay-frame{
   flex: 1 1 auto;
-  min-height: 0;            /* wichtig in flex layouts */
+  min-height: 0;                  /* wichtig in flex layouts */
   width: 100%;
   height: 100%;
 
