@@ -360,6 +360,22 @@ export function initOrmChecklist() {
     }, { once: true });
 
     frame.addEventListener("load", () => {
+
+      const app = frame.contentWindow?.PDFViewerApplication;
+
+      app?.initializedPromise?.then(() => {
+
+        console.log("[ORM] saveDocument length",
+          app.pdfDocument?.saveDocument?.length);
+
+        console.log("[ORM] has saveDocument",
+          typeof app.pdfDocument?.saveDocument);
+
+        console.log("[ORM] annotationStorage",
+          app.pdfDocument?.annotationStorage);
+
+      });      
+
       applyMinimalUiWhenReady(frame);
       wireOrmAutofill(frame);
 
@@ -442,6 +458,14 @@ export function initOrmChecklist() {
         const csNow = getDomFieldValue(frame, "CS");
         const dateNow = getDomFieldValue(frame, "Datum1_af_date");
         console.log("[ORM] pre-save DOM values", { csNow, dateNow });
+        const app = frame.contentWindow?.PDFViewerApplication;
+
+        console.log("[ORM] saveDocument length",
+          app?.pdfDocument?.saveDocument?.length);
+
+        console.log("[ORM] annotationStorage",
+          app?.pdfDocument?.annotationStorage);
+
         const bytes = await getEditedPdfBytesFromViewer(frame);
         // DEBUG START
         const u8 = bytes instanceof ArrayBuffer
