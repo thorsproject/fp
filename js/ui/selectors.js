@@ -62,6 +62,30 @@ export const SEL = {
   },
 
 
+  // ---------- CHECKLIST - ORM ----------
+  orm: {
+    overlay: "#ormOverlay",
+    frame: "#ormFrameOverlay",
+    hint: "#ormHintOverlay",
+
+    btnOpen: "#btnOrm",
+    btnSave: "#btnOrmSaveOverlay",
+    btnClose: "#btnOrmCloseOverlay",
+  },
+  // ---------- CHECKLIST - MAIL ----------
+  mail: {
+    btnSend: "#btnMailEO",
+    cbUsePicker: "#mailEoUsePicker",
+
+    recipient: ".email",
+    intranet: ".intranet",
+
+    wxNr: '[data-field="wx_nr"]',
+    wxVoid: '[data-field="wx_void"]',
+    wxInit: '[data-field="wx_init"]',
+  },
+
+
   // ---------- FUEL ----------
   fuel: {
     panel: "#fuelPanel",

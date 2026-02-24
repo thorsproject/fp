@@ -1,21 +1,12 @@
 // app.js
 // ------------------ SETUP ------------------
 // eMail an EO
-import { handleMailEOClick, getMailMode } from "./mail_eo.js";
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("#btnMailEO");
-  if (!btn) return;
-
-  handleMailEOClick(getMailMode()).catch((err) => {
-    console.error(err);
-    alert("Mail-Erstellung fehlgeschlagen.");
-  });
-});
+import { initMailEO } from "./mail_eo.js";
+import { qs, SEL, setText } from "./ui/index.js";
 
 import { loadConfig, setConfigPassword, getConfigPassword, clearConfigCache } from "./config_store.js";
 import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
-import { setText } from "./ui/ui.js";
 import { initLegActivation } from "./legs.js";
 import { createMap } from "./map.js";
 import {
@@ -161,17 +152,18 @@ map.on("click", (e) => {
   }
 
   function applyChecklistContacts(config) {
-    const scope = document.getElementById("view-checklist") || document;
+    const scope = qs("#view-checklist") || document;
 
     const mail = (config?.eoEmail || "").trim();
-    const emailEl = scope.querySelector(".email");
-    if (emailEl && mail) emailEl.textContent = mail;
+    if (mail) {
+      setText(SEL.mail.recipient, mail, scope);
+    }
 
     const phoenix = (config?.phoenixUrl || "").trim();
-    const intranetEl = scope.querySelector(".intranet");
+    const intranetEl = qs(SEL.mail.intranet, scope);
 
     if (intranetEl && phoenix) {
-      intranetEl.textContent = phoenix;
+      setText(intranetEl, phoenix);
       intranetEl.style.cursor = "pointer";
       intranetEl.onclick = () => window.open(phoenix, "_blank", "noopener");
     }
@@ -327,6 +319,7 @@ map.on("click", (e) => {
     },
   });
   initChecklistUI();
+  initMailEO();
   initOrmChecklist();
   initFuelPlanning();
   initResets();

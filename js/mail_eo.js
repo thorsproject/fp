@@ -2,13 +2,20 @@
 // Erstellt eine .eml (RFC822) inkl. Attachments -> Nutzer öffnet sie im Mailprogramm und sendet selbst.
 
 import { collectAttachments, hasAttachment } from "./attachments.js";
+import { qs, qsa, SEL, readText, readValue, setDisabled, toggleClass } from "./ui/index.js";
 
 const LS_MAIL_MODE = "fp.mail_eo.mode"; // "auto" | "picker"
 
+const DEBUG_MAIL = false;
+function dlog(...args) {
+  if (!DEBUG_MAIL) return;
+  console.log("[mail_eo]", ...args);
+}
+
 // ------------------ MODE (auto | picker) ------------------
 export function getMailMode() {
-  const cb = document.getElementById("mailEoUsePicker");
-  if (cb) return cb.checked ? "picker" : "auto";
+  const cb = qs(SEL.mail.cbUsePicker);
+  if (cb) return readValue(cb) ? "picker" : "auto";
   return localStorage.getItem(LS_MAIL_MODE) === "picker" ? "picker" : "auto";
 }
 
@@ -18,14 +25,15 @@ function setMailMode(mode) {
 
 // ------------------ UI ------------------
 function setMailButtonState() {
-  const btn = document.getElementById("btnMailEO");
+  const btn = qs(SEL.mail.btnSend);
   if (!btn) return;
 
   const mode = getMailMode();
   const ready = mode === "picker" ? true : hasAttachment("orm");
 
-  btn.disabled = !ready;
-  btn.classList.toggle("is-disabled", !ready);
+  setDisabled(btn, !ready);
+  toggleClass(btn, "is-disabled", !ready);
+
   btn.title =
     mode === "picker"
       ? "EO-Mail erstellen (Dateien manuell auswählen)"
@@ -35,44 +43,57 @@ function setMailButtonState() {
 }
 
 function wireMailModeCheckbox() {
-  const cb = document.getElementById("mailEoUsePicker");
+  const cb = qs(SEL.mail.cbUsePicker);
   if (!cb || cb.dataset.wired === "1") return;
 
   cb.checked = localStorage.getItem(LS_MAIL_MODE) === "picker";
 
   cb.addEventListener("change", () => {
-    setMailMode(cb.checked ? "picker" : "auto");
+    setMailMode(readValue(cb) ? "picker" : "auto");
     setMailButtonState();
   });
 
   cb.dataset.wired = "1";
 }
 
+function wireMailButton() {
+  const btn = qs(SEL.mail.btnSend);
+  if (!btn || btn.dataset.wired === "1") return;
+
+  btn.addEventListener("click", async () => {
+    const mode = getMailMode();
+    await handleMailEOClick(mode);
+  });
+
+  btn.dataset.wired = "1";
+}
+
 function refreshMailUi() {
   wireMailModeCheckbox();
+  wireMailButton();
   setMailButtonState();
 }
 
-// Initial (falls Settings schon da sind)
-refreshMailUi();
+// öffentliches init statt “Side-Effects beim Import”
+export function initMailEO() {
+  refreshMailUi();
 
-// Nach Includes (Settings kommt per Partial)
-window.addEventListener("fp:includes-loaded", refreshMailUi);
+  // Nach Includes (Settings kommt per Partial)
+  window.addEventListener("fp:includes-loaded", refreshMailUi);
 
-// Wenn Attachments sich ändern (ORM gespeichert etc.)
-window.addEventListener("fp:attachments-changed", setMailButtonState);
+  // Wenn Attachments sich ändern (ORM gespeichert etc.)
+  window.addEventListener("fp:attachments-changed", setMailButtonState);
+}
 
 // ------------------ Helpers ------------------
-function q(sel) { return document.querySelector(sel); }
-
 function getEmailRecipient() {
-  return (q(".email")?.textContent || "").trim();
+  return readText(qs(SEL.mail.recipient)).trim();
 }
 
 function getWxValues() {
-  const nr = (q('[data-field="wx_nr"]')?.value || "").trim();
-  const v  = (q('[data-field="wx_void"]')?.value || "").trim();
-  const i  = (q('[data-field="wx_init"]')?.value || "").trim();
+  const nr = String(readValue(qs(SEL.mail.wxNr)) || "").trim();
+  const v  = String(readValue(qs(SEL.mail.wxVoid)) || "").trim();
+  const i  = String(readValue(qs(SEL.mail.wxInit)) || "").trim();
   return { nr, voidv: v, init: i };
 }
 
@@ -85,7 +106,7 @@ function sanitizeFilePart(s) {
 }
 
 function getCallsign() {
-  return (document.getElementById("callSignDisplay")?.textContent || "").trim();
+  return readText(qs(SEL.route.callsignDisplay)).trim();
 }
 
 function toIsoDate(raw) {
@@ -103,7 +124,7 @@ function toIsoDate(raw) {
 }
 
 function getIsoDateFromUi() {
-  const raw = document.getElementById("dateInput")?.value || "";
+  const raw = readValue(qs(SEL.route.dateInput)) || "";
   return toIsoDate(raw);
 }
 
@@ -122,7 +143,7 @@ function sortFilesOrmFirst(files) {
 }
 
 function buildAttachmentSummary(files) {
-  const names = files.map(f => `- ${f.name}`);
+  const names = files.map((f) => `- ${f.name}`);
   const ormCount = files.filter(looksLikeOrmFile).length;
   const logCount = Math.max(0, files.length - ormCount);
 
@@ -134,7 +155,7 @@ function buildAttachmentSummary(files) {
       ...names,
       "",
       `ORM: ${ormCount} | Logs: ${logCount} | Gesamt: ${files.length}`,
-    ].join("\r\n")
+    ].join("\r\n"),
   };
 }
 
@@ -273,7 +294,6 @@ export async function handleMailEOClick(mode = "auto") {
     }
   }
 
-  // ✅ ORM immer zuerst (unabhängig von ForeFlight)
   files = sortFilesOrmFirst(files);
 
   const isoDate = getIsoDateFromUi();
@@ -282,11 +302,12 @@ export async function handleMailEOClick(mode = "auto") {
   const { logCount } = buildAttachmentSummary(files);
   const subject = buildSubject({ isoDate, cs, logCount });
 
+  const wx = getWxValues();
   const body = [
     "Moin an den Einsatz,",
     "",
     `anbei die Legs und das ORM für ${isoDate}${cs ? ` (${cs})` : ""}.`,
-    `Wetter ist gecheckt, Wx-Nr.: ${getWxValues().nr || "-"}, VOID: ${getWxValues().voidv || "-"}, Initials: ${getWxValues().init || "-"}.`,
+    `Wetter ist gecheckt, Wx-Nr.: ${wx.nr || "-"}, VOID: ${wx.voidv || "-"}, Initials: ${wx.init || "-"}.`,
     "",
     buildAttachmentSummary(files).text,
     "",
