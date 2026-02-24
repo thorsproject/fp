@@ -55,3 +55,253 @@ toggleBtn: '.tb[data-tb]'
 und kein einziges anderes File anfassen müssen.
 
 Wenn du als nächstes ein Modul weiter vereinheitlichen willst (z.B. reset.js, orm.js oder mail_eo.js), sag einfach welches.
+
+
+Stand: 24.02.2026:
+Projektstatus – Flight Planning Web-App (Stand: heute)
+1. Architektur – vollständig modularisiert und vereinheitlicht
+
+Die App verwendet jetzt eine klare, konsistente UI-Architektur mit zentralem Zugriffssystem:
+
+Zentrale UI-Abstraktionsschicht (/js/ui/)
+
+Single Source of Truth:
+
+SEL → alle Selektoren zentral definiert
+
+qs, qsa → DOM Zugriff
+
+readValue, readText → Lesen
+
+setValue, setText, setDisabled, toggleClass → Schreiben
+
+on, emit, EVT → Event-System
+
+➡️ Keine direkten document.querySelector oder .value mehr in Feature-Modulen.
+
+2. Einheitliches Modul-Lifecycle-System
+
+Alle Feature-Module haben jetzt ein klares Init-Pattern:
+
+initChecklistUI();
+initMailEO();
+initOrmChecklist();
+initFuelPlanning();
+initResets();
+
+Keine Side-Effects mehr beim Import.
+
+3. Event-System vereinheitlicht
+
+Statt:
+
+window.addEventListener(...)
+
+jetzt:
+
+on(EVT.includesLoaded, fn)
+emit(EVT.includesLoaded)
+
+Aktuell verwendete Events:
+
+EVT.includesLoaded
+EVT.attachmentsChanged
+4. Reset-System vollständig zentralisiert (reset.js)
+
+Single Source of Truth für alle Resets.
+
+Unterstützte Actions:
+
+Route:
+
+reset-kopf
+reset-times
+reset-aeros
+
+Checklist:
+
+reset-checklist
+reset-checkmarks
+reset-wx
+
+Fuel:
+
+reset-fuel
+reset-legfuel
+reset-compfuel
+reset-altfuel
+
+Import/Export:
+
+export-data
+import-data
+
+Checklist-Reset wurde vollständig aus checklist.js entfernt.
+
+5. Selector-Architektur vollständig standardisiert (selectors.js)
+
+Alle Module verwenden ausschließlich:
+
+SEL.route.*
+SEL.legs.*
+SEL.checklist.*
+SEL.mail.*
+SEL.orm.*
+SEL.fuel.*
+SEL.settings.*
+SEL.topbar.*
+SEL.reset.*
+SEL.io.*
+
+Keine hardcodierten Selektoren mehr in Modulen.
+
+6. ORM-System vollständig integriert
+
+Funktionen:
+
+Öffnen via PDF.js overlay
+
+Autofill:
+
+Callsign
+
+Datum
+
+Speichern via:
+
+showSaveFilePicker (modern browsers)
+
+fallback download
+
+Registrierung als Attachment:
+
+registerAttachment("orm", ...)
+
+Checklist Toggle Integration:
+
+checklistSetToggle("orm", true)
+7. Mail-System vollständig refactored (mail_eo.js)
+
+Verwendet:
+
+initMailEO()
+
+Features:
+
+auto oder picker mode
+
+erstellt RFC822 .eml
+
+hängt ORM + Logs an
+
+verwendet ausschließlich UI-Layer
+
+Keine direkten DOM Zugriffe mehr.
+
+8. Attachment-System aktiv (attachments.js)
+
+Zentrale Registry:
+
+registerAttachment(key, { name, type, getArrayBuffer })
+collectAttachments()
+hasAttachment(key)
+
+Events:
+
+EVT.attachmentsChanged
+9. app.js vollständig refactored
+
+Verwendet jetzt:
+
+SEL
+
+qs/qsa
+
+emit/on
+
+init-Pattern für alle Module
+
+Keine direkten querySelector mehr außer minimalen Spezialfällen.
+
+10. Fuel-System stabil
+
+Features:
+
+vollständige automatische Berechnung
+
+Reset vollständig integriert
+
+Toggle System stabil
+
+nutzt ausschließlich SEL + readValue
+
+11. Checklist-System stabil
+
+Features:
+
+persistiert in localStorage
+
+reset vollständig ausgelagert
+
+Toggle System stabil
+
+wx auto-check funktioniert
+
+12. Legs-System stabil
+
+Features:
+
+cascade activation
+
+autofill chain
+
+reset vollständig integriert
+
+fuel integration korrekt
+
+Aktueller Gesamtzustand
+
+Architektur:
+
+Sehr sauber
+Sehr stabil
+Sehr wartbar
+Single Source of Truth überall
+
+Technischer Zustand: Produktionsreif
+
+Nächster Schritt
+
+Geplant:
+
+Funktionale Bugs identifizieren und beheben
+
+z.B.:
+
+Mail EO edge cases
+
+ORM edge cases
+
+Reset edge cases
+
+Autosave edge cases
+
+Include timing issues
+
+Fuel edge cases
+
+Checklist edge cases
+
+Wichtig für nächsten Chat
+
+Bitte sagen:
+
+welcher Bug
+
+welches Modul betroffen
+
+erwartetes Verhalten
+
+aktuelles Verhalten
+
+Dann fixen wir gezielt.
