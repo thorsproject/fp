@@ -335,6 +335,17 @@ export function initOrmChecklist() {
     document.addEventListener("webviewerloaded", onWebViewerLoaded, { once: true });
 
     frame.src = viewerUrl(pdfPath, { page: 1, zoom: "page-width" });
+    frame.addEventListener("load", () => {
+      dlog("iframe load fired");
+      try {
+        const w = frame.contentWindow;
+        dlog("iframe location", w?.location?.href);
+        dlog("PDFViewerApplication exists?", !!w?.PDFViewerApplication);
+        dlog("pdfDocument exists?", !!w?.PDFViewerApplication?.pdfDocument);
+      } catch (e) {
+        console.error("[orm] iframe access error", e);
+      }
+    }, { once: true });
 
     frame.addEventListener("load", () => {
       applyMinimalUiWhenReady(frame);
