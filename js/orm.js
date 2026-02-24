@@ -427,7 +427,13 @@ export function initOrmChecklist() {
 
       try {
         const bytes = await getEditedPdfBytesFromViewer(frame);
+        // DEBUG START
+        const u8 = bytes instanceof ArrayBuffer
+          ? new Uint8Array(bytes)
+          : new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 
+        console.log("[ORM] bytes", u8.length, "head", String.fromCharCode(...u8.slice(0,5)));
+        // DEBUG END
         registerAttachment("orm", {
           name: filename,
           type: "application/pdf",
@@ -453,7 +459,13 @@ export function initOrmChecklist() {
     // fallback download
     try {
       const bytes = await getEditedPdfBytesFromViewer(frame);
+      // DEBUG START
+      const u8 = bytes instanceof ArrayBuffer
+        ? new Uint8Array(bytes)
+        : new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 
+      console.log("[ORM] bytes", u8.length, "head", String.fromCharCode(...u8.slice(0,5)));
+      // DEBUG END
       registerAttachment("orm", {
         name: filename,
         type: "application/pdf",
