@@ -375,8 +375,15 @@ function applyFuel(fuel) {
   const finres = qs(SEL.fuel.finresSelect, panel);
   if (finres) setValue(finres, fuel.finres || "IFR", { emit: true });
 
-  // fuel.js reagiert bei dir auch auf panel-change:
+  // fuel.js soll sicher neu rechnen/rendern – egal ob es input oder change hört
+  panel.dispatchEvent(new Event("input", { bubbles: true }));
   panel.dispatchEvent(new Event("change", { bubbles: true }));
+
+  // Safety: einmal nach dem Render-Tick (falls fuel.js erst später Listener gesetzt hat)
+  requestAnimationFrame(() => {
+    panel.dispatchEvent(new Event("input", { bubbles: true }));
+    panel.dispatchEvent(new Event("change", { bubbles: true }));
+  });
 }
 
 // ---------- PUBLIC API ----------
