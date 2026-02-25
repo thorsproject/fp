@@ -27,6 +27,7 @@ import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
 import { initOrmChecklist } from "./orm.js";
+import { initSignatureUI } from "./signature_ui.js";
 
 // ---------- Control Button State ----------
 function setBtnState(btn, onState) {
@@ -332,6 +333,7 @@ map.on("click", (e) => {
   initChecklistUI();
   initMailEO();
   initOrmChecklist();
+  initSignatureUI();
   initFuelPlanning();
   initResets();
 

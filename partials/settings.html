@@ -24,3 +24,30 @@
               <div>Platzhalter Unterschrift hinzufügen</div>
               
             </label>
+
+            <div class="c-panel">
+              <div class="c-panel__head">
+                <h3 class="c-title">Unterschrift</h3>
+                <p class="c-subtitle">Wird lokal auf diesem Gerät/Browser gespeichert.</p>
+              </div>
+
+              <div class="c-panel__body">
+                <div class="u-flex u-flex-col" style="gap:10px;">
+                  <div class="u-flex u-flex-row" style="gap:10px; flex-wrap:wrap;">
+                    <label class="c-btn c-btn--ghost">
+                      Bild hochladen
+                      <input id="sigUpload" type="file" accept="image/*" hidden>
+                    </label>
+                    <button id="sigDraw" type="button" class="c-btn c-btn--ghost">Zeichnen</button>
+                    <button id="sigClear" type="button" class="c-btn c-btn--danger">Löschen</button>
+                  </div>
+
+                  <div id="sigStatus" class="u-text-muted"></div>
+
+                  <div>
+                    <div class="c-label">Vorschau</div>
+                    <img id="sigPreview" alt="Unterschrift Vorschau" style="max-width:420px; background:#fff; border-radius:10px; display:none;">
+                  </div>
+                </div>
+              </div>
+            </div>

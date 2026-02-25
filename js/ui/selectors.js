@@ -103,8 +103,14 @@ export const SEL = {
 
     fdlSelect: "#fdlSelect",
     fdlTelDisplay: "#fdlTel",
-  },
 
+  // ---------- SETTINGS: Signature ----------
+    sigUpload: "#sigUpload",
+    sigDraw: "#sigDraw",
+    sigClear: "#sigClear",
+    sigStatus: "#sigStatus",
+    sigPreview: "#sigPreview",
+  },
   // ---------- TOPBAR ----------
   topbar: {
     nav: "#topNav",

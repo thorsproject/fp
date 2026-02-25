@@ -3,6 +3,8 @@ import { viewerUrl } from "./path.js";
 import { registerAttachment } from "./attachments.js";
 import { qs, SEL, readValue, readText, setText } from "./ui/index.js";
 import { checklistSetToggle } from "./checklist.js";
+import { getSignatureDataUrl } from "./signature_store.js";
+import { stampSignatureIntoPdf, ORM_SIG_FIELDS } from "./signature_stamp.js";
 
 // ---------- Debug optional ----------
 const DEBUG_ORM = false;
@@ -296,6 +298,14 @@ function bytesToArrayBuffer(bytes) {
   throw new Error("Unsupported bytes type for ArrayBuffer conversion");
 }
 
+async function maybeStamp(bytes) {
+  const sig = getSignatureDataUrl();
+  if (!sig) return bytes;
+
+  // stampSignatureIntoPdf liefert Uint8Array zurück
+  return await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS);
+}
+
 // ---------- MAIN ----------
 export function initOrmChecklist() {
   const overlay = qs(SEL.orm.overlay);
@@ -388,7 +398,6 @@ export function initOrmChecklist() {
 
   async function saveOrm() {
     setHint("Speichern…");
-
     const filename = getSuggestedOrmFilename();
 
     // Modern Save Picker
@@ -398,12 +407,7 @@ export function initOrmChecklist() {
       try {
         handle = await showSaveFilePicker({
           suggestedName: filename,
-          types: [
-            {
-              description: "PDF",
-              accept: { "application/pdf": [".pdf"] },
-            },
-          ],
+          types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }],
         });
       } catch (e) {
         if (e?.name === "AbortError") {
@@ -415,7 +419,8 @@ export function initOrmChecklist() {
       }
 
       try {
-        const bytes = await getEditedPdfBytesFromViewer(frame);
+        let bytes = await getEditedPdfBytesFromViewer(frame);
+        bytes = await maybeStamp(bytes);
 
         const writable = await handle.createWritable();
         await writable.write(bytes);
@@ -430,9 +435,7 @@ export function initOrmChecklist() {
 
         checklistSetToggle("orm", true);
 
-        // Warnhinweis nach Save
         setHint("Gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
-
         closeOrm();
         return;
       } catch (e) {
@@ -444,7 +447,8 @@ export function initOrmChecklist() {
 
     // Fallback Download
     try {
-      const bytes = await getEditedPdfBytesFromViewer(frame);
+      let bytes = await getEditedPdfBytesFromViewer(frame);
+      bytes = await maybeStamp(bytes);
 
       registerAttachment("orm", {
         name: filename,
@@ -460,8 +464,7 @@ export function initOrmChecklist() {
       console.error(e);
       setHint("Speichern nicht möglich.");
     }
-  }
-
+  }  
   btnOpen.addEventListener("click", openOrm);
 
   btnSave.addEventListener("click", () => {
