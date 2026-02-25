@@ -423,11 +423,13 @@ export function initOrmChecklist() {
     // ---------- ORM-Dokument entweder aus localStorage laden (wenn zwischengespeichert) oder frisches Template laden ----------
     const draft = loadOrmDraftFromLocal();
     let pdfPath;
+    let blobUrlToRevoke = null;
     if (draft) {
       // Draft aus localStorage als Blob-URL laden
       const blob = new Blob([draft], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       pdfPath = url; // viewerUrl encodiert das korrekt
+      blobUrlToRevoke = url;
       setHint("ORM Entwurf geladen (letzte gespeicherte Version).");
       setOrmMode("draft");
     } else {
@@ -452,10 +454,31 @@ export function initOrmChecklist() {
 
     // Nach load: UI + Autofill verdrahten
     frame.addEventListener("load", () => {
-      // wenn pdfPath eine Blob-URL war
+      // Wichtig: nicht hier revoke! PDF ist zu diesem Zeitpunkt noch nicht geladen.
+      const app = frame.contentWindow?.PDFViewerApplication;
+
+      // Wenn möglich: warten bis PDF wirklich geladen ist
+      const revokeLater = () => {
+        try {
+          if (blobUrlToRevoke) URL.revokeObjectURL(blobUrlToRevoke);
+        } catch {}
+        blobUrlToRevoke = null;
+      };
+
+      // Best case: PDF.js EventBus
       try {
-        if (pdfPath.startsWith("blob:")) URL.revokeObjectURL(pdfPath);
+        app?.eventBus?.on?.("documentloaded", revokeLater);
       } catch {}
+
+      // Fallback: wenn eventBus nicht greift, nach ein paar Sekunden revoke
+      // (oder diesen Fallback einfach weglassen, dann "leakt" es minimal, ist aber ok)
+      setTimeout(revokeLater, 8000);
+
+      // (Optional) hier wieder deine UI/Autofill Hooks rein:
+      applyMinimalUiWhenReady(frame);
+      wireOrmAutofill(frame);
+      setTimeout(() => autofillOrmFields(frame), 300);
+      setTimeout(() => autofillOrmFields(frame), 900);
     }, { once: true });
 
     overlay.classList.remove("is-hidden");
@@ -615,8 +638,8 @@ export function initOrmChecklist() {
       checklistSetToggle("orm", true);
 
       setHint("Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
-      closeOrm();
       clearOrmDraft();
+      closeOrm();
     } catch (e) {
       console.error(e);
       setHint("Finalisieren fehlgeschlagen.");
