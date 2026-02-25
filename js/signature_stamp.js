@@ -4,7 +4,7 @@ import { PDFDocument } from "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm";
 // Felder aus Acrobat:
 export const ORM_SIG_FIELDS = {
   signature: "PIC_Signature",
-  initials: "PIC_Initials",
+  initials: "PIC_Initial",
 };
 
 function normalizePdfBytes(pdf) {
@@ -105,10 +105,9 @@ function drawImageContain(page, img, rect, padding = 2) {
 export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields = ORM_SIG_FIELDS) {
   if (!signatureDataUrl) return pdfBytes;
 
-  const normalized = copyU8(pdfBytes);
-  const pdfDoc = await PDFDocument.load(normalized);
+  const pdfDoc = await PDFDocument.load(copyU8(pdfBytes));
   const form = pdfDoc.getForm();
-  console.log("[SIG] fields in pdf:", form.getFields().map(f => f.getName()));
+
   const imgType = getImageType(signatureDataUrl);
   if (!imgType) throw new Error("Unsupported signature image type (use PNG or JPEG).");
 
@@ -117,52 +116,65 @@ export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields =
     ? await pdfDoc.embedPng(imgBytes)
     : await pdfDoc.embedJpg(imgBytes);
 
-  // Wir stempeln in beide Felder (wenn vorhanden)
+  const pages = pdfDoc.getPages();
+
+  function findWidgetPage(widget) {
+    // Viele pdf-lib Builds: widget.P() -> PageRef
+    try {
+      const pref = widget?.P?.();
+      if (!pref) return null;
+      const idx = pages.findIndex((p) => p.ref === pref);
+      return idx >= 0 ? pages[idx] : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function getWidgetRectSafe(widget) {
+    // 1) Wenn getRectangle existiert (bei dir ja), nimm das
+    try {
+      const r = widget?.getRectangle?.(); // {x,y,width,height}
+      if (r && [r.x, r.y, r.width, r.height].every(Number.isFinite)) {
+        return { x: r.x, y: r.y, w: r.width, h: r.height };
+      }
+    } catch {}
+
+    // 2) Fallback: Dict Rect
+    return getWidgetRect(widget); // nutzt deine bestehende Funktion oben
+  }
+
   const targets = [fields.signature, fields.initials];
+  console.log("[SIG] stamping targets:", targets);
 
   for (const name of targets) {
     let field;
     try {
       field = form.getField(name);
     } catch {
-      // Feld nicht vorhanden -> skip
+      console.warn("[SIG] field not found:", name);
       continue;
     }
 
-    // Widgets (= Darstellung) finden
     const widgets = field?.acroField?.getWidgets?.() ?? [];
     if (!widgets.length) {
-    console.warn("[SIG] field has no widgets:", name);
-    continue;
+      console.warn("[SIG] field has no widgets:", name);
+      continue;
     }
-    console.log("[SIG] stamping fields", targets);
+
     for (const widget of widgets) {
-    // pdf-lib Widget API
-    let rect, page;
-    try {
-        rect = widget.getRectangle(); // { x, y, width, height }
-        page = widget.getPage();      // PDFPage
-    } catch (e) {
-        console.warn("[SIG] widget getRectangle/getPage failed:", name, e);
+      const page = findWidgetPage(widget) || pages[0];
+      const rect = getWidgetRectSafe(widget);
+
+      if (!rect) {
+        console.warn("[SIG] no rect for widget:", name);
         continue;
-    }
+      }
 
-    if (!rect || !page) continue;
-
-    // Debug: sehen wir überhaupt was?
-    console.log("[SIG] stamp", name, {
-        x: rect.x, y: rect.y, w: rect.width, h: rect.height,
-    });
-
-    // in unser Format bringen
-    const r = { x: rect.x, y: rect.y, w: rect.width, h: rect.height };
-
-    // Zeichnen
-    drawImageContain(page, img, r, 2);
+      console.log("[SIG] stamp", name, rect, "pageIndex", pages.indexOf(page));
+      drawImageContain(page, img, rect, 2);
     }
   }
 
-  // Speichern
-  const out = await pdfDoc.save({ useObjectStreams: false }); // konservativer für manche Viewer
-  return out;
+  // Speichern (konservativ)
+  return await pdfDoc.save({ useObjectStreams: false });
 }
