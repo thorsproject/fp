@@ -7,6 +7,26 @@ export const ORM_SIG_FIELDS = {
   initials: "PIC_Initials",
 };
 
+function normalizePdfBytes(pdf) {
+  // akzeptiert ArrayBuffer, TypedArrays, cross-realm ArrayBuffer
+  // und gibt garantiert ein "parent-realm" Uint8Array zurück.
+  if (typeof pdf === "string") return pdf;
+
+  // TypedArray/DataView
+  if (ArrayBuffer.isView(pdf)) {
+    const u8 = new Uint8Array(pdf.buffer, pdf.byteOffset, pdf.byteLength);
+    return new Uint8Array(u8); // copy into this realm
+  }
+
+  // ArrayBuffer (auch cross-realm): hat byteLength + slice
+  if (pdf && typeof pdf === "object" && typeof pdf.byteLength === "number") {
+    const u8 = new Uint8Array(pdf);      // creates view in this realm
+    return new Uint8Array(u8);           // copy into this realm
+  }
+
+  throw new Error(`stampSignatureIntoPdf: unsupported pdf type (${typeof pdf})`);
+}
+
 function dataUrlToBytes(dataUrl) {
   const [meta, b64] = String(dataUrl).split(",");
   if (!meta?.startsWith("data:image/") || !b64) throw new Error("Bad dataUrl");
@@ -73,7 +93,8 @@ function drawImageContain(page, img, rect, padding = 2) {
 export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields = ORM_SIG_FIELDS) {
   if (!signatureDataUrl) return pdfBytes;
 
-  const pdfDoc = await PDFDocument.load(pdfBytes);
+  const normalized = normalizePdfBytes(pdfBytes);
+  const pdfDoc = await PDFDocument.load(normalized);
   const form = pdfDoc.getForm();
 
   const imgType = getImageType(signatureDataUrl);
