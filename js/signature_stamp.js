@@ -143,7 +143,7 @@ export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields =
     return getWidgetRect(widget); // nutzt deine bestehende Funktion oben
   }
 
-  const targets = [fields.signature, fields.initials];
+  const targets = [fields.initials];
   console.log("[SIG] stamping targets:", targets);
 
   for (const name of targets) {
