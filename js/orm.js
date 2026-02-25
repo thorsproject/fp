@@ -49,6 +49,31 @@ function renderOrmStatusBadge() {
   `;
 }
 
+function syncChecklistOrmUi() {
+  const btnOrm = document.querySelector(SEL.orm.btnOpen); // #btnOrm
+  const btnMail = document.querySelector("#btnMailEO");   // Button in checklist.html
+  if (!btnOrm || !btnMail) return;
+
+  const status = getOrmStatus();      // "template" | "draft" | "final"
+  const draftExists = !!localStorage.getItem(ORM_DRAFT_KEY);
+
+  // effective status (draft nur wenn draft wirklich existiert)
+  const effective =
+    (status === "final") ? "final" :
+    (draftExists ? "draft" : "template");
+
+  // Text für ORM-Button
+  if (effective === "draft") btnOrm.textContent = "Entwurf öffnen";
+  else if (effective === "final") btnOrm.textContent = "ORM finalisiert";
+  else btnOrm.textContent = "ORM öffnen";
+
+  // Enable/Disable Regeln:
+  // - Nach Finalisierung: ORM-Button inaktiv
+  // - Mail EO erst aktiv, wenn final
+  btnOrm.disabled = (effective === "final");
+  btnMail.disabled = (effective !== "final");
+}
+
 function abToBase64(ab) {
   const u8 = new Uint8Array(ab);
   let s = "";
@@ -502,6 +527,7 @@ async function maybeStamp(bytes) {
 
 // ---------- MAIN ----------
 export function initOrmChecklist() {
+  document.querySelector("#btnMailEO")?.setAttribute("disabled", "disabled");
   const overlay = qs(SEL.orm.overlay);
   const frame = qs(SEL.orm.frame);
 
@@ -517,6 +543,7 @@ export function initOrmChecklist() {
   btnFinalize.textContent = "Finalisieren & exportieren";
   btnClose.textContent = "Schließen ohne speichern";
   renderOrmStatusBadge();
+  syncChecklistOrmUi();
 
   let isOpen = false;
 
@@ -594,6 +621,7 @@ export function initOrmChecklist() {
 
     isOpen = true;
     renderOrmStatusBadge();
+    syncChecklistOrmUi();
     const msg = applyOrmStatusIndicator();
     if (msg) setHint(msg);
   }
@@ -650,6 +678,7 @@ export function initOrmChecklist() {
       saveOrmDraftToLocal(bytes);
       setOrmStatus("draft");
       renderOrmStatusBadge();
+      syncChecklistOrmUi();
 
       // Optional: auch als Attachment registrieren (für Mail etc.)
       // (Wenn du wirklich NUR localStorage willst: diesen Block auskommentieren.)
@@ -713,6 +742,7 @@ export function initOrmChecklist() {
       setOrmStatus("final");
       clearOrmDraft();
       renderOrmStatusBadge();
+      syncChecklistOrmUi();
       closeOrm();
     } catch (e) {
       console.error(e);
