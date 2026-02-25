@@ -181,7 +181,7 @@ function setOrmField(iframe, fields, storage, name, value) {
   const canOverwrite =
     !currentDomValue ||
     (name === "CS" && currentDomValue === (lastAutofill.cs ?? "")) ||
-    (name === "Datum1_af_date" &&
+    (name === "Datum_af_date" &&
       currentDomValue === (lastAutofill.dateIso ?? ""));
 
   if (!canOverwrite) return false;
@@ -208,8 +208,8 @@ async function autofillOrmFields(iframe) {
   let okDate = false;
   let okCs = false;
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateIso) && fields["Datum1_af_date"]?.length) {
-    setOrmField(iframe, fields, storage, "Datum1_af_date", dateIso);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateIso) && fields["Datum_af_date"]?.length) {
+    setOrmField(iframe, fields, storage, "Datum_af_date", dateIso);
     okDate = true;
   }
 
