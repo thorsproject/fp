@@ -4,7 +4,7 @@ import { registerAttachment } from "./attachments.js";
 import { qs, SEL, readValue, readText, setText } from "./ui/index.js";
 import { checklistSetToggle } from "./checklist.js";
 import { getSignatureDataUrl } from "./signature_store.js";
-import { stampSignatureIntoPdf, ORM_SIG_FIELDS } from "./signature_stamp.js";
+import { stampSignatureIntoPdf, lockFieldsInPdf, ORM_SIG_FIELDS, ORM_LOCK_FIELDS } from "./signature_stamp.js";
 
 // ---------- Debug optional ----------
 const DEBUG_ORM = false;
@@ -339,7 +339,12 @@ async function maybeStamp(bytes) {
   if (!sig) return bytes;
 
   // pdf-lib akzeptiert ArrayBuffer direkt
-  return await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS);
+  let out = await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS);
+
+  // NEU: Felder sperren
+  out = await lockFieldsInPdf(out, ORM_LOCK_FIELDS);
+
+  return out;  
 }
 
 // ---------- MAIN ----------

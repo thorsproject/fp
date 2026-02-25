@@ -7,6 +7,47 @@ export const ORM_SIG_FIELDS = {
   initials: "PIC_Initial",
 };
 
+// Felder, die nach dem Speichern gesperrt werden sollen
+export const ORM_LOCK_FIELDS = [
+  "Datum_af_date",
+  "CS",
+  "Rules",
+  "Time",
+  "Gruppe1",
+  "Gruppe2",
+  "Gruppe3",
+  "Gruppe4",
+  "Gruppe5",
+  "Gruppe6",
+  "Gruppe7",
+  "Gruppe8",
+  "Gruppe9",
+  "Gruppe10",
+  "Gruppe11",
+  "Gruppe12",
+  "Gruppe13",
+  "Gruppe14",
+  "Gruppe15",
+
+  "Significant Risks HighSleep TimeQuality Distractions Reporting Time Duty Period",
+  "Significant Risks HighEmotional Factors add tasks at work double turn Number of Flightlegs",
+  "Significant Risks Highnoncurrent Checkride state of proficiency for mission content",
+  "Significant Risks Highflying continuity lookback Hours on Type",
+  "Significant Risks Highfamiliar unexperienced hierarchy IP",
+  "Significant Risks Highmission type MSN Changes A13 VFR",
+  "Significant Risks HighUnControlled Climb Gradients Terrain",
+  "Significant Risks HighRouting Terrain VFR Flight",
+  "Significant Risks HighWeight and Balance MX Status Fuel",
+  "Significant Risks Highplantime aff by changes airspaceSLOT times",
+  "Significant Risks HighceilingVis xwind icing",
+  "Significant Risks Highunfamiliarexpected traffic",
+  "Significant Risks HighIcing TSCB turbulence cloud layers",
+  "Significant Risks HighHotCold Wx Ops terrain time of day",
+
+  "PIC_Initial",
+  "PIC_Signature",
+];
+
 function normalizePdfBytes(pdf) {
   // akzeptiert ArrayBuffer, TypedArrays, cross-realm ArrayBuffer
   // und gibt garantiert ein "parent-realm" Uint8Array zurück.
@@ -177,4 +218,23 @@ export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields =
 
   // Speichern (konservativ)
   return await pdfDoc.save({ useObjectStreams: false });
+}
+
+export async function lockFieldsInPdf(pdfBytes, fieldNames = ORM_LOCK_FIELDS) {
+  const normalized = copyU8(pdfBytes);
+  const pdfDoc = await PDFDocument.load(normalized);
+  const form = pdfDoc.getForm();
+
+  for (const name of fieldNames) {
+    try {
+      const field = form.getField(name);
+      field.enableReadOnly?.();
+    } catch {
+      console.warn("[SIG] lock skipped (not found):", name);
+    }
+  }
+
+  return await pdfDoc.save({
+    useObjectStreams: false,
+  });
 }
