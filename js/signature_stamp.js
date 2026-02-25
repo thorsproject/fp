@@ -144,7 +144,7 @@ export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields =
   }
 
   const targets = [fields.initials];
-  console.log("[SIG] stamping targets:", targets);
+  // console.log("[SIG] stamping targets:", targets); <-- bei Bedarf zum Debuggen
 
   for (const name of targets) {
     let field;
@@ -170,7 +170,7 @@ export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields =
         continue;
       }
 
-      console.log("[SIG] stamp", name, rect, "pageIndex", pages.indexOf(page));
+      // console.log("[SIG] stamp", name, rect, "pageIndex", pages.indexOf(page)); <-- bei Bedarf zum Debuggen
       drawImageContain(page, img, rect, 2);
     }
   }
