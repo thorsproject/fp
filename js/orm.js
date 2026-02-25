@@ -110,23 +110,37 @@ function getSuggestedOrmFilename() {
 function setOrmMode(mode) {
   const hintEl = qs(SEL.orm.hint);
   const barEl = hintEl?.closest(".orm-overlay-bar");
-
   if (!hintEl || !barEl) return;
+
+  barEl.classList.remove("is-draft", "is-template");
+  hintEl.classList.remove("orm-hint--draft", "orm-hint--template");
+
+  if (mode === "draft") {
+    barEl.classList.add("is-draft");
+    hintEl.classList.add("orm-hint--draft");
+  } else {
+    barEl.classList.add("is-template");
+    hintEl.classList.add("orm-hint--template");
+  }
+}// ---------------------------------------------------------
+
+function getOrmStatusTextAndClass() {
+  const status = getOrmStatus(); // "template" | "draft" | "final"
+  if (status === "draft") return { cls: "orm-status-draft", text: "🟡 Entwurf vorhanden (lokal gespeichert)." };
+  if (status === "final") return { cls: "orm-status-final", text: "🟢 Finalisiert & exportiert." };
+  return { cls: "orm-status-template", text: "⚪ Neues ORM (Template)." };
+}
+
+function applyOrmStatusIndicator() {
+  const hintEl = qs(SEL.orm.hint);
+  if (!hintEl) return null;
 
   hintEl.classList.remove("orm-status-template", "orm-status-draft", "orm-status-final");
 
-  if (status === "draft") {
-    hintEl.classList.add("orm-status-draft");
-    setHint("🟡 Entwurf vorhanden (lokal gespeichert).");
-  } else if (status === "final") {
-    hintEl.classList.add("orm-status-final");
-    setHint("🟢 Finalisiert & exportiert.");
-  } else {
-    hintEl.classList.add("orm-status-template");
-    setHint("⚪ Neues ORM (Template).");
-  }
+  const { cls, text } = getOrmStatusTextAndClass();
+  hintEl.classList.add(cls);
+  return text; // Text geben wir an init zurück, damit dort setHint() genutzt wird
 }
-// ---------------------------------------------------------
 
 // ---------- PDF.js UI minimieren ----------
 function injectPdfJsMinimalUi(iframe) {
@@ -508,7 +522,8 @@ export function initOrmChecklist() {
     overlay.setAttribute("aria-hidden", "false");
 
     isOpen = true;
-    updateOrmStatusIndicator();
+    const msg = applyOrmStatusIndicator();
+    if (msg) setHint(msg);
   }
 
   function closeOrm() {
