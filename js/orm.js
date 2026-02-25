@@ -432,6 +432,9 @@ export function initOrmChecklist() {
       blobUrlToRevoke = url;
       setHint("ORM Entwurf geladen (letzte gespeicherte Version).");
       setOrmMode("draft");
+      // Button-Label je nach Modus
+      btnSave.textContent = "Entwurf speichern";
+      btnFinalize.textContent = "Finalisieren & exportieren";
     } else {
       pdfPath = new URL("./data/ORMBlatt.pdf", window.location.href).pathname + `?v=${Date.now()}`;
       setHint("ORM geöffnet (Template).");
@@ -527,79 +530,38 @@ export function initOrmChecklist() {
   }
 
   async function saveOrm() {
-    setHint("Speichern…");
-    const filename = getSuggestedOrmFilename();
-
-    // Modern Save Picker
-    if ("showSaveFilePicker" in window) {
-      let handle;
-
-      try {
-        handle = await showSaveFilePicker({
-          suggestedName: filename,
-          types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }],
-        });
-      } catch (e) {
-        if (e?.name === "AbortError") {
-          setHint("Speichern abgebrochen.");
-          return;
-        }
-        setHint("Save-Dialog fehlgeschlagen.");
-        return;
-      }
-
-      try {
-        let bytes = await getEditedPdfBytesFromViewer(frame);
-        bytes = await maybeStamp(bytes);
-
-        const writable = await handle.createWritable();
-        await writable.write(bytes);
-        await writable.close();
-        saveOrmDraftToLocal(bytes);
-
-        // Attachment erst nach erfolgreichem Schreiben registrieren
-        registerAttachment("orm", {
-          name: filename,
-          type: "application/pdf",
-          getArrayBuffer: async () => bytesToArrayBuffer(bytes),
-        });
-
-        checklistSetToggle("orm", true);
-
-        setHint("Gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
-        closeOrm();
-        return;
-      } catch (e) {
-        console.error(e);
-        setHint("Speichern fehlgeschlagen.");
-        return;
-      }
-    }
-
-    // Fallback Download
+    setHint("Entwurf speichern…");
     try {
+      // 1) Export aus PDF.js (inkl. aller aktuellen Einträge)
       let bytes = await getEditedPdfBytesFromViewer(frame);
-      bytes = await maybeStamp(bytes);
 
+      // 2) Optional: KEIN Stempel hier (Entwurf bleibt „roh“)
+      // bytes = await maybeStamp(bytes);  // <- bewusst NICHT
+
+      // 3) Nur localStorage
+      saveOrmDraftToLocal(bytes);
+
+      // Optional: auch als Attachment registrieren (für Mail etc.)
+      // (Wenn du wirklich NUR localStorage willst: diesen Block auskommentieren.)
+      const filename = getSuggestedOrmFilename();
       registerAttachment("orm", {
         name: filename,
         type: "application/pdf",
         getArrayBuffer: async () => bytesToArrayBuffer(bytes),
       });
 
-      downloadPdfBytes(bytes, filename);
       checklistSetToggle("orm", true);
-
-      setHint("Download gestartet. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
+      setHint("Entwurf gespeichert (nur lokal im Browser). Zum Export: Finalisieren.");
+      closeOrm();
     } catch (e) {
       console.error(e);
-      setHint("Speichern nicht möglich.");
+      setHint("Entwurf speichern fehlgeschlagen.");
     }
   }
   async function finalizeOrm() {
     setHint("Finalisieren…");
-
     const filename = getSuggestedOrmFilename();
+    // OPTION: const filename = getSuggestedOrmFilename().replace(/\.pdf$/i, "-FINAL.pdf");
 
     try {
       // 1) Export aus PDF.js
