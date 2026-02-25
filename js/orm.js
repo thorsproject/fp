@@ -10,6 +10,45 @@ import { stampSignatureIntoPdf, lockFieldsInPdf, ORM_SIG_FIELDS, ORM_LOCK_FIELDS
 const ORM_DRAFT_KEY = "fp.orm.draft.v1";
 const ORM_STATUS_KEY = "fp.orm.status.v1";
 
+function hasOrmDraft() {
+  return !!localStorage.getItem(ORM_DRAFT_KEY);
+}
+
+function renderOrmStatusBadge() {
+  // ORM-Zeile finden: die Zeile, in der #btnOrm steckt
+  const btn = document.querySelector(SEL.orm.btnOpen);
+  const row = btn?.closest("#view-checklist .cg-row");
+  const cell = row?.querySelector(".cg-status");
+  if (!cell) return;
+
+  // status aus localStorage
+  const status = getOrmStatus(); // "template" | "draft" | "final"
+  const draft = hasOrmDraft();
+
+  // status "draft" nur wenn wirklich draft vorhanden ist
+  const effective =
+    (status === "draft" && draft) ? "draft"
+    : (status === "final") ? "final"
+    : (draft ? "draft" : "template");
+
+  const badgeText =
+    effective === "draft" ? "ENTWURF"
+    : effective === "final" ? "FINAL"
+    : "NEU";
+
+  const msg =
+    effective === "draft" ? "Entwurf lokal gespeichert"
+    : effective === "final" ? "Finalisiert & exportiert"
+    : "Template (noch nicht gespeichert)";
+
+  cell.innerHTML = `
+    <span class="orm-status">
+      <span class="orm-badge is-${effective}">${badgeText}</span>
+      <span class="orm-status-text">${msg}</span>
+    </span>
+  `;
+}
+
 function abToBase64(ab) {
   const u8 = new Uint8Array(ab);
   let s = "";
@@ -477,6 +516,7 @@ export function initOrmChecklist() {
   btnSave.textContent = "Entwurf speichern";
   btnFinalize.textContent = "Finalisieren & exportieren";
   btnClose.textContent = "Schließen ohne speichern";
+  renderOrmStatusBadge();
 
   let isOpen = false;
 
@@ -553,6 +593,7 @@ export function initOrmChecklist() {
     overlay.setAttribute("aria-hidden", "false");
 
     isOpen = true;
+    renderOrmStatusBadge();
     const msg = applyOrmStatusIndicator();
     if (msg) setHint(msg);
   }
@@ -608,6 +649,7 @@ export function initOrmChecklist() {
       // 3) Nur localStorage
       saveOrmDraftToLocal(bytes);
       setOrmStatus("draft");
+      renderOrmStatusBadge();
 
       // Optional: auch als Attachment registrieren (für Mail etc.)
       // (Wenn du wirklich NUR localStorage willst: diesen Block auskommentieren.)
@@ -670,6 +712,7 @@ export function initOrmChecklist() {
       setHint("Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
       setOrmStatus("final");
       clearOrmDraft();
+      renderOrmStatusBadge();
       closeOrm();
     } catch (e) {
       console.error(e);

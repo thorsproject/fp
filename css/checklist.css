@@ -147,3 +147,46 @@
   color: #3ddc84;
   font-weight: 700;
 }
+
+/* =========================
+   ORM STATUS BADGE
+   ========================= */
+
+#view-checklist .orm-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#view-checklist .orm-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  user-select: none;
+  white-space: nowrap;
+}
+
+#view-checklist .orm-badge.is-template {
+  color: var(--muted);
+}
+
+#view-checklist .orm-badge.is-draft {
+  color: #ffcc00; /* bewusst nicht als var, damit’s sofort sichtbar ist */
+  border-color: rgba(255,204,0,0.35);
+}
+
+#view-checklist .orm-badge.is-final {
+  color: var(--mint);
+  border-color: rgba(0,255,204,0.35);
+}
+
+#view-checklist .orm-status-text {
+  opacity: 0.9;
+  min-width: 0;
+}
