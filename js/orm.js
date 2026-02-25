@@ -274,10 +274,36 @@ async function getEditedPdfBytesFromViewer(iframe) {
   if (!app?.pdfDocument) throw new Error("PDF noch nicht geladen.");
 
   const doc = app.pdfDocument;
-  if (typeof doc.saveDocument === "function") return await doc.saveDocument();
-  if (typeof doc.getData === "function") return await doc.getData();
 
-  throw new Error("PDF Export nicht möglich.");
+  let out;
+  if (typeof doc.saveDocument === "function") {
+    out = await doc.saveDocument();
+  } else if (typeof doc.getData === "function") {
+    out = await doc.getData();
+  } else {
+    throw new Error("PDF Export nicht möglich.");
+  }
+
+  // ---- normalize to Uint8Array / ArrayBuffer ----
+  if (out instanceof ArrayBuffer) return out;
+
+  if (ArrayBuffer.isView(out)) {
+    // Uint8Array etc.
+    return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength);
+  }
+
+  // pdf-lib akzeptiert auch string, aber das wäre hier komisch.
+  if (typeof out === "string") return out;
+
+  // das ist dein aktueller Fehlerfall:
+  // manchmal kommt hier z.B. number/NaN raus, wenn irgendwo versehentlich überschrieben wird
+  console.error("[ORM] getEditedPdfBytesFromViewer: unexpected export type", {
+    type: typeof out,
+    value: out,
+    ctor: out?.constructor?.name,
+  });
+
+  throw new Error(`PDF Export lieferte ungültige Daten (${typeof out}).`);
 }
 
 function downloadPdfBytes(bytes, filename) {
@@ -299,10 +325,20 @@ function bytesToArrayBuffer(bytes) {
 }
 
 async function maybeStamp(bytes) {
+  // Debug: was kommt hier wirklich an?
+  console.log("[ORM] maybeStamp input", {
+    type: typeof bytes,
+    isAB: bytes instanceof ArrayBuffer,
+    isView: ArrayBuffer.isView(bytes),
+    byteLength: bytes?.byteLength,
+    ctor: bytes?.constructor?.name,
+    value: bytes,
+  });
+
   const sig = getSignatureDataUrl();
   if (!sig) return bytes;
 
-  // stampSignatureIntoPdf liefert Uint8Array zurück
+  // pdf-lib akzeptiert ArrayBuffer direkt
   return await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS);
 }
 
