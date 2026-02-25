@@ -326,14 +326,14 @@ function bytesToArrayBuffer(bytes) {
 
 async function maybeStamp(bytes) {
   // Debug: was kommt hier wirklich an?
-  console.log("[ORM] maybeStamp input", {
-    type: typeof bytes,
-    isAB: bytes instanceof ArrayBuffer,
-    isView: ArrayBuffer.isView(bytes),
-    byteLength: bytes?.byteLength,
-    ctor: bytes?.constructor?.name,
-    value: bytes,
-  });
+  // console.log("[ORM] maybeStamp input", {
+  //  type: typeof bytes,
+  //  isAB: bytes instanceof ArrayBuffer,
+  //  isView: ArrayBuffer.isView(bytes),
+  //  byteLength: bytes?.byteLength,
+  //  ctor: bytes?.constructor?.name,
+  //  value: bytes,
+  //});
 
   const sig = getSignatureDataUrl();
   if (!sig) return bytes;
