@@ -8,6 +8,7 @@ import { stampSignatureIntoPdf, lockFieldsInPdf, ORM_SIG_FIELDS, ORM_LOCK_FIELDS
 
 // ---------- Local Draft Storage (ORM in localStorage zwischenspeichern) ----------
 const ORM_DRAFT_KEY = "fp.orm.draft.v1";
+const ORM_STATUS_KEY = "fp.orm.status.v1";
 
 function abToBase64(ab) {
   const u8 = new Uint8Array(ab);
@@ -36,6 +37,18 @@ function loadOrmDraftFromLocal() {
 
 function clearOrmDraft() {
   localStorage.removeItem(ORM_DRAFT_KEY);
+}
+
+function setOrmStatus(status) {
+  localStorage.setItem(ORM_STATUS_KEY, status);
+}
+
+function getOrmStatus() {
+  return localStorage.getItem(ORM_STATUS_KEY) || "template";
+}
+
+function clearOrmStatus() {
+  localStorage.removeItem(ORM_STATUS_KEY);
 }
 // ---------------------------------------------------------------------------------
 
@@ -100,15 +113,17 @@ function setOrmMode(mode) {
 
   if (!hintEl || !barEl) return;
 
-  hintEl.classList.remove("orm-hint--draft", "orm-hint--template");
-  barEl.classList.remove("is-draft", "is-template");
+  hintEl.classList.remove("orm-status-template", "orm-status-draft", "orm-status-final");
 
-  if (mode === "draft") {
-    hintEl.classList.add("orm-hint--draft");
-    barEl.classList.add("is-draft");
+  if (status === "draft") {
+    hintEl.classList.add("orm-status-draft");
+    setHint("🟡 Entwurf vorhanden (lokal gespeichert).");
+  } else if (status === "final") {
+    hintEl.classList.add("orm-status-final");
+    setHint("🟢 Finalisiert & exportiert.");
   } else {
-    hintEl.classList.add("orm-hint--template");
-    barEl.classList.add("is-template");
+    hintEl.classList.add("orm-status-template");
+    setHint("⚪ Neues ORM (Template).");
   }
 }
 // ---------------------------------------------------------
@@ -493,6 +508,7 @@ export function initOrmChecklist() {
     overlay.setAttribute("aria-hidden", "false");
 
     isOpen = true;
+    updateOrmStatusIndicator();
   }
 
   function closeOrm() {
@@ -545,6 +561,7 @@ export function initOrmChecklist() {
 
       // 3) Nur localStorage
       saveOrmDraftToLocal(bytes);
+      setOrmStatus("draft");
 
       // Optional: auch als Attachment registrieren (für Mail etc.)
       // (Wenn du wirklich NUR localStorage willst: diesen Block auskommentieren.)
@@ -605,6 +622,7 @@ export function initOrmChecklist() {
       checklistSetToggle("orm", true);
 
       setHint("Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
+      setOrmStatus("final");
       clearOrmDraft();
       closeOrm();
     } catch (e) {
