@@ -27,6 +27,18 @@ function normalizePdfBytes(pdf) {
   throw new Error(`stampSignatureIntoPdf: unsupported pdf type (${typeof pdf})`);
 }
 
+function toU8(bytes) {
+  if (typeof bytes === "string") return bytes;
+  if (ArrayBuffer.isView(bytes)) return new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (bytes && typeof bytes === "object" && typeof bytes.byteLength === "number") return new Uint8Array(bytes);
+  throw new Error("toU8: unsupported bytes");
+}
+
+function copyU8(bytes) {
+  const u8 = toU8(bytes);
+  return new Uint8Array(u8); // copy into this realm
+}
+
 function dataUrlToBytes(dataUrl) {
   const [meta, b64] = String(dataUrl).split(",");
   if (!meta?.startsWith("data:image/") || !b64) throw new Error("Bad dataUrl");
@@ -93,10 +105,10 @@ function drawImageContain(page, img, rect, padding = 2) {
 export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields = ORM_SIG_FIELDS) {
   if (!signatureDataUrl) return pdfBytes;
 
-  const normalized = normalizePdfBytes(pdfBytes);
+  const normalized = copyU8(pdfBytes);
   const pdfDoc = await PDFDocument.load(normalized);
   const form = pdfDoc.getForm();
-
+  console.log("[SIG] fields in pdf:", form.getFields().map(f => f.getName()));
   const imgType = getImageType(signatureDataUrl);
   if (!imgType) throw new Error("Unsupported signature image type (use PNG or JPEG).");
 
@@ -119,17 +131,34 @@ export async function stampSignatureIntoPdf(pdfBytes, signatureDataUrl, fields =
 
     // Widgets (= Darstellung) finden
     const widgets = field?.acroField?.getWidgets?.() ?? [];
-    for (const w of widgets) {
-      const rect = getWidgetRect(w);
-      if (!rect) continue;
+    if (!widgets.length) {
+    console.warn("[SIG] field has no widgets:", name);
+    continue;
+    }
+    console.log("[SIG] stamping fields", targets);
+    for (const widget of widgets) {
+    // pdf-lib Widget API
+    let rect, page;
+    try {
+        rect = widget.getRectangle(); // { x, y, width, height }
+        page = widget.getPage();      // PDFPage
+    } catch (e) {
+        console.warn("[SIG] widget getRectangle/getPage failed:", name, e);
+        continue;
+    }
 
-      // Seite des Widgets
-      const ref = w.P();
-      const page = pdfDoc.getPages()[pdfDoc.getPages().findIndex((p) => p.ref === ref)] || null;
+    if (!rect || !page) continue;
 
-      // Fallback: wenn Seitenref nicht matcht, nimm Seite 1
-      const targetPage = page || pdfDoc.getPages()[0];
-      drawImageContain(targetPage, img, rect, 2);
+    // Debug: sehen wir überhaupt was?
+    console.log("[SIG] stamp", name, {
+        x: rect.x, y: rect.y, w: rect.width, h: rect.height,
+    });
+
+    // in unser Format bringen
+    const r = { x: rect.x, y: rect.y, w: rect.width, h: rect.height };
+
+    // Zeichnen
+    drawImageContain(page, img, r, 2);
     }
   }
 
