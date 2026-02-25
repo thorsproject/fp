@@ -375,7 +375,9 @@ async function getEditedPdfBytesFromViewer(iframe) {
   }
 
   // pdf-lib akzeptiert auch string, aber das wäre hier komisch.
-  if (typeof out === "string") return out;
+  if (typeof out === "string") {
+    throw new Error("PDF Export lieferte String – unerwartet. (Bitte Konsole prüfen)");
+  }
 
   // das ist dein aktueller Fehlerfall:
   // manchmal kommt hier z.B. number/NaN raus, wenn irgendwo versehentlich überschrieben wird
@@ -399,10 +401,39 @@ function downloadPdfBytes(bytes, filename) {
 }
 
 function bytesToArrayBuffer(bytes) {
+  // 1) Normal: ArrayBuffer
   if (bytes instanceof ArrayBuffer) return bytes;
+
+  // 2) Normal: TypedArray/DataView
   if (ArrayBuffer.isView(bytes)) {
     return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
   }
+
+  // 3) Cross-realm TypedArray/DataView (aus iframe):
+  // Duck-typing: hat byteLength + buffer + byteOffset?
+  if (bytes && typeof bytes === "object") {
+    const hasByteLen = typeof bytes.byteLength === "number";
+    const hasBuf = bytes.buffer && typeof bytes.buffer.byteLength === "number";
+
+    if (hasByteLen && hasBuf) {
+      const off = typeof bytes.byteOffset === "number" ? bytes.byteOffset : 0;
+      return bytes.buffer.slice(off, off + bytes.byteLength);
+    }
+
+    // 4) Cross-realm ArrayBuffer (selten): nur byteLength vorhanden
+    if (hasByteLen && typeof bytes.slice === "function") {
+      return bytes.slice(0);
+    }
+  }
+
+  // Debug-Hilfe:
+  console.error("[ORM] bytesToArrayBuffer unsupported type", {
+    type: typeof bytes,
+    ctor: bytes?.constructor?.name,
+    keys: bytes && typeof bytes === "object" ? Object.keys(bytes) : null,
+    value: bytes,
+  });
+
   throw new Error("Unsupported bytes type for ArrayBuffer conversion");
 }
 
