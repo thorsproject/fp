@@ -337,14 +337,15 @@ async function maybeStamp(bytes) {
 
   const sig = getSignatureDataUrl();
   if (!sig) return bytes;
+  // ---------- Einfachstempel (ohne Sperre) ----------
+  return await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS); // muss deaktiviert werden, wenn die Alternative (direkt mit Sperre) aktiviert wird
+  // --------------------------------------------------
 
-  // pdf-lib akzeptiert ArrayBuffer direkt
-  let out = await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS);
-
-  // NEU: Felder sperren
-  out = await lockFieldsInPdf(out, ORM_LOCK_FIELDS);
-
-  return out;  
+  // ---------- Alternative: direkt mit Sperre stempeln (ohne nochmaliges Laden) ----------
+  //let out = await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS); // pdf-lib akzeptiert ArrayBuffer direkt
+  //out = await lockFieldsInPdf(out, ORM_LOCK_FIELDS); // NEU: Felder sperren
+  //return out;
+  // --------------------------------------------------------------------------------------
 }
 
 // ---------- MAIN ----------
@@ -354,9 +355,10 @@ export function initOrmChecklist() {
 
   const btnOpen = qs(SEL.orm.btnOpen);
   const btnSave = qs(SEL.orm.btnSave);
+  const btnFinalize = qs(SEL.orm.btnFinalize);
   const btnClose = qs(SEL.orm.btnClose);
 
-  if (!btnOpen || !btnSave || !btnClose || !overlay || !frame) return;
+  if (!btnOpen || !btnSave || !btnClose || !btnFinalize || !overlay || !frame) return;
 
   let isOpen = false;
 
@@ -505,11 +507,63 @@ export function initOrmChecklist() {
       console.error(e);
       setHint("Speichern nicht möglich.");
     }
-  }  
+  }
+  async function finalizeOrm() {
+    setHint("Finalisieren…");
+
+    const filename = getSuggestedOrmFilename();
+
+    try {
+      // 1) Export aus PDF.js
+      let bytes = await getEditedPdfBytesFromViewer(frame);
+
+      // 2) Signature/Initials rein + lock fields
+      const sig = getSignatureDataUrl();
+      if (!sig) {
+        setHint("Keine Unterschrift gespeichert. Bitte in Settings hochladen oder zeichnen.");
+        return;
+      }
+
+      bytes = await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS);
+      bytes = await lockFieldsInPdf(bytes, ORM_LOCK_FIELDS);
+
+      // 3) Speichern (Picker wenn möglich, sonst Download)
+      if ("showSaveFilePicker" in window) {
+        const handle = await showSaveFilePicker({
+          suggestedName: filename,
+          types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(bytes);
+        await writable.close();
+      } else {
+        downloadPdfBytes(bytes, filename);
+      }
+
+      // 4) Attachment registrieren (nach erfolgreichem Write/Download)
+      registerAttachment("orm", {
+        name: filename,
+        type: "application/pdf",
+        getArrayBuffer: async () => bytesToArrayBuffer(bytes),
+      });
+
+      checklistSetToggle("orm", true);
+
+      setHint("Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
+      closeOrm();
+    } catch (e) {
+      console.error(e);
+      setHint("Finalisieren fehlgeschlagen.");
+    }
+  }
   btnOpen.addEventListener("click", openOrm);
 
   btnSave.addEventListener("click", () => {
     if (isOpen) saveOrm();
+  });
+
+  btnFinalize.addEventListener("click", () => {
+    if (isOpen) finalizeOrm();
   });
 
   btnClose.addEventListener("click", () => {

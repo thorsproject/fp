@@ -57,6 +57,7 @@ export const SEL = {
 
     btnOpen: "#btnOrm",
     btnSave: "#btnOrmSaveOverlay",
+    btnFinalize: "#btnOrmFinalizeOverlay",
     btnClose: "#btnOrmCloseOverlay",
   },
 
