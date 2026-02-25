@@ -6,13 +6,46 @@ import { checklistSetToggle } from "./checklist.js";
 import { getSignatureDataUrl } from "./signature_store.js";
 import { stampSignatureIntoPdf, lockFieldsInPdf, ORM_SIG_FIELDS, ORM_LOCK_FIELDS } from "./signature_stamp.js";
 
+// ---------- Local Draft Storage (ORM in localStorage zwischenspeichern) ----------
+const ORM_DRAFT_KEY = "fp.orm.draft.v1";
+
+function abToBase64(ab) {
+  const u8 = new Uint8Array(ab);
+  let s = "";
+  for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
+  return btoa(s);
+}
+
+function base64ToAb(b64) {
+  const bin = atob(b64);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return u8.buffer;
+}
+
+function saveOrmDraftToLocal(bytes) {
+  const ab = bytesToArrayBuffer(bytes);
+  localStorage.setItem(ORM_DRAFT_KEY, abToBase64(ab));
+}
+
+function loadOrmDraftFromLocal() {
+  const b64 = localStorage.getItem(ORM_DRAFT_KEY);
+  if (!b64) return null;
+  try { return base64ToAb(b64); } catch { return null; }
+}
+
+function clearOrmDraft() {
+  localStorage.removeItem(ORM_DRAFT_KEY);
+}
+// ---------------------------------------------------------------------------------
+
 // ---------- Debug optional ----------
 const DEBUG_ORM = false;
 function dlog(...args) {
   if (!DEBUG_ORM) return;
   console.log("[orm]", ...args);
 }
-// -------------------------------
+// ------------------------------------
 
 function getRouteScope() {
   return qs(SEL.route.container) || document;
@@ -59,6 +92,26 @@ function getSuggestedOrmFilename() {
     readText(qs(SEL.route.callsignDisplay, scope)).trim() || "CALLSIGN";
   return `ORM-${sanitizeFilePart(datePart)}-${sanitizeFilePart(cs)}.pdf`;
 }
+
+// ---------- ORM Mode (Draft vs Template) setzen ----------
+function setOrmMode(mode) {
+  const hintEl = qs(SEL.orm.hint);
+  const barEl = hintEl?.closest(".orm-overlay-bar");
+
+  if (!hintEl || !barEl) return;
+
+  hintEl.classList.remove("orm-hint--draft", "orm-hint--template");
+  barEl.classList.remove("is-draft", "is-template");
+
+  if (mode === "draft") {
+    hintEl.classList.add("orm-hint--draft");
+    barEl.classList.add("is-draft");
+  } else {
+    hintEl.classList.add("orm-hint--template");
+    barEl.classList.add("is-template");
+  }
+}
+// ---------------------------------------------------------
 
 // ---------- PDF.js UI minimieren ----------
 function injectPdfJsMinimalUi(iframe) {
@@ -367,10 +420,22 @@ export function initOrmChecklist() {
   }
 
   function openOrm() {
-    // GH-Pages-sicherer Pfad
-    const pdfPath =
-      new URL("./data/ORMBlatt.pdf", window.location.href).pathname +
-      `?v=${Date.now()}`;
+    // ---------- ORM-Dokument entweder aus localStorage laden (wenn zwischengespeichert) oder frisches Template laden ----------
+    const draft = loadOrmDraftFromLocal();
+    let pdfPath;
+    if (draft) {
+      // Draft aus localStorage als Blob-URL laden
+      const blob = new Blob([draft], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      pdfPath = url; // viewerUrl encodiert das korrekt
+      setHint("ORM Entwurf geladen (letzte gespeicherte Version).");
+      setOrmMode("draft");
+    } else {
+      pdfPath = new URL("./data/ORMBlatt.pdf", window.location.href).pathname + `?v=${Date.now()}`;
+      setHint("ORM geöffnet (Template).");
+      setOrmMode("template");
+    }
+    // --------------------------------------------------------------------------------------------------------------
 
     // Muss vor Viewer init passieren
     const onWebViewerLoaded = (ev) => {
@@ -387,11 +452,10 @@ export function initOrmChecklist() {
 
     // Nach load: UI + Autofill verdrahten
     frame.addEventListener("load", () => {
-      applyMinimalUiWhenReady(frame);
-      wireOrmAutofill(frame);
-
-      setTimeout(() => autofillOrmFields(frame), 300);
-      setTimeout(() => autofillOrmFields(frame), 900);
+      // wenn pdfPath eine Blob-URL war
+      try {
+        if (pdfPath.startsWith("blob:")) URL.revokeObjectURL(pdfPath);
+      } catch {}
     }, { once: true });
 
     overlay.classList.remove("is-hidden");
@@ -468,6 +532,7 @@ export function initOrmChecklist() {
         const writable = await handle.createWritable();
         await writable.write(bytes);
         await writable.close();
+        saveOrmDraftToLocal(bytes);
 
         // Attachment erst nach erfolgreichem Schreiben registrieren
         registerAttachment("orm", {
@@ -551,6 +616,7 @@ export function initOrmChecklist() {
 
       setHint("Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
       closeOrm();
+      clearOrmDraft();
     } catch (e) {
       console.error(e);
       setHint("Finalisieren fehlgeschlagen.");

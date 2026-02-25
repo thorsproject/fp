@@ -108,3 +108,24 @@
 #view-checklist .cg-toggle .c-btn--sm{
   min-height: 28px;
 }
+
+/* =========================
+   ORM DRAFT INDICATOR
+   ========================= */
+
+.orm-hint--draft {
+  color: #ffd24d;
+  font-weight: 700;
+}
+
+.orm-hint--template {
+  color: var(--mint);
+}
+
+.orm-overlay-bar.is-draft {
+  border-bottom: 2px solid #ffd24d;
+}
+
+.orm-overlay-bar.is-template {
+  border-bottom: 2px solid transparent;
+}
