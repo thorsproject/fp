@@ -129,3 +129,21 @@
 .orm-overlay-bar.is-template {
   border-bottom: 2px solid transparent;
 }
+
+/* =======================
+   ORM STATUS COLORS
+   ======================= */
+
+.orm-status-template {
+  color: #bbb;
+}
+
+.orm-status-draft {
+  color: #ffd24d;
+  font-weight: 600;
+}
+
+.orm-status-final {
+  color: #3ddc84;
+  font-weight: 700;
+}
