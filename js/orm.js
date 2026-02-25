@@ -413,6 +413,11 @@ export function initOrmChecklist() {
 
   if (!btnOpen || !btnSave || !btnClose || !btnFinalize || !overlay || !frame) return;
 
+  // ---------- Fixe Button-Beschriftung ----------
+  btnSave.textContent = "Entwurf speichern";
+  btnFinalize.textContent = "Finalisieren & exportieren";
+  btnClose.textContent = "Schließen ohne speichern";
+
   let isOpen = false;
 
   function setHint(msg = "") {
