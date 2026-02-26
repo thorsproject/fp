@@ -23,6 +23,7 @@ import {
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initChecklistUI } from "./checklist.js";
+import { initPhones } from "./phones.js";
 import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
@@ -348,6 +349,7 @@ map.on("click", (e) => {
   });
 
   initChecklistUI();
+  initPhones();
   initMailEO();
   initOrmChecklist();
   initSignatureUI();
