@@ -711,12 +711,12 @@ export function initOrmChecklist() {
 
       // Optional: auch als Attachment registrieren (für Mail etc.)
       // (Wenn du wirklich NUR localStorage willst: diesen Block auskommentieren.)
-      const filename = getSuggestedOrmFilename();
-      registerAttachment("orm", {
-        name: filename,
-        type: "application/pdf",
-        getArrayBuffer: async () => bytesToArrayBuffer(bytes),
-      });
+      // const filename = getSuggestedOrmFilename();
+      // registerAttachment("orm", {
+      //  name: filename,
+      //  type: "application/pdf",
+      //  getArrayBuffer: async () => bytesToArrayBuffer(bytes),
+      // });
 
       checklistSetToggle("orm", true);
       setHint("Entwurf gespeichert (nur lokal im Browser). Zum Export: Finalisieren.");
