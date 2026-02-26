@@ -37,9 +37,9 @@ function renderOrmStatusBadge() {
     : "NEU - Template";
 
   const msg =
-    // effective === "draft" ? "Entwurf lokal gespeichert" <-- wenn der Badge-Text nicht ausführlich ist
-    // : effective === "final" ? "Finalisiert & exportiert" <-- wenn der Badge-Text nicht ausführlich ist
-    // : "Template (noch nicht gespeichert)"; <-- wenn der Badge-Text nicht ausführlich ist
+    effective === "draft" ? "" // "Entwurf lokal gespeichert" <-- wenn der Badge-Text nicht ausführlich ist
+    : effective === "final" ? "" // "Finalisiert & exportiert" <-- wenn der Badge-Text nicht ausführlich ist
+    : "" // "Template (noch nicht gespeichert)"; <-- wenn der Badge-Text nicht ausführlich ist
 
   cell.innerHTML = `
     <span class="orm-status">
