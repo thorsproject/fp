@@ -28,6 +28,7 @@ import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
 import { initOrmChecklist } from "./orm.js";
 import { initSignatureUI } from "./signature_ui.js";
+import { isInCompanyNetwork } from "./intranet_detect.js";
 
 // ---------- Control Button State ----------
 function setBtnState(btn, onState) {
@@ -153,24 +154,38 @@ map.on("click", (e) => {
     setText(SEL.route.telOutput, tel);
   }
 
-  function applyChecklistContacts(config) {
+  async function applyChecklistContacts(config) {
     const scope = qs(SEL.checklist.view) || document;
 
+    // --- EO Mail (wie bisher) ---
     const mail = (config?.eoEmail || "").trim();
-    if (mail) {
-      setText(SEL.mail.recipient, mail, scope);
-    }
+    if (mail) setText(SEL.mail.recipient, mail, scope);
 
+    // --- Phoenix (neu gesteuert) ---
     const phoenix = (config?.phoenixUrl || "").trim();
-    if (phoenix) {
-      setText(SEL.mail.intranet, phoenix, scope);
+    const intranetEl = qs(SEL.mail.intranet, scope); // sollte ".intranet" sein
 
-      const intranetEl = qs(SEL.mail.intranet, scope);
-      if (intranetEl) {
-        intranetEl.style.cursor = "pointer";
-        intranetEl.onclick = () => window.open(phoenix, "_blank", "noopener");
-      }
-    }
+    if (!intranetEl) return;
+
+    // Default: "extern" Zustand
+    intranetEl.onclick = null;
+    intranetEl.style.cursor = "";
+    intranetEl.classList.add("muted");
+    intranetEl.textContent = "Phoenix-Adresse nur im Firmennetz sichtbar";
+
+    if (!phoenix) return;
+
+    // Prüfen, ob Firmennetz (Erreichbarkeit der Phoenix-Seite)
+    const intranetOk = await isInCompanyNetwork({ url: phoenix });
+
+    if (!intranetOk) return;
+
+    // Firmennetz: anzeigen + klickbar machen
+    intranetEl.classList.remove("muted");
+    intranetEl.textContent = phoenix; // oder "Phoenix öffnen" (siehe unten)
+    intranetEl.style.cursor = "pointer";
+    intranetEl.title = "Phoenix öffnen";
+    intranetEl.onclick = () => window.open(phoenix, "_blank", "noopener");
   }
 
   function setConfigBadge(onState, text = "") {
@@ -208,11 +223,12 @@ map.on("click", (e) => {
       setStatus("Lade…");
       setConfigPassword(passEl.value.trim());
       clearConfigCache();
+      import { isInIntranet } from "./intranet_detect.js";
 
       try {
         const cfg = await loadConfig({ force: true });
         applyConfigToSettings(cfg);
-        applyChecklistContacts(cfg);
+        await applyChecklistContacts(cfg);
         setConfigBadge(true, "Config: OK");
         setStatus("OK ✓");
       } catch (e) {
@@ -287,7 +303,7 @@ map.on("click", (e) => {
     try {
       const cfg = await loadConfig({ force: true });
       applyConfigToSettings(cfg);
-      applyChecklistContacts(cfg);
+      await applyChecklistContacts(cfg);
       setConfigBadge(true, "Config: OK");
       setStatus("OK ✓ (auto)");
     } catch (e) {
