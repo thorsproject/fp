@@ -92,6 +92,17 @@ function syncChecklistOrmUi() {
   }
 }
 
+function resetOrmToTemplate(reason = "") {
+  clearOrmDraft();
+  setOrmStatus("template");
+
+  // optional: Hinweis im Overlay, falls es gerade offen ist
+  // setHint(`ORM zurückgesetzt (${reason}).`);
+
+  renderOrmStatusBadge();
+  syncChecklistOrmUi();
+}
+
 function abToBase64(ab) {
   const u8 = new Uint8Array(ab);
   let s = "";
@@ -780,6 +791,57 @@ export function initOrmChecklist() {
   btnClose.addEventListener("click", () => {
     confirmCloseOrm();
   });
+
+  // --- Reset ORM wenn Datum/CS wechseln (Draft + Final) ---
+  let lastKey = null;
+
+  function currentOrmKey() {
+    const scope = getRouteScope();
+    const dateIso = toIsoDateForOrm(scope);
+    const cs = readText(qs(SEL.route.callsignDisplay, scope)).trim();
+    return `${dateIso}__${cs}`;
+  }
+
+  function maybeResetOnKeyChange() {
+    const key = currentOrmKey();
+
+    // initial setzen (kein Reset)
+    if (lastKey === null) {
+      lastKey = key;
+      return;
+    }
+
+    if (key === lastKey) return;
+    lastKey = key;
+
+    const hadDraft = !!localStorage.getItem(ORM_DRAFT_KEY);
+    const status = getOrmStatus(); // "template" | "draft" | "final"
+    const wasFinal = status === "final";
+
+    // Nur resetten, wenn es wirklich was zu verwerfen gibt
+    if (hadDraft || wasFinal) {
+      resetOrmToTemplate("Datum/Callsign geändert");
+    } else {
+      // optional: UI trotzdem sauber ziehen, falls du willst
+      // renderOrmStatusBadge();
+      // syncChecklistOrmUi();
+    }
+  }
+
+  // Callsign beobachten
+  const csEl2 = qs(SEL.route.callsignDisplay);
+  if (csEl2) {
+    const mo2 = new MutationObserver(maybeResetOnKeyChange);
+    mo2.observe(csEl2, { childList: true, characterData: true, subtree: true });
+  }
+
+  // Datum beobachten
+  const dateEl2 = qs(SEL.route.dateInput);
+  dateEl2?.addEventListener("input", maybeResetOnKeyChange);
+  dateEl2?.addEventListener("change", maybeResetOnKeyChange);
+
+  // einmal initialisieren
+  maybeResetOnKeyChange();
 
   function scheduleReAutofill() {
     if (!isOpen) return;
