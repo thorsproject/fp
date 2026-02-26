@@ -32,8 +32,8 @@ function renderOrmStatusBadge() {
     : (draft ? "draft" : "template");
 
   const badgeText =
-    effective === "draft" ? "ENTWURF"
-    : effective === "final" ? "FINAL"
+    effective === "draft" ? "ENTWURF lokal gespeichert"
+    : effective === "final" ? "FINALISIERT & exportiert"
     : "NEU";
 
   const msg =
