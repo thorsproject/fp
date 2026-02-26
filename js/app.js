@@ -182,7 +182,7 @@ map.on("click", (e) => {
 
     // Firmennetz: anzeigen + klickbar machen
     intranetEl.classList.remove("muted");
-    intranetEl.textContent = phoenix; // oder "Phoenix öffnen" (siehe unten)
+    intranetEl.textContent = "Phoenix öffnen"; // oder phoenixv <-- wenn die URL angezeigt werden soll
     intranetEl.style.cursor = "pointer";
     intranetEl.title = "Phoenix öffnen";
     intranetEl.onclick = () => window.open(phoenix, "_blank", "noopener");
