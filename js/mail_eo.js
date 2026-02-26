@@ -2,7 +2,7 @@
 // Erstellt eine .eml (RFC822) inkl. Attachments -> Nutzer öffnet sie im Mailprogramm und sendet selbst.
 
 import { collectAttachments, hasAttachment } from "./attachments.js";
-import { qs, qsa, SEL, readText, readValue, setDisabled, toggleClass } from "./ui/index.js";
+import { qs, SEL, readText, readValue, setDisabled, toggleClass, EVT, on } from "./ui/index.js";
 
 const LS_MAIL_MODE = "fp.mail_eo.mode"; // "auto" | "picker"
 
@@ -79,10 +79,10 @@ export function initMailEO() {
   refreshMailUi();
 
   // Nach Includes (Settings kommt per Partial)
-  window.addEventListener("fp:includes-loaded", refreshMailUi);
+  on(EVT.includesLoaded, refreshMailUi);
 
   // Wenn Attachments sich ändern (ORM gespeichert etc.)
-  window.addEventListener("fp:attachments-changed", setMailButtonState);
+  on(EVT.attachmentsChanged, setMailButtonState);
 }
 
 // ------------------ Helpers ------------------
@@ -90,10 +90,10 @@ function getEmailRecipient() {
   return readText(qs(SEL.mail.recipient)).trim();
 }
 
-function getWxValues() {
-  const nr = String(readValue(qs(SEL.mail.wxNr)) || "").trim();
-  const v  = String(readValue(qs(SEL.mail.wxVoid)) || "").trim();
-  const i  = String(readValue(qs(SEL.mail.wxInit)) || "").trim();
+function getWxValues(scope = document) {
+  const nr = String(readValue(qs(SEL.checklist.fieldByKey("wx_nr"), scope)) || "").trim();
+  const v  = String(readValue(qs(SEL.checklist.fieldByKey("wx_void"), scope)) || "").trim();
+  const i  = String(readValue(qs(SEL.checklist.fieldByKey("wx_init"), scope)) || "").trim();
   return { nr, voidv: v, init: i };
 }
 
@@ -302,7 +302,9 @@ export async function handleMailEOClick(mode = "auto") {
   const { logCount } = buildAttachmentSummary(files);
   const subject = buildSubject({ isoDate, cs, logCount });
 
-  const wx = getWxValues();
+  const scope = qs(SEL.checklist.view) || document;
+  const wx = getWxValues(scope);
+
   const body = [
     "Moin an den Einsatz,",
     "",

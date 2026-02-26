@@ -58,8 +58,8 @@ export function initLegActivation({ onChange } = {}) {
     const thisFrame = getLegFrame(legNum);
     if (!prevFrame || !thisFrame) return;
 
-    const prevTo = qs("input.aeroTo", prevFrame);
-    const thisFrom = qs("input.aeroFrom", thisFrame);
+    const prevTo = qs(SEL.legs.aeroTo, prevFrame);
+    const thisFrom = qs(SEL.legs.aeroFrom, thisFrame);
     if (!prevTo || !thisFrom) return;
 
     const val = (prevTo.value || "").toUpperCase().trim();
@@ -80,8 +80,8 @@ export function initLegActivation({ onChange } = {}) {
     const thisFrame = getLegFrame(legNum);
     if (!prevFrame || !thisFrame) return;
 
-    const prevETA = qs("input.eta", prevFrame);
-    const thisETD = qs("input.etd", thisFrame);
+    const prevETA = qs(SEL.legs.eta, prevFrame);
+    const thisETD = qs(SEL.legs.etd, thisFrame);
     if (!prevETA || !thisETD) return;
 
     const val = (prevETA.value || "").trim();
@@ -110,11 +110,11 @@ export function initLegActivation({ onChange } = {}) {
       return;
     }
 
-    const prevTo = qs("input.aeroTo", prevFrame);
-    const prevETA = qs("input.eta", prevFrame);
+    const prevTo = qs(SEL.legs.aeroTo, prevFrame);
+    const prevETA = qs(SEL.legs.eta, prevFrame);
 
-    const thisFrom = qs("input.aeroFrom", thisFrame);
-    const thisETD = qs("input.etd", thisFrame);
+    const thisFrom = qs(SEL.legs.aeroFrom, thisFrame);
+    const thisETD = qs(SEL.legs.etd, thisFrame);
 
     // ICAO FROM übernehmen
     if (prevTo && thisFrom) {

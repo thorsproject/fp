@@ -1,9 +1,8 @@
 // app.js
 // ------------------ SETUP ------------------
-// eMail an EO
 import { initMailEO } from "./mail_eo.js";
-import { qs, SEL, setText } from "./ui/index.js";
 
+import { qs, qsa, SEL, setText, EVT, emit, on } from "./ui/index.js";
 import { loadConfig, setConfigPassword, getConfigPassword, clearConfigCache } from "./config_store.js";
 import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
@@ -24,25 +23,27 @@ import {
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initChecklistUI } from "./checklist.js";
+import { initPhones } from "./phones.js";
 import { initFuelPlanning } from "./fuel.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
 import { initOrmChecklist } from "./orm.js";
+import { initSignatureUI } from "./signature_ui.js";
+import { isInCompanyNetwork } from "./intranet_detect.js";
 
 // ---------- Control Button State ----------
-function setBtnState(btn, on){
+function setBtnState(btn, onState) {
   if (!btn) return;
-  btn.textContent = on ? "ON" : "OFF";
-  btn.classList.toggle("is-on", on);
+  btn.textContent = onState ? "ON" : "OFF";
+  btn.classList.toggle("is-on", !!onState);
 }
 
 function initTopNav({ map, defaultView = "view-map" } = {}) {
-  const nav = document.getElementById("topNav");
+  const nav = qs(SEL.topbar.nav);
   if (!nav) return;
 
   const buttons = Array.from(nav.querySelectorAll(".c-btn--tab"));
-
-  // ✅ nur die rechten Views (Map/Checklist/Fuel/Performance/Settings)
+  // nur die rechten Views (Map/Checklist/Fuel/Performance/Settings)
   const views = Array.from(document.querySelectorAll(".l-main .view"));
 
   function show(viewId) {
@@ -58,7 +59,7 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
   nav.addEventListener("click", (e) => {
     const btn = e.target.closest(".c-btn--tab");
     if (!btn) return;
-    if (!btn.dataset.view) return; 
+    if (!btn.dataset.view) return;
     show(btn.dataset.view);
   });
 
@@ -76,14 +77,13 @@ initTopNav({ map, defaultView: "view-map" });
 let windOn = false;
 let selectedWindLevel = "SFC";
 
-const windBtn = document.getElementById("toggleWind");
-const wxBtn   = document.getElementById("toggleWeather");
-
+const windBtn = qs("#toggleWind");
+const wxBtn = qs("#toggleWeather"); // aktuell noch ungenutzt, aber ok
 
 // ---------- Layers ----------
 const { windLayer } = createWindLayers();
 
-// ---------- Buttons ----------
+// ---------- Wind buttons ----------
 windBtn?.addEventListener("click", async () => {
   windOn = !windOn;
 
@@ -94,12 +94,10 @@ windBtn?.addEventListener("click", async () => {
     windLayer.clearLayers();
   }
 
-  // NEW:
   setBtnState(windBtn, windOn);
-
 });
 
-document.getElementById("windLevelSelect")?.addEventListener("change", async (e) => {
+qs("#windLevelSelect")?.addEventListener("change", async (e) => {
   selectedWindLevel = e.target.value;
   if (windOn) {
     await drawWindBarbsViewport({ map, windLayer, selectedWindLevel });
@@ -121,22 +119,26 @@ map.on("click", (e) => {
   async function loadIncludes(root = document) {
     const nodes = Array.from(root.querySelectorAll("[data-include]"));
 
-    for (const el of nodes) {
-      const rel = el.getAttribute("data-include");
-
-      // ✅ macht den Pfad immer absolut korrekt (wichtig bei /fp/ + GitHub Pages)
+    for (const node of nodes) {
+      const rel = node.getAttribute("data-include");
       const url = new URL(rel, document.baseURI).toString();
 
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) {
-        console.error("Include failed:", { rel, url, status: res.status, statusText: res.statusText });
+        console.error("Include failed:", {
+          rel,
+          url,
+          status: res.status,
+          statusText: res.statusText,
+        });
         throw new Error(`Include failed: ${url} (${res.status})`);
       }
 
-      el.innerHTML = await res.text();
-      el.removeAttribute("data-include");
+      node.innerHTML = await res.text();
+      node.removeAttribute("data-include");
     }
   }
+
   try {
     await loadIncludes();
   } catch (e) {
@@ -144,50 +146,68 @@ map.on("click", (e) => {
     alert("Include-Laden fehlgeschlagen:\n" + (e?.message || e));
     return;
   }
-  window.dispatchEvent(new Event("fp:includes-loaded"));
 
+  emit(EVT.includesLoaded);
+
+  // ---------- apply helpers ----------
   function applyFdlToHeader({ name = "", tel = "" } = {}) {
-    setText("#FDLoutput", name);
-    setText("#TELoutput", tel);
+    setText(SEL.route.fdlOutput, name);
+    setText(SEL.route.telOutput, tel);
   }
 
-  function applyChecklistContacts(config) {
-    const scope = qs("#view-checklist") || document;
+  async function applyChecklistContacts(config) {
+    const scope = qs(SEL.checklist.view) || document;
 
+    // --- EO Mail (wie bisher) ---
     const mail = (config?.eoEmail || "").trim();
-    if (mail) {
-      setText(SEL.mail.recipient, mail, scope);
-    }
+    if (mail) setText(SEL.mail.recipient, mail, scope);
 
+    // --- Phoenix (neu gesteuert) ---
     const phoenix = (config?.phoenixUrl || "").trim();
-    const intranetEl = qs(SEL.mail.intranet, scope);
+    const intranetEl = qs(SEL.mail.intranet, scope); // sollte ".intranet" sein
 
-    if (intranetEl && phoenix) {
-      setText(intranetEl, phoenix);
-      intranetEl.style.cursor = "pointer";
-      intranetEl.onclick = () => window.open(phoenix, "_blank", "noopener");
-    }
+    if (!intranetEl) return;
+
+    // Default: "extern" Zustand
+    intranetEl.onclick = null;
+    intranetEl.style.cursor = "";
+    intranetEl.classList.add("muted");
+    intranetEl.textContent = "Phoenix-Adresse nur im Firmennetz sichtbar";
+
+    if (!phoenix) return;
+
+    // Prüfen, ob Firmennetz (Erreichbarkeit der Phoenix-Seite)
+    const intranetOk = await isInCompanyNetwork({ url: phoenix });
+
+    if (!intranetOk) return;
+
+    // Firmennetz: anzeigen + klickbar machen
+    intranetEl.classList.remove("muted");
+    intranetEl.textContent = "Phoenix öffnen"; // oder phoenixv <-- wenn die URL angezeigt werden soll
+    intranetEl.style.cursor = "pointer";
+    intranetEl.title = "Phoenix öffnen";
+    intranetEl.onclick = () => window.open(phoenix, "_blank", "noopener");
   }
 
-  function setConfigBadge(on, text = "") {
-    const el = document.getElementById("configBadge");
+  function setConfigBadge(onState, text = "") {
+    const el = qs(SEL.topbar.configBadge);
     if (!el) return;
 
-    el.classList.toggle("is-on", !!on);
-    el.classList.toggle("is-off", !on);
-    el.textContent = text || (on ? "Config: OK" : "Config: OFF");
+    el.classList.toggle("is-on", !!onState);
+    el.classList.toggle("is-off", !onState);
+    el.textContent = text || (onState ? "Config: OK" : "Config: OFF");
   }
 
   // ----- CONFIG (Team-Passwort) wiring -----
   function wireConfigSettings() {
-    const passEl = document.getElementById("cfgPass");
-    const btnLoad = document.getElementById("btnCfgLoad");
-    const btnClear = document.getElementById("btnCfgClearPass");
-    const status = document.getElementById("cfgStatus");
+    const passEl = qs(SEL.settings.cfgPass);
+    const btnLoad = qs(SEL.settings.loadBtn);
+    const btnClear = qs(SEL.settings.clearBtn);
+    const status = qs(SEL.settings.cfgStatus);
 
     if (!passEl || !btnLoad || !btnClear) return;
 
-    // ✅ Guard gegen doppelte Bindings
+    // Guard gegen doppelte Bindings
     if (btnLoad.dataset.bound === "1") return;
     btnLoad.dataset.bound = "1";
     btnClear.dataset.bound = "1";
@@ -196,16 +216,19 @@ map.on("click", (e) => {
     // initial: gespeichertes Passwort setzen (ohne es anzuzeigen)
     passEl.value = getConfigPassword();
 
-    const setStatus = (t) => { if (status) status.textContent = t || ""; };
+    const setStatus = (t) => {
+      if (status) status.textContent = t || "";
+    };
 
     btnLoad.addEventListener("click", async () => {
       setStatus("Lade…");
       setConfigPassword(passEl.value.trim());
       clearConfigCache();
+
       try {
         const cfg = await loadConfig({ force: true });
         applyConfigToSettings(cfg);
-        applyChecklistContacts(cfg);
+        await applyChecklistContacts(cfg);
         setConfigBadge(true, "Config: OK");
         setStatus("OK ✓");
       } catch (e) {
@@ -213,7 +236,7 @@ map.on("click", (e) => {
 
         if (msg === "CONFIG_PASS_MISSING") setStatus("Passwort fehlt");
         else if (msg === "CONFIG_PASS_WRONG") setStatus("Passwort falsch");
-        else setStatus(msg); // <-- zeigt z.B. 404 oder Formatfehler
+        else setStatus(msg);
 
         console.error(e);
       }
@@ -224,13 +247,15 @@ map.on("click", (e) => {
       setConfigPassword("");
       clearConfigCache();
       setStatus("gelöscht");
+        // Phoenix im UI wieder auf "extern" zurücksetzen:
+      applyChecklistContacts({});
     });
   }
 
   function applyConfigToSettings(config) {
     // FDL Dropdown
-    const sel = document.getElementById("fdlSelect");
-    const tel = document.getElementById("fdlTel");
+    const sel = qs(SEL.settings.fdlSelect);
+    const tel = qs(SEL.settings.fdlTelDisplay);
     if (!sel || !tel) return;
 
     const list = Array.isArray(config?.fdlList) ? config.fdlList : [];
@@ -243,14 +268,14 @@ map.on("click", (e) => {
       opt.dataset.tel = item.tel || "";
       sel.appendChild(opt);
     }
-    
+
     // Default auswählen (falls vorhanden)
     const saved = localStorage.getItem(LS_FDL_SELECTED) || "";
     const def = config?.defaults?.fdlName || "";
 
-    if (saved && [...sel.options].some(o => o.value === saved)) {
+    if (saved && [...sel.options].some((o) => o.value === saved)) {
       sel.value = saved;
-    } else if (def && [...sel.options].some(o => o.value === def)) {
+    } else if (def && [...sel.options].some((o) => o.value === def)) {
       sel.value = def;
     }
 
@@ -272,13 +297,15 @@ map.on("click", (e) => {
     const pass = getConfigPassword();
     if (!pass) return;
 
-    const status = document.getElementById("cfgStatus");
-    const setStatus = (t) => { if (status) status.textContent = t || ""; };
+    const status = qs(SEL.settings.cfgStatus);
+    const setStatus = (t) => {
+      if (status) status.textContent = t || "";
+    };
 
     try {
       const cfg = await loadConfig({ force: true });
       applyConfigToSettings(cfg);
-      applyChecklistContacts(cfg);
+      await applyChecklistContacts(cfg);
       setConfigBadge(true, "Config: OK");
       setStatus("OK ✓ (auto)");
     } catch (e) {
@@ -291,9 +318,10 @@ map.on("click", (e) => {
   // nach Includes: Settings sind im DOM
   wireConfigSettings();
   tryAutoLoadConfig();
-  window.addEventListener("fp:includes-loaded", wireConfigSettings);
-  window.addEventListener("fp:includes-loaded", tryAutoLoadConfig);
+  on(EVT.includesLoaded, wireConfigSettings);
+  on(EVT.includesLoaded, tryAutoLoadConfig);
 
+  // ---------- Data loads ----------
   try {
     await loadAirfields();
     buildAirfieldsDatalist();
@@ -309,7 +337,8 @@ map.on("click", (e) => {
 
   updateLegMarkers(map);
   updateAltMarkers(map);
-  
+
+  // ---------- Init modules ----------
   initDateInput();
   initLFZ();
   initLegActivation({
@@ -318,35 +347,34 @@ map.on("click", (e) => {
       updateAltMarkers(map);
     },
   });
+
   initChecklistUI();
+  initPhones();
   initMailEO();
   initOrmChecklist();
+  initSignatureUI();
   initFuelPlanning();
   initResets();
 
-  // SAFETY: erst rendern lassen, dann laden
+  // ---------- SAFETY: erst rendern lassen, dann laden ----------
   requestAnimationFrame(() => {
-    const hasLegs = document.querySelectorAll("#legsContainer .c-panel").length >= 1;
-    const hasFuel = !!document.getElementById("fuelPanel");
+    const hasLegs = qsa(SEL.legs.frames).length >= 1;
+    const hasFuel = !!qs(SEL.fuel.panel);
 
     if (hasLegs && hasFuel) {
       loadAll();
     } else {
-      // safety retry (z.B. wenn Includes minimal später im DOM landen)
       setTimeout(() => {
-        const hasLegs2 = document.querySelectorAll("#legsContainer .c-panel").length >= 1;
-        const hasFuel2 = !!document.getElementById("fuelPanel");
+        const hasLegs2 = qsa(SEL.legs.frames).length >= 1;
+        const hasFuel2 = !!qs(SEL.fuel.panel);
         if (hasLegs2 && hasFuel2) loadAll();
       }, 80);
     }
 
-    // dein select-retry bleibt sinnvoll:
-    const lfz = document.querySelector("#lfzSelect");
-    const tac = document.querySelector("#tacSelect");
-    const needsRetry =
-      (lfz && lfz.options.length < 2) ||
-      (tac && tac.options.length < 2);
-
+    // select-retry bleibt sinnvoll:
+    const lfz = qs(SEL.route.lfzSelect);
+    const tac = qs(SEL.route.tacSelect);
+    const needsRetry = (lfz && lfz.options.length < 2) || (tac && tac.options.length < 2);
     if (needsRetry) setTimeout(loadAll, 400);
 
     initAutosave();

@@ -26,3 +26,4 @@ export {
 } from "./state.js";
 
 export { SEL } from "./selectors.js";
+export { EVT, emit, on, off } from "./events.js";

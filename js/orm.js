@@ -2,34 +2,237 @@
 import { viewerUrl } from "./path.js";
 import { registerAttachment } from "./attachments.js";
 import { qs, SEL, readValue, readText, setText } from "./ui/index.js";
+import { checklistSetToggle } from "./checklist.js";
+import { getSignatureDataUrl } from "./signature_store.js";
+import { stampSignatureIntoPdf, lockFieldsInPdf, ORM_SIG_FIELDS, ORM_LOCK_FIELDS } from "./signature_stamp.js";
 
+// ---------- Local Draft Storage (ORM in localStorage zwischenspeichern) ----------
+const ORM_DRAFT_KEY = "fp.orm.draft.v1";
+const ORM_STATUS_KEY = "fp.orm.status.v1";
+
+function hasOrmDraft() {
+  return !!localStorage.getItem(ORM_DRAFT_KEY);
+}
+
+function renderOrmStatusBadge() {
+  // ORM-Zeile finden: die Zeile, in der #btnOrm steckt
+  const btn = document.querySelector(SEL.orm.btnOpen);
+  const row = btn?.closest("#view-checklist .cg-row");
+  const cell = row?.querySelector(".cg-status");
+  if (!cell) return;
+
+  // status aus localStorage
+  const status = getOrmStatus(); // "template" | "draft" | "final"
+  const draft = hasOrmDraft();
+
+  // status "draft" nur wenn wirklich draft vorhanden ist
+  const effective =
+    (status === "draft" && draft) ? "draft"
+    : (status === "final") ? "final"
+    : (draft ? "draft" : "template");
+
+  const badgeText =
+    effective === "draft" ? "ENTWURF lokal gespeichert"
+    : effective === "final" ? "FINALISIERT & exportiert"
+    : "NEU - Template";
+
+  const msg =
+    // effective === "draft" ? "Entwurf lokal gespeichert" <-- wenn der Badge-Text nicht ausführlich ist
+    // : effective === "final" ? "Finalisiert & exportiert" <-- wenn der Badge-Text nicht ausführlich ist
+    // : "Template (noch nicht gespeichert)"; <-- wenn der Badge-Text nicht ausführlich ist
+
+  cell.innerHTML = `
+    <span class="orm-status">
+      <span class="orm-badge is-${effective}">${badgeText}</span>
+      <span class="orm-status-text">${msg}</span>
+    </span>
+  `;
+}
+
+function syncChecklistOrmUi() {
+  const btnOrm = document.querySelector(SEL.orm.btnOpen); // "#btnOrm"
+  const btnMail = document.querySelector("#btnMailEO");
+
+  if (!btnOrm || !btnMail) return;
+
+  const status = getOrmStatus(); // "template" | "draft" | "final"
+  const hasDraft = !!localStorage.getItem(ORM_DRAFT_KEY);
+
+  let effective;
+
+  if (status === "final") effective = "final";
+  else if (hasDraft) effective = "draft";
+  else effective = "template";
+
+  switch (effective) {
+
+    case "final":
+      btnOrm.textContent = "ORM finalisiert";
+      btnOrm.disabled = true;
+
+      btnMail.disabled = false;
+      btnMail.textContent = "Mail EO senden";
+      break;
+
+    case "draft":
+      btnOrm.textContent = "Entwurf öffnen";
+      btnOrm.disabled = false;
+
+      btnMail.disabled = true;
+      btnMail.textContent = "Mail EO senden";
+      break;
+
+    default: // template
+      btnOrm.textContent = "ORM öffnen";
+      btnOrm.disabled = false;
+
+      btnMail.disabled = true;
+      btnMail.textContent = "Mail EO senden";
+      break;
+  }
+}
+
+function resetOrmToTemplate(reason = "") {
+  clearOrmDraft();
+  setOrmStatus("template");
+
+  // optional: Hinweis im Overlay, falls es gerade offen ist
+  // setHint(`ORM zurückgesetzt (${reason}).`);
+
+  renderOrmStatusBadge();
+  syncChecklistOrmUi();
+}
+
+function abToBase64(ab) {
+  const u8 = new Uint8Array(ab);
+  let s = "";
+  for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
+  return btoa(s);
+}
+
+function base64ToAb(b64) {
+  const bin = atob(b64);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return u8.buffer;
+}
+
+function saveOrmDraftToLocal(bytes) {
+  const ab = bytesToArrayBuffer(bytes);
+  localStorage.setItem(ORM_DRAFT_KEY, abToBase64(ab));
+}
+
+function loadOrmDraftFromLocal() {
+  const b64 = localStorage.getItem(ORM_DRAFT_KEY);
+  if (!b64) return null;
+  try { return base64ToAb(b64); } catch { return null; }
+}
+
+function clearOrmDraft() {
+  localStorage.removeItem(ORM_DRAFT_KEY);
+}
+
+function setOrmStatus(status) {
+  localStorage.setItem(ORM_STATUS_KEY, status);
+}
+
+function getOrmStatus() {
+  return localStorage.getItem(ORM_STATUS_KEY) || "template";
+}
+
+function clearOrmStatus() {
+  localStorage.removeItem(ORM_STATUS_KEY);
+}
+// ---------------------------------------------------------------------------------
+
+// ---------- Debug optional ----------
 const DEBUG_ORM = false;
 function dlog(...args) {
   if (!DEBUG_ORM) return;
   console.log("[orm]", ...args);
+}
+// ------------------------------------
+
+function getRouteScope() {
+  return qs(SEL.route.container) || document;
 }
 
 let lastAutofill = { cs: null, dateIso: null };
 let reAutofillTimer = null;
 
 function sanitizeFilePart(s) {
-  return String(s || "")
-    .trim()
-    .replace(/\s+/g, "_")
-    .replace(/[^\w\-]+/g, "")
-    .slice(0, 32) || "NA";
+  return (
+    String(s || "")
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^\w\-]+/g, "")
+      .slice(0, 32) || "NA"
+  );
+}
+
+function toIsoDateForOrm(scope = document) {
+  const raw0 = readValue(qs(SEL.route.dateInput, scope)) ?? "";
+  const raw = String(raw0).trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+  let m = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  m = raw.match(/^(\d{2})(\d{2})(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  m = raw.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  return new Date().toISOString().slice(0, 10);
 }
 
 function getSuggestedOrmFilename() {
-  const date = readValue(qs(SEL.route.dateInput))?.trim() || "";
-  const cs = readText(qs(SEL.route.callsignDisplay))?.trim() || "CALLSIGN";
-
-  const m = date.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
-  const datePart = m
-    ? `20${m[3]}-${m[2]}-${m[1]}`
-    : new Date().toISOString().slice(0, 10);
-
+  const scope = getRouteScope();
+  const datePart = toIsoDateForOrm(scope);
+  const cs =
+    readText(qs(SEL.route.callsignDisplay, scope)).trim() || "CALLSIGN";
   return `ORM-${sanitizeFilePart(datePart)}-${sanitizeFilePart(cs)}.pdf`;
+}
+
+// ---------- ORM Mode (Draft vs Template) setzen ----------
+function setOrmMode(mode) {
+  const hintEl = qs(SEL.orm.hint);
+  const barEl = hintEl?.closest(".orm-overlay-bar");
+  if (!hintEl || !barEl) return;
+
+  barEl.classList.remove("is-draft", "is-template");
+  hintEl.classList.remove("orm-hint--draft", "orm-hint--template");
+
+  if (mode === "draft") {
+    barEl.classList.add("is-draft");
+    hintEl.classList.add("orm-hint--draft");
+  } else {
+    barEl.classList.add("is-template");
+    hintEl.classList.add("orm-hint--template");
+  }
+}// ---------------------------------------------------------
+
+function getOrmStatusTextAndClass() {
+  const status = getOrmStatus(); // "template" | "draft" | "final"
+  if (status === "draft") return { cls: "orm-status-draft", text: "🟡 Entwurf vorhanden (lokal gespeichert)." };
+  if (status === "final") return { cls: "orm-status-final", text: "🟢 Finalisiert & exportiert." };
+  return { cls: "orm-status-template", text: "⚪ Neues ORM (Template)." };
+}
+
+function applyOrmStatusIndicator() {
+  const hintEl = qs(SEL.orm.hint);
+  if (!hintEl) return null;
+
+  hintEl.classList.remove("orm-status-template", "orm-status-draft", "orm-status-final");
+
+  const { cls, text } = getOrmStatusTextAndClass();
+  hintEl.classList.add(cls);
+  return text; // Text geben wir an init zurück, damit dort setHint() genutzt wird
 }
 
 // ---------- PDF.js UI minimieren ----------
@@ -85,45 +288,22 @@ function applyMinimalUiWhenReady(iframe) {
       // Zoom setzen
       const pv = w?.PDFViewerApplication?.pdfViewer;
       if (pv) pv.currentScaleValue = "page-width";
-
       return;
     }
 
-    if (Date.now() - start < maxMs) {
-      requestAnimationFrame(tick);
-    }
+    if (Date.now() - start < maxMs) requestAnimationFrame(tick);
   };
 
   tick();
 }
 
-function toIsoDateForOrm() {
-  const raw0 = readValue(qs(SEL.route.dateInput)) ?? "";
-  const raw = String(raw0).trim();
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
-
-  let m = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
-
-  m = raw.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
-  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
-
-  m = raw.match(/^(\d{2})(\d{2})(\d{2})$/);
-  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
-
-  m = raw.match(/^(\d{2})(\d{2})(\d{4})$/);
-  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
-
-  return new Date().toISOString().slice(0, 10);
-}
-
+// ---------- DOM Field helpers (Viewer-iframe) ----------
 function setDomFieldValue(iframe, fieldName, value) {
   const doc = iframe.contentDocument;
   if (!doc) return 0;
 
   const esc = (s) =>
-    (window.CSS && CSS.escape) ? CSS.escape(s) : String(s).replace(/"/g, '\\"');
+    window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/"/g, '\\"');
 
   const sels = [
     `input[name="${esc(fieldName)}"]`,
@@ -169,19 +349,19 @@ function getDomFieldValue(iframe, fieldName) {
   return (el?.value ?? "").trim();
 }
 
+// ---------- Autofill ----------
 function setOrmField(iframe, fields, storage, name, value) {
   const currentDomValue = getDomFieldValue(iframe, name);
 
   const canOverwrite =
     !currentDomValue ||
     (name === "CS" && currentDomValue === (lastAutofill.cs ?? "")) ||
-    (name === "Datum1_af_date" && currentDomValue === (lastAutofill.dateIso ?? ""));
+    (name === "Datum_af_date" &&
+      currentDomValue === (lastAutofill.dateIso ?? ""));
 
   if (!canOverwrite) return false;
 
-  for (const f of fields[name] || []) {
-    storage.setValue(f.id, { value });
-  }
+  for (const f of fields[name] || []) storage.setValue(f.id, { value });
 
   const domHits = setDomFieldValue(iframe, name, value);
   return domHits > 0;
@@ -191,32 +371,29 @@ async function autofillOrmFields(iframe) {
   const app = iframe.contentWindow?.PDFViewerApplication;
   const pdf = app?.pdfDocument;
   const storage = pdf?.annotationStorage;
-
   if (!pdf || !storage) return;
 
   const fields = await pdf.getFieldObjects();
   if (!fields) return;
 
-  const dateIso = toIsoDateForOrm();
-  const cs = readText(qs(SEL.route.callsignDisplay))?.trim() || "";
+  const scope = getRouteScope();
+  const dateIso = toIsoDateForOrm(scope);
+  const cs = readText(qs(SEL.route.callsignDisplay, scope)).trim() || "";
 
   let okDate = false;
   let okCs = false;
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateIso) && (fields["Datum1_af_date"]?.length)) {
-    setOrmField(iframe, fields, storage, "Datum1_af_date", dateIso);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateIso) && fields["Datum_af_date"]?.length) {
+    setOrmField(iframe, fields, storage, "Datum_af_date", dateIso);
     okDate = true;
-  } else {
-    console.warn("[ORM] Datum nicht gesetzt (leer/ungültig/kein Feld):", dateIso);
   }
 
   if (fields["CS"]?.length) {
     setOrmField(iframe, fields, storage, "CS", cs);
     okCs = true;
-  } else {
-    console.warn("[ORM] CS Feld nicht gefunden");
   }
 
+  // mark modified + refresh
   storage.onSetModified?.(true);
   app?.eventBus?.dispatch?.("annotationstoragechanged", { source: storage });
   app?.pdfViewer?.refresh?.();
@@ -246,7 +423,9 @@ function wireOrmAutofill(iframe) {
       setTimeout(() => autofillOrmFields(iframe).catch(console.error), 150);
       setTimeout(() => autofillOrmFields(iframe).catch(console.error), 500);
 
-      setTimeout(() => { scheduled = false; }, 600);
+      setTimeout(() => {
+        scheduled = false;
+      }, 600);
     };
 
     const onAnyRender = () => {
@@ -264,69 +443,216 @@ function wireOrmAutofill(iframe) {
   });
 }
 
-// ---------- PDF Export ----------
+// ---------- Export helpers ----------
 async function getEditedPdfBytesFromViewer(iframe) {
   const app = iframe?.contentWindow?.PDFViewerApplication;
-
   if (!app?.pdfDocument) throw new Error("PDF noch nicht geladen.");
 
-  if (app.pdfDocument.saveDocument) return await app.pdfDocument.saveDocument();
-  if (app.pdfDocument.getData) return await app.pdfDocument.getData();
+  const doc = app.pdfDocument;
 
-  throw new Error("PDF Export nicht möglich.");
+  let out;
+  if (typeof doc.saveDocument === "function") {
+    out = await doc.saveDocument();
+  } else if (typeof doc.getData === "function") {
+    out = await doc.getData();
+  } else {
+    throw new Error("PDF Export nicht möglich.");
+  }
+
+  // ---- normalize to Uint8Array / ArrayBuffer ----
+  if (out instanceof ArrayBuffer) return out;
+
+  if (ArrayBuffer.isView(out)) {
+    // Uint8Array etc.
+    return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength);
+  }
+
+  // pdf-lib akzeptiert auch string, aber das wäre hier komisch.
+  if (typeof out === "string") {
+    throw new Error("PDF Export lieferte String – unerwartet. (Bitte Konsole prüfen)");
+  }
+
+  // das ist dein aktueller Fehlerfall:
+  // manchmal kommt hier z.B. number/NaN raus, wenn irgendwo versehentlich überschrieben wird
+  console.error("[ORM] getEditedPdfBytesFromViewer: unexpected export type", {
+    type: typeof out,
+    value: out,
+    ctor: out?.constructor?.name,
+  });
+
+  throw new Error(`PDF Export lieferte ungültige Daten (${typeof out}).`);
 }
 
 function downloadPdfBytes(bytes, filename) {
   const blob = new Blob([bytes], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   a.click();
-
   URL.revokeObjectURL(url);
 }
 
-function u8ToArrayBuffer(u8) {
-  return u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+function bytesToArrayBuffer(bytes) {
+  // 1) Normal: ArrayBuffer
+  if (bytes instanceof ArrayBuffer) return bytes;
+
+  // 2) Normal: TypedArray/DataView
+  if (ArrayBuffer.isView(bytes)) {
+    return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+  }
+
+  // 3) Cross-realm TypedArray/DataView (aus iframe):
+  // Duck-typing: hat byteLength + buffer + byteOffset?
+  if (bytes && typeof bytes === "object") {
+    const hasByteLen = typeof bytes.byteLength === "number";
+    const hasBuf = bytes.buffer && typeof bytes.buffer.byteLength === "number";
+
+    if (hasByteLen && hasBuf) {
+      const off = typeof bytes.byteOffset === "number" ? bytes.byteOffset : 0;
+      return bytes.buffer.slice(off, off + bytes.byteLength);
+    }
+
+    // 4) Cross-realm ArrayBuffer (selten): nur byteLength vorhanden
+    if (hasByteLen && typeof bytes.slice === "function") {
+      return bytes.slice(0);
+    }
+  }
+
+  // Debug-Hilfe:
+  console.error("[ORM] bytesToArrayBuffer unsupported type", {
+    type: typeof bytes,
+    ctor: bytes?.constructor?.name,
+    keys: bytes && typeof bytes === "object" ? Object.keys(bytes) : null,
+    value: bytes,
+  });
+
+  throw new Error("Unsupported bytes type for ArrayBuffer conversion");
+}
+
+async function maybeStamp(bytes) {
+  // Debug: was kommt hier wirklich an?
+  // console.log("[ORM] maybeStamp input", {
+  //  type: typeof bytes,
+  //  isAB: bytes instanceof ArrayBuffer,
+  //  isView: ArrayBuffer.isView(bytes),
+  //  byteLength: bytes?.byteLength,
+  //  ctor: bytes?.constructor?.name,
+  //  value: bytes,
+  //});
+
+  const sig = getSignatureDataUrl();
+  if (!sig) return bytes;
+  // ---------- Einfachstempel (ohne Sperre) ----------
+  return await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS); // muss deaktiviert werden, wenn die Alternative (direkt mit Sperre) aktiviert wird
+  // --------------------------------------------------
+
+  // ---------- Alternative: direkt mit Sperre stempeln (ohne nochmaliges Laden) ----------
+  //let out = await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS); // pdf-lib akzeptiert ArrayBuffer direkt
+  //out = await lockFieldsInPdf(out, ORM_LOCK_FIELDS); // NEU: Felder sperren
+  //return out;
+  // --------------------------------------------------------------------------------------
 }
 
 // ---------- MAIN ----------
 export function initOrmChecklist() {
+  document.querySelector("#btnMailEO")?.setAttribute("disabled", "disabled");
   const overlay = qs(SEL.orm.overlay);
   const frame = qs(SEL.orm.frame);
-  const hint = qs(SEL.orm.hint);
 
   const btnOpen = qs(SEL.orm.btnOpen);
   const btnSave = qs(SEL.orm.btnSave);
+  const btnFinalize = qs(SEL.orm.btnFinalize);
   const btnClose = qs(SEL.orm.btnClose);
 
-  if (!btnOpen || !btnSave || !btnClose || !overlay || !frame) return;
+  if (!btnOpen || !btnSave || !btnClose || !btnFinalize || !overlay || !frame) return;
+
+  // ---------- Fixe Button-Beschriftung ----------
+  btnSave.textContent = "Entwurf speichern";
+  btnFinalize.textContent = "Finalisieren & exportieren";
+  btnClose.textContent = "Schließen ohne speichern";
+  renderOrmStatusBadge();
+  syncChecklistOrmUi();
 
   let isOpen = false;
 
   function setHint(msg = "") {
-    setText(hint, msg);
+    setText(SEL.orm.hint, msg);
   }
 
   function openOrm() {
-    const pdfPath = `data/ORMBlatt.pdf?v=${Date.now()}`;
+    // ---------- ORM-Dokument entweder aus localStorage laden (wenn zwischengespeichert) oder frisches Template laden ----------
+    const draft = loadOrmDraftFromLocal();
+    let pdfPath;
+    let blobUrlToRevoke = null;
+    if (draft) {
+      // Draft aus localStorage als Blob-URL laden
+      const blob = new Blob([draft], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      pdfPath = url; // viewerUrl encodiert das korrekt
+      blobUrlToRevoke = url;
+      setHint("ORM Entwurf geladen (letzte gespeicherte Version).");
+      setOrmMode("draft");
+      // Button-Label je nach Modus
+      btnSave.textContent = "Entwurf speichern";
+      btnFinalize.textContent = "Finalisieren & exportieren";
+    } else {
+      pdfPath = new URL("./data/ORMBlatt.pdf", window.location.href).pathname + `?v=${Date.now()}`;
+      setHint("ORM geöffnet (Template).");
+      setOrmMode("template");
+    }
+    // --------------------------------------------------------------------------------------------------------------
 
+    // Muss vor Viewer init passieren
+    const onWebViewerLoaded = (ev) => {
+      const w = ev?.detail?.source;
+      const opts = w?.PDFViewerApplicationOptions;
+      if (opts?.set) {
+        opts.set("enableScripting", false);
+      }
+    };
+    document.addEventListener("webviewerloaded", onWebViewerLoaded, { once: true });
+
+    // Viewer laden
     frame.src = viewerUrl(pdfPath, { page: 1, zoom: "page-width" });
 
+    // Nach load: UI + Autofill verdrahten
     frame.addEventListener("load", () => {
+      // Wichtig: nicht hier revoke! PDF ist zu diesem Zeitpunkt noch nicht geladen.
+      const app = frame.contentWindow?.PDFViewerApplication;
+
+      // Wenn möglich: warten bis PDF wirklich geladen ist
+      const revokeLater = () => {
+        try {
+          if (blobUrlToRevoke) URL.revokeObjectURL(blobUrlToRevoke);
+        } catch {}
+        blobUrlToRevoke = null;
+      };
+
+      // Best case: PDF.js EventBus
+      try {
+        app?.eventBus?.on?.("documentloaded", revokeLater);
+      } catch {}
+
+      // Fallback: wenn eventBus nicht greift, nach ein paar Sekunden revoke
+      // (oder diesen Fallback einfach weglassen, dann "leakt" es minimal, ist aber ok)
+      setTimeout(revokeLater, 8000);
+
+      // (Optional) hier wieder deine UI/Autofill Hooks rein:
       applyMinimalUiWhenReady(frame);
       wireOrmAutofill(frame);
-
       setTimeout(() => autofillOrmFields(frame), 300);
       setTimeout(() => autofillOrmFields(frame), 900);
     }, { once: true });
 
     overlay.classList.remove("is-hidden");
     overlay.setAttribute("aria-hidden", "false");
-    setHint("ORM geöffnet (editierbar).");
+
     isOpen = true;
+    renderOrmStatusBadge();
+    syncChecklistOrmUi();
+    const msg = applyOrmStatusIndicator();
+    if (msg) setHint(msg);
   }
 
   function closeOrm() {
@@ -336,7 +662,9 @@ export function initOrmChecklist() {
     qs(SEL.orm.btnOpen)?.focus();
 
     const app = frame.contentWindow?.PDFViewerApplication;
-    try { app?.pdfDocument?.annotationStorage?.resetModified?.(); } catch {}
+    try {
+      app?.pdfDocument?.annotationStorage?.resetModified?.();
+    } catch {}
 
     overlay.classList.add("is-hidden");
     overlay.setAttribute("aria-hidden", "true");
@@ -349,15 +677,17 @@ export function initOrmChecklist() {
     if (!isOpen) return false;
 
     const modified =
-      frame.contentWindow?.PDFViewerApplication?.pdfDocument
-        ?.annotationStorage?.modified;
+      frame.contentWindow?.PDFViewerApplication?.pdfDocument?.annotationStorage
+        ?.modified;
 
     if (!modified) {
       closeOrm();
       return true;
     }
 
-    const ok = confirm("ORM schließen?\n\nNicht gespeicherte Änderungen gehen verloren.");
+    const ok = confirm(
+      "ORM schließen?\n\nNicht gespeicherte Änderungen gehen verloren."
+    );
     if (!ok) return false;
 
     closeOrm();
@@ -365,82 +695,153 @@ export function initOrmChecklist() {
   }
 
   async function saveOrm() {
-    setHint("Speichern…");
+    setHint("Entwurf speichern…");
+    try {
+      // 1) Export aus PDF.js (inkl. aller aktuellen Einträge)
+      let bytes = await getEditedPdfBytesFromViewer(frame);
 
+      // 2) Optional: KEIN Stempel hier (Entwurf bleibt „roh“)
+      // bytes = await maybeStamp(bytes);  // <- bewusst NICHT
+
+      // 3) Nur localStorage
+      saveOrmDraftToLocal(bytes);
+      setOrmStatus("draft");
+      renderOrmStatusBadge();
+      syncChecklistOrmUi();
+
+      // Optional: auch als Attachment registrieren (für Mail etc.)
+      // (Wenn du wirklich NUR localStorage willst: diesen Block auskommentieren.)
+      // const filename = getSuggestedOrmFilename();
+      // registerAttachment("orm", {
+      //  name: filename,
+      //  type: "application/pdf",
+      //  getArrayBuffer: async () => bytesToArrayBuffer(bytes),
+      // });
+
+      checklistSetToggle("orm", true);
+      setHint("Entwurf gespeichert (nur lokal im Browser). Zum Export: Finalisieren.");
+      closeOrm();
+    } catch (e) {
+      console.error(e);
+      setHint("Entwurf speichern fehlgeschlagen.");
+    }
+  }
+  async function finalizeOrm() {
+    setHint("Finalisieren…");
     const filename = getSuggestedOrmFilename();
+    // OPTION: const filename = getSuggestedOrmFilename().replace(/\.pdf$/i, "-FINAL.pdf");
 
-    if ("showSaveFilePicker" in window) {
-      let handle;
+    try {
+      // 1) Export aus PDF.js
+      let bytes = await getEditedPdfBytesFromViewer(frame);
 
-      try {
-        handle = await showSaveFilePicker({
-          suggestedName: filename,
-          types: [{
-            description: "PDF",
-            accept: { "application/pdf": [".pdf"] }
-          }]
-        });
-      } catch (e) {
-        if (e?.name === "AbortError") {
-          setHint("Speichern abgebrochen.");
-          return;
-        }
-        setHint("Save-Dialog fehlgeschlagen.");
+      // 2) Signature/Initials rein + lock fields
+      const sig = getSignatureDataUrl();
+      if (!sig) {
+        setHint("Keine Unterschrift gespeichert. Bitte in Settings hochladen oder zeichnen.");
         return;
       }
 
-      try {
-        const bytes = await getEditedPdfBytesFromViewer(frame);
+      bytes = await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS);
+      bytes = await lockFieldsInPdf(bytes, ORM_LOCK_FIELDS);
 
-        registerAttachment("orm", {
-          name: filename,
-          type: "application/pdf",
-          getArrayBuffer: async () => u8ToArrayBuffer(bytes),
+      // 3) Speichern (Picker wenn möglich, sonst Download)
+      if ("showSaveFilePicker" in window) {
+        const handle = await showSaveFilePicker({
+          suggestedName: filename,
+          types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }],
         });
-
         const writable = await handle.createWritable();
         await writable.write(bytes);
         await writable.close();
-
-        setHint("Gespeichert.");
-        closeOrm();
-
-        import("./checklist.js").then((m) => m.checklistSetToggle("orm", true));
-        return;
-      } catch (e) {
-        console.error(e);
-        setHint("Speichern fehlgeschlagen.");
-        return;
+      } else {
+        downloadPdfBytes(bytes, filename);
       }
-    }
 
-    // fallback download
-    try {
-      const bytes = await getEditedPdfBytesFromViewer(frame);
-
+      // 4) Attachment registrieren (nach erfolgreichem Write/Download)
       registerAttachment("orm", {
         name: filename,
         type: "application/pdf",
-        getArrayBuffer: async () => u8ToArrayBuffer(bytes),
+        getArrayBuffer: async () => bytesToArrayBuffer(bytes),
       });
 
-      downloadPdfBytes(bytes, filename);
-      setHint("Download gestartet.");
+      checklistSetToggle("orm", true);
+
+      setHint("Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
+      setOrmStatus("final");
+      clearOrmDraft();
+      renderOrmStatusBadge();
+      syncChecklistOrmUi();
+      closeOrm();
     } catch (e) {
       console.error(e);
-      setHint("Speichern nicht möglich.");
+      setHint("Finalisieren fehlgeschlagen.");
     }
   }
-
   btnOpen.addEventListener("click", openOrm);
 
   btnSave.addEventListener("click", () => {
     if (isOpen) saveOrm();
   });
 
+  btnFinalize.addEventListener("click", () => {
+    if (isOpen) finalizeOrm();
+  });
+
   btnClose.addEventListener("click", () => {
     confirmCloseOrm();
   });
+
+  // --- Reset ORM wenn Datum/CS wechseln (Draft + Final) ---
+  let lastKey = null;
+
+  function currentOrmKey() {
+    const scope = getRouteScope();
+    const dateIso = toIsoDateForOrm(scope);
+    const cs = readText(qs(SEL.route.callsignDisplay, scope)).trim();
+    return `${dateIso}__${cs}`;
+  }
+
+  function maybeResetOnKeyChange() {
+    const key = currentOrmKey();
+
+    // initial setzen (kein Reset)
+    if (lastKey === null) {
+      lastKey = key;
+      return;
+    }
+
+    if (key === lastKey) return;
+    lastKey = key;
+
+    const hadDraft = !!localStorage.getItem(ORM_DRAFT_KEY);
+    const status = getOrmStatus(); // "template" | "draft" | "final"
+    const wasFinal = status === "final";
+
+    // Nur resetten, wenn es wirklich was zu verwerfen gibt
+    if (hadDraft || wasFinal) {
+      resetOrmToTemplate("Datum/Callsign geändert");
+    } else {
+      // optional: UI trotzdem sauber ziehen, falls du willst
+      // renderOrmStatusBadge();
+      // syncChecklistOrmUi();
+    }
+  }
+
+  // Callsign beobachten
+  const csEl2 = qs(SEL.route.callsignDisplay);
+  if (csEl2) {
+    const mo2 = new MutationObserver(maybeResetOnKeyChange);
+    mo2.observe(csEl2, { childList: true, characterData: true, subtree: true });
+  }
+
+  // Datum beobachten
+  const dateEl2 = qs(SEL.route.dateInput);
+  dateEl2?.addEventListener("input", maybeResetOnKeyChange);
+  dateEl2?.addEventListener("change", maybeResetOnKeyChange);
+
+  // einmal initialisieren
+  maybeResetOnKeyChange();
 
   function scheduleReAutofill() {
     if (!isOpen) return;

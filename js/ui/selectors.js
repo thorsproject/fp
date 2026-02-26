@@ -1,14 +1,11 @@
 // js/ui/selectors.js
-
 export const SEL = {
-
-  // ---------- ROUTE HEADER ----------
+  // ---------- ROUTE ----------
   route: {
+    panel: "#routePanel",
     kopfContainer: "#kopfContainer",
-    container: "#routePanel",
 
     dateInput: "#dateInput",
-
     lfzSelect: "#lfzSelect",
     tacSelect: "#tacSelect",
 
@@ -18,51 +15,41 @@ export const SEL = {
     telOutput: "#TELoutput",
   },
 
-
   // ---------- LEGS ----------
   legs: {
     container: "#legsContainer",
-
     frames: "#legsContainer .c-panel",
 
+    // fields inside a leg frame
     etd: ".legField.etd",
     eta: ".legField.eta",
-
     aeroFrom: ".legField.aeroFrom",
     aeroTo: ".legField.aeroTo",
-
     alt: ".legField.alt",
 
-    toggle: ".legToggle",
-    toggleByLeg: (leg) => `.legToggle[data-leg="${leg}"]`,
+    // toggle
+    toggle: "button.legToggle[data-leg]",
+    toggleByLeg: (leg) => `button.legToggle[data-leg="${leg}"]`,
   },
-
 
   // ---------- CHECKLIST ----------
   checklist: {
     view: "#view-checklist",
-
     toast: "#checkToast",
 
     // toggles
-    toggleBtn: '.tb[data-tb]',
-    toggleByKey: (key) => `.tb[data-tb="${key}"]`,
+    toggleBtn: 'button[data-tb]',
+    toggleByKey: (key) => `button[data-tb="${key}"]`,
 
     // fields
     fieldAny: "[data-field]",
     fieldByKey: (key) => `[data-field="${key}"]`,
 
-    // reset buttons
-    resetChecklist: "#btnResetChecklist",
-    resetCheckmarks: "#btnResetCheckmarks",
-    resetWx: "#btnResetWx",
-
-    // phone buttons
-    phoneBtn: ".phone-btn",
+    // phone buttons (empfohlen: über data-phone statt Klasse)
+    phoneBtn: "button[data-phone]",
   },
 
-
-  // ---------- CHECKLIST - ORM ----------
+  // ---------- ORM (Overlay) ----------
   orm: {
     overlay: "#ormOverlay",
     frame: "#ormFrameOverlay",
@@ -70,84 +57,77 @@ export const SEL = {
 
     btnOpen: "#btnOrm",
     btnSave: "#btnOrmSaveOverlay",
+    btnFinalize: "#btnOrmFinalizeOverlay",
     btnClose: "#btnOrmCloseOverlay",
   },
-  // ---------- CHECKLIST - MAIL ----------
+
+  // ---------- MAIL (Checklist Mail EO) ----------
+  // Nur "Mail-spezifisch", KEINE wx Felder duplizieren (die sind checklist.fieldByKey)
   mail: {
     btnSend: "#btnMailEO",
     cbUsePicker: "#mailEoUsePicker",
 
     recipient: ".email",
     intranet: ".intranet",
-
-    wxNr: '[data-field="wx_nr"]',
-    wxVoid: '[data-field="wx_void"]',
-    wxInit: '[data-field="wx_init"]',
   },
-
 
   // ---------- FUEL ----------
   fuel: {
     panel: "#fuelPanel",
 
+    // inputs
     mainInput: '[data-field="main_usg"]',
-
     tripInput: (leg) => `[data-trip-usg="${leg}"]`,
-    tripCells: '.trip[data-trip-leg]',          // ✅ NEU
+    tripCells: '[data-trip-leg]', // robust: unabhängig von .trip class
 
     apprIfn: '[data-field="appr_ifr_n"]',
     apprVfr: '[data-field="appr_vfr_n"]',
-
     altInput: '[data-field="alt_usg_log"]',
-
     finresSelect: "#finres",
 
-    toggleAll: ".fuelToggle",                   // ✅ NEU
-    toggleStd: '.fuelToggle[data-field="std_block"]',
-    toggleAux: '.fuelToggle[data-field="aux_on"]',
+    // toggles
+    toggleAll: 'button.fuelToggle[data-field][data-state]',
+    toggleStd: 'button.fuelToggle[data-field="std_block"]',
+    toggleAux: 'button.fuelToggle[data-field="aux_on"]',
 
-    out: (key) => `[data-out="${key}"]`,         // ✅ NEU (damit setOut nur SEL nutzt)
+    // outputs
+    out: (key) => `[data-out="${key}"]`,
   },
-
 
   // ---------- SETTINGS ----------
   settings: {
-
     cfgPass: "#cfgPass",
-
-    fdlSelect: "#fdlSelect",
-    fdlTelDisplay: "#fdlTel",
-
     cfgStatus: "#cfgStatus",
 
     loadBtn: "#btnCfgLoad",
     clearBtn: "#btnCfgClearPass",
+
+    fdlSelect: "#fdlSelect",
+    fdlTelDisplay: "#fdlTel",
+
+  // ---------- SETTINGS: Signature ----------
+    sigUpload: "#sigUpload",
+    sigDraw: "#sigDraw",
+    sigClear: "#sigClear",
+    sigStatus: "#sigStatus",
+    sigPreview: "#sigPreview",
   },
-
-
   // ---------- TOPBAR ----------
   topbar: {
-
     nav: "#topNav",
-
     saveIndicator: "#saveIndicator",
-
     configBadge: "#configBadge",
   },
 
-
   // ---------- RESET ----------
   reset: {
-    // Validation messages
+    // validation messages (route/legs)
     aeroError: ".aero-error",
     altError: ".alt-error",
   },
 
-
   // ---------- IMPORT / EXPORT ----------
   io: {
-
     importFileInput: "#importFile",
-  }
-
+  },
 };
