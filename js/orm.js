@@ -44,9 +44,9 @@ function renderOrmStatusBadge() {
   cell.innerHTML = `
     <span class="orm-status">
       <span class="orm-badge is-${effective}">${badgeText}</span>
-      <span class="orm-status-text">${msg}</span>
+      <!-- <span class="orm-status-text">${msg}</span> -->
     </span>
-  `;
+  `; // <!-- --> entfernen, wenn Badge-Text doch wieder genutzt werden soll
 }
 
 function syncChecklistOrmUi() {
