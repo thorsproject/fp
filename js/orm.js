@@ -50,28 +50,46 @@ function renderOrmStatusBadge() {
 }
 
 function syncChecklistOrmUi() {
-  const btnOrm = document.querySelector(SEL.orm.btnOpen); // #btnOrm
-  const btnMail = document.querySelector("#btnMailEO");   // Button in checklist.html
+  const btnOrm = document.querySelector(SEL.orm.btnOpen); // "#btnOrm"
+  const btnMail = document.querySelector("#btnMailEO");
+
   if (!btnOrm || !btnMail) return;
 
-  const status = getOrmStatus();      // "template" | "draft" | "final"
-  const draftExists = !!localStorage.getItem(ORM_DRAFT_KEY);
+  const status = getOrmStatus(); // "template" | "draft" | "final"
+  const hasDraft = !!localStorage.getItem(ORM_DRAFT_KEY);
 
-  // effective status (draft nur wenn draft wirklich existiert)
-  const effective =
-    (status === "final") ? "final" :
-    (draftExists ? "draft" : "template");
+  let effective;
 
-  // Text für ORM-Button
-  if (effective === "draft") btnOrm.textContent = "Entwurf öffnen";
-  else if (effective === "final") btnOrm.textContent = "ORM finalisiert";
-  else btnOrm.textContent = "ORM öffnen";
+  if (status === "final") effective = "final";
+  else if (hasDraft) effective = "draft";
+  else effective = "template";
 
-  // Enable/Disable Regeln:
-  // - Nach Finalisierung: ORM-Button inaktiv
-  // - Mail EO erst aktiv, wenn final
-  btnOrm.disabled = (effective === "final");
-  btnMail.disabled = (effective !== "final");
+  switch (effective) {
+
+    case "final":
+      btnOrm.textContent = "ORM finalisiert";
+      btnOrm.disabled = true;
+
+      btnMail.disabled = false;
+      btnMail.textContent = "Mail EO senden";
+      break;
+
+    case "draft":
+      btnOrm.textContent = "Entwurf öffnen";
+      btnOrm.disabled = false;
+
+      btnMail.disabled = true;
+      btnMail.textContent = "Mail EO senden";
+      break;
+
+    default: // template
+      btnOrm.textContent = "ORM öffnen";
+      btnOrm.disabled = false;
+
+      btnMail.disabled = true;
+      btnMail.textContent = "Mail EO senden";
+      break;
+  }
 }
 
 function abToBase64(ab) {
