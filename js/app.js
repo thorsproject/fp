@@ -223,7 +223,6 @@ map.on("click", (e) => {
       setStatus("Lade…");
       setConfigPassword(passEl.value.trim());
       clearConfigCache();
-      import { isInIntranet } from "./intranet_detect.js";
 
       try {
         const cfg = await loadConfig({ force: true });
@@ -247,6 +246,8 @@ map.on("click", (e) => {
       setConfigPassword("");
       clearConfigCache();
       setStatus("gelöscht");
+        // Phoenix im UI wieder auf "extern" zurücksetzen:
+      applyChecklistContacts({});
     });
   }
 
