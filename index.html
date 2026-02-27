@@ -68,146 +68,170 @@
     <div class="c-saveIndicator" id="saveIndicator" aria-live="polite"></div>
   </header>
 
-<div class="l-views">
-  <!-- VIEW: Route + Map -->
-  <section id="view-route" class="view is-active">
-    <div class="l-shell">
+  <div class="l-views">
+    <!-- VIEW: Route + Map -->
+    <section id="view-route" class="view is-active">
+      <div class="l-shell">
 
-      <!----- =======================
-              LINKS: ROUTE (1 Panel)
-              ======================= ---->
-      <aside class="l-sidebar">
-        <!----- Outer-Frame ----->
-        <div class="c-panel c-panel--stack" id="routePanel">
-          <div class="c-panel__head" id="kopfContainer">
-            <div class="master-grid">
-              <!-- Zeile 1 -->
-              <div></div> <!-- Spalte 1 leer -->
-              <div class="c-label">DATE</div> <!-- Spalte 2 -->
-              <div><input class="c-input" type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
-              <div class="c-label aero-label">FDL</div> <!-- Spalte 4 -->
-              <div><output class="c-output c-output--mono" id="FDLoutput"></output></div> <!-- Spalte 5 -->
-              <div></div> <!-- Spalte 6 leer -->
+        <!----- =======================
+                LINKS: ROUTE (1 Panel)
+                ======================= ---->
+        <aside class="l-sidebar">
+          <!----- Outer-Frame ----->
+          <div class="c-panel c-panel--stack" id="routePanel">
+            <div class="c-panel__head" id="kopfContainer">
+              <div class="master-grid">
+                <!-- Zeile 1 -->
+                <div></div> <!-- Spalte 1 leer -->
+                <div class="c-label">DATE</div> <!-- Spalte 2 -->
+                <div><input class="c-input" type="text" id="dateInput" maxlength="8" placeholder="TT.MM.JJ"></div> <!-- Spalte 3 -->
+                <div class="c-label aero-label">FDL</div> <!-- Spalte 4 -->
+                <div><output class="c-output c-output--mono" id="FDLoutput"></output></div> <!-- Spalte 5 -->
+                <div></div> <!-- Spalte 6 leer -->
 
-              <!-- Zeile 2 -->
-              <div></div> <!-- Spalte 1 leer -->
-              <div class="c-label">LFZ</div> <!-- Spalte 2 -->
-              <div><select class="c-select" id="lfzSelect"></select></div> <!-- Spalte 3 -->
-              <div class="c-label aero-label">TEL:</div> <!-- Spalte 4 -->
-              <div><output class="c-output c-output--mono" id="TELoutput"></output></div> <!-- Spalte 5 -->
-              <div></div> <!-- Spalte 6 leer -->
+                <!-- Zeile 2 -->
+                <div></div> <!-- Spalte 1 leer -->
+                <div class="c-label">LFZ</div> <!-- Spalte 2 -->
+                <div><select class="c-select" id="lfzSelect"></select></div> <!-- Spalte 3 -->
+                <div class="c-label aero-label">TEL:</div> <!-- Spalte 4 -->
+                <div><output class="c-output c-output--mono" id="TELoutput"></output></div> <!-- Spalte 5 -->
+                <div></div> <!-- Spalte 6 leer -->
 
-              <!-- Zeile 3 -->
-              <div></div> <!-- Spalte 1 leer -->
-              <div class="c-label">CALL SIGN</div> <!-- Spalte 2 -->
-              <div id="callSignDisplay" class="callSignDisplay"></div> <!-- Spalte 3: Anzeige CALL SIGN -->
-              <div class="c-label aero-label">TAC-CS</div> <!-- Spalte 4 -->
-              <div><select class="c-select" id="tacSelect"></select></div> <!-- Spalte 5 -->
-              <div></div> <!-- Spalte 6 leer -->
+                <!-- Zeile 3 -->
+                <div></div> <!-- Spalte 1 leer -->
+                <div class="c-label">CALL SIGN</div> <!-- Spalte 2 -->
+                <div id="callSignDisplay" class="callSignDisplay"></div> <!-- Spalte 3: Anzeige CALL SIGN -->
+                <div class="c-label aero-label">TAC-CS</div> <!-- Spalte 4 -->
+                <div><select class="c-select" id="tacSelect"></select></div> <!-- Spalte 5 -->
+                <div></div> <!-- Spalte 6 leer -->
+              </div>
+            </div>
+
+            <!-- Body: scrollt (Legs) -->
+            <div class="c-panel__body">
+              <!-- FRAME 2-5 - LEGS -->
+              <div id="legsContainer" data-include="partials/legs.html"></div>
+            <!-- </div> -->
+
+            <!-- BUTTON Footer PANEL -->
+            <!-- <div class="c-panel__foot">
+              <div class="c-btnGroup">
+                <button class="c-btn c-btn--ghost" data-action="reset-kopf">Reset Kopfdaten</button>
+                <button class="c-btn c-btn--ghost" data-action="reset-times">Reset ETD/ETA</button>
+                <button class="c-btn c-btn--ghost" data-action="reset-aeros">Reset AERODROMES</button>
+              </div> -->
             </div>
           </div>
 
-          <!-- Body: scrollt (Legs) -->
-          <div class="c-panel__body">
-            <!-- FRAME 2-5 - LEGS -->
-            <div id="legsContainer" data-include="partials/legs.html"></div>
-          <!-- </div> -->
+          <datalist id="airfieldsList"></datalist>
+          <datalist id="alternatesList"></datalist>
+        </aside>
 
-          <!-- BUTTON Footer PANEL -->
-          <!-- <div class="c-panel__foot">
-            <div class="c-btnGroup">
-              <button class="c-btn c-btn--ghost" data-action="reset-kopf">Reset Kopfdaten</button>
-              <button class="c-btn c-btn--ghost" data-action="reset-times">Reset ETD/ETA</button>
-              <button class="c-btn c-btn--ghost" data-action="reset-aeros">Reset AERODROMES</button>
-            </div> -->
-          </div>
-        </div>
+        <!----- =======================
+                RECHTS: Content Panel
+                ======================= ---->
+        <main class="l-main">
 
-        <datalist id="airfieldsList"></datalist>
-        <datalist id="alternatesList"></datalist>
-      </aside>
-
-      <!----- =======================
-              RECHTS: Content Panel
-              ======================= ---->
-      <main class="l-main">
-
-        <!-- VIEW: MAP -->
-        <section id="view-map" class="view is-active">
-          <div class="map-controls">
-            <div class="ctrl-chip">
-              <span>Weather</span>
-              <button id="toggleWeather" type="button">OFF</button>
-            </div>
-
-            <div class="ctrl-chip">
-              <span>Wind</span>
-              <button id="toggleWind" type="button">OFF</button>
-            </div>
-
-            <div class="ctrl-chip">
-              <span>Level</span>
-              <select id="windLevelSelect">
-                <option value="SFC">SFC</option>
-                <option value="25">FL025</option>
-                <option value="50">FL050</option>
-                <option value="80">FL080</option>
-                <option value="100">FL100</option>
-                <option value="180">FL180</option>
-              </select>
-            </div>
-          </div>
-          <div class="map-frame" id="map"></div>
-        </section>
-
-        <!-- VIEW: CHECKLIST -->
-        <section id="view-checklist" class="view">
-          <div class="frame">
-            <div class="checklist-card">
-              <div class="check-head">
-                <h2 class="check-title">Planning-Checklist</h2>
-                <div class="check-toast is-hidden" id="checkToast" role="status" aria-live="polite"></div>
+          <!-- VIEW: MAP -->
+          <section id="view-map" class="view is-active">
+            <div class="map-controls">
+              <div class="ctrl-chip">
+                <span>Weather</span>
+                <button id="toggleWeather" type="button">OFF</button>
               </div>
 
-              <div class="check-grid" data-include="partials/checklist.html"></div>
+              <div class="ctrl-chip">
+                <span>Wind</span>
+                <button id="toggleWind" type="button">OFF</button>
+              </div>
+
+              <div class="ctrl-chip">
+                <span>Level</span>
+                <select id="windLevelSelect">
+                  <option value="SFC">SFC</option>
+                  <option value="25">FL025</option>
+                  <option value="50">FL050</option>
+                  <option value="80">FL080</option>
+                  <option value="100">FL100</option>
+                  <option value="180">FL180</option>
+                </select>
+              </div>
             </div>
-          </div>
-        </section>
+            <div class="map-frame" id="map"></div>
+          </section>
 
-        <!-- VIEW: FUEL -->
-        <section id="view-fuel" class="view" data-include="partials/fuel.html"></section>
+          <!-- VIEW: CHECKLIST -->
+          <section id="view-checklist" class="view">
+            <div class="frame">
+              <div class="checklist-card">
+                <div class="check-head">
+                  <h2 class="check-title">Planning-Checklist</h2>
+                  <div class="check-toast is-hidden" id="checkToast" role="status" aria-live="polite"></div>
+                </div>
 
-        <!-- VIEW: PERFORMANCE -->
-        <section id="view-performance" class="view">
-          <div class="frame">
-            <h2 class="view-title">Performance</h2>
-            <p class="view-sub">Platzhalter – hier kommt Performance rein.</p>
-          </div>
-        </section>
+                <div class="check-grid" data-include="partials/checklist.html"></div>
+              </div>
+            </div>
+          </section>
 
-        <!-- VIEW: SETTINGS -->
-        <section id="view-settings" class="view" data-include="partials/settings.html"></section>
+          <!-- VIEW: FUEL -->
+          <section id="view-fuel" class="view" data-include="partials/fuel.html"></section>
 
-      </main>
-    </div>
-  </section>
-</div>
-<!-- ORM Overlay (außerhalb des Frames) -->
-<div id="ormOverlay" class="orm-overlay is-hidden" aria-hidden="true">
-  <div class="orm-overlay-bar">
-    <button id="btnOrmSaveOverlay" type="button">ORM speichern</button>
-    <button id="btnOrmFinalizeOverlay" type="button">ORM finalisieren</button>
-    <button id="btnOrmCloseOverlay" type="button">Schließen</button>
-    <span id="ormHintOverlay" class="hint"></span>
+          <!-- VIEW: PERFORMANCE -->
+          <section id="view-performance" class="view">
+            <div class="frame">
+              <h2 class="view-title">Performance</h2>
+              <p class="view-sub">Platzhalter – hier kommt Performance rein.</p>
+            </div>
+          </section>
+
+          <!-- VIEW: SETTINGS -->
+          <section id="view-settings" class="view" data-include="partials/settings.html"></section>
+
+        </main>
+      </div>
+    </section>
   </div>
 
-  <iframe
-    id="ormFrameOverlay"
-    class="orm-overlay-frame"
-    title="ORM Viewer"
-    loading="lazy">
-  </iframe>
-</div>
+  <!-- ORM Overlay (außerhalb des Frames) -->
+  <div id="ormOverlay" class="orm-overlay is-hidden" aria-hidden="true">
+    <div class="orm-overlay-bar">
+      <button id="btnOrmSaveOverlay" type="button">ORM speichern</button>
+      <button id="btnOrmFinalizeOverlay" type="button">ORM finalisieren</button>
+      <button id="btnOrmCloseOverlay" type="button">Schließen</button>
+      <span id="ormHintOverlay" class="hint"></span>
+    </div>
 
+    <iframe
+      id="ormFrameOverlay"
+      class="orm-overlay-frame"
+      title="ORM Viewer"
+      loading="lazy">
+    </iframe>
+  </div>
+  
+  <!-- Phone Popup -->
+  <div id="phonePopup" class="phone-popup is-hidden" role="dialog" aria-modal="true" aria-labelledby="phonePopupTitle">
+    <div class="phone-popup__backdrop" data-phone-popup-close></div>
+
+    <div class="phone-popup__card">
+      <div class="phone-popup__head">
+        <div>
+          <div id="phonePopupTitle" class="phone-popup__title">Telefonnummer</div>
+          <div id="phonePopupLabel" class="phone-popup__label"></div>
+        </div>
+
+        <button type="button" class="c-btn c-btn--ghost c-btn--sm" data-phone-popup-close>Schließen</button>
+      </div>
+
+      <div class="phone-popup__body">
+        <div id="phonePopupNumber" class="phone-popup__number"></div>
+
+        <div class="phone-popup__actions">
+          <button type="button" class="c-btn c-btn--ghost c-btn--sm" id="phonePopupCopy">Kopieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

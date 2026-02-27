@@ -2,6 +2,7 @@
 // Local-only Planning Checklist state (NOT part of fp storage.js)
 
 import { qs, qsa, closest, readValue, setValue, SEL } from "./ui/index.js";
+import { showPhonePopup } from "./phone_popup.js";
 
 // ---------- Debug-Funktion bei Bedarf ----------
 const DEBUG_CHECKLIST = false; // <- auf true setzen, wenn du Logs willst
@@ -197,6 +198,6 @@ export function initChecklistUI() {
 
     dlog("phone click", { label, phone });
 
-    showToast(scope, `${label}: ${phone}`);
+    showPhonePopup({ label, number: phone });
   });
 }

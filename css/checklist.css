@@ -190,3 +190,70 @@
   opacity: 0.9;
   min-width: 0;
 }
+/* Phone Popup */
+.phone-popup{
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+}
+
+.phone-popup.is-hidden{
+  display: none !important;
+}
+
+.phone-popup__backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+}
+
+.phone-popup__card{
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 24px));
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+  padding: 12px;
+}
+
+.phone-popup__head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.phone-popup__title{
+  font-weight: 900;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.phone-popup__label{
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.phone-popup__number{
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--mint);
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: .2px;
+  user-select: text;
+}
+
+.phone-popup__actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top: 10px;
+}
