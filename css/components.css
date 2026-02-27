@@ -305,3 +305,35 @@ button:disabled{
 .reset-success:hover{
   background: #2e7d32 !important;
 }
+
+/* =========================================
+   CONTACT buttons (Telefon / Info / Secondary Actions)
+   ========================================= */
+.c-btn--contact{
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;     /* pill shape */
+  font-weight: 600;
+}
+
+.c-btn--contact:hover{
+  border-color: var(--accent);
+  color: var(--mint);
+  background: rgba(0,255,204,0.05);
+}
+
+.c-btn--contact:active{
+  transform: translateY(1px);
+}
+
+.c-btn--contact:focus{
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,255,204,0.25);
+}
+
+.c-btn--contact::before{
+  content: "☎";
+  font-size: 11px;
+  opacity: 0.7;
+}
