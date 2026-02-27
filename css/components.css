@@ -309,19 +309,20 @@ button:disabled{
 /* =========================================
    CONTACT buttons (Telefon / Info / Secondary Actions)
    ========================================= */
+/* CONTACT buttons – sichtbar aber nicht aggressiv */
 .c-btn--contact{
-  background: rgba(81, 108, 5, 0.04);
-/*  background: rgba(255,255,255,0.04);*/
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 999px;     /* pill shape */
-  font-weight: 600;
+  background: rgba(0,255,204,0.08);
+  color: var(--mint);
+  border: 1px solid rgba(0,255,204,0.35);
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 
 .c-btn--contact:hover{
-  border-color: var(--accent);
-  color: var(--mint);
-  background: rgba(0,255,204,0.05);
+  background: rgba(0,255,204,0.18);
+  border-color: var(--mint);
+  box-shadow: 0 0 8px rgba(0,255,204,0.25);
 }
 
 .c-btn--contact:active{
@@ -330,7 +331,7 @@ button:disabled{
 
 .c-btn--contact:focus{
   outline: none;
-  box-shadow: 0 0 0 2px rgba(0,255,204,0.25);
+  box-shadow: 0 0 0 2px rgba(0,255,204,0.35);
 }
 
 .c-btn--contact::before{
