@@ -1,4 +1,4 @@
-/*checklist.css*/
+/* checklist.css */
 /* =========================
    CHECKLIST GRID (cg-*)
    ========================= */
@@ -59,12 +59,6 @@
   font-size: 12px;
   line-height: 1.1;
   opacity: .95;
-}
-
-/* Inputs volle Breite, kein “springen” */
-#view-checklist .mini-field .c-input{
-  width: 100%;
-  box-sizing: border-box;
 }
 
 /* =========================

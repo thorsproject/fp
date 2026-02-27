@@ -1,4 +1,4 @@
-/*utils.css*/
+/* utils.css */
 /* =========================================================
    QUICK NAV
    ---------------------------------------------------------
@@ -43,6 +43,20 @@
 
 .u-p-4 { padding: 4px !important; }
 .u-p-8 { padding: 8px !important; }
+
+/* SIZE */
+.u-w-100 { width: 100% !important; }
+
+/* FLEX (gap helpers) */
+.u-gap-4  { gap: 4px !important; }
+.u-gap-8  { gap: 8px !important; }
+.u-gap-12 { gap: 12px !important; }
+
+/* STACK (common pattern) */
+.u-stack { display:flex !important; flex-direction: column !important; gap: 8px !important; }
+
+/* kleine Spezial-Utility (eigentlich später in utils) */
+.u-danger-strong { color: var(--danger) !important; font-weight: 700 !important; }
 
 /* INTERACTION */
 .u-cursor-pointer { cursor: pointer !important; }
