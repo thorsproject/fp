@@ -6,10 +6,20 @@
 
 ## Auto-Update (wird per Script gepflegt)
 <!-- STATE:AUTO:BEGIN -->
-- Last updated: (script writes)
-- Branch: (script writes)
-- Last commits: (script writes)
-- Changed files (working tree): (script writes)
+- Last updated: 2026-02-27T08:35:06.796Z
+- Branch: main
+- App Version: 1.0.0
+- Active Features:
+  - ORM Workflow
+  - Signature Stamping
+  - Phone Popup (Config-locked)
+  - Checklist State
+  - Fuel Planning
+  - Map View
+- Last commits:
+- 792f7f4 update state automation (thorsproject)
+- Changed files (working tree):
+- (clean)
 <!-- STATE:AUTO:END -->
 
 ---
