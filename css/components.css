@@ -328,12 +328,12 @@
 .c-btn.c-toggle{
   padding: 4px 8px;
   font-size: 11px;
-  line-height: 1.05;
+  /*line-height: 1.05;*/
   border-radius: 10px;
   background: rgba(0,0,0,0.18);
   color: var(--text);
   border: 1px solid var(--border);
-  box-shadow: none;
+  /*box-shadow: none;*/
 }
 
 .c-btn.c-toggle:hover{
