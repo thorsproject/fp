@@ -263,3 +263,45 @@ button:disabled{
 .c-input.was-clamped{
   box-shadow: 0 0 0 2px rgba(209, 17, 17, 0.6);
 }
+
+/* =========================================
+   RESET/WARN Buttons (orange)
+   ========================================= */
+.c-btn--warn{
+  background: #ff8800;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.c-btn--warn:hover { background: #ffa000; }
+.c-btn--warn:active { background: #ff6f00; transform: translateY(1px); }
+
+.c-btn--warn:focus{
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.4);
+}
+
+.c-btn--warn:disabled{
+  background: #555;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   RESET SUCCESS FEEDBACK
+   Button blinkt kurz grün
+   ========================================= */
+.reset-success{
+  background: #2e7d32 !important;
+  color: #fff !important;
+  transform: scale(0.96);
+}
+.reset-success:hover{
+  background: #2e7d32 !important;
+}

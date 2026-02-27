@@ -1,63 +1,28 @@
-/* =========================================
-   RESET BUTTONS
-   Einheitliches Erscheinungsbild
-   ========================================= */
-
-/* Container (optional, falls du sie einheitlich willst) */
-.c-btn--ghost {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+/* reset.css */
+/* echtes Reset, keine Farben/Design */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-/* Basis-Style für alle Reset Buttons */
-.c-btn--ghost {
-  background: #ff8800;
-  color: #000;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
-/* Hover */
-.c-btn--ghost:hover {
-  background: #ffa000;
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
 }
 
-/* Active / Click */
-.c-btn--ghost:active {
-  background: #ff6f00;
-  transform: translateY(1px);
+button {
+  background: none;
+  border: 0;
+  padding: 0;
 }
 
-/* Focus (Keyboard Navigation) */
-.c-btn--ghost:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.4);
-}
-
-/* Optional: Disabled State */
-.c-btn--ghost:disabled {
-  background: #555;
-  color: #aaa;
-  cursor: not-allowed;
-}
-
-/* =========================================
-   RESET SUCCESS FEEDBACK
-   Button blinkt kurz grün
-   ========================================= */
-
-.reset-success {
-  background: #2e7d32 !important;
-  color: #fff !important;
-  transform: scale(0.96);
-}
-
-.reset-success:hover {
-  background: #2e7d32 !important;
+img, svg, canvas {
+  display: block;
+  max-width: 100%;
 }
