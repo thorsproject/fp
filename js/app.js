@@ -43,7 +43,7 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
   const nav = qs(SEL.topbar.nav);
   if (!nav) return;
 
-  const buttons = Array.from(nav.querySelectorAll(".c-btn--tab"));
+  const buttons = Array.from(nav.querySelectorAll(".c-tab"));
   // nur die rechten Views (Map/Checklist/Fuel/Performance/Settings)
   const views = Array.from(document.querySelectorAll(".l-main .view"));
 
@@ -58,7 +58,7 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
   }
 
   nav.addEventListener("click", (e) => {
-    const btn = e.target.closest(".c-btn--tab");
+    const btn = e.target.closest(".c-tab");
     if (!btn) return;
     if (!btn.dataset.view) return;
     show(btn.dataset.view);

@@ -1,12 +1,14 @@
-/* components.css */
 /* =========================================================
-   QUICK NAV (Strg+F)
-   ---------------------------------------------------------
-   []            
-   []            
+   COMPONENTS.CSS
+   Flight Planning Web App
+   Clean structure – no modifier stacking
    ========================================================= */
 
-/* PANEL */
+
+/* =========================================================
+   1. PANELS
+   ========================================================= */
+
 .c-panel{
   border: 1px solid var(--border);
   background: var(--panel);
@@ -35,12 +37,8 @@
 
 .c-panel__foot{
   margin-top: auto;
-  padding: 0;
-  border: 0;
-  background: transparent;
 }
 
-/* Buttons im Footer wie bisher */
 .c-btnGroup{
   padding: 0 10px;
   display: flex;
@@ -48,7 +46,11 @@
   flex-wrap: wrap;
 }
 
-/* TYPO */
+
+/* =========================================================
+   2. TYPO / LABELS
+   ========================================================= */
+
 .c-title{
   margin: 0 0 8px 0;
   color: var(--muted);
@@ -66,181 +68,53 @@
   color: var(--muted);
 }
 
-/* INPUTS */
-.c-input,
-.c-select{
-  width: 100%;
-  box-sizing: border-box; /* alter Wert: 95 % */
-  padding: 5px;
-  background: #0f141a;
-  color: var(--mint);
-  text-align:center;
-  font-size: 13px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-}
 
-.c-input:focus,
-.c-select:focus{
-  outline: none;
-  border-color: var(--accent);
-}
+/* =========================================================
+   3. INPUT / FIELD SYSTEM
+   ========================================================= */
 
-.c-input:disabled{
-  background: #2a2f36;
-  color: #aaa;
-  cursor: not-allowed;
-}
-
-/* BUTTONS */
-.c-btn{
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #000;
-  font-weight: 700;
-  background: var(--accent);
-}
-
-.c-btn:hover{ background: #00aacc; }
-
-.c-btn:disabled,
-button:disabled{
-  opacity: .45;
-  cursor: not-allowed;
-  pointer-events: none;
-  filter: grayscale(0.2);
-}
-
-.c-btn--ghost{
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-.c-btn--ghost:hover{ border-color: var(--accent); }
-
-.c-btn--danger{
-  background: var(--danger);
-  color: #fff;
-}
-.c-btn--danger:hover{ filter: brightness(0.9); }
-
-.c-btn--sm{
-  padding: 4px 8px;
-  font-size: 11px;
-  line-height: 1.05;
-  border-radius: 10px;
-}
-
-/* TABS (Topbar) */
-.c-btn--tab{
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-}
-
-.c-btn--tab:hover{ border-color: var(--accent); }
-
-.c-btn--tab.is-active{
-  background: var(--accent);
-  color: #000;
-  border-color: var(--accent);
-}
-
-/* UX: clamp flash */
-.c-input.was-clamped{
-  box-shadow: 0 0 0 2px rgba(209, 17, 17, 0.6);
-}
-
-/* Save Indicator (Komponente) */
-.c-saveIndicator{
-  margin-left:auto;
-  font-size:12px;
-  font-weight:800;
-  color: var(--muted);
-  padding:6px 10px;
-  border:1px solid var(--border);
-  border-radius:999px;
-  background: var(--bg);
-  min-width: 120px;
-  text-align:center;
-  user-select:none;
-}
-
-.c-saveIndicator.is-dirty{
-  color:#ffb300;
-  border-color: rgba(255,179,0,.45);
-}
-.c-saveIndicator.is-saved{
-  color:#00ffcc;
-  border-color: rgba(0,255,204,.35);
-}
-.c-saveIndicator.is-error{
-  color:#ff8080;
-  border-color: rgba(255,128,128,.45);
-}
-
-/* ab hier ist neu, evtl. oben löschen / anpassen
-/* =========================
-   FIELD SYSTEM
-   ========================= */
-/* Wrapper für Label + Control (optional) */
 .c-field{
   display: grid;
   gap: 4px;
 }
 
-/* Label (du nutzt oft Grid-Labels einzeln – bleibt kompatibel) */
-.c-label,
-.c-field__label{
-  font-weight: 700;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-/* Base control look (Input/Select/Output sollen identisch wirken) */
 .c-input,
 .c-select,
 .c-output{
   width: 100%;
   box-sizing: border-box;
   padding: 5px;
+
   background: #0f141a;
   color: var(--mint);
+
   font-size: 13px;
+
   border: 1px solid var(--border);
   border-radius: 4px;
 }
 
-/* Output (read-only Anzeige) */
 .c-output{
-  /* output/div hat keinen "value", deshalb align & min-height */
   min-height: 28px;
   display: flex;
   align-items: center;
-  color: var(--text);            /* Anzeige normaler Text */
-  background: #1a212a;         /* leicht abgesetzt */
+
+  color: var(--text);
+  background: #1a212a;
 }
 
-/* Focus nur bei echten Controls */
 .c-input:focus,
 .c-select:focus{
   outline: none;
   border-color: var(--accent);
 }
 
-/* Disabled nur bei echten Controls */
 .c-input:disabled,
 .c-select:disabled{
   background: #2a2f36;
   color: #aaa;
-  cursor: not-allowed;
 }
 
-/* Size modifiers */
 .c-input--sm,
 .c-select--sm,
 .c-output--sm{
@@ -251,7 +125,7 @@ button:disabled{
 
 .c-input--mono,
 .c-output--mono{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .c-input--center,
@@ -259,128 +133,43 @@ button:disabled{
   text-align: center;
 }
 
-/* Clamp flash bleibt */
-.c-input.was-clamped{
-  box-shadow: 0 0 0 2px rgba(209, 17, 17, 0.6);
-}
-
-/* =========================================
-   RESET/WARN Buttons (orange)
-   ========================================= */
-.c-btn--warn{
-  background: #ff8800;
-  color: #000;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.c-btn--warn:hover { background: #ffa000; }
-.c-btn--warn:active { background: #ff6f00; transform: translateY(1px); }
-
-.c-btn--warn:focus{
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(255, 136, 0, 0.4);
-}
-
-.c-btn--warn:disabled{
-  background: #555;
-  color: #aaa;
-  cursor: not-allowed;
-}
-
-/* =========================================
-   RESET SUCCESS FEEDBACK
-   Button blinkt kurz grün
-   ========================================= */
-.reset-success{
-  background: #2e7d32 !important;
-  color: #fff !important;
-  transform: scale(0.96);
-}
-.reset-success:hover{
-  background: #2e7d32 !important;
-}
-
-/* =========================================
-   CONTACT buttons (Telefon / Info / Secondary Actions)
-   ========================================= */
-.c-btn--contact{
-  background: linear-gradient(
-    to bottom,
-    rgba(0,255,204,0.18),
-    rgba(0,255,204,0.10)
-  );
-  color: var(--mint);
-  border: 1px solid rgba(0,255,204,0.45);
-  border-radius: 999px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 0 6px rgba(0,255,204,0.15);
-}
-
-/* Hover → leicht stärker */
-.c-btn--contact:hover{
-  background: linear-gradient(
-    to bottom,
-    rgba(0,255,204,0.28),
-    rgba(0,255,204,0.16)
-  );
-  border-color: var(--mint);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    0 0 10px rgba(0,255,204,0.35);
-}
-
-/* Click */
-.c-btn--contact:active{
-  transform: translateY(1px);
-  box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.35),
-    0 0 6px rgba(0,255,204,0.2);
-}
 
 /* =========================================================
-   COCKPIT SKIN (Tabs / Contacts / Reset)
-   Form: leicht abgerundet wie Reset-Buttons
+   4. BASE BUTTON
    ========================================================= */
 
-/* shared: cockpit surface */
-.c-cockpit{
-  background: linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    0 6px 18px rgba(0,0,0,0.35);
+.c-btn{
+  padding: 5px 10px;
+
+  border-radius: 6px;
+  border: none;
+
+  cursor: pointer;
+
+  font-weight: 700;
+  font-size: 12px;
+
+  transition: all .12s ease;
+
+  user-select: none;
 }
 
-/* ---------- TOP NAV TABS ---------- */
-/* use: class="c-btn c-btn--tab c-btn--cockpit" */
-.c-btn--cockpit{
-  border-radius: 6px; /* wie deine Reset-Buttons */
-  padding: 6px 12px;
-  color: var(--text);
-  font-weight: 800;
-  letter-spacing: 0.3px;
+.c-btn:disabled{
+  opacity: .45;
+  pointer-events: none;
 }
 
-.c-btn--cockpit.c-btn--tab{
-  position: relative;
+
+/* =========================================================
+   5. BUTTON: TOP NAV TABS
+   ========================================================= */
+
+.c-tab{
 
   background: rgba(0,0,0,0.20);
   border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 6px;
 
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.18),     /* obere Kante */
-    inset 0 10px 16px rgba(255,255,255,0.05), /* Schleier läuft rein */
-    0 2px 6px rgba(0,0,0,0.35);
+  color: var(--text);
 
   font-family:
     "Segoe UI",
@@ -388,47 +177,57 @@ button:disabled{
     "Bank Gothic",
     system-ui,
     sans-serif;
+
   font-weight: 800;
   font-size: 13px;
+
   letter-spacing: 0.8px;
   text-transform: uppercase;
 
-  /* neutraler Text-Glow (kein mint) */
+  position: relative;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 10px 16px rgba(255,255,255,0.05),
+    0 2px 6px rgba(0,0,0,0.35);
+
   text-shadow: 0 0 6px rgba(255,255,255,0.10);
 }
 
-/* Hover: leicht heller, aber nicht "active" */
-.c-btn--cockpit.c-btn--tab:hover{
-  border-color: rgba(0,255,204,0.40);
-  background: rgba(0,0,0,0.18);
+.c-tab:hover{
+  border-color: rgba(0,255,204,0.35);
+
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 12px 18px rgba(255,255,255,0.06),
     0 0 10px rgba(0,255,204,0.12);
 }
 
-/* ACTIVE TAB — ForeFlight-ish: leicht eingesenkt + klarer bottom indicator */
-.c-btn--cockpit.c-btn--tab.is-active{
+.c-tab.is-active{
+
   background: linear-gradient(
     to bottom,
-    rgba(0,255,204,0.18) 0%,   /* ← mint touch oben */
+    rgba(0,255,204,0.18),
     rgba(0,0,0,0.10) 35%,
     rgba(0,0,0,0.06) 65%,
-    rgba(0,255,204,0.14) 100%   /* ← mint touch unten */
+    rgba(0,255,204,0.14)
   );
+
   border-color: rgba(0,255,204,0.65);
+
   color: var(--mint);
-  /* "inset" = eingesenkt */
+
   box-shadow:
     inset 0 1px 4px rgba(0,0,0,0.45),
     inset 0 1px 0 rgba(255,255,255,0.10),
     0 0 12px rgba(0,255,204,0.22);
+
   text-shadow:
     0 0 10px rgba(0,255,204,0.45),
     0 0 2px rgba(0,255,204,0.8);
 }
 
-/* Dünne Aktivlinie unten (nur 1px!) */
-.c-btn--cockpit.c-btn--tab.is-active::after{
+.c-tab.is-active::after{
   content:"";
   position:absolute;
   left:10px;
@@ -436,41 +235,134 @@ button:disabled{
   bottom:-2px;
   height:1px;
   background: rgba(0,255,204,0.95);
-  border-radius:1px;
-  box-shadow:
-    0 0 6px rgba(0,255,204,0.75);
+  box-shadow: 0 0 6px rgba(0,255,204,0.75);
 }
 
-.c-btn--cockpit.c-btn--tab.is-active:active{
-  transform: translateY(1px);
-}
 
-/* optional: icon spacing if you add icons later */
-.c-btn--cockpit .ico{
-  opacity: 0.9;
-  margin-right: 8px;
-}
+/* =========================================================
+   6. BUTTON: RESET / EXPORT / IMPORT
+   ========================================================= */
 
-/* ---------- CONTACT BUTTONS ---------- */
-/* use: class="c-btn c-btn--contact c-btn--cockpit c-btn--sm" */
-.c-btn--contact.c-btn--cockpit{
-  background: linear-gradient(to bottom, rgba(0,255,204,0.18), rgba(0,255,204,0.08));
-  border: 1px solid rgba(0,255,204,0.45);
-  color: var(--mint);
-  font-weight: 900;
-}
+.c-reset{
 
-.c-btn--contact.c-btn--cockpit:hover{
-  background: linear-gradient(to bottom, rgba(0,255,204,0.28), rgba(0,255,204,0.12));
-  border-color: rgba(0,255,204,0.70);
-  box-shadow: 0 0 12px rgba(0,255,204,0.30);
-}
+  background: #ff8800;
+  color: #000;
 
-/* ---------- RESET / WARN BUTTONS ---------- */
-/* keep your existing .c-btn--warn color, but add cockpit depth */
-.c-btn--warn.c-btn--cockpit{
-  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.10);
+
+  font-weight: 800;
+
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.18),
     0 8px 18px rgba(0,0,0,0.40);
+}
+
+.c-reset:hover{
+  background: #ffa000;
+}
+
+.c-reset:active{
+  background: #ff6f00;
+  transform: translateY(1px);
+}
+
+
+/* =========================================================
+   7. BUTTON: PHONE / CONTACT
+   ========================================================= */
+
+.c-phone{
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0,255,204,0.18),
+    rgba(0,255,204,0.08)
+  );
+
+  border: 1px solid rgba(0,255,204,0.45);
+
+  color: var(--mint);
+
+  font-weight: 900;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 10px rgba(0,255,204,0.12);
+}
+
+.c-phone:hover{
+
+  border-color: rgba(0,255,204,0.70);
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0,255,204,0.28),
+    rgba(0,255,204,0.12)
+  );
+
+  box-shadow: 0 0 12px rgba(0,255,204,0.30);
+}
+
+.c-phone:active{
+  transform: translateY(1px);
+}
+
+
+/* =========================================================
+   8. BUTTON: CHECK / UNCHECK
+   ========================================================= */
+
+.c-toggle{
+
+  padding: 4px 8px;
+
+  font-size: 11px;
+
+  border-radius: 10px;
+
+  background: rgba(0,0,0,0.18);
+
+  color: var(--text);
+
+  border: 1px solid var(--border);
+}
+
+.c-toggle:hover{
+  border-color: rgba(0,255,204,0.35);
+}
+
+
+/* =========================================================
+   9. SAVE INDICATOR
+   ========================================================= */
+
+.c-saveIndicator{
+
+  margin-left:auto;
+
+  font-size:12px;
+  font-weight:800;
+
+  padding:6px 10px;
+
+  border:1px solid var(--border);
+  border-radius:999px;
+
+  background: var(--bg);
+
+  min-width: 120px;
+
+  text-align:center;
+}
+
+.c-saveIndicator.is-dirty{
+  color:#ffb300;
+}
+
+.c-saveIndicator.is-saved{
+  color:#00ffcc;
+}
+
+.c-saveIndicator.is-error{
+  color:#ff8080;
 }

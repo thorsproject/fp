@@ -34,17 +34,17 @@
 <!-- Reihenfolge so lassen -->
 <link rel="stylesheet" href="css/reset.css?v=1">
 <link rel="stylesheet" href="css/base.css?v=1">
-<link rel="stylesheet" href="css/utils.css?v=1">
 <link rel="stylesheet" href="css/layout.css?v=1">
+<link rel="stylesheet" href="css/utils.css?v=1">
 <link rel="stylesheet" href="css/components.css?v=1">
 <link rel="stylesheet" href="css/overlays.css?v=1">
 
-<link rel="stylesheet" href="css/route.css?v=1">
-<link rel="stylesheet" href="css/map.css?v=1">
-<link rel="stylesheet" href="css/checklist.css?v=1">
-<link rel="stylesheet" href="css/fuel.css?v=1">
-<link rel="stylesheet" href="css/performance.css?v=1">
-<link rel="stylesheet" href="css/settings.css?v=1">
+<link rel="stylesheet" href="css/views/route.css?v=1">
+<link rel="stylesheet" href="css/views/map.css?v=1">
+<link rel="stylesheet" href="css/views/checklist.css?v=1">
+<link rel="stylesheet" href="css/views/fuel.css?v=1">
+<link rel="stylesheet" href="css/views/performance.css?v=1">
+<link rel="stylesheet" href="css/views/settings.css?v=1">
 
 
 <!-- Link zum Java Script -->
@@ -56,11 +56,11 @@
     <div class="l-topbar__title">FLIGHT PLANNING V0.1</div>
     <!-- BUTTON TOPNAV -->
     <nav class="l-topbar__nav" id="topNav">
-      <button type="button" class="c-btn c-btn--tab c-btn--cockpit is-active" data-view="view-map"><span class="ico">🗺️</span>MAP</button>
-      <button type="button" class="c-btn c-btn--tab c-btn--cockpit" data-view="view-checklist"><span class="ico">🗺️</span>Checklist</button>
-      <button type="button" class="c-btn c-btn--tab c-btn--cockpit" data-view="view-fuel"><span class="ico">🗺️</span>FUEL Planning</button>
-      <button type="button" class="c-btn c-btn--tab c-btn--cockpit" data-view="view-performance"><span class="ico">🗺️</span>PERFORMANCE</button>
-      <button type="button" class="c-btn c-btn--tab c-btn--cockpit" data-view="view-settings"><span class="ico">🗺️</span>Settings</button>
+      <button type="button" class="c-btn c-tab is-active" data-view="view-map"><span class="ico">🗺️</span>MAP</button>
+      <button type="button" class="c-btn c-tab" data-view="view-checklist"><span class="ico">🗺️</span>Checklist</button>
+      <button type="button" class="c-btn c-tab" data-view="view-fuel"><span class="ico">🗺️</span>FUEL Planning</button>
+      <button type="button" class="c-btn c-tab" data-view="view-performance"><span class="ico">🗺️</span>PERFORMANCE</button>
+      <button type="button" class="c-btn c-tab" data-view="view-settings"><span class="ico">🗺️</span>Settings</button>
       <button type="button" class="c-btn c-btn--warn c-btn--cockpit" data-action="export-data"><span class="ico">🗺️</span>Export JSON</button>
       <button type="button" class="c-btn c-btn--warn c-btn--cockpit" data-action="import-data"><span class="ico">🗺️</span>Import JSON</button>
       <!-- optional: unsichtbarer file input -->
