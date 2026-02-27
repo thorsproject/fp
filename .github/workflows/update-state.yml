@@ -1,16 +1,28 @@
-name: Update state.md
+# update-state.yml
+name: Build state.md (artifact) + optional commit
 
 on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: "Commit state.md to repo (true/false)"
+        required: false
+        default: "true"
   push:
     branches: [ main ]
+    # verhindert Endlosschleife durch Bot-Commit
     paths-ignore:
       - "state.md"
-      
+
 permissions:
   contents: write
 
+concurrency:
+  group: state-md-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  update-state:
+  build-state:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,13 +32,27 @@ jobs:
         with:
           node-version: 20
 
-      - run: node tools/update_state.mjs
+      - name: Generate state.md
+        run: node tools/update_state.mjs
 
-      - name: Commit if changed
+      - name: Upload state.md artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: state-md
+          path: state.md
+          if-no-files-found: error
+
+      # Commit nur wenn:
+      # - workflow_dispatch UND input commit == "true"
+      #   ODER
+      # - push UND Commit-Message enthält "STATE:"
+      - name: Commit state.md (optional)
+        if: >
+          (github.event_name == 'workflow_dispatch' && inputs.commit == 'true') ||
+          (github.event_name == 'push' && contains(github.event.head_commit.message, 'STATE:'))
         run: |
           git config user.name "state-bot"
           git config user.email "state-bot@users.noreply.github.com"
           git add state.md
           git diff --staged --quiet || git commit -m "auto: update state.md"
-          git pull --rebase
           git push
