@@ -106,3 +106,44 @@
                 <button class="c-btn c-btn--ghost" data-action="reset-wx">Reset Wx</button>
               </div>
             </div>
+            <!-- PHONE POPUP (Checklist) -->
+            <div id="phonePopup" class="phone-popup is-hidden" aria-hidden="true">
+              <div class="phone-popup__backdrop" data-phone-popup-close></div>
+
+              <div class="phone-popup__card" role="dialog" aria-modal="true" aria-labelledby="phonePopupTitle">
+                <div class="phone-popup__head">
+                  <div id="phonePopupTitle" class="phone-popup__title">Telefon</div>
+
+                  <button type="button"
+                          class="c-btn c-btn--ghost c-btn--sm phone-popup__close"
+                          data-phone-popup-close
+                          aria-label="Schließen">
+                    ✕
+                  </button>
+                </div>
+
+                <div class="phone-popup__body">
+                  <div class="phone-popup__label" id="phonePopupLabel"></div>
+
+                  <div class="phone-popup__row">
+                    <code class="phone-popup__number" id="phonePopupNumber"></code>
+
+                    <button type="button" class="c-btn c-btn--ghost c-btn--sm" id="phonePopupCopyBtn">
+                      Kopieren
+                    </button>
+                  </div>
+
+                  <div class="phone-popup__actions">
+                    <a class="c-btn c-btn--ghost phone-popup__call" id="phonePopupCallLink" href="#" rel="noreferrer">
+                      Anrufen
+                    </a>
+
+                    <button type="button" class="c-btn" data-phone-popup-close>
+                      Schließen
+                    </button>
+                  </div>
+
+                  <div class="phone-popup__hint" id="phonePopupHint"></div>
+                </div>
+              </div>
+            </div>

@@ -410,3 +410,96 @@ button:disabled{
   margin-top:10px;
 }
 /*---------- Ende - Signature modal (Settings/Overlay helper) ----------*/
+
+/*---------- PHONE POPUP (overlay component) ----------*/
+.phone-popup{
+  position: fixed;
+  inset: 0;
+  z-index: 10050; /* über Topbar / ggf. auch ORM */
+}
+.phone-popup.is-hidden{ display:none !important; }
+
+.phone-popup__backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.55);
+}
+
+.phone-popup__card{
+  position:absolute;
+  top: 110px; /* unter Topbar */
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 24px));
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+.phone-popup__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,.15);
+}
+
+.phone-popup__title{
+  font-weight: 900;
+  color: var(--text);
+}
+
+.phone-popup__body{
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.phone-popup__label{
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.phone-popup__row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.phone-popup__number{
+  color: var(--mint);
+  font-weight: 900;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.phone-popup__actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+
+.phone-popup__call.is-disabled{
+  opacity:.45;
+  pointer-events:none;
+}
+
+.phone-popup__hint{
+  color: var(--muted);
+  font-size: 12px;
+  min-height: 16px;
+}
+/*---------- Ende - PHONE POPUP (overlay component) ----------*/

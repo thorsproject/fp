@@ -1,63 +1,94 @@
 // js/phone_popup.js
-import { qs, setText } from "./ui/index.js";
+import { qs } from "./ui/index.js";
 
-const SEL_POPUP = {
+const ID = {
   root: "#phonePopup",
   label: "#phonePopupLabel",
   number: "#phonePopupNumber",
-  copy: "#phonePopupCopy",
-  close: "[data-phone-popup-close]",
+  hint: "#phonePopupHint",
+  copyBtn: "#phonePopupCopyBtn",
+  callLink: "#phonePopupCallLink",
 };
 
-let lastNumber = "";
-
-function showRoot(show) {
-  const root = qs(SEL_POPUP.root);
-  if (!root) return;
-  root.classList.toggle("is-hidden", !show);
-  root.setAttribute("aria-hidden", show ? "false" : "true");
+function normalizeTel(tel) {
+  return String(tel || "").trim();
+}
+function toTelHref(tel) {
+  const cleaned = normalizeTel(tel).replace(/[()\-\s]/g, "");
+  return cleaned ? `tel:${cleaned}` : "#";
 }
 
-export function showPhonePopup({ label = "", number = "" }) {
-  lastNumber = String(number || "");
-
-  setText(SEL_POPUP.label, label);
-  setText(SEL_POPUP.number, lastNumber);
-
-  showRoot(true);
-}
-
-export function hidePhonePopup() {
-  showRoot(false);
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function initPhonePopup() {
-  const root = qs(SEL_POPUP.root);
+  const root = qs(ID.root);
   if (!root) return;
 
-  // Close handlers (backdrop + button)
+  // Close (Backdrop + Buttons)
   root.addEventListener("click", (e) => {
-    const t = e.target;
-    if (t?.closest?.(SEL_POPUP.close)) hidePhonePopup();
+    if (!e.target.closest("[data-phone-popup-close]")) return;
+    hidePhonePopup();
   });
 
   // ESC
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !root.classList.contains("is-hidden")) {
-      hidePhonePopup();
-    }
+    if (e.key !== "Escape") return;
+    if (root.classList.contains("is-hidden")) return;
+    hidePhonePopup();
   });
 
   // Copy
-  const btnCopy = qs(SEL_POPUP.copy);
-  btnCopy?.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(lastNumber);
-      // optional: kurzes Feedback
-      btnCopy.textContent = "Kopiert!";
-      setTimeout(() => (btnCopy.textContent = "Kopieren"), 900);
-    } catch {
-      // fallback: nix
-    }
+  qs(ID.copyBtn)?.addEventListener("click", async () => {
+    const numberEl = qs(ID.number);
+    const hintEl = qs(ID.hint);
+    const tel = numberEl?.textContent || "";
+    const ok = await copyToClipboard(tel);
+    if (hintEl) hintEl.textContent = ok ? "Nummer kopiert ✅" : "Kopieren nicht möglich.";
+
+    clearTimeout(initPhonePopup._t);
+    initPhonePopup._t = setTimeout(() => {
+      if (hintEl) hintEl.textContent = "";
+    }, 1500);
   });
+}
+
+export function showPhonePopup({ label = "Telefon", number = "" } = {}) {
+  const root = qs(ID.root);
+  if (!root) return;
+
+  const labelEl = qs(ID.label);
+  const numberEl = qs(ID.number);
+  const hintEl = qs(ID.hint);
+  const callLink = qs(ID.callLink);
+
+  if (labelEl) labelEl.textContent = String(label || "");
+  if (numberEl) numberEl.textContent = normalizeTel(number);
+  if (hintEl) hintEl.textContent = "";
+
+  if (callLink) {
+    const href = toTelHref(number);
+    callLink.setAttribute("href", href);
+    if (href === "#") callLink.classList.add("is-disabled");
+    else callLink.classList.remove("is-disabled");
+  }
+
+  root.classList.remove("is-hidden");
+  root.setAttribute("aria-hidden", "false");
+
+  // Fokus auf Close
+  root.querySelector(".phone-popup__close")?.focus?.();
+}
+
+export function hidePhonePopup() {
+  const root = qs(ID.root);
+  if (!root) return;
+  root.classList.add("is-hidden");
+  root.setAttribute("aria-hidden", "true");
 }
