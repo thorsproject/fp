@@ -310,7 +310,8 @@ button:disabled{
    CONTACT buttons (Telefon / Info / Secondary Actions)
    ========================================= */
 .c-btn--contact{
-  background: rgba(255,255,255,0.04);
+  background: rgba(81, 108, 5, 0.04);
+/*  background: rgba(255,255,255,0.04);*/
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 999px;     /* pill shape */
