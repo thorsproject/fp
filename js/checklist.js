@@ -2,7 +2,6 @@
 // Local-only Planning Checklist state (NOT part of fp storage.js)
 
 import { qs, qsa, closest, readValue, setValue, SEL } from "./ui/index.js";
-import { showPhonePopup } from "./phone_popup.js";
 
 // ---------- Debug-Funktion bei Bedarf ----------
 const DEBUG_CHECKLIST = false; // <- auf true setzen, wenn du Logs willst
@@ -185,19 +184,5 @@ export function initChecklistUI() {
     const el = closest(e.target, SEL.checklist.fieldAny);
     if (!el || !scope.contains(el)) return;
     saveField(el.dataset.field, readValue(el));
-  });
-
-  // ---------- Phone Buttons ----------
-  scope.addEventListener("click", (e) => {
-    const b = closest(e.target, SEL.checklist.phoneBtn);
-    if (!b || !scope.contains(b)) return;
-
-    const label = b.dataset.phoneLabel || b.textContent.trim();
-    const phone = b.dataset.phone || "";
-    if (!phone) return;
-
-    dlog("phone click", { label, phone });
-
-    showPhonePopup({ label, number: phone });
   });
 }
