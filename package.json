@@ -1,0 +1,7 @@
+{
+  "name": "fp",
+  "version": "1.0.0",
+  "scripts": {
+    "state:update": "node tools/update_state.mjs"
+  }
+}
