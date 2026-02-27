@@ -309,29 +309,47 @@ button:disabled{
 /* =========================================
    CONTACT buttons (Telefon / Info / Secondary Actions)
    ========================================= */
-/* CONTACT buttons – sichtbar aber nicht aggressiv */
 .c-btn--contact{
-  background: rgba(0,255,204,0.08);
+  background: linear-gradient(
+    to bottom,
+    rgba(0,255,204,0.18),
+    rgba(0,255,204,0.10)
+  );
+
   color: var(--mint);
-  border: 1px solid rgba(0,255,204,0.35);
+
+  border: 1px solid rgba(0,255,204,0.45);
   border-radius: 999px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+
+  font-weight: 800;
+  letter-spacing: 0.4px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 0 6px rgba(0,255,204,0.15);
 }
 
+/* Hover → leicht stärker */
 .c-btn--contact:hover{
-  background: rgba(0,255,204,0.18);
+  background: linear-gradient(
+    to bottom,
+    rgba(0,255,204,0.28),
+    rgba(0,255,204,0.16)
+  );
+
   border-color: var(--mint);
-  box-shadow: 0 0 8px rgba(0,255,204,0.25);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 0 10px rgba(0,255,204,0.35);
 }
 
+/* Click */
 .c-btn--contact:active{
   transform: translateY(1px);
-}
-
-.c-btn--contact:focus{
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(0,255,204,0.35);
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,0.35),
+    0 0 6px rgba(0,255,204,0.2);
 }
 
 .c-btn--contact::before{
