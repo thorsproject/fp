@@ -346,12 +346,6 @@ button:disabled{
     0 0 6px rgba(0,255,204,0.2);
 }
 
-.c-btn--contact::before{
-  content: "☎ ";
-  font-size: 11px;
-  opacity: 0.7;
-}
-
 /* =========================================================
    COCKPIT SKIN (Tabs / Contacts / Reset)
    Form: leicht abgerundet wie Reset-Buttons
@@ -380,20 +374,63 @@ button:disabled{
   background: rgba(0,0,0,0.20);
   border: 1px solid rgba(255,255,255,0.12);
 }
+/* Cockpit font style for tabs */
+.c-btn--cockpit.c-btn--tab{
+
+  font-family:
+    "Segoe UI",
+    "Eurostile",
+    "Bank Gothic",
+    system-ui,
+    sans-serif;
+
+  font-weight: 800;
+
+  font-size: 13px;
+
+  letter-spacing: 0.8px;
+
+  text-transform: uppercase;
+
+  /* leicht technischer look */
+  text-shadow:
+    0 0 6px rgba(0,255,204,0.15);
+  position: relative;
+}
+
+/* active tab text glow stronger */
+.c-btn--cockpit.c-btn--tab.is-active{
+  text-shadow:
+    0 0 10px rgba(0,255,204,0.45),
+    0 0 2px rgba(0,255,204,0.8);
+}
 
 .c-btn--cockpit.c-btn--tab:hover{
   border-color: rgba(0,255,204,0.45);
   box-shadow: 0 0 10px rgba(0,255,204,0.18);
 }
 
-/* active tab: mint/teal glow */
+/* ACTIVE TAB — cockpit depth effect */
 .c-btn--cockpit.c-btn--tab.is-active{
-  background: linear-gradient(to bottom, rgba(0,255,204,0.22), rgba(0,255,204,0.10));
-  border-color: rgba(0,255,204,0.55);
+
+  /* dunkler oben, heller unten */
+  background: linear-gradient(
+    to bottom,
+    rgba(0,255,204,0.10) 0%,
+    rgba(0,255,204,0.16) 45%,
+    rgba(0,255,204,0.28) 100%
+  );
+
+  border-color: rgba(0,255,204,0.65);
+
   color: var(--mint);
+
+  /* wichtig: bottom highlight stärker */
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 0 14px rgba(0,255,204,0.30);
+    inset 0 1px 0 rgba(255,255,255,0.10),     /* top edge */
+    inset 0 -2px 0 rgba(0,255,204,0.55),     /* bottom inner glow */
+    0 2px 0 rgba(0,255,204,0.35),            /* bottom edge line */
+    0 8px 18px rgba(0,255,204,0.25);         /* outer glow */
 }
 
 /* optional: icon spacing if you add icons later */
