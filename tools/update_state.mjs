@@ -11,8 +11,13 @@ function safeSh(cmd) {
   try { return sh(cmd); } catch { return ""; }
 }
 
-function nowIso() {
-  return new Date().toISOString();
+function getHeadCommitIso() {
+  // deterministic for a given checked-out commit
+  return safeSh('git show -s --format=%cI HEAD') || new Date().toISOString();
+}
+
+function getHeadSha() {
+  return safeSh("git rev-parse --short HEAD") || "unknown";
 }
 
 function getBranch() {
@@ -24,13 +29,15 @@ function getLastCommits(n = 5) {
   return out || "- (no commits found)";
 }
 
-function getChangedFiles() {
-  const out = safeSh("git status --porcelain");
-  if (!out) return "- (clean)";
+function getChangedFilesInCommit() {
+  // In GitHub Actions this shows what the triggering commit changed.
+  // (Working tree is usually clean after checkout.)
+  const out = safeSh('git show --name-only --pretty="" HEAD');
+  if (!out) return "  - (none)";
   return out
     .split("\n")
     .filter(Boolean)
-    .map(l => `- ${l}`)
+    .map(f => `  - ${f}`)
     .join("\n");
 }
 
@@ -59,21 +66,22 @@ function detectFeatures() {
     : "  - (none detected)";
 }
 
-function buildAutoBlock() {
-  return [
-    "<!-- STATE:AUTO:BEGIN -->",
-    `- Last updated: ${nowIso()}`,
+ function buildAutoBlock() {
+   return [
+     "<!-- STATE:AUTO:BEGIN -->",
+    `- Last updated (commit time): ${getHeadCommitIso()}`,
+    `- HEAD: ${getHeadSha()}`,
     `- Branch: ${getBranch()}`,
-    `- App Version: ${getAppVersion()}`,
-    `- Active Features:`,
-    `${detectFeatures()}`,
-    `- Last commits:`,
-    `${getLastCommits(5)}`,
-    `- Changed files (working tree):`,
-    `${getChangedFiles()}`,
-    "<!-- STATE:AUTO:END -->",
-  ].join("\n");
-}
+     `- App Version: ${getAppVersion()}`,
+     `- Active Features:`,
+     `${detectFeatures()}`,
+     `- Last commits:`,
+     `${getLastCommits(5)}`,
+    `- Changed files (this commit):`,
+    `${getChangedFilesInCommit()}`,
+     "<!-- STATE:AUTO:END -->",
+   ].join("\n");
+ }
 
 function replaceAutoBlock(md, block) {
   const begin = "<!-- STATE:AUTO:BEGIN -->";
