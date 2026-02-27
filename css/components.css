@@ -296,6 +296,10 @@
     0 0 10px rgba(0,255,204,0.12);
 }
 
+.c-phone .ico{
+  margin-right: 6px;
+}
+
 .c-phone:hover{
 
   border-color: rgba(0,255,204,0.70);
