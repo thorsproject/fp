@@ -194,6 +194,10 @@
   text-shadow: 0 0 6px rgba(255,255,255,0.10);
 }
 
+.c-tab .ico{
+  margin-right: 6px;
+}
+
 .c-tab:hover{
   border-color: rgba(0,255,204,0.35);
 
