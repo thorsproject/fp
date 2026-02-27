@@ -3,7 +3,9 @@ name: Update state.md
 on:
   push:
     branches: [ main ]
-
+    paths-ignore:
+      - "state.md"
+      
 permissions:
   contents: write
 
