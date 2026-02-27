@@ -15,7 +15,10 @@ export function initPhones() {
     try {
       cfg = await loadConfig();
     } catch {
-      showPhonePopup({ label: "Telefon", number: "Config gesperrt / Passwort falsch" });
+      showPhonePopup({
+        label: "Telefonnummer",
+        number: "Die Telefonnummer kann erst angezeigt werden, wenn unter Settings das Passwort eingegeben wurde.",
+      });
       return;
     }
 
