@@ -351,3 +351,77 @@ button:disabled{
   font-size: 11px;
   opacity: 0.7;
 }
+
+/* =========================================================
+   COCKPIT SKIN (Tabs / Contacts / Reset)
+   Form: leicht abgerundet wie Reset-Buttons
+   ========================================================= */
+
+/* shared: cockpit surface */
+.c-cockpit{
+  background: linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 6px 18px rgba(0,0,0,0.35);
+}
+
+/* ---------- TOP NAV TABS ---------- */
+/* use: class="c-btn c-btn--tab c-btn--cockpit" */
+.c-btn--cockpit{
+  border-radius: 6px; /* wie deine Reset-Buttons */
+  padding: 6px 12px;
+  color: var(--text);
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.c-btn--cockpit.c-btn--tab{
+  background: rgba(0,0,0,0.20);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.c-btn--cockpit.c-btn--tab:hover{
+  border-color: rgba(0,255,204,0.45);
+  box-shadow: 0 0 10px rgba(0,255,204,0.18);
+}
+
+/* active tab: mint/teal glow */
+.c-btn--cockpit.c-btn--tab.is-active{
+  background: linear-gradient(to bottom, rgba(0,255,204,0.22), rgba(0,255,204,0.10));
+  border-color: rgba(0,255,204,0.55);
+  color: var(--mint);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 14px rgba(0,255,204,0.30);
+}
+
+/* optional: icon spacing if you add icons later */
+.c-btn--cockpit .ico{
+  opacity: 0.9;
+  margin-right: 8px;
+}
+
+/* ---------- CONTACT BUTTONS ---------- */
+/* use: class="c-btn c-btn--contact c-btn--cockpit c-btn--sm" */
+.c-btn--contact.c-btn--cockpit{
+  background: linear-gradient(to bottom, rgba(0,255,204,0.18), rgba(0,255,204,0.08));
+  border: 1px solid rgba(0,255,204,0.45);
+  color: var(--mint);
+  font-weight: 900;
+}
+
+.c-btn--contact.c-btn--cockpit:hover{
+  background: linear-gradient(to bottom, rgba(0,255,204,0.28), rgba(0,255,204,0.12));
+  border-color: rgba(0,255,204,0.70);
+  box-shadow: 0 0 12px rgba(0,255,204,0.30);
+}
+
+/* ---------- RESET / WARN BUTTONS ---------- */
+/* keep your existing .c-btn--warn color, but add cockpit depth */
+.c-btn--warn.c-btn--cockpit{
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 8px 18px rgba(0,0,0,0.40);
+}
