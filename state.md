@@ -6,8 +6,8 @@
 
 ## Auto-Update (wird per Script gepflegt)
 <!-- STATE:AUTO:BEGIN -->
-- Last updated (commit time): 2026-02-27T10:35:14+01:00
-- HEAD: 546ec2a
+- Last updated (commit time): 2026-02-27T11:02:05+01:00
+- HEAD: 0a4cc1a
 - Branch: main
 - App Version: 1.0.0
 - Active Features:
@@ -18,7 +18,7 @@
   - Fuel Planning
   - Map View
 - Last commits:
-- 546ec2a change (thorsproject)
+- 0a4cc1a STATE: working state function (thorsproject)
 - Changed files (this commit):
   - .DS_Store
   - .github/workflows/update-state.yml
