@@ -374,9 +374,9 @@ button:disabled{
   background:
     linear-gradient(
       to bottom,
-      rgba(0,255,204,0.18) 0%,   /* mint edge */
-      rgba(0,255,204,0.08) 6%,  /* weicher Verlauf */
-      rgba(0,255,204,0.00) 18%  /* auslaufen lassen */
+      rgba(255,255,255,0.20) 0%,   /* weiß edge */
+      rgba(255,255,255,0.07) 6%,  /* weicher Verlauf */
+      rgba(255,255,255,0.00) 18%  /* auslaufen lassen */
     ),
     rgba(0,0,0,0.20);  /* Basisfarbe darunter */  
   border: 1px solid rgba(255,255,255,0.12);
