@@ -49,6 +49,17 @@ export function initPhonePopup() {
     const numberEl = qs(ID.number);
     const hintEl = qs(ID.hint);
     const tel = numberEl?.textContent || "";
+
+    // Wenn keine Nummer da ist (z.B. locked), nicht kopieren
+    if (!tel.trim()) {
+      if (hintEl) hintEl.textContent = "Keine Nummer verfügbar.";
+      clearTimeout(initPhonePopup._t);
+      initPhonePopup._t = setTimeout(() => {
+        if (hintEl) hintEl.textContent = "";
+      }, 1500);
+      return;
+    }
+
     const ok = await copyToClipboard(tel);
     if (hintEl) hintEl.textContent = ok ? "Nummer kopiert ✅" : "Kopieren nicht möglich.";
 
@@ -59,7 +70,7 @@ export function initPhonePopup() {
   });
 }
 
-export function showPhonePopup({ label = "Telefon", number = "" } = {}) {
+export function showPhonePopup({ label = "Telefon", number = "", hint = "" } = {}) {
   const root = qs(ID.root);
   if (!root) return;
 
@@ -67,16 +78,24 @@ export function showPhonePopup({ label = "Telefon", number = "" } = {}) {
   const numberEl = qs(ID.number);
   const hintEl = qs(ID.hint);
   const callLink = qs(ID.callLink);
+  const copyBtn = qs(ID.copyBtn);
 
   if (labelEl) labelEl.textContent = String(label || "");
   if (numberEl) numberEl.textContent = normalizeTel(number);
-  if (hintEl) hintEl.textContent = "";
+  if (hintEl) hintEl.textContent = String(hint || "");
 
   if (callLink) {
     const href = toTelHref(number);
     callLink.setAttribute("href", href);
     if (href === "#") callLink.classList.add("is-disabled");
     else callLink.classList.remove("is-disabled");
+  }
+
+  // Copy-Button ebenfalls deaktivieren, wenn keine Nummer da ist
+  if (copyBtn) {
+    const hasNumber = !!normalizeTel(number);
+    copyBtn.disabled = !hasNumber;
+    copyBtn.classList.toggle("is-disabled", !hasNumber);
   }
 
   root.classList.remove("is-hidden");

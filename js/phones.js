@@ -17,7 +17,8 @@ export function initPhones() {
     } catch {
       showPhonePopup({
         label: "Telefonnummer",
-        number: "Die Telefonnummer kann erst angezeigt werden, wenn unter Settings das Passwort eingegeben wurde.",
+        number: "",
+        hint: "Die Telefonnummer kann erst angezeigt werden, wenn unter Settings das Passwort eingegeben wurde.",
       });
       return;
     }
@@ -26,13 +27,17 @@ export function initPhones() {
     const entry = cfg?.phones?.[key];
 
     if (!entry) {
-      showPhonePopup({ label: "Telefon", number: `Nicht in Config: ${key}` });
+      showPhonePopup({
+        label: "Telefon",
+        number: "",
+        hint: `Nicht in Config: ${key}`,
+      });
       return;
     }
 
     const label = entry.label || btn.textContent.trim() || key;
     const tel = entry.tel || entry;
 
-    showPhonePopup({ label, number: tel });
+    showPhonePopup({ label, number: tel, hint: "" });
   });
 }
