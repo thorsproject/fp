@@ -359,7 +359,7 @@
 
 /* optional: unchecked leicht schwächer */
 .c-btn.c-toggle:not(.is-checked) .tgl{
-  color: rgba(255,255,255,0.35);
+  color: rgba(208, 6, 6, 0.916);
 }
 
 /* =========================================================
