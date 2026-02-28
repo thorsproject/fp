@@ -194,7 +194,9 @@ function writeChecklistState(state) {
 function applyChecklistToggle(btn, checked) {
   if (!btn) return;
   btn.classList.toggle("is-checked", !!checked);
-  btn.textContent = checked ? "CHECK" : "UNCHECK";
+  btn.innerHTML = checked 
+    ? '<span class="tgl">✔</span>'
+    : '<span class="tgl">✖</span>';
 }
 
 function resetChecklist(btn) {
