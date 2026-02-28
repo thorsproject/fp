@@ -1,6 +1,6 @@
 # Flight Planning Web-App — Projektzustand (state.md)
 Stand: 2026-02-27
-Version: v0.1 (produktiver interner Einsatz, aktive Weiterentwicklung)
+Version: v0.2 (produktiver interner Einsatz, aktive Weiterentwicklung)
 
 # 1. Projektüberblick
 
@@ -43,18 +43,18 @@ Architektur: reines Frontend (kein Backend)
  │              └── update-weather.yml
  ├── .vscode/
  │    └── tasks.json
- ├── css/
+ ├── css/views/
+ │    │   ├── checklist.css
+ │    │   ├── fuel.css
+ │    │   ├── map.css
+ │    │   ├── performance.css
+ │    │   ├── route.css
+ │    │   └── settings.css
  │    ├── base.css
- │    ├── checklist.css
  │    ├── components.css
- │    ├── fuel.css
  │    ├── layout.css
- │    ├── map.css
  │    ├── overlays.css
- │    ├── performance.css
  │    ├── reset.css
- │    ├── route.css
- │    ├── settings.css
  │    └── utils.css
  ├── data/
  │    ├── airfield_missing.txt
@@ -315,10 +315,11 @@ Bekannte Einschränkung:
 
 # 6. LocalStorage Keys Übersicht
 
-fp.orm.draft.v1
-fp.orm.status.v1
-fp_checklist_v1
-fp.signature.image
+- `fp.orm.draft.v1`: ORM Draft (Base64 ArrayBuffer)
+- `fp.orm.status.v1`: ORM Status (`template|draft|final`)
+- `fp_checklist_v1`: Checklist toggles + fields
+- `signature.*`: (siehe signature_store.js) – Unterschrift DataURL
+- `config.*`: (siehe config_store.js) – config.enc cache/passwort/etc.
 
 # 7. Aktueller stabiler Funktionsumfang
 

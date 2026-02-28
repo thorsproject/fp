@@ -364,11 +364,20 @@
 ---
 
 ## CSS Struktur
-- `base.css`: root vars + global reset basics
-- `layout.css`: Shell/Topbar/Views
-- `components.css`: Panels, Buttons, Inputs, Indicators
-- `checklist.css`, `fuel.css`, `route.css`, `map.css` jeweils view-spezifisch
-- Utilities in `utils.css`
+- `reset.css`: **echtes Reset** (box-sizing, default margins, form controls inherit, remove native button styles) → **bleibt**.
+- `base.css`: Root-Variablen + globale Basics (Farben/Typo).
+- `layout.css`: Shell/Topbar/Views (Layout, Positioning).
+- `utils.css`: kleine Helper (z.B. `.is-hidden`, `.u-danger-strong` etc.).
+- `components.css`: **nur** wiederverwendbare UI-Komponenten (Panels/Inputs/Buttons/SaveIndicator). Aufgeräumt: keine doppelten Input-Regeln, keine ungenutzten Modifier mehr (außer `.c-input.was-clamped` aus `fuel.js`).
+- View-spezifisch: `checklist.css`, `fuel.css`, `route.css`, `map.css`, `settings.css`, `performance.css`.
+- Overlays: `overlays.css` (ORM Overlay, Signature Modal, Phone Popup).
+
+**Buttons (aktueller Stand)**
+- Basis: `.c-btn`
+- Topnav Tabs: `.c-tab` (+ `.is-active`)
+- Phone/Contact: `.c-contact` (Pill, etwas auffälliger)
+- Checklist Toggle: `.c-toggle` (✔/✖ via `<span class="tgl">` + `.is-checked`)
+- Reset/Warn: `.c-warn`
 
 ---
 
@@ -403,3 +412,13 @@
 **Fehlerbild:** …
 **Relevant files:*css Dateien* …
 **Logs:** …
+**Status CSS-Aufräumen:** `components.css` ist strukturiert, entdoppelt und von ungenutzten Selektoren befreit. `reset.css` ist ein echtes Reset und bleibt.
+
+**Als nächstes (kleine Schritte, ohne UI-Brüche):**
+1. Signature UI: in `js/signature_ui.js` die 2 verbliebenen `c-btn--ghost` Buttons später auf das neue Button-System umstellen (reine HTML/CSS-Änderung, JS bleibt).
+2. View-spezifische CSS-Dateien final prüfen (nur Konsistenz/kleine Dopplungen): `checklist.css`, `fuel.css`, `settings.css`.
+3. Optional: `index.html` Stylesheet-Reihenfolge im Blick behalten: Reset/Base/Layout/Utils/Components/Overlays → danach view-spezifisch.
+
+**Letzter Fix (wichtig, damit neue Chats nicht wieder stolpern):**
+- Checklist Toggles: persistieren in `checklist.js`. Beim Init werden gespeicherte Toggles restored; unbekannte Toggles werden default auf ✖ gerendert (damit kein „nackter“ Button nach Reload entsteht).
+
