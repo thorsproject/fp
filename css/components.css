@@ -337,8 +337,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px; /* verhindert springende Breite */
-  min-height: 26px;
+  min-width: 50px; /* verhindert springende Breite */
+  /*min-height: 28px;*/
 }
 
 .c-btn.c-toggle:hover{
