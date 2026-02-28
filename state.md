@@ -6,10 +6,10 @@
 
 ## Auto-Update (wird per Script gepflegt)
 <!-- STATE:AUTO:BEGIN -->
-- Last updated (commit time): 2026-02-27T11:02:05+01:00
-- HEAD: 0a4cc1a
+- Last updated (commit time): 2026-02-28T22:13:26+01:00
+- HEAD: 221eea9
 - Branch: main
-- App Version: 1.0.0
+- App Version: 0.0.3
 - Active Features:
   - ORM Workflow
   - Signature Stamping
@@ -18,7 +18,7 @@
   - Fuel Planning
   - Map View
 - Last commits:
-- 0a4cc1a STATE: working state function (thorsproject)
+- 221eea9 STATE: CSS-Refactoring finished (thorsproject)
 - Changed files (this commit):
   - .DS_Store
   - .github/workflows/update-state.yml
@@ -27,19 +27,19 @@
   - .vscode/tasks.json
   - Layout_structure.txt
   - OLD/checklistOLD.css
-  - OLD/fuel_old.js
+  - OLD/components_OLD.css
   - css/base.css
-  - css/checklist.css
-  - css/checklistRECENT.css
   - css/components.css
-  - css/fuel.css
   - css/layout.css
-  - css/map.css
-  - css/performance.css
+  - css/overlays.css
   - css/reset.css
-  - css/route.css
-  - css/settings.css
   - css/utils.css
+  - css/views/checklist.css
+  - css/views/fuel.css
+  - css/views/map.css
+  - css/views/performance.css
+  - css/views/route.css
+  - css/views/settings.css
   - data/ORMBlatt.pdf
   - data/airfields.json
   - data/airfields_missing.txt
