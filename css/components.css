@@ -345,7 +345,7 @@
 /* default toggle symbol */
 .c-btn.c-toggle .tgl{
   color: var(--muted);
-  font-size: 15px;
+  font-size: 18px;
   line-height: 1;
 }
 
