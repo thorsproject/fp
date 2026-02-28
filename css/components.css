@@ -345,6 +345,12 @@
   border-color: rgba(0,255,204,0.35);
 }
 
+/* Emoji inside toggle: consistent vertical centering */
+.c-btn.c-toggle .tgl{
+  display: inline-block;
+  line-height: 1;
+  transform: translateY(1px); /* ← 1px nach unten, weil es bei dir "zu hoch" ist */
+}
 
 /* =========================================================
    9. SAVE INDICATOR

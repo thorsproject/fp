@@ -30,7 +30,7 @@ function writeState(state) {
 export function checklistApplyToggle(btn, checked) {
   if (!btn) return;
   btn.classList.toggle("is-checked", !!checked);
-  btn.textContent = checked ? "✅" : "❌";
+  btn.textContent = checked ? '<span class="tgl">✅</span>' : '<span class="tgl">❌</span>'; //<-- span class... muss hier genutzt werden, da die zentrierung im button sonst nicht funktioneirt
 }
 
 function flashReset(btn) {
