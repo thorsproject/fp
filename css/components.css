@@ -273,71 +273,100 @@ button:disabled{
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
 /* =========================================================
-   RESET BUTTON (Cockpit outline + glow)
+   RESET BUTTON — cockpit orange rim (ref image)
    ========================================================= */
 
 .c-btn.c-reset{
-  /* Layout */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; /* Abstand Icon/Text */
+  gap: 10px;
 
-  /* Box model */
-  padding: 9px 16px;
-  border-radius: 10px;
+  padding: 10px 18px;
+  border-radius: 12px;
 
-  /* Surface */
+  /* dark cockpit surface */
   background: linear-gradient(
     to bottom,
-    rgba(255,255,255,0.10) 0%,
-    rgba(0,0,0,0.18) 35%,
-    rgba(0,0,0,0.34) 100%
+    rgba(255,255,255,0.08) 0%,
+    rgba(0,0,0,0.18) 40%,
+    rgba(0,0,0,0.35) 100%
   );
-  border: 1px solid rgba(255,150,0,0.75);
 
-  /* Typography */
+  /* orange rim */
+  border: 1px solid rgba(255,140,0,0.80);
+
   color: rgba(255,255,255,0.96);
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.9px;
   text-transform: uppercase;
+
   text-shadow:
     0 1px 0 rgba(0,0,0,0.55),
-    0 0 10px rgba(255,140,0,0.30);
+    0 0 10px rgba(255,120,0,0.30);
 
-  /* Depth */
   box-shadow:
-    inset 0 1px 0 rgba(255,200,120,0.22),   /* heller Schleier oben */
-    inset 0 0 0 1px rgba(0,0,0,0.35),       /* innerer Rahmen */
-    0 6px 16px rgba(0,0,0,0.45),            /* Schatten */
-    0 0 18px rgba(255,120,0,0.35);         /* subtile Außenkante */
+    inset 0 1px 0 rgba(255,210,140,0.20),  /* warm top sheen (not white) */
+    inset 0 0 0 1px rgba(0,0,0,0.35),      /* inner frame */
+    0 8px 22px rgba(0,0,0,0.55),           /* drop shadow */
+    0 0 0 1px rgba(255,140,0,0.18);        /* subtle outer edge */
+
+  position: relative;
 }
 
-/* Hover: stärkerer orange glow wie Bild 2 */
+/* orange glow ring (like ref) */
+.c-btn.c-reset::before{
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  pointer-events: none;
+
+  box-shadow:
+    0 0 18px rgba(255,120,0,0.45),
+    0 0 6px rgba(255,170,0,0.55);
+  opacity: 0.55;
+}
+
+/* bottom “lit” edge */
+.c-btn.c-reset::after{
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 6px;
+  height: 2px;
+  border-radius: 2px;
+  pointer-events: none;
+
+  background: rgba(255,140,0,0.75);
+  box-shadow: 0 0 10px rgba(255,120,0,0.55);
+  opacity: 0.6;
+}
+
 .c-btn.c-reset:hover{
   border-color: rgba(255,170,0,0.95);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,200,120,0.26),
-    inset 0 0 0 1px rgba(0,0,0,0.35),
-    0 8px 20px rgba(0,0,0,0.50),
-    0 0 30px rgba(255,120,0,0.60),
-    0 0 10px rgba(255,170,0,0.65);
 }
 
-/* Active: leicht “eingedrückt” */
+.c-btn.c-reset:hover::before{
+  opacity: 0.85;
+  box-shadow:
+    0 0 26px rgba(255,120,0,0.70),
+    0 0 10px rgba(255,170,0,0.75);
+}
+
 .c-btn.c-reset:active{
   transform: translateY(1px);
-  box-shadow:
-    inset 0 2px 6px rgba(0,0,0,0.45),
-    0 3px 10px rgba(0,0,0,0.45),
-    0 0 16px rgba(255,140,0,0.40);
 }
 
-/* optional: Icon-Klasse (falls du <span class="ico">…</span> nutzt) */
-.c-reset .ico{
-  opacity: 0.95;
+.c-btn.c-reset:active::before{
+  opacity: 0.70;
+}
+
+/* icon spacing (works with <span class="ico">…</span>) */
+.c-btn.c-reset .ico{
+  margin-right: 6px;
 }
 
 /* =========================================================
