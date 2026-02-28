@@ -345,11 +345,21 @@
   border-color: rgba(0,255,204,0.35);
 }
 
-/* Emoji inside toggle: consistent vertical centering */
+/* default toggle symbol */
 .c-btn.c-toggle .tgl{
-  display: inline-block;
+  color: var(--muted);
+  font-size: 15px;
   line-height: 1;
-  transform: translateY(1px); /* ← 1px nach unten, weil es bei dir "zu hoch" ist */
+}
+
+/* checked = mint */
+.c-btn.c-toggle.is-checked .tgl{
+  color: var(--mint);
+}
+
+/* optional: unchecked leicht schwächer */
+.c-btn.c-toggle:not(.is-checked) .tgl{
+  color: rgba(255,255,255,0.35);
 }
 
 /* =========================================================
