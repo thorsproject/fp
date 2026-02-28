@@ -2,209 +2,269 @@
    COMPONENTS.CSS
    Flight Planning Web App
    Clean structure – no modifier stacking
+   einheitliche Reihenfolge innerhalb der Regeln:
+    a. Layout (display/position/flex/grid/overflow)
+    b. Box Model (width/height/padding/margin/box-sizing/min/max)
+    c. Surface (background/border/border-radius)
+    d. Depth/FX (box-shadow/opacity/filter)
+    e. Typography (color/font/weight/size/letter-spacing/text-*)
+    f. Interaction (cursor/transition/user-select/pointer-events)
    ========================================================= */
-
 
 /* =========================================================
    1. PANELS
    ========================================================= */
-
 .c-panel{
-  border: 1px solid var(--border);
-  background: var(--panel);
+  /* Box model */
   padding: 10px;
   margin-bottom: 10px;
+  /* Surface */
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 5px;
 }
 
 .c-panel--stack{
+  /* Layout */
   display: flex;
   flex-direction: column;
+  /* Box model */
   height: 100%;
   min-height: 0;
 }
 
 .c-panel__head{
+  /* Layout */
   flex-shrink: 0;
+  /* Box model */
   margin-bottom: 10px;
 }
 
 .c-panel__body{
+  /* Layout */
   flex: 1;
-  min-height: 0;
   overflow-y: auto;
+  /* Box model */
+  min-height: 0;
 }
 
 .c-panel__foot{
+  /* Layout */
   margin-top: auto;
 }
 
 .c-btnGroup{
-  padding: 0 10px;
+  /* Layout */
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
+  /* Box model */
+  padding: 0 10px;
 }
-
 
 /* =========================================================
    2. TYPO / LABELS
    ========================================================= */
-
 .c-title{
+  /* Box model */
   margin: 0 0 8px 0;
+  /* Typography */
   color: var(--muted);
   font-weight: 700;
 }
 
 .c-subtitle{
+  /* Box model */
   margin: 0;
+  /* Typography */
   color: var(--text);
 }
 
 .c-label{
-  font-weight: 700;
-  font-size: 11px;
+  /* Typography */
   color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
 }
 
-
 /* =========================================================
-   3. INPUT / FIELD SYSTEM
+   3. FIELD SYSTEM
    ========================================================= */
-
 .c-field{
+  /* Layout */
   display: grid;
   gap: 4px;
 }
 
+/* =========================================================
+   4. INPUT / FIELD SYSTEM
+   ========================================================= */
 .c-input,
 .c-select,
 .c-output{
+  /* Box model */
   width: 100%;
-  box-sizing: border-box;
   padding: 5px;
-
+  box-sizing: border-box;
+  /* Surface */
   background: #0f141a;
-  color: var(--mint);
-
-  font-size: 13px;
-
   border: 1px solid var(--border);
   border-radius: 4px;
+  /* Typography */
+  color: var(--mint);
+  font-size: 13px;
+}
+
+.c-input,
+.c-select{
+  /* Typography */
+  text-align: center;
 }
 
 .c-output{
-  min-height: 28px;
+  /* Layout */
   display: flex;
   align-items: center;
-
-  color: var(--text);
+  /* Box model */
+  min-height: 28px;
+  /* Surface */
   background: #1a212a;
+  /* Typography */
+  color: var(--text);
 }
 
 .c-input:focus,
 .c-select:focus{
+  /* Interaction */
   outline: none;
+  /* Surface */
   border-color: var(--accent);
 }
 
 .c-input:disabled,
 .c-select:disabled{
+  /* Surface */
   background: #2a2f36;
+  /* Typography */
   color: #aaa;
+  /* Interaction */
+  cursor: not-allowed;
 }
 
 .c-input--sm,
 .c-select--sm,
 .c-output--sm{
-  padding: 4px 6px;
-  font-size: 12px;
+  /* Box model */
   min-height: 24px;
+  padding: 4px 6px;
+  /* Typography */
+  font-size: 12px;
 }
 
 .c-input--mono,
 .c-output--mono{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* Typography */
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .c-input--center,
 .c-output--center{
+  /* Typography */
   text-align: center;
 }
 
+/* Clamp flash */
+.c-input.was-clamped{
+  /* Depth/FX */
+  box-shadow: 0 0 0 2px rgba(209, 17, 17, 0.6);
+}
 
 /* =========================================================
-   4. BASE BUTTON: shared material + behavior
+   5. BASE BUTTON: shared material + behavior
    ========================================================= */
 .c-btn{
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.10);
-
-  background: rgba(0,0,0,0.16);
-  color: var(--text);
-
+  /* Box model */
   padding: 6px 12px;
-  font-weight: 700;
+  /* Surface */
+  background: rgba(0,0,0,0.16);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 6px;
+  /* Depth/FX */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 2px 6px rgba(0,0,0,0.35);
+  /* Typography */
+  color: var(--text);
   font-size: 12px;
-
+  font-weight: 700;
+  /* Interaction */
   cursor: pointer;
   user-select: none;
-
   transition:
     background .12s ease,
     border-color .12s ease,
     box-shadow .12s ease,
     transform .06s ease;
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 2px 6px rgba(0,0,0,0.35);
 }
 
 .c-btn:hover{
+  /* Surface */
   border-color: rgba(0,255,204,0.25);
 }
 
 .c-btn:active{
+  /* Interaction */
   transform: translateY(1px);
 }
 
 .c-btn:disabled,
 button:disabled{
+  /* Depth/FX */
   opacity: .45;
+  filter: grayscale(0.2);
+  /* Interaction */
   cursor: not-allowed;
   pointer-events: none;
-  filter: grayscale(0.2);
 }
 
 /* =========================================================
-   4.1 BUTTON: TOP NAV TABS
+   5.1 BUTTON: TOP NAV TABS
    ========================================================= */
 .c-tab{
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  font-weight: 800;
-  font-size: 13px;
-
-  /* etwas "segmentiger" als normale Buttons */
+  /* Layout */
+  position: relative;
+  /* Surface */
   background: rgba(0,0,0,0.20);
   border-color: rgba(255,255,255,0.12);
-
+  /* Depth/FX */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 10px 16px rgba(255,255,255,0.05),
+    0 2px 6px rgba(0,0,0,0.35);
+  /* Typography */
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
   text-shadow: 0 0 6px rgba(255,255,255,0.10);
+}
 
-  position: relative;
+.c-tab .ico{
+  /* Box model */
+  margin-right: 6px;
 }
 
 .c-tab:hover{
+  /* Surface */
   border-color: rgba(0,255,204,0.35);
+  /* Depth/FX */
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.12),
     0 0 10px rgba(0,255,204,0.12);
 }
 
-/* Active tab */
 .c-tab.is-active{
+  /* Surface */
   background: linear-gradient(
     to bottom,
     rgba(0,255,204,0.18),
@@ -212,15 +272,14 @@ button:disabled{
     rgba(0,0,0,0.06) 65%,
     rgba(0,255,204,0.14)
   );
-
   border-color: rgba(0,255,204,0.65);
-  color: var(--mint);
-
+  /* Depth/FX */
   box-shadow:
     inset 0 1px 4px rgba(0,0,0,0.45),
     inset 0 1px 0 rgba(255,255,255,0.10),
     0 0 12px rgba(0,255,204,0.22);
-
+  /* Typography */
+  color: var(--mint);
   text-shadow:
     0 0 10px rgba(0,255,204,0.45),
     0 0 2px rgba(0,255,204,0.8);
@@ -228,164 +287,164 @@ button:disabled{
 
 .c-tab.is-active::after{
   content:"";
-  position:absolute;
-  left:10px;
-  right:10px;
-  bottom:-2px;
-  height:1px;
+  /* Layout */
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  bottom: -2px;
+  /* Box model */
+  height: 1px;
+  /* Surface */
   background: rgba(0,255,204,0.95);
-  box-shadow: 0 0 6px rgba(0,255,204,0.75);
   border-radius: 1px;
+  /* Depth/FX */
+  box-shadow: 0 0 6px rgba(0,255,204,0.75);
 }
 
-/* Icons spacing (falls vorhanden) */
-.c-tab .ico{ margin-right: 6px; }
-
-
 /* =========================================================
-   6. BUTTON: RESET / EXPORT / IMPORT
+   5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
-
 .c-reset{
-
+  /* Surface */
   background: #ff8800;
+  border-color: rgba(255,255,255,0.12);
+  /* Typography */
   color: #000;
-
-  border: 1px solid rgba(255,255,255,0.10);
-
   font-weight: 800;
-
+  /* Depth/FX */
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.18),
     0 8px 18px rgba(0,0,0,0.40);
 }
 
 .c-reset:hover{
+  /* Surface */
   background: #ffa000;
 }
 
 .c-reset:active{
+  /* Surface */
   background: #ff6f00;
-  transform: translateY(1px);
 }
 
+/* Reset success blink */
+.reset-success{
+  /* Surface */
+  background: #2e7d32 !important;
+  /* Typography */
+  color: #fff !important;
+  /* Interaction */
+  transform: scale(0.96);
+}
+.reset-success:hover{
+  /* Surface */
+  background: #2e7d32 !important;
+}
 
 /* =========================================================
-   7. BUTTON: PHONE / CONTACT
+   5.3 BUTTON: PHONE / CONTACT
    ========================================================= */
-
 .c-phone{
-  padding: 4px 10px;          /* weniger hoch */
-  font-size: 11px;            /* optional: wirkt kompakter */
-  line-height: 1.05;
-
-  border-radius: 999px;       /* pill */
-
-  background: linear-gradient(
-    to bottom,
-    rgba(0,255,204,0.18),
-    rgba(0,255,204,0.08)
-  );
-
-  border: 1px solid rgba(0,255,204,0.45);
-
-  color: var(--mint);
-
-  font-weight: 900;
-  letter-spacing: 0.3px;
-
+  /* Box model */
+  padding: 4px 10px;       /* 1.Wert: Abstand oben/unten, 2. Wert: Abstand links/rechts */
+  /* Surface */
+  background: linear-gradient(to bottom, rgba(0,255,204,0.18), rgba(0,255,204,0.08));
+  border-color: rgba(0,255,204,0.45);
+  border-radius: 999px;    /* pill */
+  /* Depth/FX */
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.10),
     0 0 10px rgba(0,255,204,0.12);
+  /* Typography */
+  color: var(--mint);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  line-height: 1.05;
 }
 
 .c-phone .ico{
+  /* Box model */
   margin-right: 6px;
 }
 
 .c-phone:hover{
-
+  /* Surface */
+  background: linear-gradient(to bottom, rgba(0,255,204,0.28), rgba(0,255,204,0.12));
   border-color: rgba(0,255,204,0.70);
-
-  background: linear-gradient(
-    to bottom,
-    rgba(0,255,204,0.28),
-    rgba(0,255,204,0.12)
-  );
-
+  /* Depth/FX */
   box-shadow: 0 0 12px rgba(0,255,204,0.30);
 }
 
-.c-phone:active{
-  transform: translateY(1px);
-}
-
-
 /* =========================================================
-   8. BUTTON: CHECK / UNCHECK
+   5.4 TOGGLE BUTTON: CHECK / UNCHECK
    ========================================================= */
-.c-btn.c-toggle{
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.18);
-  border: 1px solid var(--border);
+.c-toggle{
+  /* Layout */
   display: inline-grid;           /* grid ist wichtig bei Emojis*/
   place-items: center;            /* vertikal zentrieren */
-  line-height: 1;                 /* ganz wichtig bei Emojis */
+
+  /* Box model */
+  padding: 6px 10px;
   min-width: 50px;  /* Verhindert visuelles Springen beim Wechsel ✔ / ✖ */
   min-height: 28px; /* Verhindert visuelles Springen beim Wechsel ✔ / ✖ */
+
+  /* Surface */
+  border-radius: 999px;
+  background: rgba(0,0,0,0.18);
+  border-color: var(--border);
 }
 
 .c-btn.c-toggle:hover{
+  /* Surface */
   border-color: rgba(0,255,204,0.35);
 }
 
-/* symbol */
+/* unchecked = red */
 .c-btn.c-toggle .tgl{
   font-size: 18px;
+  line-height: 1;                /* ganz wichtig bei Emojis */
   color: rgba(208, 6, 6, 0.916);   /* default = red ✖ */
 }
 
 /* checked = green */
 .c-btn.c-toggle.is-checked .tgl{
+  /* Typography */
   color: rgba(21, 255, 0, 0.916);  /* green ✔ */
-}
-.c-btn.c-toggle.is-checked{
-  border-color: rgba(0,255,204,0.55);
-  box-shadow: 0 0 6px rgba(0,255,204,0.25);
 }
 
 /* =========================================================
-   9. SAVE INDICATOR
+   6. SAVE INDICATOR
    ========================================================= */
-
 .c-saveIndicator{
-
-  margin-left:auto;
-
-  font-size:12px;
-  font-weight:800;
-
-  padding:6px 10px;
-
-  border:1px solid var(--border);
-  border-radius:999px;
-
-  background: var(--bg);
-
+  /* Box model */
   min-width: 120px;
-
-  text-align:center;
+  padding: 6px 10px;
+  margin-left: auto;
+  /* Surface */
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  /* Typography */
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  /* Interaction */
+  user-select: none;
 }
 
 .c-saveIndicator.is-dirty{
-  color:#ffb300;
+  /* Typography */
+  color: #ffb300;
 }
 
 .c-saveIndicator.is-saved{
-  color:#00ffcc;
+  /* Typography */
+  color: #00ffcc;
 }
 
 .c-saveIndicator.is-error{
-  color:#ff8080;
+  /* Typography */
+  color: #ff8080;
 }
