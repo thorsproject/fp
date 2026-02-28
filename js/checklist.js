@@ -31,7 +31,7 @@ export function checklistApplyToggle(btn, checked) {
   if (!btn) return;
   btn.classList.toggle("is-checked", !!checked);
   btn.innerHTML = checked 
-    ? '<span class="tgl">✔️</span>'
+    ? '<span class="tgl">✔</span>'
     : '<span class="tgl">✖</span>';
 }
 
