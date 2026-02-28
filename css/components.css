@@ -358,6 +358,23 @@ button:disabled{
     0 7px 16px rgba(0,0,0,0.55);
 }
 
+
+
+
+/* Reset success blink */
+.reset-success{
+  /* Surface */
+  background: #2e7d32 !important;
+  /* Typography */
+  color: #fff !important;
+  /* Interaction */
+  transform: scale(0.96);
+}
+.reset-success:hover{
+  /* Surface */
+  background: #2e7d32 !important;
+}
+
 /* =========================================================
    5.3 BUTTON: PHONE / CONTACT
    ========================================================= */
