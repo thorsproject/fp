@@ -327,18 +327,18 @@
    ========================================================= */
 .c-btn.c-toggle{
   padding: 6px 10px;
-  font-size: 10px;
+  font-size: 13px;
   border-radius: 999px;
   background: rgba(0,0,0,0.18);
   border: 1px solid var(--border);
   /*box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);*/
-  display: inline-flex;           /* wichtig */
-  align-items: center;            /* vertikal zentrieren */
-  vertical-align: middle;
-  justify-content: center;        /* horizontal zentrieren */
+  display: inline-grid;           /* grid ist wichtig bei Emojis*/
+  place-items: center;            /* vertikal zentrieren */
+  /*vertical-align: middle;*/
+  /*justify-content: center; */       /* horizontal zentrieren */
   line-height: 1;                 /* ganz wichtig bei Emojis */
   min-width: 50px; /* verhindert springende Breite */
-  /*min-height: 28px;*/
+  min-height: 28px;
 }
 
 .c-btn.c-toggle:hover{
