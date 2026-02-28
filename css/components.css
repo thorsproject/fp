@@ -272,103 +272,41 @@ button:disabled{
 /* =========================================================
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
-/* =========================================================
-   RESET BUTTON — matches ref (dark + orange rim + glow)
-   ========================================================= */
-
-.c-btn.c-reset{
-  position: relative;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  padding: 10px 18px;
-  border-radius: 12px;
-
-  /* Dark cockpit face */
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.10) 0%,
-    rgba(0,0,0,0.16) 42%,
-    rgba(0,0,0,0.38) 100%
-  );
-
-  /* Orange rim */
-  border: 1px solid rgba(255,140,0,0.78);
-
-  /* Text */
-  color: rgba(255,255,255,0.96);
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 0.9px;
-  text-transform: uppercase;
-
-  text-shadow:
-    0 1px 0 rgba(0,0,0,0.55),
-    0 0 10px rgba(255,140,0,0.30);
-
-  /* Depth + subtle orange */
+.c-reset{
+  /* Surface */
+  background: #ff8800;
+  border-color: rgba(255,255,255,0.12);
+  /* Typography */
+  color: #000;
+  font-weight: 800;
+  /* Depth/FX */
   box-shadow:
-    inset 0 1px 0 rgba(255,210,150,0.18), /* warm top sheen */
-    inset 0 0 0 1px rgba(0,0,0,0.38),     /* inner frame */
-    0 8px 22px rgba(0,0,0,0.55),          /* drop shadow */
-    0 0 0 1px rgba(255,140,0,0.16);       /* outer edge */
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 8px 18px rgba(0,0,0,0.40);
 }
 
-/* The orange glow ring (this is the “Bild 2” effect) */
-.c-btn.c-reset::before{
-  content: "";
-  position: absolute;
-  inset: -3px;
-  border-radius: 14px;
-  pointer-events: none;
-
-  box-shadow:
-    0 0 22px rgba(255,120,0,0.55),
-    0 0 8px rgba(255,170,0,0.65);
-  opacity: 0.70;
+.c-reset:hover{
+  /* Surface */
+  background: #ffa000;
 }
 
-/* Slight brighter bottom edge */
-.c-btn.c-reset::after{
-  content: "";
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 6px;
-  height: 2px;
-  border-radius: 2px;
-  pointer-events: none;
-
-  background: rgba(255,140,0,0.80);
-  box-shadow: 0 0 12px rgba(255,120,0,0.60);
-  opacity: 0.60;
+.c-reset:active{
+  /* Surface */
+  background: #ff6f00;
 }
 
-.c-btn.c-reset:hover{
-  border-color: rgba(255,170,0,0.95);
+/* Reset success blink */
+.reset-success{
+  /* Surface */
+  background: #2e7d32 !important;
+  /* Typography */
+  color: #fff !important;
+  /* Interaction */
+  transform: scale(0.96);
 }
-
-.c-btn.c-reset:hover::before{
-  opacity: 0.95;
-  box-shadow:
-    0 0 30px rgba(255,120,0,0.75),
-    0 0 12px rgba(255,170,0,0.80);
-}
-
-.c-btn.c-reset:active{
-  transform: translateY(1px);
-}
-
-.c-btn.c-reset:active::before{
-  opacity: 0.80;
-}
-
-/* Icon spacing (your <span class="ico">…</span>) */
-.c-btn.c-reset .ico{
-  margin-right: 6px;
+.reset-success:hover{
+  /* Surface */
+  background: #2e7d32 !important;
 }
 
 /* =========================================================
