@@ -347,7 +347,7 @@
   color: rgba(208, 6, 6, 0.916);   /* default = red ✖ */
 }
 
-/* checked = mint */
+/* checked = green */
 .c-btn.c-toggle.is-checked .tgl{
   color: rgba(21, 255, 0, 0.916);  /* green ✔ */
 }
