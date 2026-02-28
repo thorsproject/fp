@@ -30,7 +30,7 @@ function writeState(state) {
 export function checklistApplyToggle(btn, checked) {
   if (!btn) return;
   btn.classList.toggle("is-checked", !!checked);
-  btn.textContent = checked ? "CHECK" : "UNCHECK";
+  btn.textContent = checked ? "✅" : "❌";
 }
 
 function flashReset(btn) {
