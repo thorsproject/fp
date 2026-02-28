@@ -1,6 +1,6 @@
 # Flight Planning Web-App — Projektzustand (state.md)
 Stand: 2026-02-27
-Version: v0.2 (produktiver interner Einsatz, aktive Weiterentwicklung)
+Version: v0.3 (produktiver interner Einsatz, aktive Weiterentwicklung)
 
 # 1. Projektüberblick
 
@@ -89,7 +89,8 @@ Architektur: reines Frontend (kein Backend)
  │    ├── fetchWeather.js
  │    └── fetchWindGrid.js
  ├── tools
- │    └── config-crypto.mjs
+ │    ├── config-crypto.mjs
+ │    └── update_stae.mjs
  └── js/
       ├── ui/
       │    ├── dom.js
