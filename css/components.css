@@ -327,37 +327,33 @@
    ========================================================= */
 .c-btn.c-toggle{
   padding: 6px 10px;
-  font-size: 17px;
   border-radius: 999px;
   background: rgba(0,0,0,0.18);
   border: 1px solid var(--border);
   display: inline-grid;           /* grid ist wichtig bei Emojis*/
   place-items: center;            /* vertikal zentrieren */
   line-height: 1;                 /* ganz wichtig bei Emojis */
-  min-width: 50px; /* verhindert springende Breite */
-  min-height: 28px;
+  min-width: 50px;  /* Verhindert visuelles Springen beim Wechsel ✔ / ✖ */
+  min-height: 28px; /* Verhindert visuelles Springen beim Wechsel ✔ / ✖ */
 }
 
 .c-btn.c-toggle:hover{
   border-color: rgba(0,255,204,0.35);
 }
 
-/* default toggle symbol */
+/* symbol */
 .c-btn.c-toggle .tgl{
-  color: var(--muted);
   font-size: 18px;
-  line-height: 1;
+  color: rgba(208, 6, 6, 0.916);   /* default = red ✖ */
 }
 
 /* checked = mint */
 .c-btn.c-toggle.is-checked .tgl{
-  color: rgba(21, 255, 0, 0.916);
-  /*color: var(--mint);*/
+  color: rgba(21, 255, 0, 0.916);  /* green ✔ */
 }
-
-/* optional: unchecked leicht schwächer */
-.c-btn.c-toggle:not(.is-checked) .tgl{
-  color: rgba(208, 6, 6, 0.916);
+.c-btn.c-toggle.is-checked{
+  border-color: rgba(0,255,204,0.55);
+  box-shadow: 0 0 6px rgba(0,255,204,0.25);
 }
 
 /* =========================================================
