@@ -14,52 +14,72 @@
 /* =========================================================
    1. PANELS
    ========================================================= */
-.c-panel{
+/* =========================================================
+   RESET BUTTON (Cockpit outline + glow)
+   ========================================================= */
+
+.c-reset{
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Abstand Icon/Text */
+
   /* Box model */
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 8px 16px;
+  border-radius: 10px;
+
   /* Surface */
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 5px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.08) 0%,
+    rgba(0,0,0,0.22) 45%,
+    rgba(0,0,0,0.30) 100%
+  );
+  border: 1px solid rgba(255,170,0,0.60);
+
+  /* Typography */
+  color: rgba(255,255,255,0.95);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.45),
+    0 0 10px rgba(255,170,0,0.25);
+
+  /* Depth */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.16),   /* heller Schleier oben */
+    inset 0 0 0 1px rgba(0,0,0,0.35),       /* innerer Rahmen */
+    0 6px 16px rgba(0,0,0,0.45),            /* Schatten */
+    0 0 0 1px rgba(255,170,0,0.15);         /* subtile Außenkante */
 }
 
-.c-panel--stack{
-  /* Layout */
-  display: flex;
-  flex-direction: column;
-  /* Box model */
-  height: 100%;
-  min-height: 0;
+/* Hover: stärkerer orange glow wie Bild 2 */
+.c-reset:hover{
+  border-color: rgba(255,170,0,0.85);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 0 0 1px rgba(0,0,0,0.35),
+    0 6px 18px rgba(0,0,0,0.50),
+    0 0 22px rgba(255,140,0,0.45),
+    0 0 6px rgba(255,170,0,0.55);
 }
 
-.c-panel__head{
-  /* Layout */
-  flex-shrink: 0;
-  /* Box model */
-  margin-bottom: 10px;
+/* Active: leicht “eingedrückt” */
+.c-reset:active{
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 6px rgba(0,0,0,0.45),
+    0 3px 10px rgba(0,0,0,0.45),
+    0 0 14px rgba(255,140,0,0.35);
 }
 
-.c-panel__body{
-  /* Layout */
-  flex: 1;
-  overflow-y: auto;
-  /* Box model */
-  min-height: 0;
-}
-
-.c-panel__foot{
-  /* Layout */
-  margin-top: auto;
-}
-
-.c-btnGroup{
-  /* Layout */
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  /* Box model */
-  padding: 0 10px;
+/* optional: Icon-Klasse (falls du <span class="ico">…</span> nutzt) */
+.c-reset .ico{
+  opacity: 0.95;
 }
 
 /* =========================================================
@@ -273,58 +293,40 @@ button:disabled{
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
 .c-reset{
-  /* Box model */
-  padding: 6px 14px;
-  border-radius: 6px;
-
+  /* Surface */
+  background: #ff8800;
+  border-color: rgba(255,255,255,0.12);
   /* Typography */
   color: #000;
-  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-
-  /* Background */
-  background: linear-gradient(
-    to bottom,
-    rgba(255,170,0,0.95) 0%,
-    rgba(255,140,0,0.95) 100%
-  );
-
-  /* Border */
-  border: 1px solid rgba(255,200,120,0.65);
-
-  /* Depth */
+  /* Depth/FX */
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.35),
-    inset 0 -1px 0 rgba(0,0,0,0.25),
-    0 2px 6px rgba(0,0,0,0.45);
-
-  /* Interaction */
-  cursor: pointer;
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 8px 18px rgba(0,0,0,0.40);
 }
 
-/* Hover */
 .c-reset:hover{
-  background: linear-gradient(
-    to bottom,
-    rgba(255,185,40,0.95),
-    rgba(255,150,20,0.95)
-  );
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.45),
-    inset 0 -1px 0 rgba(0,0,0,0.30),
-    0 3px 10px rgba(255,140,0,0.35);
+  /* Surface */
+  background: #ffa000;
 }
 
-/* Active */
 .c-reset:active{
-  transform: translateY(1px);
+  /* Surface */
+  background: #ff6f00;
+}
 
-  box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.35),
-    0 1px 4px rgba(0,0,0,0.35);
+/* Reset success blink */
+.reset-success{
+  /* Surface */
+  background: #2e7d32 !important;
+  /* Typography */
+  color: #fff !important;
+  /* Interaction */
+  transform: scale(0.96);
+}
+.reset-success:hover{
+  /* Surface */
+  background: #2e7d32 !important;
 }
 
 /* =========================================================
