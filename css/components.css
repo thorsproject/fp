@@ -327,7 +327,7 @@
    ========================================================= */
 .c-btn.c-toggle{
   padding: 6px 10px;
-  font-size: 14px;
+  font-size: 10px;
   border-radius: 999px;
   background: rgba(0,0,0,0.18);
   border: 1px solid var(--border);
