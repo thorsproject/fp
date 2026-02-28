@@ -73,6 +73,13 @@
   font-weight: 700;
 }
 
+.c-subtitle{
+  /* Box model */
+  margin: 0;
+  /* Typography */
+  color: var(--text);
+}
+
 .c-label{
   /* Typography */
   color: var(--muted);
@@ -83,7 +90,11 @@
 /* =========================================================
    3. FIELD SYSTEM
    ========================================================= */
-
+.c-field{
+  /* Layout */
+  display: grid;
+  gap: 4px;
+}
 
 /* =========================================================
    4. INPUTS / SELECTS / OUTPUTS
