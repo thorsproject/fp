@@ -103,10 +103,7 @@ export function initChecklistUI() {
 
   qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => {
     const key = tb.dataset.tb;
-    if (key in toggles) {
-      dlog("restore toggle", key, toggles[key]);
-      checklistApplyToggle(tb, toggles[key]);
-    }
+    if (!(key in toggles)) checklistApplyToggle(tb, false);
   });
 
   qsa(SEL.checklist.fieldAny, scope).forEach((inp) => {
