@@ -180,271 +180,116 @@
 }
 
 /* =========================================================
-   5. BASE BUTTON: shared material + behavior
+   BUTTON SYSTEM (FINAL)
    ========================================================= */
+
+/* ---------- BASE BUTTON ---------- */
 .c-btn{
-  /* Box model */
+  display: inline-grid;
+  place-items: center;
+
   padding: 6px 12px;
-  /* Surface */
-  background: rgba(0,0,0,0.16);
-  border: 1px solid rgba(255,255,255,0.10);
+
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 6px;
-  /* Depth/FX */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 2px 6px rgba(0,0,0,0.35);
-  /* Typography */
+
   color: var(--text);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  /* Interaction */
+  letter-spacing: 0.4px;
+
   cursor: pointer;
-  user-select: none;
-  transition:
-    background .12s ease,
-    border-color .12s ease,
-    box-shadow .12s ease,
-    transform .06s ease;
-}
 
-.c-btn:hover{
-  /* Surface */
-  border-color: rgba(0,255,204,0.25);
-}
-
-.c-btn:active{
-  /* Interaction */
-  transform: translateY(1px);
-}
-
-.c-btn:disabled,
-button:disabled{
-  /* Depth/FX */
-  opacity: .45;
-  filter: grayscale(0.2);
-  /* Interaction */
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* =========================================================
-   5.1 BUTTON: TOP NAV TABS
-   ========================================================= */
-.c-tab{
-  /* Layout */
-  position: relative;
-  /* Surface */
-  background: rgba(0,0,0,0.20);
-  border-color: rgba(255,255,255,0.12);
-  /* Depth/FX */
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.18),
     inset 0 10px 16px rgba(255,255,255,0.05),
     0 2px 6px rgba(0,0,0,0.35);
-  /* Typography */
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  text-shadow: 0 0 6px rgba(255,255,255,0.10);
 }
 
-.c-tab .ico{
-  /* Box model */
-  margin-right: 6px;
-}
-
-.c-tab:hover{
-  /* Surface */
+.c-btn:hover{
   border-color: rgba(0,255,204,0.35);
-  /* Depth/FX */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    0 0 10px rgba(0,255,204,0.12);
+}
+
+.c-btn:active{
+  transform: translateY(1px);
+}
+
+
+/* ---------- TOP NAV TAB ---------- */
+.c-tab{
+  text-transform: uppercase;
+  font-weight: 800;
 }
 
 .c-tab.is-active{
-  /* Surface */
   background: linear-gradient(
     to bottom,
     rgba(0,255,204,0.18),
-    rgba(0,0,0,0.10) 35%,
-    rgba(0,0,0,0.06) 65%,
+    rgba(0,0,0,0.10),
     rgba(0,255,204,0.14)
   );
+
   border-color: rgba(0,255,204,0.65);
-  /* Depth/FX */
+
+  color: var(--mint);
+
   box-shadow:
     inset 0 1px 4px rgba(0,0,0,0.45),
     inset 0 1px 0 rgba(255,255,255,0.10),
     0 0 12px rgba(0,255,204,0.22);
-  /* Typography */
+}
+
+
+/* ---------- CONTACT BUTTON ---------- */
+.c-contact{
+  border-radius: 999px;
+
   color: var(--mint);
-  text-shadow:
-    0 0 10px rgba(0,255,204,0.45),
-    0 0 2px rgba(0,255,204,0.8);
+
+  border: 1px solid rgba(0,255,204,0.45);
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0,255,204,0.18),
+    rgba(0,255,204,0.08)
+  );
 }
 
-.c-tab.is-active::after{
-  content:"";
-  /* Layout */
-  position: absolute;
-  left: 5px;
-  right: 5px;
-  bottom: -2px;
-  /* Box model */
-  height: 1px;
-  /* Surface */
-  background: rgba(0,255,204,0.95);
-  border-radius: 1px;
-  /* Depth/FX */
-  box-shadow: 0 0 6px rgba(0,255,204,0.75);
-}
 
-/* =========================================================
-   5.2 BUTTON: RESET / EXPORT / IMPORT
-   ========================================================= */
-.c-reset{
-  /* Surface */
-  background: #ff8800;
-  border-color: rgba(255,255,255,0.12);
-  /* Typography */
-  color: #000;
-  font-weight: 800;
-  /* Depth/FX */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.18),
-    0 8px 18px rgba(0,0,0,0.40);
-}
-
-.c-reset:hover{
-  /* Surface */
-  background: #ffa000;
-}
-
-.c-reset:active{
-  /* Surface */
-  background: #ff6f00;
-}
-
-/* Reset success blink */
-.reset-success{
-  /* Surface */
-  background: #2e7d32 !important;
-  /* Typography */
-  color: #fff !important;
-  /* Interaction */
-  transform: scale(0.96);
-}
-.reset-success:hover{
-  /* Surface */
-  background: #2e7d32 !important;
-}
-
-/* =========================================================
-   5.3 BUTTON: PHONE / CONTACT
-   ========================================================= */
-.c-phone{
-  /* Box model */
-  padding: 4px 10px;       /* 1.Wert: Abstand oben/unten, 2. Wert: Abstand links/rechts */
-  /* Surface */
-  background: linear-gradient(to bottom, rgba(0,255,204,0.18), rgba(0,255,204,0.08));
-  border-color: rgba(0,255,204,0.45);
-  border-radius: 999px;    /* pill */
-  /* Depth/FX */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 0 10px rgba(0,255,204,0.12);
-  /* Typography */
-  color: var(--mint);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.3px;
-  line-height: 1.05;
-}
-
-.c-phone .ico{
-  /* Box model */
-  margin-right: 6px;
-}
-
-.c-phone:hover{
-  /* Surface */
-  background: linear-gradient(to bottom, rgba(0,255,204,0.28), rgba(0,255,204,0.12));
-  border-color: rgba(0,255,204,0.70);
-  /* Depth/FX */
-  box-shadow: 0 0 12px rgba(0,255,204,0.30);
-}
-
-/* =========================================================
-   5.4 TOGGLE BUTTON: CHECK / UNCHECK
-   ========================================================= */
+/* ---------- TOGGLE BUTTON ---------- */
 .c-toggle{
-  /* Layout */
-  display: inline-grid;           /* grid ist wichtig bei Emojis*/
-  place-items: center;            /* vertikal zentrieren */
+  min-width: 42px;
+  min-height: 30px;
 
-  /* Box model */
-  padding: 6px 10px;
-  min-width: 50px;  /* Verhindert visuelles Springen beim Wechsel ✔ / ✖ */
-  min-height: 28px; /* Verhindert visuelles Springen beim Wechsel ✔ / ✖ */
-
-  /* Surface */
   border-radius: 999px;
-  background: rgba(0,0,0,0.18);
-  border-color: var(--border);
 }
 
-.c-btn.c-toggle:hover{
-  /* Surface */
-  border-color: rgba(0,255,204,0.35);
+.c-toggle .tgl{
+  font-size: 16px;
+  line-height: 1;
 }
 
-/* unchecked = red */
-.c-btn.c-toggle .tgl{
-  font-size: 18px;
-  line-height: 1;                /* ganz wichtig bei Emojis */
-  color: rgba(208, 6, 6, 0.916);   /* default = red ✖ */
+.c-toggle.is-checked .tgl{
+  color: #00ff88;
 }
 
-/* checked = green */
-.c-btn.c-toggle.is-checked .tgl{
-  /* Typography */
-  color: rgba(21, 255, 0, 0.916);  /* green ✔ */
+.c-toggle:not(.is-checked) .tgl{
+  color: #ff4444;
 }
 
-/* =========================================================
-   6. SAVE INDICATOR
-   ========================================================= */
-.c-saveIndicator{
-  /* Box model */
-  min-width: 120px;
-  padding: 6px 10px;
-  margin-left: auto;
-  /* Surface */
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  /* Typography */
-  color: var(--muted);
-  font-size: 12px;
+
+/* ---------- WARN / RESET BUTTON ---------- */
+.c-warn{
+  background: #ff8800;
+
+  border: none;
+
+  color: #000;
+
   font-weight: 800;
-  text-align: center;
-  /* Interaction */
-  user-select: none;
 }
 
-.c-saveIndicator.is-dirty{
-  /* Typography */
-  color: #ffb300;
-}
-
-.c-saveIndicator.is-saved{
-  /* Typography */
-  color: #00ffcc;
-}
-
-.c-saveIndicator.is-error{
-  /* Typography */
-  color: #ff8080;
+.c-warn:hover{
+  background: #ffa000;
 }
