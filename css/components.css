@@ -73,13 +73,6 @@
   font-weight: 700;
 }
 
-.c-subtitle{
-  /* Box model */
-  margin: 0;
-  /* Typography */
-  color: var(--text);
-}
-
 .c-label{
   /* Typography */
   color: var(--muted);
@@ -90,14 +83,10 @@
 /* =========================================================
    3. FIELD SYSTEM
    ========================================================= */
-.c-field{
-  /* Layout */
-  display: grid;
-  gap: 4px;
-}
+
 
 /* =========================================================
-   4. INPUT / FIELD SYSTEM
+   4. INPUTS / SELECTS / OUTPUTS
    ========================================================= */
 .c-input,
 .c-select,
@@ -151,28 +140,6 @@
   cursor: not-allowed;
 }
 
-.c-input--sm,
-.c-select--sm,
-.c-output--sm{
-  /* Box model */
-  min-height: 24px;
-  padding: 4px 6px;
-  /* Typography */
-  font-size: 12px;
-}
-
-.c-input--mono,
-.c-output--mono{
-  /* Typography */
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
-.c-input--center,
-.c-output--center{
-  /* Typography */
-  text-align: center;
-}
-
 /* Clamp flash */
 .c-input.was-clamped{
   /* Depth/FX */
@@ -180,6 +147,7 @@
 }
 
 /* =========================================================
+                          BUTTONS
    5. BASE BUTTON: shared material + behavior
    ========================================================= */
 .c-btn{
