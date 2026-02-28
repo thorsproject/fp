@@ -327,7 +327,7 @@
    ========================================================= */
 .c-btn.c-toggle{
   padding: 6px 10px;
-  font-size: 15px;
+  font-size: 17px;
   border-radius: 999px;
   background: rgba(0,0,0,0.18);
   border: 1px solid var(--border);
@@ -351,7 +351,7 @@
 
 /* checked = mint */
 .c-btn.c-toggle.is-checked .tgl{
-  color: rgba(24, 182, 10, 0.916);
+  color: rgba(21, 255, 0, 0.916);
   /*color: var(--mint);*/
 }
 
