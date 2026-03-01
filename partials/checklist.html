@@ -1,147 +1,154 @@
 <!-- checklist.html -->
-            <!-- Header -->
-            <div class="cg-row cg-head">
-              <div>ToDo</div>  <!-- Spalte 1 -->
-              <div>Kontakt</div>  <!-- Spalte 2 -->
-              <div>Aktion</div>  <!-- Spalte 3 -->
-              <div>Details</div>  <!-- Spalte 4 -->
-              <div>Status</div>  <!-- Spalte 5+6 -->
-              <div></div>
-            </div>
+<div class="view-checklist__body">
+  <div class="c-panel c-panel--stack">
+    <div class="c-panel__head">
+      <h2 class="check-title">Planning-Checklist</h2>
+      <div class="check-toast is-hidden" id="checkToast" role="status" aria-live="polite"></div>
+    </div>
+    <!-- Header -->
+    <div class="cg-row cg-head">
+      <div>ToDo</div>  <!-- Spalte 1 -->
+      <div>Kontakt</div>  <!-- Spalte 2 -->
+      <div>Aktion</div>  <!-- Spalte 3 -->
+      <div>Details</div>  <!-- Spalte 4 -->
+      <div>Status</div>  <!-- Spalte 5+6 -->
+      <div></div>
+    </div>
 
-            <!-- 1) Anflüge anmelden -->
-            <div class="cg-row">
-              <div class="cg-todo">Wachleiter: Anflüge anmelden</div>  <!-- Spalte 1 -->
-              <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="bremen"><span class="ico">📞</span>Bremen</button></div>  <!-- Spalte 2 -->
-              <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="langen"><span class="ico">📞</span>Langen</button></div>  <!-- Spalte 2 -->
-              <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="muenchen"><span class="ico">📞</span>München</button></div>  <!-- Spalte 2 -->
-              <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
-              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
-              <div class="cg-status">Anflüge angemeldet und genehmigt</div>  <!-- Spalte 5 -->
-              <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="appr">✖</button></div>  <!-- Spalte 6 -->
-            </div>
+    <!-- 1) Anflüge anmelden -->
+    <div class="cg-row">
+      <div class="cg-todo">Wachleiter: Anflüge anmelden</div>  <!-- Spalte 1 -->
+      <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="bremen"><span class="ico">📞</span>Bremen</button></div>  <!-- Spalte 2 -->
+      <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="langen"><span class="ico">📞</span>Langen</button></div>  <!-- Spalte 2 -->
+      <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="muenchen"><span class="ico">📞</span>München</button></div>  <!-- Spalte 2 -->
+      <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
+      <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+      <div class="cg-status">Anflüge angemeldet und genehmigt</div>  <!-- Spalte 5 -->
+      <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="appr">✖</button></div>  <!-- Spalte 6 -->
+    </div>
 
-            <!-- 2) lokale Anflüge absprechen -->
-            <div class="cg-row">
-              <div class="cg-todo">lokale Anflüge absprechen</div>  <!-- Spalte 1 -->
-              <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="laage_rdr"><span class="ico">📞</span>Laage RDR</button></div>  <!-- Spalte 2 -->
-              <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
-              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
-              <div class="cg-status">Anflüge genehmigt</div>  <!-- Spalte 5 -->
-              <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="local">✖</button></div>  <!-- Spalte 6 -->
-            </div>
+    <!-- 2) lokale Anflüge absprechen -->
+    <div class="cg-row">
+      <div class="cg-todo">lokale Anflüge absprechen</div>  <!-- Spalte 1 -->
+      <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="laage_rdr"><span class="ico">📞</span>Laage RDR</button></div>  <!-- Spalte 2 -->
+      <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
+      <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+      <div class="cg-status">Anflüge genehmigt</div>  <!-- Spalte 5 -->
+      <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="local">✖</button></div>  <!-- Spalte 6 -->
+    </div>
 
-            <!-- 3) Wx Check -->
-            <div class="cg-row">
-              <div class="cg-todo">Wx Check</div>  <!-- Spalte 1 -->
-              <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="wx_muenster"><span class="ico">📞</span>Wx Münster</button></div>  <!-- Spalte 2 -->
-              <div class="cg-action">  <!-- Spalte 3 -->
-                <label class="mini-field">  <!-- Spalte 3 -->
-                  NR
-                  <input class="c-input c-input--sm" type="text" inputmode="numeric" data-field="wx_nr" placeholder="NR">  <!-- Spalte 3 -->
-                </label>
-                <label class="mini-field">  <!-- Spalte 3 -->
-                  VOID
-                  <input class="c-input c-input--sm" type="text" data-field="wx_void" placeholder="VOID">  <!-- Spalte 3 -->
-                </label>
-                <label class="mini-field">  <!-- Spalte 3 -->
-                  INITIALS
-                  <input class="c-input c-input--sm" type="text" data-field="wx_init" placeholder="ABC">  <!-- Spalte 3 -->
-                </label>
-              </div>
-              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
-              <div class="cg-status">Wx angerufen</div>  <!-- Spalte 5 -->
-              <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="wx">✖</button></div>  <!-- Spalte 6 -->
-            </div>
+    <!-- 3) Wx Check -->
+    <div class="cg-row">
+      <div class="cg-todo">Wx Check</div>  <!-- Spalte 1 -->
+      <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="wx_muenster"><span class="ico">📞</span>Wx Münster</button></div>  <!-- Spalte 2 -->
+      <div class="cg-action">  <!-- Spalte 3 -->
+        <label class="mini-field">  <!-- Spalte 3 -->
+          NR
+          <input class="c-input c-input--sm" type="text" inputmode="numeric" data-field="wx_nr" placeholder="NR">  <!-- Spalte 3 -->
+        </label>
+        <label class="mini-field">  <!-- Spalte 3 -->
+          VOID
+          <input class="c-input c-input--sm" type="text" data-field="wx_void" placeholder="VOID">  <!-- Spalte 3 -->
+        </label>
+        <label class="mini-field">  <!-- Spalte 3 -->
+          INITIALS
+          <input class="c-input c-input--sm" type="text" data-field="wx_init" placeholder="ABC">  <!-- Spalte 3 -->
+        </label>
+      </div>
+      <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+      <div class="cg-status">Wx angerufen</div>  <!-- Spalte 5 -->
+      <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="wx">✖</button></div>  <!-- Spalte 6 -->
+    </div>
 
-            <!-- 4) ORM Sheet -->
-            <div class="cg-row">
-              <div class="cg-todo">ORM-Sheet</div>  <!-- Spalte 1 -->
-              <div class="cg-contacts"><span class="muted"></span></div>  <!-- Spalte 2 -->
-              <div class="cg-action"><button id="btnOrm" type="button">ORM öffnen</button></div>  <!-- Spalte 3 -->
-              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
-              <div class="cg-status">ausgefüllt und gespeichert</div>  <!-- Spalte 5 -->
-              <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="orm">✖</button></div>  <!-- Spalte 6 -->
-            </div>
+    <!-- 4) ORM Sheet -->
+    <div class="cg-row">
+      <div class="cg-todo">ORM-Sheet</div>  <!-- Spalte 1 -->
+      <div class="cg-contacts"><span class="muted"></span></div>  <!-- Spalte 2 -->
+      <div class="cg-action"><button id="btnOrm" type="button">ORM öffnen</button></div>  <!-- Spalte 3 -->
+      <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+      <div class="cg-status">ausgefüllt und gespeichert</div>  <!-- Spalte 5 -->
+      <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="orm">✖</button></div>  <!-- Spalte 6 -->
+    </div>
 
-            <!-- 5) eMail an EO -->
-            <div class="cg-row">
-              <div class="cg-todo">Package send to</div>  <!-- Spalte 1 -->
-              <div class="cg-contacts"><span class="email">thors-project@web.de</span></div>  <!-- Spalte 2 -->
-              <div class="cg-action"><button id="btnMailEO" type="button">Mail EO senden</button></div>  <!-- Spalte 3 -->
-              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
-              <div class="cg-status">eMail an EO gesendet</div>  <!-- Spalte 5 -->
-              <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="eo">✖</button></div>  <!-- Spalte 6 -->
-            </div>
-            
-            <!-- 6) Phoenix signed -->
-            <div class="cg-row">
-              <div class="cg-todo">Phoenix Signout</div>  <!-- Spalte 1 -->
-              <div class="cg-contacts"><span class="intranet">Die Adresse kann nur im Intranet angezeigt werden</span></div>  <!-- Spalte 2 -->
-              <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
-              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
-              <div class="cg-status">Phoenix Signout durchgeführt</div>  <!-- Spalte 5 -->
-              <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="phoenix">✖</button></div>  <!-- Spalte 6 -->
-            </div>
+    <!-- 5) eMail an EO -->
+    <div class="cg-row">
+      <div class="cg-todo">Package send to</div>  <!-- Spalte 1 -->
+      <div class="cg-contacts"><span class="email">thors-project@web.de</span></div>  <!-- Spalte 2 -->
+      <div class="cg-action"><button id="btnMailEO" type="button">Mail EO senden</button></div>  <!-- Spalte 3 -->
+      <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+      <div class="cg-status">eMail an EO gesendet</div>  <!-- Spalte 5 -->
+      <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="eo">✖</button></div>  <!-- Spalte 6 -->
+    </div>
+    
+    <!-- 6) Phoenix signed -->
+    <div class="cg-row">
+      <div class="cg-todo">Phoenix Signout</div>  <!-- Spalte 1 -->
+      <div class="cg-contacts"><span class="intranet">Die Adresse kann nur im Intranet angezeigt werden</span></div>  <!-- Spalte 2 -->
+      <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
+      <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+      <div class="cg-status">Phoenix Signout durchgeführt</div>  <!-- Spalte 5 -->
+      <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="phoenix">✖</button></div>  <!-- Spalte 6 -->
+    </div>
 
-            <!-- 7) FDL informiert -->
-            <div class="cg-row">
-              <div class="cg-todo">Flugplan an FDL</div>  <!-- Spalte 1 -->
-              <div class="cg-contacts"><span class="muted"></span></div>  <!-- Spalte 2 -->
-              <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
-              <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
-              <div class="cg-status">FPL (short) per SMS oder Telegram gesendet</div>  <!-- Spalte 5 -->
-              <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="fdl">✖</button></div>  <!-- Spalte 6 -->
-            </div>
+    <!-- 7) FDL informiert -->
+    <div class="cg-row">
+      <div class="cg-todo">Flugplan an FDL</div>  <!-- Spalte 1 -->
+      <div class="cg-contacts"><span class="muted"></span></div>  <!-- Spalte 2 -->
+      <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
+      <div class="cg-details"><span class="muted"></span></div>  <!-- Spalte 4 -->
+      <div class="cg-status">FPL (short) per SMS oder Telegram gesendet</div>  <!-- Spalte 5 -->
+      <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="fdl">✖</button></div>  <!-- Spalte 6 -->
+    </div>
 
-            <!-- REESET FOOTER -->
-            <div class="c-resetBar">
-              <div class="c-resetBar__inner">
-                <button class="c-btn c-reset" data-action="reset-checklist">Reset Checklist</button>
-                <button class="c-btn c-reset" data-action="reset-checkmarks">Reset Checkmarks</button>
-                <button class="c-btn c-reset" data-action="reset-wx">Reset Wx</button>
-              </div>
-            </div>
+    <!-- PHONE POPUP (Checklist) -->
+    <div id="phonePopup" class="phone-popup is-hidden" aria-hidden="true">
+      <div class="phone-popup__backdrop" data-phone-popup-close></div>
 
+      <div class="phone-popup__card" role="dialog" aria-modal="true" aria-labelledby="phonePopupTitle">
+        <div class="phone-popup__head">
+          <div id="phonePopupTitle" class="phone-popup__title">Telefon</div>
 
-            <!-- PHONE POPUP (Checklist) -->
-            <div id="phonePopup" class="phone-popup is-hidden" aria-hidden="true">
-              <div class="phone-popup__backdrop" data-phone-popup-close></div>
+          <button type="button"
+                  class="c-btn c-btn--ghost c-btn--sm phone-popup__close"
+                  data-phone-popup-close
+                  aria-label="Schließen">
+            ✕
+          </button>
+        </div>
 
-              <div class="phone-popup__card" role="dialog" aria-modal="true" aria-labelledby="phonePopupTitle">
-                <div class="phone-popup__head">
-                  <div id="phonePopupTitle" class="phone-popup__title">Telefon</div>
+        <div class="phone-popup__body">
+          <div class="phone-popup__label" id="phonePopupLabel"></div>
 
-                  <button type="button"
-                          class="c-btn c-btn--ghost c-btn--sm phone-popup__close"
-                          data-phone-popup-close
-                          aria-label="Schließen">
-                    ✕
-                  </button>
-                </div>
+          <div class="phone-popup__row">
+            <code class="phone-popup__number" id="phonePopupNumber"></code>
 
-                <div class="phone-popup__body">
-                  <div class="phone-popup__label" id="phonePopupLabel"></div>
+            <button type="button" class="c-btn c-btn--ghost c-btn--sm" id="phonePopupCopyBtn">
+              Kopieren
+            </button>
+          </div>
 
-                  <div class="phone-popup__row">
-                    <code class="phone-popup__number" id="phonePopupNumber"></code>
+          <div class="phone-popup__actions">
+            <a class="c-btn c-btn--ghost phone-popup__call" id="phonePopupCallLink" href="#" rel="noreferrer">
+              Anrufen
+            </a>
 
-                    <button type="button" class="c-btn c-btn--ghost c-btn--sm" id="phonePopupCopyBtn">
-                      Kopieren
-                    </button>
-                  </div>
+            <button type="button" class="c-btn" data-phone-popup-close>
+              Schließen
+            </button>
+          </div>
 
-                  <div class="phone-popup__actions">
-                    <a class="c-btn c-btn--ghost phone-popup__call" id="phonePopupCallLink" href="#" rel="noreferrer">
-                      Anrufen
-                    </a>
-
-                    <button type="button" class="c-btn" data-phone-popup-close>
-                      Schließen
-                    </button>
-                  </div>
-
-                  <div class="phone-popup__hint" id="phonePopupHint"></div>
-                </div>
-              </div>
-            </div>
+          <div class="phone-popup__hint" id="phonePopupHint"></div>
+        </div>
+      </div>
+    </div>
+    <div class="check-grid" data-include="partials/checklist.html"></div>
+  </div>
+</div>
+<!-- REESET FOOTER -->
+<div class="c-resetBar">
+  <div class="c-resetBar__inner">
+    <button class="c-btn c-reset" data-action="reset-checklist">Reset Checklist</button>
+    <button class="c-btn c-reset" data-action="reset-checkmarks">Reset Checkmarks</button>
+    <button class="c-btn c-reset" data-action="reset-wx">Reset Wx</button>
+  </div>
+</div>
