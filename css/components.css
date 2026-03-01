@@ -247,7 +247,11 @@ button:disabled{
   font-weight: 800;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  /* text-shadow: 0 0 6px rgba(255,255,255,0.10); */
+  /* WICHTIG: kein Glow, sondern harter Shadow */
+  text-shadow: 0 1px 0 rgba(0,0,0,0.85);  
+  /* sorgt für scharfe Darstellung auf macOS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* --- harden TOPNAV layout: keep icon left, text single line --- */
@@ -295,9 +299,7 @@ button:disabled{
     0 0 12px rgba(0,255,204,0.22);
   /* Typography */
   color: var(--mint);
-  text-shadow:
-    0 0 10px rgba(0,255,204,0.45),
-    0 0 2px rgba(0,255,204,0.8);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.85);
 }
 
 .c-tab.is-active::after{
