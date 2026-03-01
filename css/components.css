@@ -315,7 +315,7 @@ button:disabled{
     rgba(255,150,0,0.60) 100%
   );
 
-  border: 1.5px solid rgba(255,170,0,0.70);
+  border: 1.5px solid rgba(255,185,0,0.75);
 
   box-shadow: none !important;
   
