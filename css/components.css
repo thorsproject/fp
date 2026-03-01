@@ -87,10 +87,6 @@
    3. RESET BAR (global footer inside app column)
    ========================================================= */
 .c-resetBar{
-  position: sticky;
-  bottom: 0;
-  z-index: 20;
-
   margin-top: auto;
   padding: 10px;
 
