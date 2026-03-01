@@ -89,12 +89,9 @@
 .c-resetBar{
   /* Layout */
   margin-top: auto;     /* drückt die Bar nach unten */
+  margin-top: 10px;      /* erzeugt den sichtbaren Gap */
   width: 100%;
   box-sizing: border-box;
-
-  /* Abstand zum Panel darüber */
-  position: relative;
-  top: 5px;            /* erzeugt den sichtbaren Gap */
 
   /* Box model */
   padding: 10px;
