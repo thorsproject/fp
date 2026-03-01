@@ -1,30 +1,33 @@
-/* reset.css — only reset buttons */
+/* reset.css — ONLY reset buttons */
 
-/* base: same “material” as .c-tab, just orange */
+/* Reset button: same “material” as .c-tab, but orange */
 .c-btn.c-reset{
+  /* Layout */
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 
+  /* Box model */
   height: 34px;
   padding: 0 18px;
 
-  /* dark core (NOT orange filled) */
+  /* Surface: DARK core (not orange filled) */
   background: rgba(0,0,0,0.20);
 
-  /* orange frame */
-  border: 1px solid rgba(255,165,0,0.55);
+  /* Orange frame */
+  border: 1px solid rgba(255, 153, 0, 0.75);
   border-radius: 10px;
 
-  /* tab-like highlights + subtle orange glow (NO black outside shadow) */
+  /* Depth/FX: tab-like inner highlights + orange glow, NO black halo */
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.18),
     inset 0 10px 16px rgba(255,255,255,0.05),
-    inset 0 0 0 1px rgba(255,165,0,0.18),
-    0 0 12px rgba(255,165,0,0.18);
+    inset 0 0 0 1px rgba(255,153,0,0.20),
+    0 0 12px rgba(255,153,0,0.18);
 
+  /* Typography */
   color: #fff;
   font-size: 13px;
   font-weight: 900;
@@ -32,36 +35,58 @@
   text-transform: uppercase;
   text-shadow: 0 0 6px rgba(255,255,255,0.10);
 
+  /* Interaction */
   cursor: pointer;
   user-select: none;
-
-  transition: box-shadow .12s ease, border-color .12s ease, transform .06s ease;
+  transition:
+    border-color .12s ease,
+    box-shadow .12s ease,
+    transform .06s ease,
+    filter .12s ease;
 }
 
-/* left icon (same style as tabs: small + clean) */
+/* glossy top band (this is what makes it look like the reference) */
+.c-btn.c-reset::after{
+  content:"";
+  position:absolute;
+  left: 2px;
+  right: 2px;
+  top: 2px;
+  height: 45%;
+  border-radius: 8px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.22),
+    rgba(255,255,255,0.06),
+    rgba(255,255,255,0.00)
+  );
+  pointer-events:none;
+}
+
+/* icon (simple + consistent) */
 .c-btn.c-reset::before{
-  content: "↻";
+  content:"↻";
   font-size: 16px;
   line-height: 1;
   margin-right: 2px;
-  filter: drop-shadow(0 0 4px rgba(255,165,0,0.20));
+  filter: drop-shadow(0 0 4px rgba(255,153,0,0.20));
 }
 
-/* hover: stronger orange border + glow, still no black shadow */
 .c-btn.c-reset:hover{
-  border-color: rgba(255,165,0,0.75);
+  border-color: rgba(255,153,0,0.95);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.16),
     inset 0 10px 16px rgba(255,255,255,0.05),
-    inset 0 0 0 1px rgba(255,165,0,0.28),
-    0 0 14px rgba(255,165,0,0.28);
+    inset 0 0 0 1px rgba(255,153,0,0.28),
+    0 0 14px rgba(255,153,0,0.28);
+  filter: brightness(1.03);
 }
 
 .c-btn.c-reset:active{
   transform: translateY(1px);
 }
 
-/* success blink can stay as-is (optional) */
+/* success blink can stay */
 .reset-success{
   background: #2e7d32 !important;
   color: #fff !important;
