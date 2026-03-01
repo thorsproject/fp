@@ -1,8 +1,22 @@
 /* checklist.css */
 /* =========================
+   CHECKLIST VIEW-PANEL
+   ========================= */
+#view-checklist{
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+
+.view-checklist__body{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+}
+
+/* =========================
    CHECKLIST GRID (cg-*)
    ========================= */
-
 #view-checklist .check-grid{
   display: grid;
   gap: 10px;
