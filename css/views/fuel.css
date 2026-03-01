@@ -18,6 +18,9 @@
    [FUEL:MISC]     Bottom MISC cards (Bingo Fuel, Min Block Fuel, CO2 Fußabdruck)
    [FUEL:FOOT]     Footer note + MISC layout container
    ========================================================= */
+#fuelPanel{
+  height: 100%;
+}
 
 .fuel-card {
   display: flex;
