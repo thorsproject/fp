@@ -85,6 +85,12 @@
 /* VIEWS 
 Hinweis: Ich lasse .view als Namen drin, weil du damit sehr wahrscheinlich in JS arbeitest.
 Wenn du es “perfekt” willst, können wir später auch .view → l-view machen – aber dann musst du definitiv JS anfassen.*/
-.view{ display:none; height:100%; }
-.view.is-active{ display:block; height:100%; }
+.view{ 
+  display:none; 
+  min-height:0; 
+}
+.view.is-active{ 
+  display:block; 
+  min-height:0;
+}
 
