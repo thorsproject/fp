@@ -20,6 +20,10 @@
   align-items: center;
 }
 
+.c-span2 {
+  grid-column: span 2;
+}
+
 /* ------------ Debugging - Tool ----------- */
 /*.master-grid > * {
   outline: 1px solid red;
