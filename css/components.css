@@ -330,7 +330,7 @@ button:disabled{
   justify-content: center;
   gap: 6px; /* <-- Abstand zwischen Icon und Text */
 
-  padding: 6px 12px 6px 5px; /* top right bottom left*/
+  padding: 6px 5px 6px 5px; /* top right bottom left*/
   border-radius: 6px;
 
   /* tab-active material, color swapped to orange */
