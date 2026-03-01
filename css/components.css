@@ -338,20 +338,6 @@ button:disabled{
   line-height: 1;
 }
 
-/* bottom highlight line like .c-tab.is-active::after */
-.c-btn.c-reset::after{
-  content:"";
-  position:absolute;
-  left: 5px;
-  right: 5px;
-  bottom: -2px;
-  height: 1px;
-  background: rgba(255,165,0,0.95);
-  border-radius: 1px;
-  box-shadow: 0 0 6px rgba(255,165,0,0.75);
-  pointer-events: none;
-}
-
 .c-btn.c-reset:hover{
   border-color: rgba(255,165,0,0.80);
   box-shadow:
