@@ -81,29 +81,17 @@
 }
 
 /* =========================================================
-   3. FIELD SYSTEM
+   3. FIELD SYSTEM - nicht genutzt
    ========================================================= */
 /* =========================================================
-   RESET BAR (global footer inside app column)
+   3. RESET BAR (global footer inside app column)
    ========================================================= */
-
-/* Sidebar als Spalte: Panel oben, Resetbar unten */
-.l-sidebar{
-  display: flex;
-  flex-direction: column;
-}
-
-/* RoutePanel soll den freien Platz bekommen */
-#routePanel{
-  flex: 1;
-  min-height: 0;
-}
-
 .c-resetBar{
   position: sticky;
   bottom: 0;
   z-index: 20;
 
+  margin-top: auto;
   padding: 10px;
 
   background: linear-gradient(
