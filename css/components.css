@@ -287,80 +287,90 @@ button:disabled{
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
 .c-btn.c-reset{
+  /* kill base .c-btn visuals completely */
   background: none;
   border: none;
   box-shadow: none;
-  border-radius: 0;
-  
+
+  /* Layout */
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 
-  height: 34px;
-  padding: 0 18px;
+  /* Box model */
+  padding: 6px 12px;      /* wie Tabs */
+  border-radius: 6px;      /* wie Tabs */
 
-  border-radius: 10px;
+  /* Surface (same as .c-tab, but orange accent) */
+  background: rgba(0,0,0,0.20);
+  border: 1px solid rgba(255,255,255,0.12);
 
-  /* dark frame like reference */
-  border: 1px solid rgba(50, 24, 6, 0.95);
-
-  /* orange body (not flat, not “solid”) */
-  background: linear-gradient(
-    to bottom,
-    #ffb21a 0%,
-    #ff9400 46%,
-    #ff7a00 60%,
-    #c94f00 100%
-  );
-
-  /* IMPORTANT: no “sockel”, no glow halo */
+  /* Depth/FX (copy from .c-tab + orange glow) */
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.38),   /* top bevel */
-    inset 0 -1px 0 rgba(0,0,0,0.42),        /* bottom bevel */
-    inset 0 0 0 1px rgba(255,200,110,0.22), /* inner rim */
-    0 2px 5px rgba(0,0,0,0.42);             /* soft drop shadow only */
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 10px 16px rgba(255,255,255,0.05),
+    0 2px 6px rgba(0,0,0,0.35);
 
-  color: #fff;
+  /* Typography (copy from .c-tab) */
+  color: var(--text);
   font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.75);
-
-  cursor: pointer;
-  user-select: none;
-  transition: filter .12s ease, transform .06s ease;
+  text-shadow: 0 0 6px rgba(255,255,255,0.10);
 }
 
-/* glossy band (narrower, like reference) */
+/* icon like tabs */
+.c-btn.c-reset::before{
+  content: "↻";
+  font-size: 16px;
+  line-height: 1;
+  margin-right: 2px;
+}
+
+/* hover = orange border hint (like tabs hover) */
+.c-btn.c-reset:hover{
+  border-color: rgba(255,165,0,0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 0 10px rgba(255,165,0,0.14);
+}
+
+/* “active tab” look permanently (normal state should look like your reference topnav active style) */
+.c-btn.c-reset{
+  background: linear-gradient(
+    to bottom,
+    rgba(255,165,0,0.18),
+    rgba(0,0,0,0.10) 35%,
+    rgba(0,0,0,0.06) 65%,
+    rgba(255,165,0,0.14)
+  );
+  border-color: rgba(255,165,0,0.65);
+  box-shadow:
+    inset 0 1px 4px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 12px rgba(255,165,0,0.22);
+
+  color: #fff;
+  text-shadow:
+    0 0 10px rgba(255,165,0,0.45),
+    0 0 2px rgba(255,165,0,0.8);
+}
+
+/* bottom highlight line like .c-tab.is-active::after */
 .c-btn.c-reset::after{
   content:"";
   position:absolute;
-  left: 2px;
-  right: 2px;
-  top: 2px;
-  height: 36%;
-  border-radius: 8px;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.45),
-    rgba(255,255,255,0.14),
-    rgba(255,255,255,0.00)
-  );
-  pointer-events:none;
-}
-
-.c-btn.c-reset::before{
-  content:"↻";
-  font-size: 16px;
-  line-height: 1;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.75);
-}
-
-.c-btn.c-reset:hover{
-  filter: brightness(1.05) saturate(1.04);
+  left:5px;
+  right:5px;
+  bottom:-2px;
+  height:1px;
+  background: rgba(255,165,0,0.95);
+  border-radius: 1px;
+  box-shadow: 0 0 6px rgba(255,165,0,0.75);
+  pointer-events: none;
 }
 
 .c-btn.c-reset:active{
