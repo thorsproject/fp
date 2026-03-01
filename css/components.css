@@ -280,12 +280,15 @@ button:disabled{
 .c-tab .ico svg{  
   width: 18px;
   height: 18px;
-  display: block;
+  
   stroke: currentColor;
   fill: none;
-  stroke-width: 2;
+
+  stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
+
+  shape-rendering:geometricPrecision;
 }
 
 .c-tab:hover{
