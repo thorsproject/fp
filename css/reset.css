@@ -1,76 +1,82 @@
-/* RESET BUTTON — EXACT same material as .c-tab.is-active, but orange */
+/* EXACT match of reference button */
 
 .c-btn.c-reset{
 
-  position: relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  height:36px;
+  padding:0 18px;
 
-  height: 34px;
-  padding: 0 18px;
+  border-radius:10px;
 
-  /* THIS is the exact tab-active material, color-swapped */
+  /* dark brown outer frame */
+  border:2px solid #3a1d00;
 
+  /* THIS gradient is the key */
   background: linear-gradient(
     to bottom,
-    rgba(255,165,0,0.18),
-    rgba(0,0,0,0.10) 35%,
-    rgba(0,0,0,0.06) 65%,
-    rgba(255,165,0,0.14)
+    #ffbf2a 0%,
+    #ff9a00 45%,
+    #ff7a00 55%,
+    #d95a00 100%
   );
 
-  border: 1px solid rgba(255,165,0,0.65);
-  border-radius: 10px;
-
+  /* exact bevel structure */
   box-shadow:
-    inset 0 1px 4px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 0 12px rgba(255,165,0,0.22);
 
-  color: #fff;
+    inset 0 2px 0 rgba(255,255,255,0.45),
+    inset 0 -2px 0 rgba(0,0,0,0.35),
 
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+    inset 0 0 0 1px rgba(255,200,100,0.35),
+
+    0 2px 6px rgba(0,0,0,0.55);
+
+  color:#ffffff;
+
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:1px;
+  text-transform:uppercase;
 
   text-shadow:
-    0 0 10px rgba(255,165,0,0.45),
-    0 0 2px rgba(255,165,0,0.8);
+    0 1px 0 rgba(0,0,0,0.85);
 
-  cursor: pointer;
-  user-select: none;
 }
 
-
-/* icon identical behavior */
-.c-btn.c-reset::before{
-  content:"↻";
-  font-size:16px;
-  line-height:1;
-}
-
-
-/* same highlight line as active tab */
+/* glossy band */
 .c-btn.c-reset::after{
 
   content:"";
 
   position:absolute;
 
-  left:5px;
-  right:5px;
-  bottom:-2px;
+  left:2px;
+  right:2px;
+  top:2px;
 
-  height:1px;
+  height:45%;
 
-  background: rgba(255,165,0,0.95);
+  border-radius:8px;
 
-  border-radius:1px;
+  background:linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.55),
+    rgba(255,255,255,0.18),
+    rgba(255,255,255,0)
+  );
 
-  box-shadow:0 0 6px rgba(255,165,0,0.75);
+}
+
+/* icon */
+.c-btn.c-reset::before{
+
+  content:"↻";
+
+  font-size:18px;
+
+  text-shadow:0 1px 0 rgba(0,0,0,0.8);
 
 }
