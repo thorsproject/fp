@@ -52,8 +52,7 @@
   font-weight: bold;
   /* padding: 5px; */
   color: var(--mint);
-  align-items: center;   /* vertikal */
-  justify-content: center; /* horizontal */
+  text-align: center;
 }
 
 .aero-label{
