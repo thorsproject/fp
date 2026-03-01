@@ -287,6 +287,11 @@ button:disabled{
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
 .c-btn.c-reset{
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  
   position: relative;
   display: inline-flex;
   align-items: center;
