@@ -307,12 +307,16 @@ button:disabled{
 
   background: linear-gradient(
     to bottom,
+    /* oberer Bereich */
     rgba(255,150,0,0.62) 0%,
     rgba(255,105,0,0.50) 18%,
+    /* Mitte - transparenter */
     rgba(255,70,0,0.30) 42%,
     rgba(255,70,0,0.30) 58%,
-    rgba(255,105,0,0.50) 82%,
-    rgba(255,150,0,0.60) 100%
+    /* unterer Bereich – zur Mitte hin stärker */
+    rgba(255,110,0,0.55) 78%,
+    rgba(255,140,0,0.75) 92%,
+    rgba(255,120,0,0.55) 100%
   );
 
   border: 1.5px solid rgba(255,185,0,0.75);
@@ -352,24 +356,7 @@ button:disabled{
 }
 
 .c-btn.c-reset::after{
-  content:"";
-  position:absolute;
-
-  left: 2px;
-  right: 2px;
-  bottom: 0;
-
-  height: 2px;
-  border-radius: 0 0 8px 8px;
-
-  background: linear-gradient(
-    to right,
-    rgba(255,170,0,0.15) 0%,
-    rgba(255,190,0,0.65) 50%,
-    rgba(255,170,0,0.15) 100%
-  );
-
-  pointer-events:none;
+  content: none !important;
 }
 
 .c-btn.c-reset:active{
