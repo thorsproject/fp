@@ -91,7 +91,7 @@
   margin-top: auto;
   width: 100%;
   box-sizing: border-box;
-  
+
   /* Box model */
   padding: 10px;
 
@@ -328,9 +328,9 @@ button:disabled{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 6px; /* <-- Abstand zwischen Icon und Text */
 
-  padding: 6px 12px;
+  padding: 6px 12px 0 10px; /* top right bottom left*/
   border-radius: 6px;
 
   /* tab-active material, color swapped to orange */
