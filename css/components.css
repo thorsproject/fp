@@ -287,81 +287,80 @@ button:disabled{
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
 .c-btn.c-reset{
-  /* Layout */
   position: relative;
-  /* Surface */
-  background: rgba(0,0,0,0.20);
-  border-color: rgba(255,255,255,0.12);
-  /* Depth/FX */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  height: 34px;
+  padding: 0 18px;
+
+  border-radius: 10px;
+
+  /* dark frame like reference */
+  border: 1px solid rgba(50, 24, 6, 0.95);
+
+  /* orange body (not flat, not “solid”) */
+  background: linear-gradient(
+    to bottom,
+    #ffb21a 0%,
+    #ff9400 46%,
+    #ff7a00 60%,
+    #c94f00 100%
+  );
+
+  /* IMPORTANT: no “sockel”, no glow halo */
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.18),
-    inset 0 10px 16px rgba(255,255,255,0.05),
-    0 2px 6px rgba(0,0,0,0.35);
-  /* Typography */
+    inset 0 1px 0 rgba(255,255,255,0.38),   /* top bevel */
+    inset 0 -1px 0 rgba(0,0,0,0.42),        /* bottom bevel */
+    inset 0 0 0 1px rgba(255,200,110,0.22), /* inner rim */
+    0 2px 5px rgba(0,0,0,0.42);             /* soft drop shadow only */
+
+  color: #fff;
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
+  font-weight: 900;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  text-shadow: 0 0 6px rgba(255,255,255,0.10);
+  text-shadow: 0 2px 0 rgba(0,0,0,0.75);
+
+  cursor: pointer;
+  user-select: none;
+  transition: filter .12s ease, transform .06s ease;
 }
 
-.c-btn.c-reset .ico{
-  display: inline-block;   /* verhindert “block” Verhalten */
-  margin-right: 6px;       /* wie vorher */
+/* glossy band (narrower, like reference) */
+.c-btn.c-reset::after{
+  content:"";
+  position:absolute;
+  left: 2px;
+  right: 2px;
+  top: 2px;
+  height: 36%;
+  border-radius: 8px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.45),
+    rgba(255,255,255,0.14),
+    rgba(255,255,255,0.00)
+  );
+  pointer-events:none;
 }
 
-.c-btn.c-reset .ico{
-  /* Box model */
-  margin-right: 6px;
+.c-btn.c-reset::before{
+  content:"↻";
+  font-size: 16px;
+  line-height: 1;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.75);
 }
 
 .c-btn.c-reset:hover{
-  /* Surface */
-  border-color: rgba(0,255,204,0.35);
-  /* Depth/FX */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    0 0 10px rgba(0,255,204,0.12);
+  filter: brightness(1.05) saturate(1.04);
 }
 
-.c-btn.c-reset.is-active{
-  /* Surface */
-  background: linear-gradient(
-    to bottom,
-    rgba(0,255,204,0.18),
-    rgba(0,0,0,0.10) 35%,
-    rgba(0,0,0,0.06) 65%,
-    rgba(0,255,204,0.14)
-  );
-  border-color: rgba(0,255,204,0.65);
-  /* Depth/FX */
-  box-shadow:
-    inset 0 1px 4px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 0 12px rgba(0,255,204,0.22);
-  /* Typography */
-  color: var(--mint);
-  text-shadow:
-    0 0 10px rgba(0,255,204,0.45),
-    0 0 2px rgba(0,255,204,0.8);
+.c-btn.c-reset:active{
+  transform: translateY(1px);
 }
-
-.c-btn.c-reset.is-active::after{
-  content:"";
-  /* Layout */
-  position: absolute;
-  left: 5px;
-  right: 5px;
-  bottom: -2px;
-  /* Box model */
-  height: 1px;
-  /* Surface */
-  background: rgba(0,255,204,0.95);
-  border-radius: 1px;
-  /* Depth/FX */
-  box-shadow: 0 0 6px rgba(0,255,204,0.75);
-}
-
 
 /* =========================================================
    5.3 BUTTON: PHONE / CONTACT
