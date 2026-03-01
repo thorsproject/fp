@@ -88,7 +88,7 @@
    ========================================================= */
 .c-resetBar{
   margin-top: auto;
-  padding: 10px;
+  padding: 10px 0;
 
   background: linear-gradient(
     to bottom,
@@ -96,8 +96,6 @@
     rgba(20,25,32,0.85) 40%,
     rgba(20,25,32,0.95)
   );
-
-  border-top: 1px solid var(--border);
 }
 
 .c-resetBar__inner{
@@ -105,11 +103,13 @@
   gap: 10px;
   justify-content: center;
 
-  padding: 8px;
+  padding: 8px 10px; /* entspricht Panel padding */
 
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 8px;
+
+  margin-right: var(--panel-gutter); /* gleicht sidebar padding aus */
 }
 
 /* =========================================================
