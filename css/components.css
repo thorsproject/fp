@@ -269,8 +269,23 @@ button:disabled{
 }
 
 .c-tab .ico{
-  /* Box model */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
   margin-right: 6px;
+}
+
+.c-tab .ico svg{  
+  width: 18px;
+  height: 18px;
+  display: block;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .c-tab:hover{
