@@ -57,19 +57,3 @@
   border: 1px solid var(--border);
   line-height: 1;                 /* ganz wichtig bei Emojis */
 }
-
-
-
-
-  background: linear-gradient(
-    to bottom,
-    /* oberer Bereich */
-    rgba(255,150,0,0.62) 0%,
-    rgba(255,105,0,0.50) 18%,
-    /* Mitte - transparenter */
-    rgba(255,70,0,0.30) 42%,
-    rgba(255,70,0,0.30) 58%,
-    /* unterer Bereich */
-    rgba(255,105,0,0.50) 82%,
-    rgba(255,150,0,0.60) 100%
-  );

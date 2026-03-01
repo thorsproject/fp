@@ -305,42 +305,23 @@ button:disabled{
   /* tab-active material, color swapped to orange */
   background-color: transparent !important;
 
-
-
-  background-clip: padding-box;
-
-  background-image:
-    /* 1) Hotline unten – OBEN in der Liste, damit sie sichtbar bleibt */
-    linear-gradient(
-      to right,
-      rgba(255,210,0,0.10) 0%,
-      rgba(255,210,0,0.80) 50%,
-      rgba(255,210,0,0.10) 100%
-    ),
-
-    /* 2) Hauptgradient (dein Verlauf) */
-    linear-gradient(
-      to bottom,
-      rgba(255,150,0,0.65) 0%,
-      rgba(255,105,0,0.52) 18%,
-      rgba(255,70,0,0.28) 42%,
-      rgba(255,70,0,0.28) 58%,
-      rgba(255,105,0,0.52) 82%,
-      rgba(255,150,0,0.62) 100%
-    );
-
-  background-repeat: no-repeat, no-repeat;
-
-  /* Hotline ist 2px hoch und sitzt innen am unteren Rand */
-  background-size: 100% 2px, 100% 100%;
-  background-position: 0 calc(100% - 2px), 0 0;
-
-
-
-
+  background: linear-gradient(
+    to bottom,
+    /* oberer Bereich */
+    rgba(255,150,0,0.62) 0%,
+    rgba(255,105,0,0.50) 18%,
+    /* Mitte - transparenter */
+    rgba(255,70,0,0.30) 42%,
+    rgba(255,70,0,0.30) 58%,
+    /* unterer Bereich */
+    rgba(255,105,0,0.50) 82%,
+    rgba(255,150,0,0.60) 100%
+  );
 
   border: 1.5px solid rgba(255,185,0,0.75);
+
   box-shadow: none !important;
+  
   color: #ffffff;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 13px;
