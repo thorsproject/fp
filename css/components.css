@@ -94,7 +94,7 @@
 
   /* Abstand zum Panel darüber */
   position: relative;
-  top: 10px;            /* erzeugt den sichtbaren Gap */
+  top: 5px;            /* erzeugt den sichtbaren Gap */
 
   /* Box model */
   padding: 10px;
