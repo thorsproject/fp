@@ -8,13 +8,7 @@
 /* Master grid */
 .master-grid{
   display: grid;
-  grid-template-columns:
-    40px
-    70px
-    80px
-    100px
-    70px
-    70px;
+  grid-template-columns: var(--route-cols);
   grid-auto-rows: 30px;
   gap: 3px;
   align-items: center;

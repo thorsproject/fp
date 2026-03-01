@@ -16,6 +16,7 @@
   --danger: #d11;
 
   --panel-gutter: 10px;
+  --route-cols: 40px 70px 80px 100px 70px 70px;
 }
 
 html, body {
