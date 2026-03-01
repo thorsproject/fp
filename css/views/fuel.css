@@ -22,7 +22,7 @@
    FUEL VIEW-PANEL
    ========================= */
 /* Fuel view: column layout */
-#view-fuel{
+#view-fuel.is-active{
   display: flex;
   flex-direction: column;
   min-height: 0;
