@@ -69,12 +69,20 @@
 }
 
 .l-main{
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   flex: 1;
   min-width: 0;
   height: calc(100vh - 60px - 20px);
   overflow: hidden;
   padding-left: var(--panel-gutter);
   position: relative;
+}
+
+.l-main > .view.is-active{
+  flex: 1;
+  min-height: 0;
 }
 
 .l-sidebar,
