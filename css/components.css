@@ -307,12 +307,12 @@ button:disabled{
 
   background: linear-gradient(
     to bottom,
-    rgba(255,165,0,0.55) 0%,     /* kräftiges Orange oben */
-    rgba(255,120,0,0.40) 18%,
-    rgba(255,95,0,0.32) 40%,
-    rgba(255,95,0,0.32) 60%,
-    rgba(255,120,0,0.40) 82%,
-    rgba(255,165,0,0.52) 100%    /* kräftiges Orange unten */
+    #ffb000 0%,    /* kräftiges helles Orange oben */
+    #ff8c00 18%,
+    #ff6a00 42%,
+    #ff6a00 58%,
+    #ff8c00 82%,
+    #ffb000 100%   /* kräftiges helles Orange unten */
   );
 
   border: 1px solid rgba(255,165,0,0.65);
