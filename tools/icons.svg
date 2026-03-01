@@ -44,4 +44,20 @@
     <path d="M15 9l1.5-1.5"/>
   </symbol>
 
+  <symbol id="i-export" viewBox="0 0 24 24">
+    <!-- tray -->
+    <path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>
+    <!-- arrow up -->
+    <path d="M12 4v10"/>
+    <path d="M8 8l4-4 4 4"/>
+  </symbol>
+
+  <symbol id="i-import" viewBox="0 0 24 24">
+    <!-- tray -->
+    <path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>
+    <!-- arrow down -->
+    <path d="M12 14V4"/>
+    <path d="M8 10l4 4 4-4"/>
+  </symbol>
+
 </svg>
