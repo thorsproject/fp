@@ -278,7 +278,7 @@
 }
 
 /* Fuel view: column layout */
-.view-fuel{
+#view-fuel{
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -292,6 +292,6 @@
 }
 
 /* ResetBar in fuel: unten */
-.view-fuel .c-resetBar{
+#view-fuel .c-resetBar{
   margin-top: auto;
 }
