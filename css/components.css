@@ -312,9 +312,7 @@ button:disabled{
     rgba(255,140,0,0.28) 14%,
 
     /* schneller Übergang zur dunklen Mitte */
-    rgba(0,0,0,0.28) 42%,
-    rgba(0,0,0,0.32) 50%,
-    rgba(0,0,0,0.28) 58%,
+
 
     /* schneller wieder heller */
     rgba(255,130,0,0.28) 86%,
