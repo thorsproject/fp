@@ -89,9 +89,10 @@
 .c-resetBar{
   /* Layout */
   margin-top: auto;
-
+  width: 100%;
+  box-sizing: border-box;
+  
   /* Box model */
-  margin-right: var(--panel-gutter); /* gleiche Breite wie Route/Legs */
   padding: 10px;
 
   /* Surface */
