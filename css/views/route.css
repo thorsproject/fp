@@ -48,11 +48,13 @@
 }
 
 .callSignDisplay{
+  display: flex;
+  align-items: center;   /* vertikal */
+  justify-content: center; /* horizontal */
   font-size: 14px;
   font-weight: bold;
   /* padding: 5px; */
   color: var(--mint);
-  text-align: center;
 }
 
 .aero-label{
