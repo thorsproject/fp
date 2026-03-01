@@ -286,83 +286,52 @@ button:disabled{
 /* =========================================================
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
-/* ---- isolated skin: does not rely on .c-btn look ---- */
 .c-btn.c-reset{
-  /* neutralize base button visuals */
+  /* neutralize base .c-btn visuals */
   background: none;
+  border: none;
   box-shadow: none;
 
+  /* layout like tabs */
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 
-  height: 34px;
-  padding: 0 18px;
+  padding: 6px 12px;
+  border-radius: 6px;
 
-  border-radius: 10px;
+  /* tab-active material, color swapped to orange */
+  background-color: transparent !important;
 
-  /* OUTER BORDER (frame) */
-  border: 1.5px solid rgba(255,170,0,0.70);
+  background: linear-gradient(
+    to bottom,
+    /* oberer Bereich */
+    rgba(255,150,0,0.62) 0%,
+    rgba(255,105,0,0.50) 18%,
+    /* Mitte - transparenter */
+    rgba(255,70,0,0.30) 42%,
+    rgba(255,70,0,0.30) 58%,
+    /* unterer Bereich */
+    rgba(255,105,0,0.50) 82%,
+    rgba(255,150,0,0.60) 100%
+  );
 
-  /* IMPORTANT: keeps layers inside border clean */
-  background-clip: padding-box;
+  border: 1.5px solid rgba(255,185,0,0.75);
 
-  /* ---------- LAYER STACK (topmost first) ---------- */
-  background-image:
-    /* Layer 3: bottom “hotline” (middle brighter) */
-    linear-gradient(
-      to right,
-      rgba(255,190,40,0.10) 0%,
-      rgba(255,190,40,0.70) 50%,
-      rgba(255,190,40,0.10) 100%
-    ),
-
-    /* Layer 2: top gloss band */
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.28) 0%,
-      rgba(255,255,255,0.10) 55%,
-      rgba(255,255,255,0.00) 100%
-    ),
-
-    /* Layer 1: base fill (transparent orange, vertical) */
-    linear-gradient(
-      to bottom,
-      rgba(255,150,0,0.65) 0%,
-      rgba(255,105,0,0.52) 18%,
-      rgba(255,70,0,0.28) 42%,
-      rgba(255,70,0,0.28) 58%,
-      rgba(255,105,0,0.52) 82%,
-      rgba(255,150,0,0.62) 100%
-    );
-
-  background-repeat: no-repeat;
-
-  /* sizes: hotline 2px at bottom, gloss 40% height at top, base covers all */
-  background-size:
-    100% 2px,
-    100% 40%,
-    100% 100%;
-
-  /* positions: hotline inside at bottom, gloss at top, base at top */
-  background-position:
-    0 calc(100% - 2px),
-    0 0,
-    0 0;
-
-  /* INNER RIM (optional, subtle) — does not change layout */
-  outline: 1px solid rgba(255,140,0,0.22);
-  outline-offset: -2px;
-
-  /* TEXT: sharp, no glow */
-  color: #fff;
+  box-shadow: none !important;
+  
+  color: #ffffff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.85);
+
+  /* WICHTIG: kein Glow, sondern harter Shadow */
+  text-shadow: 0 1px 0 rgba(0,0,0,0.85);  
+  /* sorgt für scharfe Darstellung auf macOS */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -370,19 +339,27 @@ button:disabled{
   user-select: none;
 }
 
-/* icon */
+.c-btn.c-reset:hover{
+  border-color: rgba(255,165,0,0.80);
+  box-shadow:
+    inset 0 1px 4px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 14px rgba(255,165,0,0.30);
+}
+
+/* icon (robust) */
 .c-btn.c-reset::before{
-  content:"↻";
+  content: "↻";
   font-size: 16px;
   line-height: 1;
 }
 
-/* interaction (keine translateY, damit keine “Spalt”-Artefakte) */
-.c-btn.c-reset:hover{
-  filter: brightness(1.05) saturate(1.04);
+.c-btn.c-reset::after{
+  content: none !important;
 }
+
 .c-btn.c-reset:active{
-  filter: brightness(0.98) saturate(1.02);
+  transform: translateY(1px);
 }
 
 /* =========================================================
