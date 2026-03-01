@@ -305,6 +305,16 @@ button:disabled{
   text-shadow: 0 0 6px rgba(255,255,255,0.10);
 }
 
+.c-btn.c-reset .ico{
+  display: inline-block;   /* verhindert “block” Verhalten */
+  margin-right: 6px;       /* wie vorher */
+}
+
+.c-btn.c-reset .ico{
+  /* Box model */
+  margin-right: 6px;
+}
+
 .c-btn.c-reset:hover{
   /* Surface */
   border-color: rgba(0,255,204,0.35);
