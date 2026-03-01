@@ -321,9 +321,9 @@ button:disabled{
   /* 2) die “Hotline” unten: in der Mitte heller */
   linear-gradient(
     to right,
-    rgba(255,170,40,0.10) 0%,
-    rgba(255,210,40,0.85) 50%,
-    rgba(255,170,40,0.10) 100%
+    rgba(255,170,0,0.10) 0%,
+    rgba(255,210,0,0.85) 50%,
+    rgba(255,170,0,0.10) 100%
   ),
 
   /* 3. transparenter filler, damit Border sauber bleibt */
