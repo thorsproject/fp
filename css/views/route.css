@@ -50,8 +50,10 @@
 .callSignDisplay{
   font-size: 14px;
   font-weight: bold;
-  padding: 5px;
+  /* padding: 5px; */
   color: var(--mint);
+  align-items: center;   /* vertikal */
+  justify-content: center; /* horizontal */
 }
 
 .aero-label{
