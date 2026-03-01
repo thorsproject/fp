@@ -1,5 +1,6 @@
-/* RESET BUTTON — pixel-matched to reference */
+/* reset.css — only reset buttons */
 
+/* base: same “material” as .c-tab, just orange */
 .c-btn.c-reset{
   position: relative;
   display: inline-flex;
@@ -10,76 +11,62 @@
   height: 34px;
   padding: 0 18px;
 
+  /* dark core (NOT orange filled) */
+  background: rgba(0,0,0,0.20);
+
+  /* orange frame */
+  border: 1px solid rgba(255,165,0,0.55);
   border-radius: 10px;
-  border: 1px solid #2b1608;
 
-  /* THIS gradient is the key difference */
-  background: linear-gradient(
-    to bottom,
-    #ffbe2e 0%,     /* bright top highlight */
-    #ff9a00 35%,
-    #f07c00 55%,
-    #c85a00 100%
-  );
-
-  /* correct layered depth */
+  /* tab-like highlights + subtle orange glow (NO black outside shadow) */
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.40),   /* strong top light edge */
-    inset 0 -1px 0 rgba(0,0,0,0.35),        /* bottom inner edge */
-    inset 0 0 0 1px rgba(255,255,255,0.12), /* inner rim */
-    0 4px 0 rgba(0,0,0,0.65),               /* dark base step */
-    0 8px 14px rgba(0,0,0,0.55);
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 10px 16px rgba(255,255,255,0.05),
+    inset 0 0 0 1px rgba(255,165,0,0.18),
+    0 0 12px rgba(255,165,0,0.18);
 
-  color: #ffffff;
+  color: #fff;
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 1px;
   text-transform: uppercase;
-
-  text-shadow:
-    0 2px 0 rgba(0,0,0,0.75);
+  text-shadow: 0 0 6px rgba(255,255,255,0.10);
 
   cursor: pointer;
   user-select: none;
+
+  transition: box-shadow .12s ease, border-color .12s ease, transform .06s ease;
 }
 
-/* glossy band */
-.c-btn.c-reset::after{
-  content: "";
-  position: absolute;
-  left: 2px;
-  right: 2px;
-  top: 2px;
-  height: 45%;
-  border-radius: 8px;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.45),
-    rgba(255,255,255,0.15),
-    rgba(255,255,255,0.00)
-  );
-}
-
-/* icon */
+/* left icon (same style as tabs: small + clean) */
 .c-btn.c-reset::before{
   content: "↻";
-  font-size: 17px;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.7);
+  font-size: 16px;
+  line-height: 1;
+  margin-right: 2px;
+  filter: drop-shadow(0 0 4px rgba(255,165,0,0.20));
 }
 
-/* hover */
+/* hover: stronger orange border + glow, still no black shadow */
 .c-btn.c-reset:hover{
-  filter: brightness(1.08);
+  border-color: rgba(255,165,0,0.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    inset 0 10px 16px rgba(255,255,255,0.05),
+    inset 0 0 0 1px rgba(255,165,0,0.28),
+    0 0 14px rgba(255,165,0,0.28);
 }
 
-/* active */
 .c-btn.c-reset:active{
   transform: translateY(1px);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.35),
-    inset 0 -1px 0 rgba(0,0,0,0.45),
-    inset 0 0 0 1px rgba(255,255,255,0.12),
-    0 3px 0 rgba(0,0,0,0.65),
-    0 6px 10px rgba(0,0,0,0.55);
+}
+
+/* success blink can stay as-is (optional) */
+.reset-success{
+  background: #2e7d32 !important;
+  color: #fff !important;
+  transform: scale(0.96);
+}
+.reset-success:hover{
+  background: #2e7d32 !important;
 }
