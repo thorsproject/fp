@@ -94,3 +94,8 @@ Wenn du es “perfekt” willst, können wir später auch .view → l-view mache
   min-height:0;
 }
 
+.view.is-active.is-flex{
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
