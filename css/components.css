@@ -84,26 +84,33 @@
    3. FIELD SYSTEM - nicht genutzt
    ========================================================= */
 /* =========================================================
-   3. RESET BAR (global footer inside app column)
+   3. RESET BAR = eigenes Panel (wie .c-panel)
    ========================================================= */
-/* ResetBar wie Panel-Foot / eigenes kleines Panel */
 .c-resetBar{
+  /* Layout */
   margin-top: auto;
+
+  /* Box model */
   margin-right: var(--panel-gutter); /* gleiche Breite wie Route/Legs */
   padding: 10px;
 
+  /* Surface */
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 5px; /* wie .c-panel */
+  border-radius: 5px; /* exakt wie .c-panel */
 }
 
 .c-resetBar__inner{
+  /* Layout */
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
 
-  padding: 0;          /* kein extra Rahmen innen */
+  /* Box model */
+  padding: 0;
+
+  /* Surface */
   background: none;
   border: 0;
 }
