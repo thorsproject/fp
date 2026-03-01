@@ -308,7 +308,7 @@ button:disabled{
 
     /* oberer Bevel – stärker und kürzer */
     rgba(255,190,60,0.42) 0%,
-    rgba(255,140,0,0.28) 12%,
+    rgba(255,140,0,0.28) 5%,
 
     /* schneller Übergang zur dunklen Mitte */
     rgba(0,0,0,0.28) 42%,
@@ -316,7 +316,7 @@ button:disabled{
     rgba(0,0,0,0.28) 58%,
 
     /* schneller wieder heller */
-    rgba(255,130,0,0.28) 88%,
+    rgba(255,130,0,0.28) 95%,
     rgba(255,185,60,0.40) 100%
 
   );
