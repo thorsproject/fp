@@ -294,79 +294,105 @@ button:disabled{
    5.2 BUTTON: RESET / EXPORT / IMPORT
    (match reference image)
    ========================================================= */
+/* =========================================================
+   RESET BUTTON — pixel identical to reference
+   ========================================================= */
 
 .c-btn.c-reset{
-  /* Layout */
+
   position: relative;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 
-  /* Box model */
-  height: 34px;
+  height: 36px;
   padding: 0 18px;
 
-  /* Surface */
-  border-radius: 10px;
-  border: 2px solid #6b3604;            /* dark brown frame like reference */
+  border-radius: 9px;
 
+  /* dark brown frame */
+  border: 1px solid #4a2500;
+
+  /* exact orange body */
   background: linear-gradient(
     to bottom,
-    #ffbf2a 0%,                          /* bright top */
-    #ff9a00 42%,
-    #ff7a00 58%,
-    #d95a00 100%                         /* darker bottom */
+    #ffc12f 0%,
+    #ff9a00 48%,
+    #ff7a00 52%,
+    #d45a00 100%
   );
 
-  /* Depth/FX — IMPORTANT: no “sockel”, no outer glow */
+  /* exact depth structure */
   box-shadow:
-    inset 0 2px 0 rgba(255,255,255,0.45), /* strong top bevel */
-    inset 0 -2px 0 rgba(0,0,0,0.35),      /* bottom bevel */
-    inset 0 0 0 1px rgba(255,210,120,0.28),/* warm inner rim */
-    0 2px 6px rgba(0,0,0,0.40);           /* simple soft shadow */
 
-  /* Typography */
-  color: #fff;
+    /* inner top bevel */
+    inset 0 2px 0 rgba(255,255,255,0.42),
+
+    /* inner bottom bevel */
+    inset 0 -2px 0 rgba(0,0,0,0.38),
+
+    /* inner warm rim */
+    inset 0 0 0 1px rgba(255,210,120,0.28),
+
+    /* soft outer shadow (no sockel, no glow) */
+    0 3px 6px rgba(0,0,0,0.45);
+
+  color: #ffffff;
+
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 1px;
   text-transform: uppercase;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.75);
 
-  /* Interaction */
+  /* exact text depth */
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.85);
+
   cursor: pointer;
   user-select: none;
-  transition: filter .12s ease, transform .06s ease, box-shadow .12s ease;
+
 }
 
-/* glossy band like reference */
+
+/* glossy highlight band */
 .c-btn.c-reset::after{
+
   content:"";
+
   position:absolute;
-  left: 2px;
-  right: 2px;
-  top: 2px;
-  height: 46%;
-  border-radius: 8px;
+
+  left:2px;
+  right:2px;
+  top:2px;
+
+  height:44%;
+
+  border-radius:7px;
+
   background: linear-gradient(
     to bottom,
     rgba(255,255,255,0.55),
     rgba(255,255,255,0.18),
-    rgba(255,255,255,0.00)
+    rgba(255,255,255,0)
   );
-  pointer-events: none;
+
 }
 
-/* icon — use real refresh symbol (SVG mask) */
+
+/* refresh icon (pixel correct size and weight) */
 .c-btn.c-reset::before{
-  content: "";
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  -webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCc+PHBhdGggZmlsbD0nYmxhY2snIGQ9J00xNy42NSA2LjM1QTcuOTUgNy45NSAwIDAgMCAxMiA0VjFMNyA2bDUgNVY3YTYgNiAwIDEgMS02IDZINGE4IDggMCAxIDAgMTMuNjUtNi42NVonLz48L3N2Zz4=") center/contain no-repeat;
-          mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCc+PHBhdGggZmlsbD0nYmxhY2snIGQ9J00xNy42NSA2LjM1QTcuOTUgNy45NSAwIDAgMCAxMiA0VjFMNyA2bDUgNVY3YTYgNiAwIDEgMS02IDZINGE4IDggMCAxIDAgMTMuNjUtNi42NVonLz48L3N2Zz4=") center/contain no-repeat;
-  filter: drop-shadow(0 2px 0 rgba(0,0,0,0.65));
+
+  content:"↻";
+
+  font-size:16px;
+
+  line-height:1;
+
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.85);
+
 }
 
 .c-btn.c-reset:hover{
