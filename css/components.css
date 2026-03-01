@@ -326,12 +326,12 @@ button:disabled{
   );
 
   background-repeat: no-repeat;
-  background-size: 100% 100%, 100% 2px;
+  background-size: 100% 100%, 100% 1.7px;
 
   /* 1px innen am unteren Rand (nicht außen) */
-  /* background-position: 0 0, 0 calc(100% - 1px); */
+  background-position: 0 0, 0 calc(100% - 1.7px);
 
-  border: 2px solid rgba(255,185,0,0.75);
+  border: 1.7px solid rgba(255,185,0,0.75);
 
   box-shadow: none !important;
   
