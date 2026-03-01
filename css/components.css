@@ -286,7 +286,94 @@ button:disabled{
 /* =========================================================
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
-/* ist in reset.css enthalten */
+/* =========================================================
+   5.2 BUTTON: RESET / EXPORT / IMPORT
+   (EXAKT wie Referenz-Button)
+   ========================================================= */
+
+.c-btn.c-reset{
+  /* Layout */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  /* Box model */
+  height: 34px;
+  padding: 0 18px;
+
+  /* Surface */
+  border-radius: 10px;
+  border: 2px solid #3a1d00;
+
+  background: linear-gradient(
+    to bottom,
+    #ffbf2a 0%,
+    #ff9a00 45%,
+    #ff7a00 58%,
+    #d95a00 100%
+  );
+
+  /* Depth/FX (ohne Sockel / ohne Außen-Halo) */
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.45),
+    inset 0 -2px 0 rgba(0,0,0,0.35),
+    inset 0 0 0 1px rgba(255,200,100,0.35),
+    0 2px 6px rgba(0,0,0,0.40);
+
+  /* Typography */
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.75);
+
+  /* Interaction */
+  cursor: pointer;
+  user-select: none;
+  transition: filter .12s ease, transform .06s ease, box-shadow .12s ease;
+}
+
+/* glossy band */
+.c-btn.c-reset::after{
+  content:"";
+  position:absolute;
+  left: 2px;
+  right: 2px;
+  top: 2px;
+  height: 45%;
+  border-radius: 8px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.55),
+    rgba(255,255,255,0.18),
+    rgba(255,255,255,0)
+  );
+  pointer-events:none;
+}
+
+/* left icon */
+.c-btn.c-reset::before{
+  content:"↻";
+  font-size: 18px;
+  line-height: 1;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.75);
+}
+
+.c-btn.c-reset:hover{
+  filter: brightness(1.05) saturate(1.05);
+}
+
+.c-btn.c-reset:active{
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.40),
+    inset 0 -2px 0 rgba(0,0,0,0.40),
+    inset 0 0 0 1px rgba(255,200,100,0.30),
+    0 1px 4px rgba(0,0,0,0.35);
+}
 
 /* =========================================================
    5.3 BUTTON: PHONE / CONTACT
