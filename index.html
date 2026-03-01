@@ -112,15 +112,6 @@
             <div class="c-panel__body">
               <!-- FRAME 2-5 - LEGS -->
               <div id="legsContainer" data-include="partials/legs.html"></div>
-            <!-- </div> -->
-
-            <!-- BUTTON Footer PANEL -->
-            <!-- <div class="c-panel__foot">
-              <div class="c-btnGroup">
-                <button class="c-btn c-btn--ghost" data-action="reset-kopf">Reset Kopfdaten</button>
-                <button class="c-btn c-btn--ghost" data-action="reset-times">Reset ETD/ETA</button>
-                <button class="c-btn c-btn--ghost" data-action="reset-aeros">Reset AERODROMES</button>
-              </div> -->
             </div>
           </div>
 
@@ -188,7 +179,15 @@
 
           <!-- VIEW: SETTINGS -->
           <section id="view-settings" class="view" data-include="partials/settings.html"></section>
-
+          <!-- NEU: Reset Footer -->
+          <div class="c-resetBar">
+            <div class="c-resetBar__inner">
+              <button class="c-btn c-reset" data-action="reset-kopf">Reset Kopfdaten</button>
+              <button class="c-btn c-reset" data-action="reset-legs">Reset Legs</button>
+              <button class="c-btn c-reset" data-action="reset-fuel">Reset Fuel</button>
+            </div>
+          </div>
+          
         </main>
       </div>
     </section>
