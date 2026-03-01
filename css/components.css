@@ -305,43 +305,18 @@ button:disabled{
   /* tab-active material, color swapped to orange */
   background-color: transparent !important;
 
-  background-image: linear-gradient(
+  background: linear-gradient(
     to bottom,
     /* oberer Bereich */
-    rgba(255,150,0,0.65) 0%,
-    rgba(255,105,0,0.52) 18%,
+    rgba(255,150,0,0.62) 0%,
+    rgba(255,105,0,0.50) 18%,
     /* Mitte - transparenter */
-    rgba(255,70,0,0.28) 42%,
-    rgba(255,70,0,0.28) 58%,
+    rgba(255,70,0,0.30) 42%,
+    rgba(255,70,0,0.30) 58%,
     /* unterer Bereich */
-    rgba(255,105,0,0.52) 82%,
-    rgba(255,150,0,0.62) 100%
-  ),
-
-  /* 2) die “Hotline” unten: in der Mitte heller */
-  linear-gradient(
-    to right,
-    rgba(255,170,0,0.10) 0%,
-    rgba(255,210,0,0.85) 50%,
-    rgba(255,170,0,0.10) 100%
-  ),
-
-  /* 3. transparenter filler, damit Border sauber bleibt */
-  linear-gradient(to bottom, transparent, transparent);
-
-  background-repeat: no-repeat, no-repeat, no-repeat;
-
-  background-size:
-    100% calc(100% - 1px),  /* Hauptgradient endet über Border */
-    100% 2px,               /* Hotline */
-    100% 100%;
-
-  background-position:
-    0 0,
-    0 calc(100% - 2px),
-    0 0;
-
-  background-clip: padding-box;
+    rgba(255,105,0,0.50) 82%,
+    rgba(255,150,0,0.60) 100%
+  );
 
   border: 1.5px solid rgba(255,185,0,0.75);
 
