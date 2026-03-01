@@ -81,16 +81,20 @@
 }
 
 /* =========================================================
-   3. FIELD SYSTEM - nicht genutzt
+   3. FIELD SYSTEM - zur Zeit nicht genutzt
    ========================================================= */
 /* =========================================================
    3. RESET BAR = eigenes Panel (wie .c-panel)
    ========================================================= */
 .c-resetBar{
   /* Layout */
-  margin-top: auto;
+  margin-top: auto;     /* drückt die Bar nach unten */
   width: 100%;
   box-sizing: border-box;
+
+  /* Abstand zum Panel darüber */
+  position: relative;
+  top: 10px;            /* erzeugt den sichtbaren Gap */
 
   /* Box model */
   padding: 10px;
@@ -98,7 +102,7 @@
   /* Surface */
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 5px; /* exakt wie .c-panel */
+  border-radius: 5px;
 }
 
 .c-resetBar__inner{
