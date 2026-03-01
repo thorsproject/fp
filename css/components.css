@@ -316,12 +316,12 @@ button:disabled{
     /* unterer Bereich */
     rgba(255,105,0,0.50) 82%,
     rgba(255,150,0,0.60) 100%
-  );
+  ),
   /* 2) die “Hotline” unten: in der Mitte heller */
   linear-gradient(
     to right,
     rgba(255,190,40,0.10) 0%,
-    rgba(255,190,40,0.55) 50%,
+    rgba(255,190,40,0.70) 50%,
     rgba(255,190,40,0.10) 100%
   );
 
@@ -329,7 +329,7 @@ button:disabled{
   background-size: 100% 100%, 100% 1px;
 
   /* 1px innen am unteren Rand (nicht außen) */
-  background-position: 0 0, 0 calc(100% - 1px);
+  background-position: 0 0, 0 calc(100% - 1.5px);
 
   border: 1.5px solid rgba(255,185,0,0.75);
 
