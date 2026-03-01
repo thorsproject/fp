@@ -316,9 +316,17 @@ button:disabled{
   border: 1px solid rgba(255,165,0,0.65);
 
   box-shadow:
-    inset 0 1px 4px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 0 12px rgba(255,165,0,0.22);
+    /* obere helle Innenkante (Gloss-Bevel) */
+    inset 0 2px 0 rgba(255,255,255,0.45),
+
+    /* untere dunkle Innenkante (Depth-Bevel) */
+    inset 0 -2px 0 rgba(0,0,0,0.55),
+
+    /* warme Innenkontur (orange rim) */
+    inset 0 0 0 1px rgba(255,170,40,0.28),
+
+    /* sehr subtiler äußerer Schatten */
+    0 2px 4px rgba(0,0,0,0.35);
 
   color: #fff;
   font-size: 13px;
