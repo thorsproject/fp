@@ -331,7 +331,7 @@ button:disabled{
   /* 1px innen am unteren Rand (nicht außen) */
   background-position: 0 0, 0 calc(100% - 1px);
 
-  border: 1.7px solid rgba(255,185,0,0.75);
+  border: 1.5px solid rgba(255,185,0,0.75);
 
   box-shadow: none !important;
   
