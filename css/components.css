@@ -286,127 +286,72 @@ button:disabled{
 /* =========================================================
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
-/* =========================================================
-   5.2 BUTTON: RESET / EXPORT / IMPORT
-   (EXAKT wie Referenz-Button)
-   ========================================================= */
-/* =========================================================
-   5.2 BUTTON: RESET / EXPORT / IMPORT
-   (match reference image)
-   ========================================================= */
-/* =========================================================
-   RESET BUTTON — pixel identical to reference
-   ========================================================= */
-
 .c-btn.c-reset{
-
+  /* Layout */
   position: relative;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  height: 36px;
-  padding: 0 18px;
-
-  border-radius: 9px;
-
-  /* dark brown frame */
-  border: 1px solid #2b1600;
-
-  /* exact orange body */
-  background: linear-gradient(
-    to bottom,
-    #ffc12f 0%,
-    #ff9500 38%,
-    #ff7a00 50%,
-    #c84e00 100%
-  );
-
-  /* exact depth structure */
+  /* Surface */
+  background: rgba(0,0,0,0.20);
+  border-color: rgba(255,255,255,0.12);
+  /* Depth/FX */
   box-shadow:
-
-    /* inner top bevel */
-    inset 0 1px 0 rgba(255,255,255,0.35),
-
-    /* inner bottom bevel */
-    inset 0 -1px 0 rgba(0,0,0,0.40),
-
-    /* inner warm rim */
-    inset 0 0 0 1px rgba(255,200,100,0.22),
-
-    /* soft outer shadow (no sockel, no glow) */
-    0 2px 4px rgba(0,0,0,0.45);
-
-  color: #ffffff;
-
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 10px 16px rgba(255,255,255,0.05),
+    0 2px 6px rgba(0,0,0,0.35);
+  /* Typography */
   font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-
-  /* exact text depth */
-  text-shadow:
-    0 1px 0 rgba(0,0,0,0.85);
-
-  cursor: pointer;
-  user-select: none;
-
-}
-
-
-/* glossy highlight band */
-.c-btn.c-reset::after{
-
-  content:"";
-
-  position:absolute;
-
-  left:2px;
-  right:2px;
-  top:2px;
-
-  height:38%;
-
-  border-radius:7px;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.55),
-    rgba(255,255,255,0.18),
-    rgba(255,255,255,0)
-  );
-
-}
-
-
-/* refresh icon (pixel correct size and weight) */
-.c-btn.c-reset::before{
-
-  content:"↻";
-
-  font-size:16px;
-
-  line-height:1;
-
-  text-shadow:
-    0 1px 0 rgba(0,0,0,0.85);
-
+  text-shadow: 0 0 6px rgba(255,255,255,0.10);
 }
 
 .c-btn.c-reset:hover{
-  filter: brightness(1.05) saturate(1.04);
+  /* Surface */
+  border-color: rgba(0,255,204,0.35);
+  /* Depth/FX */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 0 10px rgba(0,255,204,0.12);
 }
 
-.c-btn.c-reset:active{
-  transform: translateY(1px);
+.c-btn.c-reset.is-active{
+  /* Surface */
+  background: linear-gradient(
+    to bottom,
+    rgba(0,255,204,0.18),
+    rgba(0,0,0,0.10) 35%,
+    rgba(0,0,0,0.06) 65%,
+    rgba(0,255,204,0.14)
+  );
+  border-color: rgba(0,255,204,0.65);
+  /* Depth/FX */
   box-shadow:
-    inset 0 2px 0 rgba(255,255,255,0.40),
-    inset 0 -2px 0 rgba(0,0,0,0.42),
-    inset 0 0 0 1px rgba(255,210,120,0.24),
-    0 1px 4px rgba(0,0,0,0.35);
+    inset 0 1px 4px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 12px rgba(0,255,204,0.22);
+  /* Typography */
+  color: var(--mint);
+  text-shadow:
+    0 0 10px rgba(0,255,204,0.45),
+    0 0 2px rgba(0,255,204,0.8);
 }
+
+.c-btn.c-reset.is-active::after{
+  content:"";
+  /* Layout */
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  bottom: -2px;
+  /* Box model */
+  height: 1px;
+  /* Surface */
+  background: rgba(0,255,204,0.95);
+  border-radius: 1px;
+  /* Depth/FX */
+  box-shadow: 0 0 6px rgba(0,255,204,0.75);
+}
+
 
 /* =========================================================
    5.3 BUTTON: PHONE / CONTACT
