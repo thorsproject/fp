@@ -306,19 +306,13 @@ button:disabled{
   background-color: transparent !important;
   background: linear-gradient(
     to bottom,
-
-    /* oberer Bevel – stärker und kürzer */
-    rgba(255,190,60,0.42) 0%,
-    rgba(255,140,0,0.28) 14%,
-
-    /* schneller Übergang zur dunklen Mitte */
-
-
-    /* schneller wieder heller */
-    rgba(255,130,0,0.28) 86%,
-    rgba(255,185,60,0.40) 100%
-
-  ) !important;
+    rgba(255,190,60,0.45) 0%,
+    rgba(255,140,0,0.30) 20%,
+    rgba(255,130,0,0.22) 40%,
+    rgba(255,130,0,0.22) 60%,
+    rgba(255,140,0,0.30) 80%,
+    rgba(255,185,60,0.42) 100%
+  );
 
   border: 1px solid rgba(255,165,0,0.65);
   box-shadow: none !important;
