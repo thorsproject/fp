@@ -86,30 +86,26 @@
 /* =========================================================
    3. RESET BAR (global footer inside app column)
    ========================================================= */
+/* ResetBar wie Panel-Foot / eigenes kleines Panel */
 .c-resetBar{
   margin-top: auto;
-  padding: 10px 0;
+  margin-right: var(--panel-gutter); /* gleiche Breite wie Route/Legs */
+  padding: 10px;
 
-  background: linear-gradient(
-    to bottom,
-    rgba(20,25,32,0.0),
-    rgba(20,25,32,0.85) 40%,
-    rgba(20,25,32,0.95)
-  );
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 5px; /* wie .c-panel */
 }
 
 .c-resetBar__inner{
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
 
-  padding: 8px 10px; /* entspricht Panel padding */
-
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-
-  margin-right: var(--panel-gutter); /* gleicht sidebar padding aus */
+  padding: 0;          /* kein extra Rahmen innen */
+  background: none;
+  border: 0;
 }
 
 /* =========================================================
