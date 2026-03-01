@@ -2,7 +2,7 @@
 /* =========================
    CHECKLIST VIEW-PANEL
    ========================= */
-#view-checklist{
+#view-checklist.is-active{
   display:flex;
   flex-direction:column;
   min-height:0;
