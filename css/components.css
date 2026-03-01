@@ -286,78 +286,7 @@ button:disabled{
 /* =========================================================
    5.2 BUTTON: RESET / EXPORT / IMPORT
    ========================================================= */
-.c-btn.c-reset{
-  /* Layout */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  /* Box model */
-  height: 34px;
-  padding: 0 18px;
-
-  /* Surface */
-  background: linear-gradient(to bottom, #ff9a00 0%, #e57a00 55%, #c85d00 100%);
-  border: 1px solid #3a200f;
-  border-radius: 10px;
-
-  /* Depth/FX */
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.35),   /* top glossy line */
-    inset 0 -1px 0 rgba(0,0,0,0.25),        /* bottom edge */
-    0 6px 14px rgba(0,0,0,0.45);            /* outer shadow (no “sockel”) */
-
-  /* Typography */
-  color: #fff;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.65);
-
-  /* Interaction */
-  transition: filter .12s ease, transform .06s ease, box-shadow .12s ease;
-}
-
-/* left icon */
-.c-btn.c-reset::before{
-  content: "↻";
-  display: inline-grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  font-size: 18px;
-  line-height: 1;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.60);
-}
-
-.c-btn.c-reset:hover{
-  filter: brightness(1.06) saturate(1.06);
-}
-
-.c-btn.c-reset:active{
-  transform: translateY(1px);
-  filter: brightness(0.98) saturate(1.03);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.28),
-    inset 0 -1px 0 rgba(0,0,0,0.30),
-    0 4px 10px rgba(0,0,0,0.45);
-}
-
-/* Reset success blink */
-.reset-success{
-  /* Surface */
-  background: #2e7d32 !important;
-  /* Typography */
-  color: #fff !important;
-  /* Interaction */
-  transform: scale(0.96);
-}
-.reset-success:hover{
-  /* Surface */
-  background: #2e7d32 !important;
-}
+/* ist in reset.css enthalten */
 
 /* =========================================================
    5.3 BUTTON: PHONE / CONTACT

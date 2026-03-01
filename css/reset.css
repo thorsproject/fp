@@ -1,28 +1,101 @@
-/* reset.css */
-/* echtes Reset, keine Farben/Design */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* reset.css
+   NUR Reset-Buttons (kein globales CSS-Reset!)
+*/
+
+/* Reset Button – exakt “glossy orange” wie Screenshot */
+.c-btn.c-reset{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  height: 34px;
+  padding: 0 18px;
+
+  border-radius: 10px;
+  border: 2px solid #2a160e;
+
+  /* Orange body */
+  background: linear-gradient(
+    to bottom,
+    #ffb000 0%,
+    #ff8a00 55%,
+    #d05f00 100%
+  );
+
+  /* Frame + depth like the reference */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.28),   /* top bevel */
+    inset 0 0 0 1px rgba(255,255,255,0.10), /* inner rim */
+    inset 0 -1px 0 rgba(0,0,0,0.35),        /* bottom edge */
+    0 6px 0 rgba(0,0,0,0.55),               /* dark “step” under button */
+    0 10px 18px rgba(0,0,0,0.55);           /* soft shadow */
+
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.70);
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: filter .12s ease, transform .06s ease, box-shadow .12s ease;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
+/* glossy highlight band */
+.c-btn.c-reset::after{
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 2px;
+  height: 45%;
+  border-radius: 8px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.00)
+  );
+  pointer-events: none;
 }
 
-button, input, select, textarea {
-  font: inherit;
-  color: inherit;
+/* icon: crisp SVG via mask (base64 to avoid CSS parsing bugs) */
+.c-btn.c-reset::before{
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: #fff;
+
+  -webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCc+PHBhdGggZmlsbD0nYmxhY2snIGQ9J00xNy42NSw2LjM1QTcuOTUsNy45NSAwIDAgMCAxMiw0VjFMMTcsNkwxMiwxMVY3YTYsNiAwIDEgMS02LDZINGE4LDggMCAxIDAgMTMuNjUtNi42NVo nLz48L3N2Zz4=") center / contain no-repeat;
+          mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCc+PHBhdGggZmlsbD0nYmxhY2snIGQ9J00xNy42NSw2LjM1QTcuOTUsNy45NSAwIDAgMCAxMiw0VjFMMTcsNkwxMiwxMVY3YTYsNiAwIDEgMS02LDZINGE4LDggMCAxIDAgMTMuNjUtNi42NVo nLz48L3N2Zz4=") center / contain no-repeat;
+
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,0.65));
 }
 
-button {
-  background: none;
-  border: 0;
-  padding: 0;
+/* hover/active */
+.c-btn.c-reset:hover{
+  filter: brightness(1.06) saturate(1.06);
 }
 
-img, svg, canvas {
-  display: block;
-  max-width: 100%;
+.c-btn.c-reset:active{
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.24),
+    inset 0 0 0 1px rgba(255,255,255,0.10),
+    inset 0 -1px 0 rgba(0,0,0,0.38),
+    0 4px 0 rgba(0,0,0,0.55),
+    0 8px 14px rgba(0,0,0,0.55);
+}
+
+/* Reset success blink – 그대로 유지 */
+.reset-success{
+  background: #2e7d32 !important;
+  color: #fff !important;
+  transform: scale(0.96);
+}
+.reset-success:hover{
+  background: #2e7d32 !important;
 }
