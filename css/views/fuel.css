@@ -293,5 +293,5 @@
 
 /* ResetBar in fuel: unten */
 #view-fuel .c-resetBar{
-  margin-top: auto;
+  margin-top: 10px;
 }
