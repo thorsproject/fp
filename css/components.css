@@ -317,11 +317,8 @@ button:disabled{
 
   border: 1.5px solid rgba(255,130,0,0.55);
 
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.55),  /* scharfer oberer Lichtreflex */
-    inset 0 -1px 0 rgba(0,0,0,0.50),       /* untere Tiefe */
-    0 2px 4px rgba(0,0,0,0.35);            /* subtiler Außenschatten */
-
+  box-shadow: none !important;
+  
   color: #ffffff;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 13px;
@@ -331,13 +328,20 @@ button:disabled{
 
   /* WICHTIG: kein Glow, sondern harter Shadow */
   text-shadow: 0 1px 0 rgba(0,0,0,0.85);  
-
   /* sorgt für scharfe Darstellung auf macOS */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   cursor: pointer;
   user-select: none;
+}
+
+.c-btn.c-reset:hover{
+  border-color: rgba(255,165,0,0.80);
+  box-shadow:
+    inset 0 1px 4px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 0 14px rgba(255,165,0,0.30);
 }
 
 /* icon (robust) */
@@ -347,12 +351,8 @@ button:disabled{
   line-height: 1;
 }
 
-.c-btn.c-reset:hover{
-  border-color: rgba(255,165,0,0.80);
-  box-shadow:
-    inset 0 1px 4px rgba(0,0,0,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 0 14px rgba(255,165,0,0.30);
+.c-btn.c-reset::after{
+  content: none !important;
 }
 
 .c-btn.c-reset:active{
