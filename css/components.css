@@ -352,7 +352,24 @@ button:disabled{
 }
 
 .c-btn.c-reset::after{
-  content: none !important;
+  content:"";
+  position:absolute;
+
+  left: 2px;
+  right: 2px;
+  bottom: 0;
+
+  height: 2px;
+  border-radius: 0 0 8px 8px;
+
+  background: linear-gradient(
+    to right,
+    rgba(255,170,0,0.15) 0%,
+    rgba(255,190,0,0.65) 50%,
+    rgba(255,170,0,0.15) 100%
+  );
+
+  pointer-events:none;
 }
 
 .c-btn.c-reset:active{
