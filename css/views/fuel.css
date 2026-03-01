@@ -273,3 +273,22 @@
   color: var(--muted);
   font-size:12px;
 }
+
+/* Fuel view: column layout */
+.view-fuel{
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Fuel content scroll area */
+.view-fuel__body{
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* ResetBar in fuel: unten */
+.view-fuel .c-resetBar{
+  margin-top: auto;
+}
