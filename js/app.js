@@ -32,6 +32,15 @@ import { initOrmChecklist } from "./orm.js";
 import { initSignatureUI } from "./signature_ui.js";
 import { isInCompanyNetwork } from "./intranet_detect.js";
 
+// ---------- Edge-Problem beseitigen ----------
+(function markPlatform() {
+  const platform =
+    (navigator.userAgentData && navigator.userAgentData.platform) ||
+    navigator.platform ||
+    "";
+  if (/win/i.test(platform)) document.documentElement.classList.add("is-win");
+})();
+
 // ---------- Control Button State ----------
 function setBtnState(btn, onState) {
   if (!btn) return;
