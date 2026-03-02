@@ -88,9 +88,9 @@
    ========================================================= */
 .c-resetBar{
   /* Layout */
-  margin-top: var(--space-md);    /* drückt die Bar nach unten */
+  margin-top: 0;          /* drückt die Bar nach unten */
   /* margin-top: auto;    /* drückt die Bar nach unten */
-  /* margin-top: 10px;      /* erzeugt den sichtbaren Gap */
+  /* margin-top: 10px;     /* erzeugt den sichtbaren Gap */
   width: 100%;
   box-sizing: border-box;
 
