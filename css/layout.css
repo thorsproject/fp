@@ -63,7 +63,6 @@
   position: relative;
 }
 
-.l-sidebar,
 .c-panel__body{
   scrollbar-gutter: stable;
 }
