@@ -18,9 +18,11 @@
       <!-- 1) Anflüge anmelden -->
       <div class="cg-row">
         <div class="cg-todo">Wachleiter: Anflüge anmelden</div>  <!-- Spalte 1 -->
-        <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="bremen"><span class="ico">📞</span>Bremen</button></div>  <!-- Spalte 2 -->
-        <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="langen"><span class="ico">📞</span>Langen</button></div>  <!-- Spalte 2 -->
-        <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="muenchen"><span class="ico">📞</span>München</button></div>  <!-- Spalte 2 -->
+        <div class="cg-contacts cg-contacts--stack"> 
+          <button class="c-btn c-phone" data-phone-key="bremen"><span class="ico">📞</span>Bremen</button> <!-- Spalte 2 -->
+          <button class="c-btn c-phone" data-phone-key="langen"><span class="ico">📞</span>Langen</button> <!-- Spalte 2 -->
+          <button class="c-btn c-phone" data-phone-key="muenchen"><span class="ico">📞</span>München</button> <!-- Spalte 2 -->
+        </div>
         <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
         <div class="cg-status">Anflüge angemeldet und genehmigt</div>  <!-- Spalte 4 -->
         <div class="cg-toggle"><button class="c-btn c-toggle" data-tb="appr">✖</button></div>  <!-- Spalte 5 -->
@@ -40,16 +42,11 @@
         <div class="cg-todo">Wx Check</div>  <!-- Spalte 1 -->
         <div class="cg-contacts"><button class="c-btn c-phone" data-phone-key="wx_muenster"><span class="ico">📞</span>Wx Münster</button></div>  <!-- Spalte 2 -->
         <div class="cg-action">  <!-- Spalte 3 -->
-          <label class="mini-field">  <!-- Spalte 3 -->
-            NR
-            <input class="c-input c-input--sm" type="text" inputmode="numeric" data-field="wx_nr" placeholder="NR">  <!-- Spalte 3 -->
-          </label>
-          <label class="mini-field">  <!-- Spalte 3 -->
-            VOID
+          <label class="mini-field"> <span class="mini-field__label">NR</span>  <!-- Spalte 3 -->
+            <input class="c-input c-input--sm" type="text" inputmode="numeric" data-field="wx_nr" placeholder="NR"> </label>  <!-- Spalte 3 -->
+          <label class="mini-field"> <span class="mini-field__label">VOID</span>  <!-- Spalte 3 -->
             <input class="c-input c-input--sm" type="text" data-field="wx_void" placeholder="VOID">  <!-- Spalte 3 -->
-          </label>
-          <label class="mini-field">  <!-- Spalte 3 -->
-            INITIALS
+          </label> <label class="mini-field"> <span class="mini-field__label">INITIALS</span>  <!-- Spalte 3 -->
             <input class="c-input c-input--sm" type="text" data-field="wx_init" placeholder="ABC">  <!-- Spalte 3 -->
           </label>
         </div>

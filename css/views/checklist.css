@@ -55,23 +55,42 @@
 }
 
 /* =========================
+   WACHLEITER: Buttons untereinander
+   ========================= */
+#view-checklist .cg-contacts--stack{
+display:flex;
+flex-direction:column;
+gap:8px;
+align-items:flex-start;
+}
+
+/* =========================
    WX CHECK: Inputs untereinander
    ========================= */
-
 /* cg-action ist Spalte 3; dort sollen die mini-field Labels untereinander */
 #view-checklist .cg-action{
   display: grid;
   gap: 8px;
 }
 
-/* jedes mini-field: Label oben, Input darunter */
+/* jedes mini-field: Label links, Input daneben */
 #view-checklist .mini-field{
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 4px;
-  font-size: 12px;
-  line-height: 1.1;
-  opacity: .95;
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  font-size: 12px; 
+  line-height: 1.1; 
+  opacity: .95; 
+} 
+
+#view-checklist .mini-field__label{ 
+  min-width: 70px; /* Label steht links “davor” */ 
+  font-weight: 700; 
+  text-align: left; 
+}
+
+#view-checklist .mini-field .c-input--sm{ 
+  width: 120px; 
 }
 
 /* =========================
