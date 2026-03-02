@@ -35,38 +35,64 @@
   padding-bottom: 2px;
 }
 
-/* APP LAYOUT */
+/* =========================================================
+   APP LAYOUT – robust (Desktop + Tablet + Mobile)
+   ========================================================= */
+/* 2) Platz unter fixed Topbar */
 .l-views,
 .l-shell{
-  padding-top: 60px; /* Platz für fixed Topbar */
+  padding-top: calc(var(--topbar-h) + 10px); /* 50 + 10 = 60 wie bisher */
 }
 
+/* 3) Shell als Grid: 2 Spalten, symmetrische Außenränder */
 .l-shell{
-  display: flex;
-  gap: 10px;
-  padding: 10px;
+  display: grid;
+  grid-template-columns: minmax(320px, var(--sidebar-w)) 1fr;
+  gap: var(--col-gap);
+
+  padding: var(--app-pad);
+
+  /* stabile Höhe für "Viewport - Topbar - Außenpadding" */
+  height: calc(100vh - (var(--topbar-h) + 2 * var(--app-pad)));
+  box-sizing: border-box;
 }
 
-.l-sidebar{
-  width: 530px;
-  height: calc(100vh - 60px - 20px);
-  overflow-y: hidden;
-  padding-left: var(--panel-gutter); /* new */
+/* 4) Beide Spalten identisch behandeln => Symmetrie garantiert */
+.l-sidebar,
+.l-main{
+  min-width: 0;            /* wichtig gegen Overflow in Grid */
+  height: 100%;
+  box-sizing: border-box;
+
+  padding-left: var(--panel-gutter);
   padding-right: var(--panel-gutter);
 }
 
-.l-main{
-  flex: 1;
-  min-width: 0;
-  height: calc(100vh - 60px - 20px);
-  overflow: hidden;
-  padding-left: var(--panel-gutter);
-  padding-right: var(--panel-gutter); /* new */
-  position: relative;
-}
+/* Scroll-Regeln */
+.l-sidebar{ overflow: hidden; }
+.l-main{ overflow: hidden; position: relative; }
 
-.c-panel__body{
-  scrollbar-gutter: stable;
+/* Panel-Body scrollt (wie bei dir schon) */
+.c-panel__body{ scrollbar-gutter: stable; }
+
+/* Small Tablet / große Phones: Layout stapeln */
+@media (max-width: 860px){
+  .l-shell{
+    grid-template-columns: 1fr;
+    height: auto;               /* auf Mobile lieber Content-Höhe */
+    min-height: calc(100vh - (var(--topbar-h) + 2 * var(--app-pad)));
+  }
+
+  .l-sidebar,
+  .l-main{
+    height: auto;
+    padding-left: var(--panel-gutter);
+    padding-right: var(--panel-gutter);
+  }
+
+  /* optional: damit Content scrollt, nicht einzelne Spalten */
+  .l-sidebar{ overflow: visible; }
+  .l-main{ overflow: visible; }
 }
 
 /* VIEWS 

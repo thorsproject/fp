@@ -15,7 +15,13 @@
   --mint: #00ffcc;
   --danger: #d11;
 
-  --panel-gutter: 10px;
+  /* 1) Globale Konstanten */
+  --app-pad: 10px;         /* Außenrand der App */
+  --panel-gutter: 10px;    /* Innenabstand links/rechts in Spalten */
+  --col-gap: 10px;         /* Abstand zwischen Sidebar und Main */
+  --sidebar-w: 530px;      /* Desktop Sidebar */
+  --topbar-h: 50px;
+
   --route-cols: 40px 70px 80px 100px 70px 70px;
 
   --space-xs: 5px;
@@ -23,6 +29,11 @@
   --space-md: 10px;
   --space-lg: 14px;
   --space-xl: 20px;
+}
+
+/* Tablet: Sidebar schmaler */
+@media (max-width: 1024px){
+  :root{ --sidebar-w: 420px; }
 }
 
 html, body {

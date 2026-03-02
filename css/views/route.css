@@ -5,8 +5,8 @@
    [ROUTE]         Route panel grid, leg toggles, validation
    ========================================================= */
 #kopfContainer .master-grid{
-  padding-left: 11px;
-  padding-right: 11px;
+  padding-left: var(--panel-gutter);
+  padding-right: var(--panel-gutter);
   box-sizing: border-box;
 }
 
