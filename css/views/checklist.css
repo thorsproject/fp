@@ -21,7 +21,11 @@
   gap: 10px;
 }
 
-/* Jede Zeile als 6-Spalten-Raster */
+#view-checklist .cg-head{
+  margin-bottom: 10px;
+}
+
+/* Jede Zeile als 5-Spalten-Raster */
 #view-checklist .cg-row{
   display: grid;
   grid-template-columns: 1.4fr 1.1fr 1.2fr 1.3fr auto; /* ToDo | Kontakt | Aktion | Status | Toggle */
