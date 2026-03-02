@@ -460,7 +460,8 @@ button:disabled{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
+  width: 70%;
+  
   /* Box model */
   padding: 4px 12px;
 
@@ -480,7 +481,7 @@ button:disabled{
 
   /* Typography */
   color: rgba(255,210,120,0.95);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.3px;
 

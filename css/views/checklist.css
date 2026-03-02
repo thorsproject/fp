@@ -128,26 +128,6 @@ align-items: flex-start;
 }
 
 /* =========================
-   ORM / MAIL Buttons bündig
-   ========================= */
-
-/* In cg-action steckt jeweils nur ein Button (#btnOrm / #btnMailEO) -> 100% Breite */
-/* #view-checklist .cg-action > button{
-  width: 70%;
-  box-sizing: border-box;
-  height: 34px;             /* einheitliche Höhe */
-/*  border-radius: var(--space-md);
-} */
-
-/* Falls du noch Default-Button Styles hast, die anders aussehen */
-/* #view-checklist #btnOrm,*/
-#view-checklist #btnMailEO{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* =========================
    Toggle Buttons kleiner
    ========================= */
 
