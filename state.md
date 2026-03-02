@@ -379,6 +379,9 @@
 - Checklist Toggle: `.c-toggle` (✔/✖ via `<span class="tgl">` + `.is-checked`)
 - Reset/Warn: `.c-warn`
 
+
+- Checklist Toggles: persistieren in `checklist.js`. Beim Init werden gespeicherte Toggles restored; unbekannte Toggles werden default auf ✖ gerendert (damit kein „nackter“ Button nach Reload entsteht).
+
 ---
 
 ## Bekannte Stolperstellen / Fixes
@@ -406,19 +409,103 @@
 
 ---
 
-## Nächster Schritt (für neuen Chat)
-**Ziel:*nach umfangreicher restrukturierung soll noch: css-dateien aufräumen / abgleichen* …
-**Kontext:** …
-**Fehlerbild:** …
-**Relevant files:*css Dateien* …
-**Logs:** …
-**Status CSS-Aufräumen:** `components.css` ist strukturiert, entdoppelt und von ungenutzten Selektoren befreit. `reset.css` ist ein echtes Reset und bleibt.
+# Flight Planning Web App — State Update (Layout, Checklist, ORM)
 
-**Als nächstes (kleine Schritte, ohne UI-Brüche):**
-1. Signature UI: in `js/signature_ui.js` die 2 verbliebenen `c-btn--ghost` Buttons später auf das neue Button-System umstellen (reine HTML/CSS-Änderung, JS bleibt).
-2. View-spezifische CSS-Dateien final prüfen (nur Konsistenz/kleine Dopplungen): `checklist.css`, `fuel.css`, `settings.css`.
-3. Optional: `index.html` Stylesheet-Reihenfolge im Blick behalten: Reset/Base/Layout/Utils/Components/Overlays → danach view-spezifisch.
+## Architektur
 
-**Letzter Fix (wichtig, damit neue Chats nicht wieder stolpern):**
-- Checklist Toggles: persistieren in `checklist.js`. Beim Init werden gespeicherte Toggles restored; unbekannte Toggles werden default auf ✖ gerendert (damit kein „nackter“ Button nach Reload entsteht).
+* Modularer Aufbau mit `index.html` + `partials/*` via `data-include`
+* Klare Trennung:
 
+  * `layout.css` → Struktur (l-main, l-sidebar, views)
+  * `components.css` → wiederverwendbare UI-Elemente
+  * `route.css`, `checklist.css`, `fuel.css` → view-spezifisch
+* View-System:
+
+  * `.view` → hidden
+  * `.view.is-active` → sichtbar
+  * `.view.is-active.is-flex` → flex-column Layout
+
+---
+
+## Panel- und ResetBar-System
+
+* ResetBars sind eigene Panels außerhalb der scrollenden Panel-Bodies
+* Struktur:
+
+  * `.view-xyz__body` → flex:1, overflow hidden
+  * `.c-panel.c-panel--stack`
+
+    * `.c-panel__head`
+    * `.c-panel__body` (scrollt)
+  * `.c-resetBar` (fix unten im View)
+* Konsistenter Abstand über margin (kein transform/top mehr)
+
+---
+
+## Sidebar / Route / Legs
+
+* `.l-sidebar` fix: `flex: 0 0 530px`
+* Scrollbar-Gutter nur auf `.c-panel__body`, nicht auf Sidebar
+* master-grid basiert auf 6 Spalten (Details später entfernt → jetzt 4 Hauptspalten)
+* Toggle-Buttons und Inputs stabilisiert
+
+---
+
+## Checklist View
+
+* Struktur vereinheitlicht mit Route und Fuel
+* `.c-panel__body` hinzugefügt → ResetBar sitzt korrekt unten
+* ToDo-Schrift verkleinert (~12px)
+* Kontakt-Text (`email`, `intranet`) eigene Klasse `.cg-contacts-text`
+* intranet nutzt `.cg-contacts--wide` → grid-column span
+* Wachleiter-Buttons vertikal gestapelt
+* saubere Trennlinien zwischen `.cg-row`
+
+---
+
+## Fuel View
+
+* gleiche Architektur wie Checklist und Route
+* ResetBar vollständig getrennt vom Panel
+* keine Altlasten mehr (`fuel-card` entfernt)
+
+---
+
+## Icons und Buttons
+
+* SVG Icon-System aktiv (`assets/icons.svg`)
+* Phone Buttons → mint pill style
+* Reset Buttons → orange bevel style
+* ORM Button → amber pill style (`.c-orm`)
+
+---
+
+## ORM Integration
+
+* Button ID: `btnOrm`
+* Listener in orm.js aktiv (`openOrm`)
+* ORM Viewer öffnet korrekt (pdf.js iframe)
+
+---
+
+## Edge-spezifische Erkenntnis
+
+* Edge reserviert Scrollbar-Breite strikt → scrollbar-gutter nur auf Scroll-Container
+* Border-width 1.11111px war Folge von Zoom ≠ 100%
+* Layout korrekt bei 100% Zoom
+
+---
+
+## Aktueller Status
+
+Layout stabil in:
+
+* Chrome
+* Brave
+* Safari
+* Firefox
+* Edge (bei 100% Zoom)
+
+ResetBars, Panels, Checklist, Fuel und Route funktionieren konsistent.
+
+---
