@@ -16,8 +16,8 @@
    ========================================================= */
 .c-panel{
   /* Box model */
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
   /* Surface */
   background: var(--panel);
   border: 1px solid var(--border);
@@ -37,7 +37,7 @@
   /* Layout */
   flex-shrink: 0;
   /* Box model */
-  margin-bottom: 10px;
+  margin-bottom: var(--space-md);
 }
 
 .c-panel__body{
@@ -88,13 +88,14 @@
    ========================================================= */
 .c-resetBar{
   /* Layout */
-  margin-top: auto;     /* drückt die Bar nach unten */
-  margin-top: 10px;      /* erzeugt den sichtbaren Gap */
+  margin-top: var(--space-md);    /* drückt die Bar nach unten */
+  /* margin-top: auto;    /* drückt die Bar nach unten */
+  /* margin-top: 10px;      /* erzeugt den sichtbaren Gap */
   width: 100%;
   box-sizing: border-box;
 
   /* Box model */
-  padding: 10px;
+  padding: var(--space-md);
 
   /* Surface */
   background: var(--panel);
