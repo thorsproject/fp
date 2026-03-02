@@ -45,8 +45,17 @@
   border-radius: 12px;
 }
 
-/* Zellen dürfen schrumpfen (verhindert Überlauf) */
-#view-checklist .cg-row > *{ min-width: 0; }
+#view-checklist .cg-row{
+  min-width: 0;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  opacity: 0.9;
+}
+
+#view-checklist .cg-row:last-child{
+  border-bottom: none;
+}
 
 /* Status-Spalte etwas ruhiger */
 #view-checklist .cg-status{
