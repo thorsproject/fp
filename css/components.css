@@ -460,8 +460,9 @@ button:disabled{
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px; /* <-- Abstand zwischen Icon und Text */
   width: 70%;
-  
+
   /* Box model */
   padding: 4px 12px;
 
