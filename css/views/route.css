@@ -19,10 +19,10 @@
   align-items: center;
 }
 
-/* Nur Grid-Spalte 6 bekommt Abstand zum Panelrand */
-#legsContainer .master-grid > *:nth-child(6n){
-  padding-right: 6px;
-  box-sizing: border-box;
+/* Spalte 6: Elemente nicht bis an den Rand drücken */
+#legsContainer .master-grid > :nth-child(6n){
+  justify-self: start;
+  margin-right: 6px;
 }
 
 .c-span2 {
@@ -74,7 +74,7 @@
   border: none;
   font-weight: bold;
   font-size: 12px;
-  width: 110%;
+  width: 100%;
   max-width: 120px;
   text-align: center;
   cursor: pointer;
