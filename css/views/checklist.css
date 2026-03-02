@@ -47,8 +47,8 @@
 
 #view-checklist .cg-row{
   min-width: 0;
-  padding-bottom: 6px;
-  margin-bottom: 6px;
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-sm);
   border-bottom: 1px solid var(--border);
   opacity: 0.9;
 }
