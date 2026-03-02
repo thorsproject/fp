@@ -58,17 +58,33 @@
   overflow: hidden;
 }
 
-/* 4) Beide Spalten identisch behandeln => Symmetrie garantiert */
+/* 4) Beide Spalten identisch behandeln => Symmetrie garantiert
+      Sidebar und Main in 2 feste Zeilen aufteilen */
 .l-sidebar,
 .l-main{
-  min-width: 0;            /* wichtig gegen Overflow in Grid */
+  display: grid;
+  grid-template-rows: 1fr auto; /* oben flexibel, unten ResetBar */
+  gap: var(--space-md);
+
+  min-height: 0;
   height: 100%;
-  box-sizing: border-box;
 
   padding-left: var(--panel-gutter);
   padding-right: var(--panel-gutter);
 
+  box-sizing: border-box;
   overflow: hidden; /* wichtig: Spalten bleiben fest */
+}
+
+/* Wichtig: erstes Element darf schrumpfen */
+.l-sidebar > :first-child,
+.l-main > :first-child{
+  min-height: 0;
+}
+
+#routePanel{
+  height: 100%;
+  min-height: 0;
 }
 
 /* Scroll-Regeln */
