@@ -79,6 +79,10 @@
   opacity: 0.9;
 }
 
+#view-checklist .cg-contacts--wide{
+  grid-column: span 2;
+}
+
 #view-checklist .cg-status{
   font-size: 14px;
   line-height: 1.3;
