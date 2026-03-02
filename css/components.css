@@ -460,7 +460,7 @@ button:disabled{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px; /* <-- Abstand zwischen Icon und Text */
+  gap: 10px; /* <-- Abstand zwischen Icon und Text */
   width: 70%;
 
   /* Box model */
@@ -488,6 +488,13 @@ button:disabled{
 
   /* Interaction */
   cursor: pointer;
+}
+
+/* icon (robust) */
+.c-orm::before{
+  content: "📄";
+  font-size: 12px;
+  line-height: 1;
 }
 
 .c-orm:hover{
