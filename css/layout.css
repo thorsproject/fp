@@ -80,15 +80,13 @@
   position: relative;
 }
 
-<<<<<<< HEAD
-=======
+/* =========================================================
+    HEAD
+   ========================================================= */
 .l-main > .view.is-active{
   flex: 1;
   min-height: 0;
 }
-
-.l-sidebar,
->>>>>>> 8666a4a9a0470905afa40f5ac9b1a10449dba0c8
 .c-panel__body{
   scrollbar-gutter: stable;
 }
