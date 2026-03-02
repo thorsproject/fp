@@ -20,8 +20,8 @@
   --topbar-h: 50px;
 
   /* outer frame */
-  --app-pad: 10px;         /* Außenrand um die ganze App */
-  --col-gap: 10px;         /* Abstand zwischen Sidebar und Main */
+  --app-pad: 5px;         /* Außenrand um die ganze App */
+  --col-gap: 5px;         /* Abstand zwischen Sidebar und Main */
 
   /* symmetric inner spacing for both columns */
   --panel-gutter: 10px;
