@@ -16,11 +16,11 @@
   --danger: #d11;
 
   /* 1) Globale Konstanten */
-  --app-pad: 10px;         /* Außenrand der App */
-  --panel-gutter: 10px;    /* Innenabstand links/rechts in Spalten */
-  --col-gap: 10px;         /* Abstand zwischen Sidebar und Main */
-  --sidebar-w: 530px;      /* Desktop Sidebar */
   --topbar-h: 50px;
+  --app-pad: 5px;         /* Außenrand der App */
+  --panel-gutter: 5px;    /* Innenabstand links/rechts in Spalten */
+  --col-gap: 5px;         /* Abstand zwischen Sidebar und Main */
+  --sidebar-w: 530px;      /* Desktop Sidebar */
 
   --route-cols: 40px 70px 80px 100px 70px 70px;
 
