@@ -1,21 +1,50 @@
-/*layout.css*/
-/* =========================================================
+/* layout.css
+   =========================================================
    QUICK NAV (Strg+F)
    ---------------------------------------------------------
+   [VARS]          Layout Variablen (nur Layout-relevant)
    [TOPBAR]        Fixed header + top navigation buttons
-   [LAYOUT]        2-column layout (route left, content right)
-   [VIEWS]         View switching helpers
+   [SHELL]         2-column grid (route left, content right)
+   [COLUMNS]       Sidebar/Main: 2 rows (content + reset bar)
+   [PANELS]        Internal scrolling only in .c-panel__body
+   [VIEWS]         View switching helpers (display handling)
+   [RESPONSIVE]    Tablet + small screens
    ========================================================= */
 
-/* TOPBAR */
+
+/* =========================================================
+   [VARS]
+   ========================================================= */
+:root{
+  /* heights */
+  --topbar-h: 50px;
+
+  /* outer frame */
+  --app-pad: 10px;         /* Außenrand um die ganze App */
+  --col-gap: 10px;         /* Abstand zwischen Sidebar und Main */
+
+  /* symmetric inner spacing for both columns */
+  --panel-gutter: 10px;
+
+  /* desktop sidebar width */
+  --sidebar-w: 530px;
+}
+
+
+/* =========================================================
+   [TOPBAR]
+   ========================================================= */
 .l-topbar{
-  height: 50px;
+  height: var(--topbar-h);
   background: var(--panel);
   color: var(--accent);
+
   display: flex;
   align-items: center;
   gap: 14px;
+
   padding: 0 10px;
+
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 9999;
@@ -31,20 +60,23 @@
   display: flex;
   gap: 8px;
   align-items: center;
+
   overflow-x: auto;
   padding-bottom: 2px;
 }
 
+
 /* =========================================================
-   APP LAYOUT – robust (Desktop + Tablet + Mobile)
+   [SHELL]  (App Layout)
    ========================================================= */
-/* 2) Platz unter fixed Topbar */
+
+/* Platz für fixed Topbar (wie bei dir vorher 60px) */
 .l-views,
 .l-shell{
-  padding-top: calc(var(--topbar-h) + 10px); /* 50 + 10 = 60 wie bisher */
+  padding-top: calc(var(--topbar-h) + 10px);
 }
 
-/* 3) Shell als Grid: 2 Spalten, symmetrische Außenränder */
+/* 2-column grid => stabil + symmetrische Ränder */
 .l-shell{
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr;
@@ -53,83 +85,126 @@
   padding: var(--app-pad);
   box-sizing: border-box;
 
-  /* stabile Höhe für "Viewport - Topbar - Außenpadding" */
+  /* feste viewport-basierte Höhe => keine Page-Scrollbars */
   height: calc(100vh - (var(--topbar-h) + 2 * var(--app-pad)));
   overflow: hidden;
 }
 
-/* 4) Beide Spalten identisch behandeln => Symmetrie garantiert
-      Sidebar und Main in 2 feste Zeilen aufteilen */
+
+/* =========================================================
+   [COLUMNS]
+   Sidebar/Main sind "fest" und haben 2 Reihen:
+   Row 1: Content (flexibel)
+   Row 2: ResetBar (auto, immer sichtbar unten)
+   ========================================================= */
 .l-sidebar,
 .l-main{
+  /* 2 rows: content + footer/reset */
   display: grid;
   grid-template-rows: 1fr auto; /* oben flexibel, unten ResetBar */
   gap: var(--space-md);
 
-  min-height: 0;
   height: 100%;
+  min-height: 0;
+  min-width: 0;
 
+  /* symmetrische Abstände links/rechts */
   padding-left: var(--panel-gutter);
   padding-right: var(--panel-gutter);
 
   box-sizing: border-box;
-  overflow: hidden; /* wichtig: Spalten bleiben fest */
+
+  /* Spalten bleiben fest */
+  overflow: hidden;
 }
 
-/* Wichtig: erstes Element darf schrumpfen */
+.l-main{
+  position: relative;
+}
+
+/* wichtig: erstes Kind darf schrumpfen (sonst schiebt es Footer raus) */
 .l-sidebar > :first-child,
 .l-main > :first-child{
   min-height: 0;
 }
 
+
+/* =========================================================
+   [PANELS]  (Internal scrolling only)
+   ========================================================= */
+
+/* routePanel muss die komplette Höhe der Content-Zeile nutzen */
 #routePanel{
   height: 100%;
   min-height: 0;
 }
 
-/* Scroll-Regeln */
-.l-main{ position: relative; }
-
-/* Nur Panel-Bodies scrollen */
+/* Panel stack: head fixed, body scrollt */
 .c-panel--stack{
+  display: flex;
+  flex-direction: column;
+
   height: 100%;
   min-height: 0;
 }
 
-/* Panel-Body scrollt (wie bei dir schon) */
+/* nur BODY scrollt */
 .c-panel__body{
+  flex: 1;
   overflow-y: auto;
   min-height: 0;
 
-  /* optional, aber gut: verhindert Layout-Shift beim Scrollbar */
+  /* verhindert Layout-Shift beim Scrollbar */
   scrollbar-gutter: stable;
 }
 
+
 /* =========================================================
-   Tablet / Mobile
+   [VIEWS]
+   Hinweis: du nutzt .view in JS – bleibt so.
    ========================================================= */
-/* Small Tablet / große Phones: Layout stapeln */
+.view{
+  display: none;
+  height: 100%;
+  min-height: 0;
+}
+
+.view.is-active{
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+/* wenn du irgendwo .view.is-flex verwendest, bleibt es kompatibel */
+.view.is-flex.is-active{
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* häufig: der per data-include geladene Content soll die Höhe bekommen */
+.view.is-flex.is-active > *{
+  min-height: 0;
+}
+
+
+/* =========================================================
+   [RESPONSIVE]
+   ========================================================= */
+
+/* Tablet: Sidebar etwas schmaler */
+@media (max-width: 1024px){
+  :root{ --sidebar-w: 420px; }
+}
+
+/* Small screens: stapeln, aber weiterhin "immer fest":
+   beide Bereiche teilen sich die Höhe. */
 @media (max-width: 860px){
   .l-shell{
     grid-template-columns: 1fr;
-    height: calc(100vh - (var(--topbar-h) + 2 * var(--app-pad)));
   }
 
-  .l-sidebar,
-  .l-main{
-    height: auto;
-    padding-left: var(--panel-gutter);
-    padding-right: var(--panel-gutter);
-  }
-
-  /* Wenn gestapelt: beide Bereiche teilen sich die Höhe.
-     Du kannst das Verhältnis anpassen. */
+  /* Verhältnis kannst du nach Geschmack anpassen */
   .l-sidebar{ height: 42%; }
   .l-main{ height: 58%; }
 }
-
-/* VIEWS 
-Hinweis: Ich lasse .view als Namen drin, weil du damit sehr wahrscheinlich in JS arbeitest.
-Wenn du es “perfekt” willst, können wir später auch .view → l-view machen – aber dann musst du definitiv JS anfassen.*/
-.view{ display:none; height:100%; }
-.view.is-active{ display:block; height:100%; }

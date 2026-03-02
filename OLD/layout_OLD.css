@@ -1,0 +1,135 @@
+/*layout.css*/
+/* =========================================================
+   QUICK NAV (Strg+F)
+   ---------------------------------------------------------
+   [TOPBAR]        Fixed header + top navigation buttons
+   [LAYOUT]        2-column layout (route left, content right)
+   [VIEWS]         View switching helpers
+   ========================================================= */
+
+/* TOPBAR */
+.l-topbar{
+  height: 50px;
+  background: var(--panel);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 10px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+}
+
+.l-topbar__title{
+  font-size: 24px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.l-topbar__nav{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+/* =========================================================
+   APP LAYOUT – robust (Desktop + Tablet + Mobile)
+   ========================================================= */
+/* 2) Platz unter fixed Topbar */
+.l-views,
+.l-shell{
+  padding-top: calc(var(--topbar-h) + 10px); /* 50 + 10 = 60 wie bisher */
+}
+
+/* 3) Shell als Grid: 2 Spalten, symmetrische Außenränder */
+.l-shell{
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  gap: var(--col-gap);
+
+  padding: var(--app-pad);
+  box-sizing: border-box;
+
+  /* stabile Höhe für "Viewport - Topbar - Außenpadding" */
+  height: calc(100vh - (var(--topbar-h) + 2 * var(--app-pad)));
+  overflow: hidden;
+}
+
+/* 4) Beide Spalten identisch behandeln => Symmetrie garantiert
+      Sidebar und Main in 2 feste Zeilen aufteilen */
+.l-sidebar,
+.l-main{
+  display: grid;
+  grid-template-rows: 1fr auto; /* oben flexibel, unten ResetBar */
+  gap: var(--space-md);
+
+  min-height: 0;
+  height: 100%;
+
+  padding-left: var(--panel-gutter);
+  padding-right: var(--panel-gutter);
+
+  box-sizing: border-box;
+  overflow: hidden; /* wichtig: Spalten bleiben fest */
+}
+
+/* Wichtig: erstes Element darf schrumpfen */
+.l-sidebar > :first-child,
+.l-main > :first-child{
+  min-height: 0;
+}
+
+#routePanel{
+  height: 100%;
+  min-height: 0;
+}
+
+/* Scroll-Regeln */
+.l-main{ position: relative; }
+
+/* Nur Panel-Bodies scrollen */
+.c-panel--stack{
+  height: 100%;
+  min-height: 0;
+}
+
+/* Panel-Body scrollt (wie bei dir schon) */
+.c-panel__body{
+  overflow-y: auto;
+  min-height: 0;
+
+  /* optional, aber gut: verhindert Layout-Shift beim Scrollbar */
+  scrollbar-gutter: stable;
+}
+
+/* =========================================================
+   Tablet / Mobile
+   ========================================================= */
+/* Small Tablet / große Phones: Layout stapeln */
+@media (max-width: 860px){
+  .l-shell{
+    grid-template-columns: 1fr;
+    height: calc(100vh - (var(--topbar-h) + 2 * var(--app-pad)));
+  }
+
+  .l-sidebar,
+  .l-main{
+    height: auto;
+    padding-left: var(--panel-gutter);
+    padding-right: var(--panel-gutter);
+  }
+
+  /* Wenn gestapelt: beide Bereiche teilen sich die Höhe.
+     Du kannst das Verhältnis anpassen. */
+  .l-sidebar{ height: 42%; }
+  .l-main{ height: 58%; }
+}
+
+/* VIEWS 
+Hinweis: Ich lasse .view als Namen drin, weil du damit sehr wahrscheinlich in JS arbeitest.
+Wenn du es “perfekt” willst, können wir später auch .view → l-view machen – aber dann musst du definitiv JS anfassen.*/
+.view{ display:none; height:100%; }
+.view.is-active{ display:block; height:100%; }
