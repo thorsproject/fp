@@ -19,12 +19,6 @@
   align-items: center;
 }
 
-/* Spalte 6: Elemente nicht bis an den Rand drücken */
-#legsContainer .master-grid > :nth-child(6n){
-  justify-self: start;
-  margin-right: 6px;
-}
-
 .c-span2 {
   grid-column: span 2;
 }
@@ -74,8 +68,8 @@
   border: none;
   font-weight: bold;
   font-size: 12px;
-  width: 100%;
-  max-width: 120px;
+  width: 110%;
+  max-width: 80px;
   text-align: center;
   cursor: pointer;
   transition: 0.2s ease;
