@@ -50,11 +50,16 @@
 .l-sidebar{
   display: flex;
   flex-direction: column;
-  width: 530px;
+
+  flex: 0 0 530px;    /* wichtig: keine Shrink-Spielchen in Edge */
+  width: 530px;       /* ok, bleibt als Dokumentation */
+
   min-height: 0;
   height: calc(100vh - 60px - 20px);
+
   overflow-y: hidden;
   padding-right: var(--panel-gutter);
+  box-sizing: border-box;
 }
 
 /* RoutePanel soll den freien Platz bekommen */
@@ -87,8 +92,9 @@
   flex: 1;
   min-height: 0;
 }
-.c-panel__body{
-  scrollbar-gutter: stable;
+
+#routePanel .c-panel__body{
+  scrollbar-gutter: stable both-edges;
 }
 
 /* VIEWS 
