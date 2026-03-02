@@ -23,6 +23,11 @@
   grid-column: span 2;
 }
 
+/* Legs: etwas mehr Innenluft (Edge braucht das sichtbar) */
+#legsContainer .c-panel{
+  padding-right: 12px;  /* vorher global 10px */
+}
+
 /* ------------ Debugging - Tool ----------- */
 /*.master-grid > * {
   outline: 1px solid red;
