@@ -19,13 +19,14 @@
   align-items: center;
 }
 
-.c-span2 {
-  grid-column: span 2;
+/* Nur Grid-Spalte 6 bekommt Abstand zum Panelrand */
+#legsContainer .master-grid > *:nth-child(6n){
+  padding-right: 6px;
+  box-sizing: border-box;
 }
 
-/* Legs: etwas mehr Innenluft (Edge braucht das sichtbar) */
-#legsContainer .c-panel{
-  padding-right: 12px;  /* vorher global 10px */
+.c-span2 {
+  grid-column: span 2;
 }
 
 /* ------------ Debugging - Tool ----------- */
