@@ -24,7 +24,7 @@
 /* Jede Zeile als 6-Spalten-Raster */
 #view-checklist .cg-row{
   display: grid;
-  grid-template-columns: 1.4fr 1.4fr 1.2fr 1.3fr auto; /* ToDo | Kontakt | Aktion | Details | Status | Toggle */
+  grid-template-columns: 1.4fr 1.2fr 1.2fr 1.3fr auto; /* ToDo | Kontakt | Aktion | Details | Status | Toggle */
   gap: 10px 12px;
   align-items: center;
 }
