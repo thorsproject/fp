@@ -51,6 +51,7 @@
   width: 530px;
   height: calc(100vh - 60px - 20px);
   overflow-y: hidden;
+  padding-left: var(--panel-gutter); /* new */
   padding-right: var(--panel-gutter);
 }
 
@@ -60,6 +61,7 @@
   height: calc(100vh - 60px - 20px);
   overflow: hidden;
   padding-left: var(--panel-gutter);
+  padding-right: var(--panel-gutter); /* new */
   position: relative;
 }
 
