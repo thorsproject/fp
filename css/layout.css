@@ -158,20 +158,6 @@
   scrollbar-gutter: stable;
 }
 
-/* Route: nur der Panel-Body scrollt */
-#routePanel .c-panel__body{
-  overflow-y: auto;                 /* hast du bereits global */
-  -webkit-overflow-scrolling: touch;/* iOS smooth */
-  overscroll-behavior: contain;
-  min-height: 0;
-}
-
-/* Include-Container darf NIE scrollen */
-#legsContainer{
-  overflow: visible;
-  height: auto;
-  max-height: none;
-}
 
 /* =========================================================
    [VIEWS]

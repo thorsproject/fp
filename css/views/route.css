@@ -31,6 +31,37 @@
   grid-column: span 2;
 }
 
+/* Route: nur der Panel-Body scrollt */
+#routePanel .c-panel__body{
+  overflow-y: auto;                 /* hast du bereits global */
+  -webkit-overflow-scrolling: touch;/* iOS smooth */
+  overscroll-behavior: contain;
+  min-height: 0;
+  scrollbar-gutter: stable;
+}
+
+/* Include-Container darf NIE scrollen */
+#legsContainer{
+  overflow: visible;
+  height: auto;
+  max-height: none;
+}
+
+/* routePanel muss die Content-Zeile komplett ausfüllen */
+#routePanel{
+  height: 100%;
+  min-height: 0;
+}
+
+/* Stack-Panel: Head fix, Body darf schrumpfen + scrollen */
+#routePanel.c-panel--stack{
+  min-height: 0;
+}
+#routePanel .c-panel__body{
+  min-height: 0;
+  flex: 1;
+}
+
 /* ------------ Debugging - Tool ----------- */
 /*.master-grid > * {
   outline: 1px solid red;
