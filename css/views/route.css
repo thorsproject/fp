@@ -4,14 +4,6 @@
    ---------------------------------------------------------
    [ROUTE]         Route panel grid, leg toggles, validation
    ========================================================= */
-/* Nur Windows: Scrollbar klaut Breite => Legs wirken rechts schmaler */
-.is-win :root{ --sbw: 16px; } /* ggf. 15-17px */
-
-.is-win #legsContainer{
-  padding-right: var(--sbw);
-  margin-right: calc(-1 * var(--sbw));
-}
-
 #kopfContainer .master-grid{
   padding-left: var(--panel-gutter);
   padding-right: var(--panel-gutter);
@@ -37,7 +29,6 @@
   -webkit-overflow-scrolling: touch;/* iOS smooth */
   overscroll-behavior: contain;
   min-height: 0;
-  scrollbar-gutter: stable;
 }
 
 /* Include-Container darf NIE scrollen */
