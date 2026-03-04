@@ -134,14 +134,14 @@
 }
 
 .phone-popup__card{
-  position: absolute;
+  position: fixed;
 
   top: 110px;
-  left: 0;
-  right: 0;
+  left: 20px;
+  right: 20px;
   margin: 0 auto;
 
-  width: min(420px, calc(100vw - 40px));  /* schmaler als vorher */
+  width: min(360px, calc(100vw - 40px));  /* schmaler als vorher */
 
   border: 1px solid var(--border);
   background: var(--panel);
