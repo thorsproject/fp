@@ -417,10 +417,6 @@ button:disabled{
   transform: translateY(1px);
 }
 
-.c-resetBar{
-  margin-top: 0;
-}
-
 /* =========================================================
    5.3 BUTTON: PHONE / CONTACT
    ========================================================= */
