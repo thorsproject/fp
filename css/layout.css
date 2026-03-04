@@ -30,7 +30,7 @@
 
 
 /* =========================================================
-   [MAIN] --> eingefügt nachdem alles läuft --> soll scroll-Verhalten auf tablets verhindern
+   [BODY]
    ========================================================= */
 /* Mobile/iOS: Seite selbst darf nicht scrollen – nur interne Bereiche */
 html, body{
@@ -238,10 +238,7 @@ html, body{
   .l-main{ height: 58%; }
 }
 
-
-/* =========================================================
-   [RESPONSIVE] --> eingefügt nachdem alles läuft --> soll scroll-Verhalten auf tablets verhindern
-   ========================================================= */
+/* nur auf kleineren Geräten im Hochformat anzeigen */
 @supports (height: 100dvh){
   .l-shell{
     height: calc(100dvh - (var(--topbar-h) + 2 * var(--app-pad)));

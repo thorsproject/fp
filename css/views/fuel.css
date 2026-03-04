@@ -28,7 +28,7 @@
 }
 
 /* Fuel content scroll area */
-/*.view-fuel__body{   <-- deaktiviert nachdem alles läuft --> soll scroll-Verhalten auf tablets verhindern
+/*.view-fuel__body{   <-- deaktiviert nachdem alles läuft --> soll scroll-Verhalten auf tablets verhindern; evtl. nach Site-Refac wieder aktivieren
   flex: 1;
   min-height: 0;
   overflow: visible;

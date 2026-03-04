@@ -252,7 +252,21 @@
 }
 
 /* nur auf kleineren Geräten im Hochformat anzeigen */
-@media (max-width: 1024px) and (orientation: portrait){
+/*@media (max-width: 1024px) and (orientation: portrait){
+  .rotate-overlay{
+    display: flex;
+  }
+} */
+
+/* =========================================
+   SHOW ONLY ON TABLETS IN PORTRAIT
+   ========================================= */
+@media
+(pointer: coarse)
+and (hover: none)
+and (orientation: portrait)
+and (max-width: 1100px){
+
   .rotate-overlay{
     display: flex;
   }
