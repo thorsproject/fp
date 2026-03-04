@@ -169,9 +169,17 @@
   min-height: 0;
 }
 
+/* Active views: content + optional footer (reset bar) */
 .view.is-active{
-  display: block;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--space-md);
+  min-height: 0;
   height: 100%;
+}
+
+/* erstes Kind (z.B. .view-checklist__body / .view-fuel__body) darf schrumpfen */
+.view.is-active > :first-child{
   min-height: 0;
 }
 
