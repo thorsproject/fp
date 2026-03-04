@@ -58,7 +58,6 @@
   display: flex;
   gap: 8px;
   align-items: center;
-
   overflow-x: auto;
   padding-bottom: 2px;
 }
@@ -69,8 +68,7 @@
    ========================================================= */
 
 /* Platz für fixed Topbar (wie bei dir vorher 60px) */
-.l-views,
-.l-shell{
+.l-views{
   padding-top: calc(var(--topbar-h) + 10px);
 }
 
@@ -103,7 +101,6 @@
    Row 2: ResetBar (auto, immer sichtbar unten)
    ========================================================= */
 .l-sidebar,
-.l-main{
   /* 2 rows: content + footer/reset */
   display: grid;
   grid-template-rows: 1fr auto; /* oben flexibel, unten ResetBar */
@@ -122,13 +119,22 @@
   overflow: hidden;
 }
 
+/* RECHTS: Main ist nur Container für die aktive View (Footer sitzt in der View) */
 .l-main{
   position: relative;
+
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  padding-left: var(--panel-gutter);
+  padding-right: var(--panel-gutter);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-/* wichtig: erstes Kind darf schrumpfen (sonst schiebt es Footer raus) */
-.l-sidebar > :first-child,
-.l-main > :first-child{
+.l-main > .view{
+  height: 100%;
   min-height: 0;
 }
 
@@ -238,10 +244,3 @@
   .l-sidebar{ height: 42%; }
   .l-main{ height: 58%; }
 }
-
-/* nur auf kleinen Screens Scrollbar-Platz stabilisieren */
-/* @media (max-width: 860px){
-  #routePanel .c-panel__body{
-    scrollbar-gutter: stable;
-  }
-} */
