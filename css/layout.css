@@ -155,7 +155,7 @@
   min-height: 0;
 
   /* verhindert Layout-Shift beim Scrollbar */
-  scrollbar-gutter: stable;
+  /* scrollbar-gutter: stable; */
 }
 
 
@@ -207,4 +207,11 @@
   /* Verhältnis kannst du nach Geschmack anpassen */
   .l-sidebar{ height: 42%; }
   .l-main{ height: 58%; }
+}
+
+/* nur auf kleinen Screens Scrollbar-Platz stabilisieren */
+@media (max-width: 860px){
+  #routePanel .c-panel__body{
+    scrollbar-gutter: stable;
+  }
 }
