@@ -418,7 +418,7 @@ button:disabled{
 }
 
 .c-resetBar{
-  margin-top: var(--space-md);
+  margin-top: 0;
 }
 
 /* =========================================================
