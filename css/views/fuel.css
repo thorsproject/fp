@@ -28,11 +28,28 @@
 }
 
 /* Fuel content scroll area */
-.view-fuel__body{
+/*.view-fuel__body{   <-- deaktiviert nachdem alles läuft --> soll scroll-Verhalten auf tablets verhindern
   flex: 1;
   min-height: 0;
   overflow: visible;
+} */
+
+/* =========================================================
+   eingefügt nachdem alles läuft --> soll scroll-Verhalten auf tablets verhindern */
+.view-fuel__body{
+  flex: 1;
+  min-height: 0;
+
+  /* horizontal scroll fürs breite Grid */
+  overflow-x: auto;
+  overflow-y: visible;
+
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
 }
+/*   ========================================================= */
+
+
 
 /* -------------------------
    [FUEL:HEAD]
