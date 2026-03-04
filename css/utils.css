@@ -62,3 +62,61 @@
 .u-cursor-pointer { cursor: pointer !important; }
 .u-no-select { user-select: none !important; }
 .u-click-through { pointer-events: none !important; }
+
+/* =========================================================
+   DEBUG LAYOUT OVERLAY
+   Aktivieren: 2 möglichkeiten
+   entweder über die Konsole mit: document.documentElement.classList.toggle("dbg-layout");
+   oder mit:
+   Aktivieren: <html class="dbg-layout">
+   Deaktivieren: Klasse entfernen
+   ========================================================= */
+
+html.dbg-layout .l-shell,
+html.dbg-layout .l-sidebar,
+html.dbg-layout .l-main,
+html.dbg-layout .view.is-active,
+html.dbg-layout #routePanel,
+html.dbg-layout .c-panel,
+html.dbg-layout .c-resetBar{
+  outline: 2px solid rgba(255, 80, 80, 0.9);
+  outline-offset: -2px;
+}
+
+html.dbg-layout .l-shell{
+  box-shadow: inset 0 0 0 2px rgba(255, 200, 0, 0.9);
+}
+
+html.dbg-layout .l-sidebar{
+  box-shadow: inset 0 0 0 2px rgba(0, 255, 204, 0.9);
+}
+
+html.dbg-layout .l-main{
+  box-shadow: inset 0 0 0 2px rgba(120, 180, 255, 0.9);
+}
+
+/* Zeigt dir Padding/Gaps optisch: Hintergrundfarben, die nicht “übermalen” */
+html.dbg-layout .l-sidebar,
+html.dbg-layout .l-main{
+  background-image:
+    linear-gradient(to right,
+      rgba(0,0,0,0) 0,
+      rgba(0,0,0,0) var(--panel-gutter),
+      rgba(255,0,0,0.12) var(--panel-gutter),
+      rgba(255,0,0,0.12) calc(var(--panel-gutter) + 1px),
+      rgba(0,0,0,0) calc(var(--panel-gutter) + 1px),
+      rgba(0,0,0,0) calc(100% - var(--panel-gutter) - 1px),
+      rgba(255,0,0,0.12) calc(100% - var(--panel-gutter) - 1px),
+      rgba(255,0,0,0.12) calc(100% - var(--panel-gutter)),
+      rgba(0,0,0,0) calc(100% - var(--panel-gutter)),
+      rgba(0,0,0,0) 100%
+    );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+/* ResetBars sichtbar “unten” markieren */
+html.dbg-layout .c-resetBar{
+  outline-color: rgba(0, 255, 120, 0.95);
+  box-shadow: inset 0 0 0 2px rgba(0, 255, 120, 0.35);
+}

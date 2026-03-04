@@ -36,15 +36,6 @@
   min-height: 0;
 }
 
-/* Stack-Panel: Head fix, Body darf schrumpfen + scrollen */
-#routePanel.c-panel--stack{
-  min-height: 0;
-}
-#routePanel .c-panel__body{
-  min-height: 0;
-  flex: 1;
-}
-
 /* ------------ Debugging - Tool ----------- */
 /*.master-grid > * {
   outline: 1px solid red;
