@@ -211,3 +211,49 @@
   min-height: 16px;
 }
 /*---------- Ende - PHONE POPUP (overlay component) ----------*/
+
+/* =========================================
+   DEVICE ROTATION OVERLAY
+   ========================================= */
+
+.rotate-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(10,14,18,0.92);
+  backdrop-filter: blur(6px);
+}
+
+.rotate-card{
+  text-align: center;
+  padding: 30px 40px;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  box-shadow: 0 10px 40px rgba(0,0,0,.6);
+}
+
+.rotate-icon{
+  font-size: 48px;
+  margin-bottom: 14px;
+}
+
+.rotate-text{
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* nur auf kleineren Geräten im Hochformat anzeigen */
+@media (max-width: 1024px) and (orientation: portrait){
+  .rotate-overlay{
+    display: flex;
+  }
+}
