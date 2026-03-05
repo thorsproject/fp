@@ -464,7 +464,8 @@ button:disabled{
   justify-content: center;
   gap: 10px; /* <-- Abstand zwischen Icon und Text */
   width: 70%;
-
+  min-width: 160px;
+  
   /* Box model */
   padding: 4px 12px;
 
