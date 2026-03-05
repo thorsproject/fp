@@ -455,7 +455,7 @@ button:disabled{
 }
 
 /* =========================================================
-   5.4 BUTTON: ORM / DOCUMENT VIEWER
+   5.4 BUTTON: ORM + Mail EO / DOCUMENT VIEWER
    ========================================================= */
 .c-orm{
   /* Layout */
@@ -498,6 +498,10 @@ button:disabled{
   content: "📄";
   font-size: 12px;
   line-height: 1;
+}
+
+.c-mail::before{
+  content: "✉️";
 }
 
 .c-orm:hover{
