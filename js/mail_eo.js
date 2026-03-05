@@ -329,5 +329,8 @@ export async function handleMailEOClick(mode = "auto") {
   a.click();
   a.remove();
 
+  const btn = qs(SEL.mail.btnSend);
+  if (btn) toggleClass(btn, "is-sent", true);
+
   URL.revokeObjectURL(url);
 }
