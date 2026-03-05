@@ -776,13 +776,12 @@ export function initOrmChecklist() {
         getArrayBuffer: async () => bytesToArrayBuffer(bytes),
       });
 
-      checklistSetToggle("orm", true);
-
       setHint("Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
       setOrmStatus("final");
       clearOrmDraft();
       renderOrmStatusBadge();
       syncChecklistOrmUi();
+      syncChecklistOrmToggle();
       closeOrm();
     } catch (e) {
       console.error(e);
