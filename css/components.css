@@ -426,7 +426,7 @@ button:disabled{
   /* Layout */
   justify-content: center;
   gap: 10px; /* <-- Abstand zwischen Icon und Text */
-  width: 100px;
+  width: 120px;
   
   /* Box model */
   padding: 4px 10px;       /* 1.Wert: Abstand oben/unten, 2. Wert: Abstand links/rechts */
