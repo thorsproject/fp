@@ -463,8 +463,8 @@ button:disabled{
   align-items: center;
   justify-content: center;
   gap: 10px; /* <-- Abstand zwischen Icon und Text */
-  width: 70%;
-  min-width: 160px;
+  width: 160px;
+  justify-content: center;
   
   /* Box model */
   padding: 4px 12px;
