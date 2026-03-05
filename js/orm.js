@@ -92,6 +92,11 @@ function syncChecklistOrmUi() {
   }
 }
 
+function syncChecklistOrmToggle() {
+  // Haken NUR wenn final
+  checklistSetToggle("orm", getOrmStatus() === "final");
+}
+
 function resetOrmToTemplate(reason = "") {
   clearOrmDraft();
   setOrmStatus("template");
@@ -101,6 +106,7 @@ function resetOrmToTemplate(reason = "") {
 
   renderOrmStatusBadge();
   syncChecklistOrmUi();
+  syncChecklistOrmToggle();
 }
 
 function abToBase64(ab) {
@@ -573,6 +579,7 @@ export function initOrmChecklist() {
   btnClose.textContent = "Schließen ohne speichern";
   renderOrmStatusBadge();
   syncChecklistOrmUi();
+  syncChecklistOrmToggle();
 
   let isOpen = false;
 
@@ -708,6 +715,7 @@ export function initOrmChecklist() {
       setOrmStatus("draft");
       renderOrmStatusBadge();
       syncChecklistOrmUi();
+      syncChecklistOrmToggle();
 
       // Optional: auch als Attachment registrieren (für Mail etc.)
       // (Wenn du wirklich NUR localStorage willst: diesen Block auskommentieren.)
@@ -718,7 +726,6 @@ export function initOrmChecklist() {
       //  getArrayBuffer: async () => bytesToArrayBuffer(bytes),
       // });
 
-      checklistSetToggle("orm", true);
       setHint("Entwurf gespeichert (nur lokal im Browser). Zum Export: Finalisieren.");
       closeOrm();
     } catch (e) {
