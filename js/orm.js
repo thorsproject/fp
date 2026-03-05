@@ -93,12 +93,8 @@ function syncChecklistOrmUi() {
 }
 
 function syncChecklistOrmToggle() {
-  const shouldBeChecked = getOrmStatus() === "final";
-  const current = checklistGetToggle?.("orm");
-
-  if (current !== shouldBeChecked) {
-    checklistSetToggle("orm", shouldBeChecked);
-  }
+  // Haken nur bei FINAL
+  checklistSetToggle("orm", getOrmStatus() === "final");
 }
 
 function resetOrmToTemplate(reason = "") {
