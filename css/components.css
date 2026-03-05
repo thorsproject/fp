@@ -423,17 +423,25 @@ button:disabled{
    5.3 BUTTON: PHONE / CONTACT
    ========================================================= */
 .c-phone{
+  /* Layout */
+  justify-content: center;
+  gap: 10px; /* <-- Abstand zwischen Icon und Text */
+  width: 80px;
+  
   /* Box model */
   padding: 4px 10px;       /* 1.Wert: Abstand oben/unten, 2. Wert: Abstand links/rechts */
+  
   /* Surface */
   background: linear-gradient(to bottom, rgba(0,255,204,0.18), rgba(0,255,204,0.08));
   border-color: rgba(0,255,204,0.45);
   border-radius: 999px;    /* pill */
+  
   /* Depth/FX */
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.10),
     0 0 10px rgba(0,255,204,0.12);
-  /* Typography */
+  
+    /* Typography */
   color: var(--mint);
   font-size: 11px;
   font-weight: 900;
@@ -464,7 +472,6 @@ button:disabled{
   justify-content: center;
   gap: 10px; /* <-- Abstand zwischen Icon und Text */
   width: 160px;
-  justify-content: center;
   
   /* Box model */
   padding: 4px 12px;
