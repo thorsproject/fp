@@ -163,6 +163,9 @@ map.on("click", (e) => {
   function applyFdlToHeader({ name = "", tel = "" } = {}) {
     setText(SEL.route.fdlOutput, name);
     setText(SEL.route.telOutput, tel);
+  
+    const btn = document.getElementById("btnFDL");
+    if (btn && name) btn.textContent = name;
   }
 
   async function applyChecklistContacts(config) {
