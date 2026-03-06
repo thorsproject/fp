@@ -113,6 +113,7 @@ function syncTripInputsEnabled(panel) {
 
 // ---------- Fuel toggles ----------
 function initFuelToggles(panel) {
+  console.log("Fuel toggles found:", qsa(SEL.fuel.toggleAll, panel).length);
   qsa(SEL.fuel.toggleAll, panel).forEach((btn) => {
     function applyVisual() {
       const field = btn.dataset.field;
@@ -378,7 +379,7 @@ function render(panel) {
 export function initFuelPlanning() {
   const panel = qs(SEL.fuel.panel);
   if (!panel) return;
-
+  console.log("Fuel init OK", panel);
   initFuelToggles(panel);
   initMainClamp(panel);
 
