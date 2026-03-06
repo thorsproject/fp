@@ -316,6 +316,7 @@
 .c-desc{
   max-width: 185px;
   line-height: 1.08;
+  padding-left: 6px;
 }
 
 .fuel-foot{
