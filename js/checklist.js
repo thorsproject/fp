@@ -103,7 +103,12 @@ export function initChecklistUI() {
 
   qsa(SEL.checklist.toggleBtn, scope).forEach((tb) => {
     const key = tb.dataset.tb;
-    if (!(key in toggles)) checklistApplyToggle(tb, false);
+
+    if (key in toggles) {
+      checklistApplyToggle(tb, !!toggles[key]);
+    } else {
+      checklistApplyToggle(tb, false);
+    }
   });
 
   qsa(SEL.checklist.fieldAny, scope).forEach((inp) => {
