@@ -429,7 +429,7 @@ button:disabled{
   width: 120px;
   
   /* Box model */
-  padding: 4px 10px;       /* 1.Wert: Abstand oben/unten, 2. Wert: Abstand links/rechts */
+  padding: 4px 5px;       /* 1.Wert: Abstand oben/unten, 2. Wert: Abstand links/rechts */
   
   /* Surface */
   background: linear-gradient(to bottom, rgba(0,255,204,0.18), rgba(0,255,204,0.08));
