@@ -306,14 +306,14 @@
 .fuel-grid{
   width: fit-content;
   max-width: 100%;
-  grid-template-columns: 160px repeat(4, 56px) 68px 68px;
+  grid-template-columns: 140px repeat(4, 56px) 68px 68px;
   column-gap: 8px;
 }
 
-/*.c-desc{
+.c-desc{
   max-width: 185px;
   line-height: 1.08;
-}*/
+}
 
 .fuel-foot{
   width: fit-content;
@@ -328,5 +328,8 @@
 }
 
 .c-desc--wide{
-  grid-column: span 5;
+  grid-column: span 3;
+  max-width: none;
+  width: auto;
+  white-space: nowrap;
 }
