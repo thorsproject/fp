@@ -236,17 +236,17 @@
 .fuel-accent{
   background: rgba(0,212,255,0.06);
   border-radius: 8px;
-  margin-left: -6px;
-  margin-right: -6px;
-  padding-left: 6px;
-  padding-right: 6px;
-  border-radius: 6px;
+  padding: 8px 8px;
 }
+
 .fuel-total{
   background: rgba(0,255,204,0.06);
   border-radius: 8px;
-  padding: 8px 0;   /* nur oben/unten, links/rechts bleibt 0*/
+  padding: 8px 8px;   /* nur oben/unten, links/rechts bleibt 0*/
+  margin-left: -6px;
+  margin-right: -6px;
 }
+
 /* Totals nicht einrücken */
 .fuel-grid.fuel-total .c-desc{
   padding-left: 0;
