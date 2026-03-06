@@ -69,8 +69,8 @@ function syncFuelToggleUI(panel) {
     mainInp.disabled = true;
 
     // Aux automatisch ON (Company-Vorgabe)
-    auxBtn.dataset.state = "on";
-    auxBtn.textContent = `${CAP.AUX} USG`;
+    // auxBtn.dataset.state = "on";
+    // auxBtn.textContent = `${CAP.AUX} USG`;
   } else {
     // Standard OFF => unlock, Wert NICHT löschen
     mainInp.disabled = false;
