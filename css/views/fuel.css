@@ -123,7 +123,7 @@
 /* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
 .fuel-grid{
   display: grid;
-  grid-template-columns: 1.6fr repeat(4, 0.5fr) 0.9fr 0.9fr;
+  grid-template-columns: 1.0fr repeat(4, 0.3fr) 0.6fr 0.6fr;
   /* grid-template-columns: 240px repeat(4, 86px) 110px 110px; */
   column-gap: var(--space-md);
   row-gap: 6px;
