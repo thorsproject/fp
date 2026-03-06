@@ -298,80 +298,26 @@
   font-size: 12px;
 }
 
-/* =========================
-   Fuel Planning – wirklich kompakter
-   ========================= */
+/* -------------------------
+   [FUEL:COMPACT-WIDTH]
+   kompakter Gesamtblock statt Full-Width-Stretch
+   ------------------------- */
 
-/* obere Controls enger und kleiner */
-.fuel-controls{
-  justify-content: flex-start;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.fuel-chip{
-  padding: 4px 8px;
-  gap: 4px;
-}
-
-.fuel-chip input,
-.fuel-chip .c-input,
-.fuel-chip select,
-.fuel-chip .c-select{
-  height: 28px;
-  min-height: 28px;
-  padding: 2px 8px;
-  font-size: 14px;
-}
-
-/* Tabelle enger */
 .fuel-grid{
-  grid-template-columns: 1.45fr repeat(4, 0.42fr) 0.62fr 0.62fr;
-  column-gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  grid-template-columns: 240px repeat(4, 72px) 78px 78px;
+  column-gap: 10px;
 }
 
-.fuel-head{
-  margin-bottom: 2px;
-  padding-bottom: 4px;
+.fuel-foot{
+  width: fit-content;
+  max-width: 100%;
 }
 
-.fuel-row{
-  min-height: 28px;
-  padding: 2px 0;
-}
-
-/* Inputs in den Leg-Spalten kleiner */
-.c-leg.trip input,
-.fuel-mini-input,
-#finres{
-  height: 24px;
-  min-height: 24px;
-  padding: 1px 6px;
-  font-size: 14px;
-}
-
-.c-leg.trip input,
-.fuel-mini-input{
-  text-align: center;
-}
-
-.fuel-inputcol{
-  gap: 4px;
-}
-
-/* Beschriftungen dichter */
-.c-desc{
-  line-height: 1.05;
-}
-
-/* Summary/KPI unten kompakter */
-.fuel-kpis{
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.fuel-kpi,
-.fuel-stat,
-.fuel-summary-card{
-  padding: 8px 10px;
+.fuel-miscs{
+  width: fit-content;
+  max-width: 100%;
+  grid-template-columns: repeat(3, 130px);
+  gap: 10px;
 }
