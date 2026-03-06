@@ -27,11 +27,31 @@ export function initPhones() {
     const entry = cfg?.phones?.[key];
 
     if (!entry) {
+
+      const directTel = btn.getAttribute("data-phone");
+
+      if (directTel) {
+
+        const label =
+          btn.querySelector(".label")?.textContent.trim() ||
+          btn.textContent.trim() ||
+          "Telefon";
+
+        showPhonePopup({
+          label: label,
+          number: directTel,
+          hint: ""
+        });
+
+        return;
+      }
+
       showPhonePopup({
         label: "Telefon",
         number: "",
         hint: `Nicht in Config: ${key}`,
       });
+
       return;
     }
 

@@ -165,9 +165,12 @@ map.on("click", (e) => {
     setText(SEL.route.telOutput, tel);
   
     const btn = document.getElementById("btnFDL");
-    const label = document.querySelector("#btnFDL .label");
+    if (!btn) return;
+
+    const label = btn.querySelector(".label");
     if (label) label.textContent = name || "FDL";
-    if (btn) btn.dataset.phone = tel;
+    
+    btn.setAttribute("data-phone", tel || "");
   }
 
   async function applyChecklistContacts(config) {
