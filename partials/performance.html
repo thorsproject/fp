@@ -1,21 +1,160 @@
 <!-- performance.html -->
 <div class="view-performance__body">
   <div class="c-panel c-panel--stack" id="performancePanel">
-    <div class="c-panel__head">
-      <h2 class="c-title">PERFORMANCE</h2>
+    <div class="c-panel__head performance-head">
+      <h2 class="c-title">Performance</h2>
+
+      <div class="performance-head__status">
+        <span class="performance-status performance-status--active">✓</span>
+        <span class="performance-head__text">Performance deaktivieren</span>
+      </div>
     </div>
 
     <div class="c-panel__body">
+      <div class="performance-layout">
 
-      Scrollbarer Inhalt
+        <!-- TAKEOFF -->
+        <section class="perf-card" data-perf-section="takeoff">
+          <div class="perf-card__title">Takeoff</div>
 
-      
+          <div class="perf-grid">
+            <div class="perf-label">ICAO</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_icao" /></div>
+
+            <div class="perf-label">RWY</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_rwy" /></div>
+
+            <div class="perf-label">Wind</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_wind" /></div>
+
+            <div class="perf-label">Temp</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_temp" /></div>
+
+            <div class="perf-label">QNH</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_qnh" /></div>
+
+            <div class="perf-label">TOM</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_tom" /></div>
+
+            <div class="perf-label">MTOM</div>
+            <div class="perf-cell perf-cell--out"><span data-out="to_mtom">1999</span></div>
+
+            <div class="perf-label">Flaps</div>
+            <div class="perf-cell perf-cell--out"><span data-out="to_flaps">UP</span></div>
+
+            <div class="perf-label">TORA</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_tora" /></div>
+
+            <div class="perf-label">Takeoff Roll</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_roll" /></div>
+
+            <div class="perf-label">ASD</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_asd" /></div>
+
+            <div class="perf-label">Stop Margin</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_stop_margin" /></div>
+          </div>
+        </section>
+
+        <!-- RETURN / DIV -->
+        <section class="perf-card" data-perf-section="return">
+          <div class="perf-card__title">Return / Div</div>
+
+          <div class="perf-grid">
+            <div class="perf-label">ICAO</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_icao" /></div>
+
+            <div class="perf-label">RWY</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_rwy" /></div>
+
+            <div class="perf-label">OEI ROC</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_oei_roc" /></div>
+
+            <div class="perf-label">OEI SC</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_oei_sc" /></div>
+
+            <div class="perf-label">EOSID</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_eosid" /></div>
+
+            <div class="perf-label">LM</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_lm" /></div>
+
+            <div class="perf-label">MLM</div>
+            <div class="perf-cell perf-cell--out"><span data-out="rt_mlm">1999</span></div>
+
+            <div class="perf-label">Flaps</div>
+            <div class="perf-cell perf-cell--out"><span data-out="rt_flaps">UP</span></div>
+
+            <div class="perf-label">LDA</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_lda" /></div>
+
+            <div class="perf-label">Landing Roll</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_roll" /></div>
+
+            <div class="perf-label">LD ABN</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_ld_abn" /></div>
+
+            <div class="perf-label">Stop Margin</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_stop_margin" /></div>
+          </div>
+        </section>
+
+        <!-- LANDING -->
+        <section class="perf-card" data-perf-section="landing">
+          <div class="perf-card__title">Landing</div>
+
+          <div class="perf-grid">
+            <div class="perf-label">ICAO</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_icao" /></div>
+
+            <div class="perf-label">RWY</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_rwy" /></div>
+
+            <div class="perf-label">Wind</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_wind" /></div>
+
+            <div class="perf-label">Temp</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_temp" /></div>
+
+            <div class="perf-label">QNH</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_qnh" /></div>
+
+            <div class="perf-label">LM</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_lm" /></div>
+
+            <div class="perf-label">MLM</div>
+            <div class="perf-cell perf-cell--out"><span data-out="ld_mlm">1999</span></div>
+
+            <div class="perf-label">Flaps</div>
+            <div class="perf-cell perf-cell--out"><span data-out="ld_flaps">UP</span></div>
+
+            <div class="perf-label">LDA</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_lda" /></div>
+
+            <div class="perf-label">Landing Roll</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_roll" /></div>
+
+            <div class="perf-label">LD</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_ld" /></div>
+
+            <div class="perf-label">Stop Margin</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_stop_margin" /></div>
+          </div>
+        </section>
+
+      </div>
     </div>
   </div>
 </div>
 
 <div class="c-resetBar">
-  <div class="c-resetBar__inner">
-    Reset Buttons oder Footer
+  <div class="c-resetBar__inner performance-reset">
+    <button type="button" class="c-btn c-warn performance-reset__all">alle Eingabezellen PERFOR. leeren</button>
+
+    <div class="performance-reset__row">
+      <button type="button" class="c-btn c-warn">Takeoff leeren</button>
+      <button type="button" class="c-btn c-warn">Return leeren</button>
+      <button type="button" class="c-btn c-warn">Landing leeren</button>
+    </div>
   </div>
 </div>
