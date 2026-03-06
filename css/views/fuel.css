@@ -123,9 +123,10 @@
 /* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
 .fuel-grid{
   display: grid;
-  grid-template-columns: 1.6fr repeat(4, 0.5fr) 0.9fr 0.9fr;
-  /* grid-template-columns: 240px repeat(4, 86px) 110px 110px; */
-  column-gap: var(--space-md);
+  grid-template-columns: 220px repeat(4, 70px) 70px 70px;
+  column-gap: 8px;
+  /* grid-template-columns: 240px repeat(4, 86px) 110px 110px;
+  column-gap: var(--space-md); */
   row-gap: 6px;
   align-items: center;
 }
