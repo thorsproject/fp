@@ -698,7 +698,7 @@ data-state="on">
 
 Problem:
 
-fuelToggle Buttons reagieren momentan nicht auf Klick.
+fuelToggle Button "aux_on" reagiert momentan nicht auf Klick.
 
 Vermutung:
 
