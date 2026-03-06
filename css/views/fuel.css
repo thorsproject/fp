@@ -123,7 +123,7 @@
 /* ITEM | LEG1 | LEG2 | LEG3 | LEG4 | USG | TIME */
 .fuel-grid{
   display: grid;
-  grid-template-columns: 1.0fr repeat(4, 0.3fr) 0.6fr 0.6fr;
+  grid-template-columns: 1.6fr repeat(4, 0.5fr) 0.9fr 0.9fr;
   /* grid-template-columns: 240px repeat(4, 86px) 110px 110px; */
   column-gap: var(--space-md);
   row-gap: 6px;
@@ -295,4 +295,98 @@
 .fuel-note{
   color: var(--muted);
   font-size: 12px;
+}
+
+/* =========================
+   Fuel Planning – compact layout
+   ========================= */
+
+/* oberer Control-Bereich kompakter */
+.fuel-controls{
+  gap: 10px;
+  margin-bottom: 10px;
+  justify-content: flex-start;
+}
+
+.fuel-chip{
+  padding: 6px 10px;
+  gap: 6px;
+  min-height: 0;
+}
+
+.fuel-chip input,
+.fuel-chip .c-input,
+.fuel-chip select,
+.fuel-chip .c-select{
+  min-height: 34px;
+  height: 34px;
+  padding: 6px 10px;
+}
+
+/* Tabelle insgesamt enger */
+.fuel-grid{
+  grid-template-columns: 1.55fr repeat(4, 0.52fr) 0.72fr 0.72fr;
+  column-gap: 10px;
+}
+
+.fuel-row{
+  min-height: 34px;
+  padding: 4px 0;
+}
+
+.fuel-head{
+  margin-bottom: 4px;
+  padding-bottom: 6px;
+}
+
+/* Leg-Spalten + Eingabefelder kompakter */
+.c-leg.trip input,
+.fuel-mini-input,
+#finres{
+  height: 30px;
+  min-height: 30px;
+  padding: 4px 8px;
+}
+
+.c-leg.trip input{
+  text-align: center;
+}
+
+.fuel-mini-input{
+  text-align: center;
+}
+
+.fuel-inputcol{
+  gap: 6px;
+}
+
+/* Beschriftungen etwas dichter */
+.c-desc{
+  line-height: 1.15;
+}
+
+.c-desc small,
+.c-desc .sub,
+.fuel-sub{
+  line-height: 1.1;
+}
+
+/* Ergebniszeilen flacher */
+.fuel-row.is-accent,
+.fuel-row.is-strong,
+.fuel-row.is-result{
+  min-height: 32px;
+}
+
+/* KPI-Boxen unten kompakter */
+.fuel-kpis{
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.fuel-kpi,
+.fuel-stat,
+.fuel-summary-card{
+  padding: 10px 12px;
+  min-height: 0;
 }
