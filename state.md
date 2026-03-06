@@ -496,7 +496,7 @@
 
 ---
 
-## Aktueller Status
+## Aktueller Status 01.03.2026
 
 Layout stabil in:
 
@@ -508,4 +508,206 @@ Layout stabil in:
 
 ResetBars, Panels, Checklist, Fuel und Route funktionieren konsistent.
 
+
+# Flight Planning Web App — State Update 06.03.2026 (Checklist, Phones, FDL, Fuel)
+
+## Checklist
+
+Checklist ist funktional abgeschlossen.
+
+### Toggle-System
+Toggle Buttons nutzen:
+
+data-tb="..."
+
+Beispiele:
+
+data-tb="orm"  
+data-tb="wx"  
+data-tb="eo"
+
+Zustände:
+
+✖ = rot  
+✔ = mint
+
+### Persistenz
+
+Checklist State wird gespeichert in:
+
+fp_checklist_v1
+
+Beim Laden der Checklist werden alle gespeicherten Toggle-States wiederhergestellt.
+
+Fix implementiert:
+Beim Init wird jetzt **immer** `checklistApplyToggle()` aufgerufen, auch wenn der Key im Storage existiert.  
+Dadurch entstehen keine weißen Toggle Buttons mehr nach einem Reload.
+
 ---
+
+## ORM Workflow
+
+ORM Button befindet sich in Checklist.
+
+Button:
+
+btnOrm
+
+Button Text:
+
+"ORM öffnen"  
+"Entwurf öffnen"  
+"ORM finalisiert"
+
+Statuslogik:
+
+template → Standardzustand  
+draft → Entwurf gespeichert  
+final → ORM finalisiert
+
+Speicherorte:
+
+fp.orm.draft.v1  
+fp.orm.status.v1
+
+Verhalten:
+
+Draft speichern  
+→ Status "Entwurf lokal gespeichert"  
+→ Checklist Toggle bleibt ✖
+
+Finalisieren  
+→ Badge "ORM finalisiert"  
+→ Checklist Toggle ✔  
+→ Button disabled
+
+Datum oder Callsign Änderung  
+→ ORM Status reset auf template
+
+---
+
+## Mail EO
+
+Button:
+
+btnMailEO
+
+Zustände:
+
+disabled → solange ORM nicht finalisiert  
+aktiv → wenn ORM finalisiert  
+mint → nach Klick (Mail gesendet)
+
+Mint Zustand bleibt bis:
+
+Datum oder LFZ geändert wird.
+
+---
+
+## Phone System
+
+Telefon Buttons nutzen:
+
+data-phone-key="..."
+
+Beispiele:
+
+wx_muenster  
+bremen  
+laage_rdr
+
+Telefonnummern werden geladen aus:
+
+config.enc → phones{}
+
+Popup wird geöffnet über:
+
+showPhonePopup()
+
+Wenn Config nicht entsperrt ist:
+
+Popup Hinweis  
+"Passwort in Settings erforderlich"
+
+---
+
+## FDL Button
+
+Neuer Telefonbutton in Checklist.
+
+HTML:
+
+<button class="c-btn c-phone c-fdl" id="btnFDL">
+<span class="ico">📞</span>
+<span class="label">FDL</span>
+</button>
+
+Der Buttontext wird dynamisch gesetzt über:
+
+applyFdlToHeader({ name, tel })
+
+Dabei werden gesetzt:
+
+FDLoutput  
+TELoutput  
+Button Text (.label)
+
+Die Telefonnummer wird zusätzlich im Button gespeichert:
+
+data-phone
+
+Damit kann das Phone Popup direkt darauf zugreifen.
+
+---
+
+## Layout Status
+
+Layout vollständig stabilisiert.
+
+Browser getestet:
+
+Chrome  
+Safari  
+Firefox  
+Edge  
+Brave
+
+Fixes:
+
+Scrollbar nur auf `.c-panel__body`  
+ResetBars außerhalb der Scrollbereiche  
+Symmetrische Panelabstände links/rechts
+
+Tablet Fix:
+
+Portrait Orientation Overlay (Rotate Hinweis)
+
+---
+
+## Fuel Planning (aktueller Arbeitsbereich)
+
+Fuel View ist strukturell fertig.
+
+Fuel Button Beispiel:
+
+<button class="c-btn fuelToggle"
+data-field="aux_on"
+data-state="on">
+26.4 USG
+</button>
+
+Problem:
+
+fuelToggle Buttons reagieren momentan nicht auf Klick.
+
+Vermutung:
+
+fehlender Event Listener in `fuel.js`.
+
+Nächster Schritt:
+
+fuelToggle Logik implementieren:
+
+toggle data-state  
+Fuel Berechnung aktualisieren  
+UI neu rendern
