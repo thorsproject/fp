@@ -298,95 +298,79 @@
 }
 
 /* =========================
-   Fuel Planning – compact layout
+   Fuel Planning – wirklich kompakter
    ========================= */
 
-/* oberer Control-Bereich kompakter */
+/* obere Controls enger und kleiner */
 .fuel-controls{
-  gap: 10px;
-  margin-bottom: 10px;
   justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .fuel-chip{
-  padding: 6px 10px;
-  gap: 6px;
-  min-height: 0;
+  padding: 4px 8px;
+  gap: 4px;
 }
 
 .fuel-chip input,
 .fuel-chip .c-input,
 .fuel-chip select,
 .fuel-chip .c-select{
-  min-height: 34px;
-  height: 34px;
-  padding: 6px 10px;
+  height: 28px;
+  min-height: 28px;
+  padding: 2px 8px;
+  font-size: 14px;
 }
 
-/* Tabelle insgesamt enger */
+/* Tabelle enger */
 .fuel-grid{
-  grid-template-columns: 1.55fr repeat(4, 0.52fr) 0.72fr 0.72fr;
-  column-gap: 10px;
-}
-
-.fuel-row{
-  min-height: 34px;
-  padding: 4px 0;
+  grid-template-columns: 1.45fr repeat(4, 0.42fr) 0.62fr 0.62fr;
+  column-gap: 8px;
 }
 
 .fuel-head{
-  margin-bottom: 4px;
-  padding-bottom: 6px;
+  margin-bottom: 2px;
+  padding-bottom: 4px;
 }
 
-/* Leg-Spalten + Eingabefelder kompakter */
+.fuel-row{
+  min-height: 28px;
+  padding: 2px 0;
+}
+
+/* Inputs in den Leg-Spalten kleiner */
 .c-leg.trip input,
 .fuel-mini-input,
 #finres{
-  height: 30px;
-  min-height: 30px;
-  padding: 4px 8px;
+  height: 24px;
+  min-height: 24px;
+  padding: 1px 6px;
+  font-size: 14px;
 }
 
-.c-leg.trip input{
-  text-align: center;
-}
-
+.c-leg.trip input,
 .fuel-mini-input{
   text-align: center;
 }
 
 .fuel-inputcol{
-  gap: 6px;
+  gap: 4px;
 }
 
-/* Beschriftungen etwas dichter */
+/* Beschriftungen dichter */
 .c-desc{
-  line-height: 1.15;
+  line-height: 1.05;
 }
 
-.c-desc small,
-.c-desc .sub,
-.fuel-sub{
-  line-height: 1.1;
-}
-
-/* Ergebniszeilen flacher */
-.fuel-row.is-accent,
-.fuel-row.is-strong,
-.fuel-row.is-result{
-  min-height: 32px;
-}
-
-/* KPI-Boxen unten kompakter */
+/* Summary/KPI unten kompakter */
 .fuel-kpis{
-  gap: 10px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .fuel-kpi,
 .fuel-stat,
 .fuel-summary-card{
-  padding: 10px 12px;
-  min-height: 0;
+  padding: 8px 10px;
 }
