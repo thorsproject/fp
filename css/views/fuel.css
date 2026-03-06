@@ -246,7 +246,8 @@
 /* Totals nicht einrücken */
 .fuel-grid.fuel-total .c-desc{
   padding-left: 0;
-  margin-left: 0;
+  margin-left: -6px;
+  margin-right: -6px;
 }
 
 /* -------------------------
