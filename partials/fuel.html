@@ -12,7 +12,7 @@
 
         <label class="fuel-chip">
           Main (USG)
-          <input data-field="main_usg" inputmode="decimal" />
+          <input class="c-input" data-field="main_usg" inputmode="decimal" />
         </label>
 
         <label class="fuel-chip">
@@ -37,10 +37,10 @@
       <!-- TRIP FUEL -->
       <div class="fuel-grid fuel-row">
         <div class="c-desc">Trip Fuel</div>
-        <div class="c-leg trip" data-trip-leg="1"><input data-trip-usg="1" inputmode="decimal"></div>
-        <div class="c-leg trip" data-trip-leg="2"><input data-trip-usg="2" inputmode="decimal"></div>
-        <div class="c-leg trip" data-trip-leg="3"><input data-trip-usg="3" inputmode="decimal"></div>
-        <div class="c-leg trip" data-trip-leg="4"><input data-trip-usg="4" inputmode="decimal"></div>
+        <div class="c-leg trip" data-trip-leg="1"><input class="c-input" data-trip-usg="1" inputmode="decimal"></div>
+        <div class="c-leg trip" data-trip-leg="2"><input class="c-input" data-trip-usg="2" inputmode="decimal"></div>
+        <div class="c-leg trip" data-trip-leg="3"><input class="c-input" data-trip-usg="3" inputmode="decimal"></div>
+        <div class="c-leg trip" data-trip-leg="4"><input class="c-input" data-trip-usg="4" inputmode="decimal"></div>
         <span data-out="trip_usg_sum"></span>
         <span data-out="trip_time_sum"></span>
       </div>
@@ -62,12 +62,12 @@
         </div>
 
         <div class="c-leg fuel-inputcol">
-          <input class="fuel-mini-input"
+          <input class="c-input fuel-mini-input"
                 data-field="appr_ifr_n"
                 inputmode="numeric"
                 placeholder="n" />
 
-          <input class="fuel-mini-input"
+          <input class="c-input fuel-mini-input"
                 data-field="appr_vfr_n"
                 inputmode="numeric"
                 placeholder="n" />
@@ -94,7 +94,7 @@
         </div>
 
         <div class="c-leg fuel-inputcol">
-          <input class="fuel-mini-input"
+          <input class="c-input fuel-mini-input"
                 data-field="alt_usg_log"
                 inputmode="decimal" />
         </div>
@@ -108,7 +108,7 @@
         <div class="c-leg"></div><div class="c-leg"></div><div class="c-leg"></div>
 
         <div class="c-leg leg-stack">
-          <select id="finres">
+          <select class="c-select" id="finres">
             <option value="IFR" selected>IFR</option>
             <option value="VFR">VFR</option>
           </select>
