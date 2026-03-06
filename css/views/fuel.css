@@ -327,6 +327,6 @@
   gap: 10px;
 }
 
-.c-span2{
-  grid-column: span 2;
+.c-desc--wide{
+  grid-column: span 3;
 }
