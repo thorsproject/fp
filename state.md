@@ -684,30 +684,52 @@ Portrait Orientation Overlay (Rotate Hinweis)
 
 ---
 
-## Fuel Planning (aktueller Arbeitsbereich)
+# Flight Planning Web App — State Update 06.03.2026 (Fuel Planning abgeschlossen)
 
-Fuel View ist strukturell fertig.
+## Fuel Planning
 
-Fuel Button Beispiel:
+Fuel Planning ist funktional und optisch vorerst abgeschlossen.
 
-<button class="c-btn fuelToggle"
-data-field="aux_on"
-data-state="on">
-26.4 USG
-</button>
+### Funktionen
+- Fuel Toggle Logik funktioniert
+- `aux_on` reagiert wieder korrekt auf Klick
+- Ursache war nicht fehlender Listener, sondern dass `syncFuelToggleUI()` den Aux-State bei `std_block = on` direkt wieder auf `on` zurückgesetzt hat
+- Fix: Aux wird nicht mehr in `syncFuelToggleUI()` erzwungen, sondern nur noch beim Aktivieren von `std_block` einmalig gesetzt
 
-Problem:
+### Inputs / Selects
+Fuel Inputs und Selects wurden auf das bestehende Komponenten-System umgestellt:
 
-fuelToggle Button "aux_on" reagiert momentan nicht auf Klick.
+- `class="c-input"`
+- `class="c-select"`
 
-Vermutung:
+Dadurch:
+- keine weißen Felder mehr
+- einheitliche Optik mit dem Rest der App
+- keine Fuel-Sonderlösung für Input-Styling nötig
 
-fehlender Event Listener in `fuel.js`.
+Betroffene Felder:
+- `main_usg`
+- `trip_usg` Leg 1–4
+- `appr_ifr_n`
+- `appr_vfr_n`
+- `alt_usg_log`
+- `#finres`
 
-Nächster Schritt:
+### Layout / Kompaktheit
+Fuel View wurde optisch deutlich kompakter gemacht.
 
-fuelToggle Logik implementieren:
+Umgesetzt:
+- Fuel Controls links ausgerichtet
+- Fuel Grid nicht mehr unnötig full-width gestreckt
+- Leg 1–4 Spalten enger gesetzt
+- untere KPI/Misc-Boxen ebenfalls kompakter
+- lange Labels können gezielt über mehrere Grid-Spalten laufen
 
-toggle data-state  
-Fuel Berechnung aktualisieren  
-UI neu rendern
+### Long Labels
+Für breite Beschriftungen wurde ein flexibler Ansatz eingeführt:
+CSS-Klassen:
+- `c-desc--wide`
+
+Beispiel:
+```html
+<div class="c-desc c-desc--wide">Contingency (5% Trip + Company)</div>
