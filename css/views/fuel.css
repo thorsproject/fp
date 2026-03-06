@@ -236,9 +236,11 @@
 .fuel-accent{
   background: rgba(0,212,255,0.06);
   border-radius: 8px;
-  padding: 8px 0;
-  margin-left: -6;
-  margin-right: -6;
+  margin-left: -6px;
+  margin-right: -6px;
+  padding-left: 6px;
+  padding-right: 6px;
+  border-radius: 6px;
 }
 .fuel-total{
   background: rgba(0,255,204,0.06);
