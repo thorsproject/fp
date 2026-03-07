@@ -6,19 +6,20 @@
 
 ## Auto-Update (wird per Script gepflegt)
 <!-- STATE:AUTO:BEGIN -->
-- Last updated (commit time): 2026-02-28T22:13:26+01:00
-- HEAD: 221eea9
+- Last updated (commit time): 2026-03-07T18:11:17+01:00
+- HEAD: 61ea449
 - Branch: main
-- App Version: 0.0.3
+- App Version: 0.3
 - Active Features:
   - ORM Workflow
   - Signature Stamping
   - Phone Popup (Config-locked)
   - Checklist State
   - Fuel Planning
+  - Performance Planning
   - Map View
 - Last commits:
-- 221eea9 STATE: CSS-Refactoring finished (thorsproject)
+- 61ea449 STATE: Add DFS runway generator and initial runway dataset (thorsproject)
 - Changed files (this commit):
   - .DS_Store
   - .github/workflows/update-state.yml
@@ -28,6 +29,7 @@
   - Layout_structure.txt
   - OLD/checklistOLD.css
   - OLD/components_OLD.css
+  - OLD/layout_OLD.css
   - css/base.css
   - css/components.css
   - css/layout.css
@@ -40,6 +42,7 @@
   - css/views/performance.css
   - css/views/route.css
   - css/views/settings.css
+  - data/Bildschirmfoto 2026-02-16 um 00.52.16.png
   - data/ORMBlatt.pdf
   - data/airfields.json
   - data/airfields_missing.txt
@@ -48,6 +51,7 @@
   - data/approved_airfields.csv
   - data/approved_alternates.csv
   - data/config.enc
+  - data/performance_runways.json
   - data/weather.json
   - data/windgrid.json
   - icon-192.png
@@ -71,6 +75,7 @@
   - js/metar.js
   - js/orm.js
   - js/path.js
+  - js/performance.js
   - js/phone_popup.js
   - js/phones.js
   - js/reset.js
@@ -303,6 +308,10 @@
   - state.md
   - state_manuell.md
   - tools/config-crypto.mjs
+  - tools/icons.svg
+  - tools/icons0.svg
+  - tools/icons1.svg
+  - tools/update-runways-auto.mjs
   - tools/update_state.mjs
 <!-- STATE:AUTO:END -->
 
