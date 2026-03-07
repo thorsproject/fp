@@ -1,75 +1,153 @@
-// weather_layers.js
+let cloudLayerGroup = null;
+let precipLayerGroup = null;
 
-let cloudLayer = null;
-let precipLayer = null;
+const WEATHER_ENDPOINT = "https://api.open-meteo.com/v1/ecmwf";
 
-async function fetchWeather() {
+// Deutschland grob
+const BOUNDS = {
+  west: 5.5,
+  east: 16.5,
+  south: 47.0,
+  north: 55.5,
+};
+
+// Für schöne Darstellung auf der Karte
+const STEP = 1.0; // 1.0 = wenig Zellen, 0.5 = schöner aber mehr Layer
+
+function makePoints() {
+  const pts = [];
+  for (let lat = BOUNDS.south; lat <= BOUNDS.north + 1e-9; lat += STEP) {
+    for (let lon = BOUNDS.west; lon <= BOUNDS.east + 1e-9; lon += STEP) {
+      pts.push({
+        lat: +lat.toFixed(3),
+        lon: +lon.toFixed(3),
+      });
+    }
+  }
+  return pts;
+}
+
+function findNearestTimeIndex(times) {
+  if (!Array.isArray(times) || times.length === 0) return 0;
+
+  const now = Date.now();
+  let bestIdx = 0;
+  let bestDiff = Infinity;
+
+  for (let i = 0; i < times.length; i++) {
+    const t = Date.parse(times[i]);
+    if (!Number.isFinite(t)) continue;
+
+    const diff = Math.abs(t - now);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      bestIdx = i;
+    }
+  }
+
+  return bestIdx;
+}
+
+async function fetchWeatherGrid() {
+  const pts = makePoints();
+  const lats = pts.map((p) => p.lat).join(",");
+  const lons = pts.map((p) => p.lon).join(",");
 
   const url =
-    "https://api.open-meteo.com/v1/ecmwf" +
-    "?latitude=51" +
-    "&longitude=10" +
-    "&hourly=cloud_cover,precipitation" +
-    "&timezone=GMT";
+    `${WEATHER_ENDPOINT}?latitude=${encodeURIComponent(lats)}` +
+    `&longitude=${encodeURIComponent(lons)}` +
+    `&hourly=cloud_cover,precipitation` +
+    `&timezone=GMT`;
 
   const res = await fetch(url);
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    throw new Error(`Weather layer fetch failed ${res.status}: ${txt.slice(0, 200)}`);
+  }
+
   const data = await res.json();
+  const list = Array.isArray(data) ? data : [data];
 
-  return data.hourly;
+  return list.map((item) => {
+    const h = item.hourly || {};
+    const idx = findNearestTimeIndex(h.time || []);
+
+    return {
+      lat: +item.latitude.toFixed(3),
+      lon: +item.longitude.toFixed(3),
+      cloud: Array.isArray(h.cloud_cover) ? h.cloud_cover[idx] : null,
+      precip: Array.isArray(h.precipitation) ? h.precipitation[idx] : null,
+    };
+  });
 }
 
-function colorCloud(v) {
-
-  if (v < 20) return "rgba(0,0,0,0)";
-  if (v < 40) return "rgba(200,200,200,0.3)";
-  if (v < 60) return "rgba(150,150,150,0.45)";
-  if (v < 80) return "rgba(110,110,110,0.6)";
-  return "rgba(80,80,80,0.75)";
+function cloudStyle(v) {
+  if (typeof v !== "number" || v < 10) return null;
+  if (v < 25) return { fillColor: "rgba(220,220,220,0.18)" };
+  if (v < 50) return { fillColor: "rgba(180,180,180,0.28)" };
+  if (v < 75) return { fillColor: "rgba(130,130,130,0.40)" };
+  return { fillColor: "rgba(90,90,90,0.52)" };
 }
 
-function colorRain(v) {
+function precipStyle(v) {
+  if (typeof v !== "number" || v < 0.1) return null;
+  if (v < 0.5) return { fillColor: "rgba(120,180,255,0.28)" };
+  if (v < 2) return { fillColor: "rgba(40,120,255,0.40)" };
+  if (v < 5) return { fillColor: "rgba(0,60,200,0.52)" };
+  return { fillColor: "rgba(180,0,255,0.62)" };
+}
 
-  if (v < 0.1) return "rgba(0,0,0,0)";
-  if (v < 0.5) return "rgba(120,180,255,0.35)";
-  if (v < 2) return "rgba(40,120,255,0.5)";
-  if (v < 5) return "rgba(0,60,200,0.65)";
-  return "rgba(180,0,255,0.75)";
+function makeCell(lat, lon, style) {
+  const half = STEP / 2;
+
+  return L.rectangle(
+    [
+      [lat - half, lon - half],
+      [lat + half, lon + half],
+    ],
+    {
+      color: "transparent",
+      weight: 0,
+      fillOpacity: 1,
+      ...style,
+    }
+  );
 }
 
 export async function createWeatherLayers(map) {
+  const data = await fetchWeatherGrid();
 
-  const w = await fetchWeather();
+  cloudLayerGroup = L.layerGroup();
+  precipLayerGroup = L.layerGroup();
 
-  const cloud = w.cloud_cover[0];
-  const rain = w.precipitation[0];
+  for (const p of data) {
+    const cStyle = cloudStyle(p.cloud);
+    if (cStyle) {
+      makeCell(p.lat, p.lon, cStyle).addTo(cloudLayerGroup);
+    }
 
-  const bounds = map.getBounds();
+    const rStyle = precipStyle(p.precip);
+    if (rStyle) {
+      makeCell(p.lat, p.lon, rStyle).addTo(precipLayerGroup);
+    }
+  }
 
-  cloudLayer = L.rectangle(bounds, {
-    color: "transparent",
-    fillColor: colorCloud(cloud),
-    fillOpacity: 1
-  });
-
-  precipLayer = L.rectangle(bounds, {
-    color: "transparent",
-    fillColor: colorRain(rain),
-    fillOpacity: 1
-  });
-
-  cloudLayer.addTo(map);
-  precipLayer.addTo(map);
+  // Start aus
+  map._weatherCloudLayer = cloudLayerGroup;
+  map._weatherPrecipLayer = precipLayerGroup;
 }
 
-export function setWeatherVisible(map, on) {
+export function setWeatherVisible(map, isOn) {
+  const cloud = map._weatherCloudLayer;
+  const precip = map._weatherPrecipLayer;
 
-  if (!cloudLayer || !precipLayer) return;
+  if (!cloud || !precip) return;
 
-  if (on) {
-    cloudLayer.addTo(map);
-    precipLayer.addTo(map);
+  if (isOn) {
+    cloud.addTo(map);
+    precip.addTo(map);
   } else {
-    map.removeLayer(cloudLayer);
-    map.removeLayer(precipLayer);
+    map.removeLayer(cloud);
+    map.removeLayer(precip);
   }
 }

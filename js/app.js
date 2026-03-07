@@ -81,7 +81,7 @@ function initTopNav({ map, defaultView = "view-map" } = {}) {
 const LS_FDL_SELECTED = "fp.fdl.selected";
 
 // ---------- Map ----------
-const map = createMap();
+const map = await createMap();
 initTopNav({ map, defaultView: "view-map" });
 
 // ---------- Wind state ----------

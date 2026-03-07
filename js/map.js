@@ -1,4 +1,3 @@
-// map.js
 // ------------------ LEAFLET MAP ------------------
 import { createWeatherLayers, setWeatherVisible } from "./weather_layers.js";
 
@@ -12,36 +11,41 @@ function applyWeatherToggleUI(btn, isOn) {
   btn.classList.toggle("is-active", isOn);
 }
 
-function setWeatherVisible(map, isOn) {
-  // Platzhalter für späteren echten Wetterlayer
-  // Beispiel später:
-  // map._weatherLayer?.setOpacity(isOn ? 1 : 0);
-
-  map._weatherEnabled = isOn;
-}
-
 function initWeatherToggle(map) {
-
   const btn = document.getElementById("toggleWeather");
+  if (!btn) return;
+
+  if (btn.dataset.bound === "1") return;
+  btn.dataset.bound = "1";
+
+  const saved = localStorage.getItem(LS_WEATHER_TOGGLE);
+  const isOn = saved === "1";
+
+  applyWeatherToggleUI(btn, isOn);
+  setWeatherVisible(map, isOn);
 
   btn.addEventListener("click", () => {
+    const nextOn = btn.dataset.state !== "on";
 
-    const on = btn.textContent === "OFF";
-
-    btn.textContent = on ? "ON" : "OFF";
-
-    setWeatherVisible(map, on);
+    applyWeatherToggleUI(btn, nextOn);
+    setWeatherVisible(map, nextOn);
+    localStorage.setItem(LS_WEATHER_TOGGLE, nextOn ? "1" : "0");
   });
 }
 
-export function createMap() {
+export async function createMap() {
   const map = L.map("map").setView([51, 10], 6);
-  
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OSM",
   }).addTo(map);
 
-  createWeatherLayers(map);
+  try {
+    await createWeatherLayers(map);
+  } catch (err) {
+    console.error("Weather layers init failed:", err);
+  }
+
   initWeatherToggle(map);
 
   return map;
