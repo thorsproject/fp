@@ -5,7 +5,6 @@ const LS_WEATHER_TOGGLE = "fp.map.weather.v1";
 
 function applyWeatherToggleUI(btn, isOn) {
   if (!btn) return;
-
   btn.dataset.state = isOn ? "on" : "off";
   btn.textContent = isOn ? "ON" : "OFF";
   btn.classList.toggle("is-active", isOn);
@@ -26,7 +25,6 @@ function initWeatherToggle(map) {
 
   btn.addEventListener("click", () => {
     const nextOn = btn.dataset.state !== "on";
-
     applyWeatherToggleUI(btn, nextOn);
     setWeatherVisible(map, nextOn);
     localStorage.setItem(LS_WEATHER_TOGGLE, nextOn ? "1" : "0");
@@ -43,10 +41,9 @@ export async function createMap() {
   try {
     await createWeatherLayers(map);
   } catch (err) {
-    console.error("Weather layers init failed:", err);
+    console.error("Weather layer init failed:", err);
   }
 
   initWeatherToggle(map);
-
   return map;
 }
