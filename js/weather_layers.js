@@ -12,7 +12,7 @@ const BOUNDS = {
 };
 
 // Für schöne Darstellung auf der Karte
-const STEP = 0.25; // 1.0 = wenig Zellen, 0.5 = schöner aber mehr Layer
+const STEP = 0.5; // 1.0 = wenig Zellen, 0.5 = schöner aber mehr Layer
 
 function makePoints() {
   const pts = [];
