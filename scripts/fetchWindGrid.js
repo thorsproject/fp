@@ -22,7 +22,7 @@ const LEVEL_MAP = {
 const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf";
 
 // URL wird sonst zu lang -> wir splitten in Chunks
-const CHUNK_SIZE = 60;
+const CHUNK_SIZE = 40;
 
 function makePoints() {
   const pts = [];
@@ -40,38 +40,51 @@ function chunk(arr, size) {
   return out;
 }
 
-async function fetchChunk(points) {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchChunk(points, attempt = 1) {
   const lats = points.map(p => p.lat).join(",");
   const lons = points.map(p => p.lon).join(",");
 
-  // alle benötigten "stündliche" Variablen in einem Request
-const hourlyVars = [
-  "wind_speed_10m", "wind_direction_10m", "temperature_2m",
-  "wind_speed_925hPa", "wind_direction_925hPa", "temperature_925hPa",
-  "wind_speed_850hPa", "wind_direction_850hPa", "temperature_850hPa",
-  "wind_speed_750hPa", "wind_direction_750hPa", "temperature_750hPa",
-  "wind_speed_700hPa", "wind_direction_700hPa", "temperature_700hPa",
-  "wind_speed_500hPa", "wind_direction_500hPa", "temperature_500hPa"
-].join(",");
+  const hourlyVars = [
+    "wind_speed_10m", "wind_direction_10m", "temperature_2m",
+    "wind_speed_925hPa", "wind_direction_925hPa", "temperature_925hPa",
+    "wind_speed_850hPa", "wind_direction_850hPa", "temperature_850hPa",
+    "wind_speed_750hPa", "wind_direction_750hPa", "temperature_750hPa",
+    "wind_speed_700hPa", "wind_direction_700hPa", "temperature_700hPa",
+    "wind_speed_500hPa", "wind_direction_500hPa", "temperature_500hPa"
+  ].join(",");
 
-const url =
-  `${ENDPOINT}?latitude=${encodeURIComponent(lats)}&longitude=${encodeURIComponent(lons)}` +
-  `&hourly=${encodeURIComponent(hourlyVars)}` +
-  `&wind_speed_unit=ms` +
-  `&temperature_unit=celsius` +
-  `&timezone=GMT`;
+  const url =
+    `${ENDPOINT}?latitude=${encodeURIComponent(lats)}&longitude=${encodeURIComponent(lons)}` +
+    `&hourly=${encodeURIComponent(hourlyVars)}` +
+    `&wind_speed_unit=ms` +
+    `&temperature_unit=celsius` +
+    `&timezone=GMT`;
 
   const res = await fetch(url);
+
+  if (res.status === 429) {
+    const txt = await res.text().catch(() => "");
+    if (attempt >= 5) {
+      throw new Error(`Open-Meteo Fehler 429 nach ${attempt} Versuchen: ${txt.slice(0, 200)}`);
+    }
+
+    const waitMs = 65000; // Open-Meteo sagt selbst: try again in one minute
+    console.log(`429 erhalten – warte ${waitMs / 1000}s, Versuch ${attempt + 1}/5`);
+    await sleep(waitMs);
+    return fetchChunk(points, attempt + 1);
+  }
+
   if (!res.ok) {
     const txt = await res.text().catch(() => "");
     throw new Error(`Open-Meteo Fehler ${res.status}: ${txt.slice(0, 200)}`);
   }
 
   const data = await res.json();
-
-  // Bei mehreren Koordinaten liefert Open-Meteo eine Liste von Strukturen. :contentReference[oaicite:3]{index=3}
-  const list = Array.isArray(data) ? data : [data];
-  return list;
+  return Array.isArray(data) ? data : [data];
 }
 
 async function main() {
@@ -92,8 +105,6 @@ async function main() {
       const lon = +item.longitude.toFixed(4);
       const h = item.hourly || {};
 
-      // wir nehmen den ersten verfügbaren Zeitpunkt
-      // (alternativ: nächster zu "jetzt" – können wir später verfeinern)
       for (const [lvl, vars] of Object.entries(LEVEL_MAP)) {
         const spdArr = h[vars.spd];
         const dirArr = h[vars.dir];
@@ -110,7 +121,12 @@ async function main() {
         }
       }
     }
+
     console.log(`Chunk ${i + 1}/${chunks.length} verarbeitet`);
+
+    if (i < chunks.length - 1) {
+      await sleep(3000);
+    }
   }
 
   const out = {
