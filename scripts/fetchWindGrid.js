@@ -115,6 +115,7 @@ async function main() {
 
   const levelsOut = {};
   for (const key of Object.keys(LEVEL_MAP)) levelsOut[key] = [];
+  let nearestTimeUsed = null;
 
   const chunks = chunk(pts, CHUNK_SIZE);
 
@@ -126,9 +127,12 @@ async function main() {
       const lat = +item.latitude.toFixed(4);
       const lon = +item.longitude.toFixed(4);
       const h = item.hourly || {};
-      
+
       const timeArr = h.time || [];
       const idx = findNearestTimeIndex(timeArr);
+      if (!nearestTimeUsed && Array.isArray(timeArr) && timeArr[idx]) {
+        nearestTimeUsed = timeArr[idx];
+      }
 
       for (const [lvl, vars] of Object.entries(LEVEL_MAP)) {
         const spdArr = h[vars.spd];
@@ -156,7 +160,13 @@ async function main() {
 
   const out = {
     generatedAt: Math.floor(Date.now() / 1000),
-    meta: { ...BOUNDS, step: STEP },
+    meta: {
+      ...BOUNDS,
+      step: STEP,
+      source: "Open-Meteo CMA",
+      nearestTimeUsed: nearestTimeUsed || null,
+      endpoint: ENDPOINT
+    },
     levels: levelsOut
   };
 
