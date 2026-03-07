@@ -3,14 +3,10 @@ name: Update runway data
 on:
   workflow_dispatch:
   schedule:
-    - cron: "15 3 1 * *"   # jeden Monat am 1. um 03:15 UTC
+    - cron: "15 2 * * *"
 
 permissions:
   contents: write
-
-concurrency:
-  group: update-runways
-  cancel-in-progress: false
 
 jobs:
   update-runways:
@@ -25,17 +21,54 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Check AIRAC validity
+        id: airac
+        run: |
+          node - <<'NODE'
+          const fs = require("fs");
+
+          const path = "data/performance_runways.json";
+          if (!fs.existsSync(path)) {
+            console.log("should_update=true");
+            process.exit(0);
+          }
+
+          const json = JSON.parse(fs.readFileSync(path, "utf8"));
+          const validUntil = json?._meta?.airac_valid_until || "";
+
+          if (!validUntil) {
+            console.log("should_update=true");
+            process.exit(0);
+          }
+
+          const today = new Date();
+          const todayIso = today.toISOString().slice(0, 10);
+
+          // optional: 2 Tage Puffer
+          const cutoff = new Date(validUntil + "T00:00:00Z");
+          cutoff.setUTCDate(cutoff.getUTCDate() - 2);
+          const cutoffIso = cutoff.toISOString().slice(0, 10);
+
+          const shouldUpdate = todayIso >= cutoffIso;
+          console.log(`AIRAC valid until: ${validUntil}`);
+          console.log(`Cutoff date: ${cutoffIso}`);
+          console.log(`Today: ${todayIso}`);
+          console.log(`should_update=${shouldUpdate}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `should_update=${shouldUpdate}\n`);
+          NODE
+
       - name: Run DFS runway update
+        if: steps.airac.outputs.should_update == 'true'
         run: node tools/update-runways-auto.mjs
 
       - name: Commit changes
+        if: steps.airac.outputs.should_update == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add data/performance_runways.json
           git diff --cached --quiet || git commit -m "Update performance runway data"
 
       - name: Push changes
-        run: |
-          git push
+        if: steps.airac.outputs.should_update == 'true'
+        run: git push
