@@ -1,1 +1,8 @@
-{}
+{
+  "EDHK": {
+    "name": "Kiel-Holtenau Airport",
+    "source": "DFS AIP",
+    "source_section": "AD 2.13 Declared distances",
+    "runways": {}
+  }
+}
