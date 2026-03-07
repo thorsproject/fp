@@ -353,7 +353,8 @@ map.on("click", (e) => {
   } catch (e) {
     console.error(e);
   }
-
+  await initPerformance();
+  
   updateLegMarkers(map);
   updateAltMarkers(map);
 
@@ -374,7 +375,6 @@ map.on("click", (e) => {
   initOrmChecklist();
   initSignatureUI();
   initFuelPlanning();
-  initPerformance();
   initResets();
 
   // ---------- SAFETY: erst rendern lassen, dann laden ----------

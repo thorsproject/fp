@@ -22,7 +22,7 @@
             <div class="perf-cell"><input class="c-input" data-field="to_icao" /></div>
 
             <div class="perf-label">RWY</div>
-            <div class="perf-cell"><input class="c-input" data-field="to_rwy" /></div>
+            <div class="perf-cell"><select class="c-select" data-field="to_rwy"><option value="">RWY</option></select></div>
 
             <div class="perf-label">Wind</div>
             <div class="perf-cell"><input class="c-input" data-field="to_wind" /></div>
@@ -65,7 +65,7 @@
             <div class="perf-cell"><input class="c-input" data-field="rt_icao" /></div>
 
             <div class="perf-label">RWY</div>
-            <div class="perf-cell"><input class="c-input" data-field="rt_rwy" /></div>
+            <div class="perf-cell"><select class="c-select" data-field="rt_rwy"><option value="">RWY</option></select></div>
 
             <div class="perf-label">OEI ROC</div>
             <div class="perf-cell"><input class="c-input" data-field="rt_oei_roc" /></div>
@@ -74,10 +74,18 @@
             <div class="perf-cell"><input class="c-input" data-field="rt_oei_sc" /></div>
 
             <div class="perf-label">EOSID</div>
-            <div class="perf-cell"><input class="c-input" data-field="rt_eosid" /></div>
+            <div class="perf-cell">
+                <select class="c-select" data-field="rt_eosid">
+                <option value="">EOSID</option>
+                <option value="IFR">IFR</option>
+                <option value="VFR">VFR</option>
+                <option value="IFR/VFR OPT">IFR/VFR OPT</option>
+                <option value="VFR/IFR OPT">VFR/IFR OPT</option>
+                </select>
+            </div>
 
             <div class="perf-label">LM</div>
-            <div class="perf-cell"><input class="c-input" data-field="rt_lm" /></div>
+            <div class="perf-cell"><span data-out="rt_lm"></span></div>
 
             <div class="perf-label">MLM</div>
             <div class="perf-cell perf-cell--out"><span data-out="rt_mlm">1999</span></div>
@@ -108,7 +116,7 @@
             <div class="perf-cell"><input class="c-input" data-field="ld_icao" /></div>
 
             <div class="perf-label">RWY</div>
-            <div class="perf-cell"><input class="c-input" data-field="ld_rwy" /></div>
+            <div class="perf-cell"><select class="c-select" data-field="ld_rwy"><option value="">RWY</option></select></div>
 
             <div class="perf-label">Wind</div>
             <div class="perf-cell"><input class="c-input" data-field="ld_wind" /></div>
