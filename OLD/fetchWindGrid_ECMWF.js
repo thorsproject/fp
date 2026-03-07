@@ -19,11 +19,10 @@ const LEVEL_MAP = {
 
 
 // Open-Meteo ECMWF Endpoint (Pressure Level Variablen) :contentReference[oaicite:2]{index=2}
-// const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf"; // <-- liefert keine 750hpa-Daten
-const ENDPOINT = "https://api.open-meteo.com/v1/cms"; // <-- liefert 750hpa-Daten
+const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf";
 
 // URL wird sonst zu lang -> wir splitten in Chunks
-const CHUNK_SIZE = 60;
+const CHUNK_SIZE = 40;
 
 function makePoints() {
   const pts = [];
@@ -43,27 +42,6 @@ function chunk(arr, size) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function findNearestTimeIndex(times) {
-  if (!Array.isArray(times) || times.length === 0) return 0;
-
-  const now = Date.now();
-  let bestIdx = 0;
-  let bestDiff = Infinity;
-
-  for (let i = 0; i < times.length; i++) {
-    const t = Date.parse(times[i]);
-    if (!Number.isFinite(t)) continue;
-
-    const diff = Math.abs(t - now);
-    if (diff < bestDiff) {
-      bestDiff = diff;
-      bestIdx = i;
-    }
-  }
-
-  return bestIdx;
 }
 
 async function fetchChunk(points, attempt = 1) {
@@ -126,18 +104,15 @@ async function main() {
       const lat = +item.latitude.toFixed(4);
       const lon = +item.longitude.toFixed(4);
       const h = item.hourly || {};
-      
-      const timeArr = h.time || [];
-      const idx = findNearestTimeIndex(timeArr);
 
       for (const [lvl, vars] of Object.entries(LEVEL_MAP)) {
         const spdArr = h[vars.spd];
         const dirArr = h[vars.dir];
         const tmpArr = h[vars.tmp];
 
-        const spd = Array.isArray(spdArr) ? spdArr[idx] : null;
-        const dir = Array.isArray(dirArr) ? dirArr[idx] : null;
-        const tmp = Array.isArray(tmpArr) ? tmpArr[idx] : null;
+        const spd = Array.isArray(spdArr) ? spdArr[0] : undefined;
+        const dir = Array.isArray(dirArr) ? dirArr[0] : undefined;
+        const tmp = Array.isArray(tmpArr) ? tmpArr[0] : undefined;
 
         if (typeof spd === "number" && typeof dir === "number") {
           const obj = { lat, lon, speed: spd, deg: dir };
