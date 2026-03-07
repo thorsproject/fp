@@ -1,5 +1,5 @@
-// js/weather_layers.js
-let weatherCanvasLayer = null;
+let weatherOverlay = null;
+let weatherLoaded = false;
 
 const WEATHER_ENDPOINT = "https://api.open-meteo.com/v1/ecmwf";
 
@@ -10,7 +10,7 @@ const BOUNDS = {
   north: 55.5,
 };
 
-const STEP = 0.75; // 1.0 = schneller, 0.75 = schöner
+const STEP = 0.75;
 
 function makePoints() {
   const pts = [];
@@ -26,7 +26,7 @@ function makePoints() {
 }
 
 function findNearestTimeIndex(times) {
-  if (!Array.isArray(times) || !times.length) return 0;
+  if (!Array.isArray(times) || times.length === 0) return 0;
 
   const now = Date.now();
   let bestIdx = 0;
@@ -79,179 +79,85 @@ async function fetchWeatherGrid() {
   });
 }
 
-function clamp(v, min, max) {
-  return Math.max(min, Math.min(max, v));
+function cloudStyle(v) {
+  if (typeof v !== "number" || v < 10) return null;
+  if (v < 25) return "rgba(220,220,220,0.12)";
+  if (v < 50) return "rgba(180,180,180,0.18)";
+  if (v < 75) return "rgba(130,130,130,0.24)";
+  return "rgba(90,90,90,0.30)";
 }
 
-function lerp(a, b, t) {
-  return a + (b - a) * t;
+function precipStyle(v) {
+  if (typeof v !== "number" || v < 0.1) return null;
+  if (v < 0.5) return "rgba(120,180,255,0.18)";
+  if (v < 2) return "rgba(40,120,255,0.28)";
+  if (v < 5) return "rgba(0,60,200,0.36)";
+  return "rgba(180,0,255,0.44)";
 }
 
-function getGridInfo(points) {
-  const lats = [...new Set(points.map((p) => p.lat))].sort((a, b) => a - b);
+function drawCell(ctx, x, y, w, h, color) {
+  if (!color) return;
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+}
+
+async function buildWeatherOverlay(map) {
+  const points = await fetchWeatherGrid();
+
+  const lats = [...new Set(points.map((p) => p.lat))].sort((a, b) => b - a);
   const lons = [...new Set(points.map((p) => p.lon))].sort((a, b) => a - b);
 
-  const byKey = new Map();
+  const cols = lons.length;
+  const rows = lats.length;
+
+  const cellPx = 32;
+  const canvas = document.createElement("canvas");
+  canvas.width = cols * cellPx;
+  canvas.height = rows * cellPx;
+
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const latIndex = new Map(lats.map((v, i) => [v, i]));
+  const lonIndex = new Map(lons.map((v, i) => [v, i]));
+
   for (const p of points) {
-    byKey.set(`${p.lat}|${p.lon}`, p);
+    const row = latIndex.get(p.lat);
+    const col = lonIndex.get(p.lon);
+    if (row == null || col == null) continue;
+
+    const x = col * cellPx;
+    const y = row * cellPx;
+
+    drawCell(ctx, x, y, cellPx, cellPx, cloudStyle(p.cloud));
+    drawCell(ctx, x, y, cellPx, cellPx, precipStyle(p.precip));
   }
 
-  return { lats, lons, byKey };
-}
+  const url = canvas.toDataURL("image/png");
 
-function sampleBilinear(grid, lat, lon, field) {
-  const { lats, lons, byKey } = grid;
-
-  const latMin = lats[0];
-  const latMax = lats[lats.length - 1];
-  const lonMin = lons[0];
-  const lonMax = lons[lons.length - 1];
-
-  const clat = clamp(lat, latMin, latMax);
-  const clon = clamp(lon, lonMin, lonMax);
-
-  const lat0 = Math.floor((clat - latMin) / STEP) * STEP + latMin;
-  const lon0 = Math.floor((clon - lonMin) / STEP) * STEP + lonMin;
-
-  const aLat = +lat0.toFixed(3);
-  const aLon = +lon0.toFixed(3);
-  const bLat = +(aLat + STEP).toFixed(3);
-  const bLon = +(aLon + STEP).toFixed(3);
-
-  const p00 = byKey.get(`${aLat}|${aLon}`);
-  const p10 = byKey.get(`${bLat}|${aLon}`) || p00;
-  const p01 = byKey.get(`${aLat}|${bLon}`) || p00;
-  const p11 = byKey.get(`${bLat}|${bLon}`) || p00;
-
-  if (!p00) return 0;
-
-  const tx = STEP === 0 ? 0 : clamp((clon - aLon) / STEP, 0, 1);
-  const ty = STEP === 0 ? 0 : clamp((clat - aLat) / STEP, 0, 1);
-
-  const v00 = p00[field] ?? 0;
-  const v10 = p10?.[field] ?? v00;
-  const v01 = p01?.[field] ?? v00;
-  const v11 = p11?.[field] ?? v00;
-
-  const v0 = lerp(v00, v01, tx);
-  const v1 = lerp(v10, v11, tx);
-  return lerp(v0, v1, ty);
-}
-
-function cloudColor(v) {
-  if (v < 8) return null;
-
-  if (v < 20) return [220, 220, 220, 22];
-  if (v < 40) return [185, 185, 185, 36];
-  if (v < 60) return [145, 145, 145, 54];
-  if (v < 80) return [110, 110, 110, 72];
-  return [80, 80, 80, 92];
-}
-
-function precipColor(v) {
-  if (v < 0.08) return null;
-
-  if (v < 0.4) return [120, 180, 255, 38];
-  if (v < 1.5) return [50, 130, 255, 58];
-  if (v < 4) return [0, 70, 210, 82];
-  return [170, 0, 255, 100];
-}
-
-const WeatherCanvasLayer = L.Layer.extend({
-  initialize(points) {
-    this._points = points;
-    this._grid = getGridInfo(points);
-  },
-
-  onAdd(map) {
-    this._map = map;
-    this._canvas = L.DomUtil.create("canvas", "leaflet-weather-layer");
-    this._canvas.style.position = "absolute";
-    this._canvas.style.pointerEvents = "none";
-
-    const pane = map.getPanes().overlayPane;
-    pane.appendChild(this._canvas);
-
-    map.on("moveend zoomend resize", this._redraw, this);
-    this._redraw();
-  },
-
-  onRemove(map) {
-    map.off("moveend zoomend resize", this._redraw, this);
-    if (this._canvas?.parentNode) {
-      this._canvas.parentNode.removeChild(this._canvas);
+  weatherOverlay = L.imageOverlay(
+    url,
+    [
+      [BOUNDS.south, BOUNDS.west],
+      [BOUNDS.north, BOUNDS.east],
+    ],
+    {
+      opacity: 1,
+      interactive: false,
     }
-  },
+  );
 
-  _redraw() {
-    if (!this._map || !this._canvas) return;
+  map._weatherOverlay = weatherOverlay;
+  weatherLoaded = true;
+}
 
-    const size = this._map.getSize();
-    const bounds = this._map.getBounds();
-    const topLeft = this._map.containerPointToLayerPoint([0, 0]);
-
-    this._canvas.width = size.x;
-    this._canvas.height = size.y;
-    L.DomUtil.setPosition(this._canvas, topLeft);
-
-    const ctx = this._canvas.getContext("2d");
-    ctx.clearRect(0, 0, size.x, size.y);
-
-    const img = ctx.createImageData(size.x, size.y);
-    const data = img.data;
-
-    const north = bounds.getNorth();
-    const south = bounds.getSouth();
-    const west = bounds.getWest();
-    const east = bounds.getEast();
-
-    for (let y = 0; y < size.y; y++) {
-      const lat = lerp(north, south, y / Math.max(1, size.y - 1));
-
-      for (let x = 0; x < size.x; x++) {
-        const lon = lerp(west, east, x / Math.max(1, size.x - 1));
-
-        const cloud = sampleBilinear(this._grid, lat, lon, "cloud");
-        const precip = sampleBilinear(this._grid, lat, lon, "precip");
-
-        const cc = cloudColor(cloud);
-        const pc = precipColor(precip);
-
-        const i = (y * size.x + x) * 4;
-
-        let r = 0, g = 0, b = 0, a = 0;
-
-        if (cc) {
-          r = cc[0]; g = cc[1]; b = cc[2]; a = cc[3];
-        }
-
-        if (pc) {
-          // Niederschlag überlagert Wolken
-          r = pc[0];
-          g = pc[1];
-          b = pc[2];
-          a = Math.max(a, pc[3]);
-        }
-
-        data[i] = r;
-        data[i + 1] = g;
-        data[i + 2] = b;
-        data[i + 3] = a;
-      }
-    }
-
-    ctx.putImageData(img, 0, 0);
-  }
-});
-
-export async function createWeatherLayers(map) {
-  const points = await fetchWeatherGrid();
-  weatherCanvasLayer = new WeatherCanvasLayer(points);
-  map._weatherLayer = weatherCanvasLayer;
+export async function ensureWeatherOverlay(map) {
+  if (weatherLoaded && map._weatherOverlay) return;
+  await buildWeatherOverlay(map);
 }
 
 export function setWeatherVisible(map, isOn) {
-  const layer = map._weatherLayer;
+  const layer = map._weatherOverlay;
   if (!layer) return;
 
   if (isOn) {
