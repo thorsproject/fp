@@ -20,7 +20,7 @@ const LEVEL_MAP = {
 
 // Open-Meteo ECMWF Endpoint (Pressure Level Variablen) :contentReference[oaicite:2]{index=2}
 // const ENDPOINT = "https://api.open-meteo.com/v1/ecmwf"; // <-- liefert keine 750hpa-Daten
-const ENDPOINT = "https://api.open-meteo.com/v1/cms"; // <-- liefert 750hpa-Daten
+const ENDPOINT = "https://api.open-meteo.com/v1/cma"; // <-- liefert 750hpa-Daten
 
 // URL wird sonst zu lang -> wir splitten in Chunks
 const CHUNK_SIZE = 60;
