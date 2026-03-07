@@ -5,6 +5,44 @@ import { qs, qsa, SEL } from "./ui/index.js";
 let runwayData = {};
 
 // ---------- helpers ----------
+function formatDateDE(isoDate) {
+  if (!isoDate) return "";
+  const d = new Date(`${isoDate}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return isoDate;
+  return d.toLocaleDateString("de-DE");
+}
+
+function todayIsoLocal() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function syncAiracHeader() {
+  const el = document.getElementById("performanceAiracStatus");
+  if (!el) return;
+
+  const meta = runwayData?._meta || {};
+  const validUntil = meta.airac_valid_until || "";
+
+  el.classList.remove("is-expired");
+
+  if (!validUntil) {
+    el.textContent = "";
+    return;
+  }
+
+  if (todayIsoLocal() > validUntil) {
+    el.textContent = "AIRAC-Daten abgelaufen. Bitte in Settings aktualisieren.";
+    el.classList.add("is-expired");
+    return;
+  }
+
+  el.textContent = `AIRAC-Daten gültig bis: ${formatDateDE(validUntil)}`;
+}
+
 function normIcao(v = "") {
   return String(v).trim().toUpperCase();
 }
@@ -199,6 +237,7 @@ function syncPerformanceDerived() {
 // ---------- init ----------
 export async function initPerformance() {
   await loadRunwayData();
+  syncAiracHeader();
   syncPerformanceDerived();
 
   document.addEventListener("input", (e) => {

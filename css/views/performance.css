@@ -29,6 +29,23 @@
   font-weight: 700;
 }
 
+.performance-head__meta{
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+}
+
+.performance-head__airac{
+  font-size: 12px;
+  color: var(--text-muted, #9fb0c8);
+  text-align: right;
+}
+
+.performance-head__airac.is-expired{
+  color: #ff9a8b;
+  font-weight: 700;
+}
+
 .performance-status{
   display: inline-flex;
   align-items: center;

@@ -1,0 +1,27 @@
+.settings-airac{
+  display: grid;
+  gap: 10px;
+}
+
+.settings-airac__text{
+  color: var(--text-muted);
+}
+
+.settings-airac__cmd{
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-all;
+}
+
+.settings-airac__actions{
+  display: flex;
+  gap: 10px;
+}
+
+.settings-airac__hint{
+  min-height: 1.2em;
+  color: var(--text-muted);
+}

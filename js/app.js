@@ -271,6 +271,27 @@ map.on("click", (e) => {
     });
   }
 
+  function wireAiracSettings() {
+    const btn = document.getElementById("btnCopyAiracCmd");
+    const cmdEl = document.getElementById("airacCmd");
+    const statusEl = document.getElementById("airacCmdStatus");
+
+    if (!btn || !cmdEl) return;
+    if (btn.dataset.bound === "1") return;
+    btn.dataset.bound = "1";
+
+    btn.addEventListener("click", async () => {
+      const cmd = cmdEl.textContent.trim();
+
+      try {
+        await navigator.clipboard.writeText(cmd);
+        if (statusEl) statusEl.textContent = "Befehl kopiert.";
+      } catch {
+        if (statusEl) statusEl.textContent = "Kopieren nicht möglich. Bitte manuell kopieren.";
+      }
+    });
+  }
+
   function applyConfigToSettings(config) {
     // FDL Dropdown
     const sel = qs(SEL.settings.fdlSelect);
@@ -339,6 +360,8 @@ map.on("click", (e) => {
   tryAutoLoadConfig();
   on(EVT.includesLoaded, wireConfigSettings);
   on(EVT.includesLoaded, tryAutoLoadConfig);
+  wireAiracSettings();
+  on(EVT.includesLoaded, wireAiracSettings);
 
   // ---------- Data loads ----------
   try {
@@ -354,7 +377,7 @@ map.on("click", (e) => {
     console.error(e);
   }
   await initPerformance();
-  
+
   updateLegMarkers(map);
   updateAltMarkers(map);
 

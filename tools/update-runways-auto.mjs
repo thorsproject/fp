@@ -273,6 +273,12 @@ async function main() {
     return Number.isFinite(n) ? n : null;
   }
 
+  function addDaysIso(dateStr, days) {
+    const d = new Date(`${dateStr}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + days);
+    return d.toISOString().slice(0, 10);
+  }
+
   // --------------------------------------------------
   // 1) AirportHeliport UUID -> ICAO
   // --------------------------------------------------
@@ -484,7 +490,25 @@ async function main() {
       delete result[icao];
     }
   }
-  await fs.writeFile(args.out, JSON.stringify(result, null, 2));
+
+  const effectiveDate = String(airportRelease.effectiveDate || runwayRelease.effectiveDate || "").slice(0, 10);
+  const validUntil = effectiveDate ? addDaysIso(effectiveDate, 27) : "";
+
+  const finalJson = {
+    _meta: {
+      source: "DFS AIP",
+      amendment: runwayRelease.amendment,
+      amendment_date: runwayRelease.amendmentDate || "",
+      airac_effective: effectiveDate,
+      airac_valid_until: validUntil,
+      generated_at: new Date().toISOString(),
+      airport_dataset: airportRelease.filename,
+      runway_dataset: runwayRelease.filename,
+    },
+    ...result,
+  };
+
+  await fs.writeFile(args.out, JSON.stringify(finalJson, null, 2));
   console.log(`[update-runways] Wrote ${args.out}`);
 
   const airportCount = Object.keys(result).length;
