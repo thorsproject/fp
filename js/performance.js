@@ -130,11 +130,9 @@ export function syncPerformanceAirfields() {
 // ---------- runway selects ----------
 function syncRunwaySelectsFromIcao() {
   const toIcao = normIcao(getField("to_icao")?.value || "");
-  const rtIcao = normIcao(getField("rt_icao")?.value || "");
   const ldIcao = normIcao(getField("ld_icao")?.value || "");
 
   fillRunwaySelect(getField("to_rwy"), getRunwaysForIcao(toIcao));
-  fillRunwaySelect(getField("rt_rwy"), getRunwaysForIcao(rtIcao));
   fillRunwaySelect(getField("ld_rwy"), getRunwaysForIcao(ldIcao));
 }
 
@@ -144,16 +142,25 @@ function syncDeclaredDistances() {
   const ldIcao = normIcao(getField("ld_icao")?.value || "");
 
   const toRwy = getField("to_rwy")?.value || "";
-  const rtRwy = getField("rt_rwy")?.value || "";
   const ldRwy = getField("ld_rwy")?.value || "";
 
   clearField("to_tora");
   clearField("ld_lda");
+  setOut("rt_rwy", "");
+  setOut("rt_lda", "");
 
   if (toIcao && toRwy) {
     applyDeclaredDistances(toIcao, toRwy, {
       toraField: "to_tora",
     });
+
+    // RETURN/DIV übernimmt TAKEOFF RWY + LDA vom Departure Airfield
+    setOut("rt_rwy", toRwy);
+
+    const rtData = runwayData?.[rtIcao]?.runways?.[toRwy];
+    if (rtData?.lda != null) {
+      setOut("rt_lda", String(rtData.lda));
+    }
   }
 
   if (ldIcao && ldRwy) {
@@ -161,10 +168,6 @@ function syncDeclaredDistances() {
       ldaField: "ld_lda",
     });
   }
-
-  // Return/Div aktuell noch ohne auto TORA/LDA
-  void rtIcao;
-  void rtRwy;
 }
 
 // ---------- RT LM ----------
@@ -223,7 +226,6 @@ export async function initPerformance() {
 
     if (
       e.target.matches('[data-field="to_rwy"]') ||
-      e.target.matches('[data-field="rt_rwy"]') ||
       e.target.matches('[data-field="ld_rwy"]')
     ) {
       syncDeclaredDistances();
