@@ -1,5 +1,4 @@
 import { qs, qsa, SEL } from "./ui/index.js";
-import { initPerformance } from "./performance.js";
 
 function getLastActiveLegFrame() {
   const frames = qsa(SEL.legs.frames);
@@ -45,7 +44,7 @@ export function syncPerformanceAirfields() {
 export function initPerformance() {
   syncPerformanceAirfields();
   initPerformance();
-  
+
   document.addEventListener("input", (e) => {
     if (!e.target.closest(SEL.legs.container)) return;
     syncPerformanceAirfields();
