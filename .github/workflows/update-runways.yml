@@ -1,0 +1,41 @@
+name: Update runway data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 3 1 * *"   # jeden Monat am 1. um 03:15 UTC
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-runways
+  cancel-in-progress: false
+
+jobs:
+  update-runways:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run DFS runway update
+        run: node tools/update-runways-auto.mjs
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/performance_runways.json
+          git diff --cached --quiet || git commit -m "Update performance runway data"
+
+      - name: Push changes
+        run: |
+          git push
