@@ -1,6 +1,4 @@
 // ------------------ LEAFLET MAP ------------------
-const OWM_API_KEY = "HIER_DEIN_OPENWEATHERMAP_API_KEY";
-
 const LS_WEATHER_TOGGLE = "fp.map.weather.v1";
 const LS_RADAR_TOGGLE = "fp.map.radar.v1";
 
@@ -58,9 +56,8 @@ export async function createMap() {
 
   // ---------- Clouds ----------
   const cloudTiles = L.tileLayer(
-    `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_API_KEY}`,
+    "https://fp-weather-proxy.thors-project.workers.dev/clouds/{z}/{x}/{y}.png",
     {
-      pane: "cloudPane",
       opacity: 0.75,
       attribution: "Weather © OpenWeatherMap",
     }
