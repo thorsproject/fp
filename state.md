@@ -742,3 +742,364 @@ CSS-Klassen:
 Beispiel:
 ```html
 <div class="c-desc c-desc--wide">Contingency (5% Trip + Company)</div>
+
+
+
+# Flight Planning Web App — State Update 08.03.2026
+
+## Projekt
+
+Webbasierte Flight-Planning App für GA-Operationen.
+
+Hosting:
+
+* GitHub Pages
+* Repository: `thorsproject/fp`
+
+Tech Stack:
+
+* Vanilla JS (ES Modules)
+* Leaflet Map
+* GitHub Actions
+* Cloudflare Worker (Tile Proxy)
+
+---
+
+# Aktueller Stand
+
+## Route / Legs
+
+* 4 Legs möglich
+* Aerodrome Validierung über `airfields.json`
+* Alternates integriert
+* Leg Toggle aktiviert/deaktiviert Legs
+* ETD / ETA Eingabe
+* Karte zeigt:
+
+  * Route
+  * Departure
+  * Destination
+  * Alternates
+
+---
+
+# Fuel Planning
+
+Komplett funktionsfähig.
+
+Berechnungen:
+
+* Trip Fuel
+* Company Fuel
+* Contingency (5%)
+* Alternate Fuel
+* Final Reserve IFR / VFR
+* Planned Takeoff Fuel
+* Extra Fuel LRC
+* Takeoff Fuel
+* Block Fuel
+* Taxi Fuel
+* Landing Fuel
+
+Features:
+
+* Standard Block Fuel Toggle
+* Aux Tank Toggle
+* Leg-abhängige Trip-Berechnung
+* Kompakte Grid Darstellung
+
+UI:
+
+* Aviation Style Table Layout
+* Item Column teilweise über mehrere Grid-Spalten
+* Hervorgehobene Zeilen:
+
+  * Takeoff Fuel
+  * Block Fuel
+  * Landing Fuel
+
+---
+
+# Performance Panel
+
+Grundstruktur vorhanden.
+
+Felder:
+TAKEOFF
+RETURN/DIV
+LANDING
+
+Automatische Werte:
+
+* TO ICAO ← Leg1 Departure
+* LD ICAO ← letzter aktiver Leg Destination
+* RETURN/DIV ← Departure
+
+RWY Auswahl:
+
+* RWY Dropdown
+* TORA aus DFS Datensatz
+* LDA aus DFS Datensatz
+
+Weitere Felder:
+
+* Flaps (UP / APP / LDG)
+* EOSID Auswahl
+* LM Berechnung abhängig von EOSID
+
+---
+
+# Runway Daten
+
+Quelle:
+DFS AIP Dataset (AIXM XML)
+
+Script:
+
+```
+tools/update-runways-auto.mjs
+```
+
+Funktion:
+
+* lädt aktuelle DFS Dataset Version
+* extrahiert:
+
+  * ICAO
+  * RWY
+  * TORA
+  * LDA
+* erzeugt:
+
+```
+data/performance_runways.json
+```
+
+Automatisierung:
+GitHub Action
+
+```
+auto-update-AIRAC.yml
+```
+
+läuft automatisch bei AIRAC Update.
+
+---
+
+# Wetter
+
+## Wind
+
+Quelle:
+Open-Meteo
+
+Script:
+
+```
+scripts/fetchWindGrid.js
+```
+
+GitHub Action:
+
+```
+update-weather.yml
+```
+
+Erzeugt:
+
+```
+data/wind_grid.json
+```
+
+Darstellung:
+
+* Wind Barbs
+* mehrere Höhen
+* Toggle Button
+
+---
+
+## Weather Layer (Clouds)
+
+Darstellung:
+OpenWeatherMap Cloud Tiles
+
+Problem:
+API Key darf nicht öffentlich sein.
+
+Lösung:
+Cloudflare Worker Proxy
+
+Worker URL:
+
+```
+https://fp-weather-proxy.thors-project.workers.dev
+```
+
+Worker übernimmt:
+
+```
+/clouds/{z}/{x}/{y}.png
+```
+
+→ leitet an OpenWeatherMap weiter
+→ API Key bleibt geheim
+
+Leaflet Layer:
+
+```
+https://fp-weather-proxy.thors-project.workers.dev/clouds/{z}/{x}/{y}.png
+```
+
+---
+
+## Radar Layer
+
+Quelle:
+RainViewer
+
+Layer:
+
+```
+https://tilecache.rainviewer.com/v2/radar/latest/256/{z}/{x}/{y}/2/1_1.png
+```
+
+Darstellung:
+leicht transparent über Clouds.
+
+---
+
+# Map Architektur
+
+Layer Reihenfolge:
+
+1. OSM Basemap
+2. Clouds (OWM via Worker)
+3. Radar (RainViewer)
+4. Wind (Barbs)
+
+Leaflet Panes:
+
+```
+cloudPane
+radarPane
+windPane
+```
+
+---
+
+# Map Controls
+
+Buttons:
+
+```
+Weather  → Cloud Tiles
+Radar    → RainViewer
+Wind     → Wind Barbs
+```
+
+UI:
+`.ctrl-chip` Toggle Buttons
+
+---
+
+# Cloudflare Worker
+
+Proxy Code:
+
+Route:
+
+```
+/clouds/{z}/{x}/{y}.png
+```
+
+Forward:
+
+```
+https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png
+```
+
+Secret:
+
+```
+OWM_API_KEY
+```
+
+---
+
+# GitHub Actions
+
+Workflows:
+
+```
+auto-update-AIRAC.yml
+update-weather.yml
+update-state.yml
+```
+
+---
+
+# Offene Punkte / Next Steps
+
+### Map
+
+* Radar Animation
+* bessere Cloud Opacity
+* Zoom-abhängige Layer Darstellung
+
+### Performance
+
+* Aircraft Performance Daten integrieren
+* Berechnung:
+
+  * Takeoff Roll
+  * ASD
+  * Stop Margin
+  * Landing Roll
+  * LD ABN
+  * OEI ROC
+  * OEI SC
+
+### Weather
+
+* ggf. weitere Layer
+* Alternative Datenquellen prüfen
+
+### UI
+
+* Map Controls verfeinern
+* Layer Status Anzeige
+* Performance Panel Feinschliff
+
+---
+
+# Struktur (wichtige Dateien)
+
+```
+/js
+  app.js
+  map.js
+  fuel.js
+  performance.js
+  legs.js
+  wind.js
+
+/data
+  airfields.json
+  performance_runways.json
+  wind_grid.json
+
+/tools
+  update-runways-auto.mjs
+
+/scripts
+  fetchWindGrid.js
+
+/workflows
+  auto-update-AIRAC.yml
+  update-weather.yml
+```
+
+---
+
+Ende State Update
