@@ -69,6 +69,15 @@ function normalizeFirst(data) {
   return null;
 }
 
+function formatTaf(raw) {
+  if (!raw) return raw;
+
+  return raw
+    .replace(/\s(TEMPO)/g, "\n$1")
+    .replace(/\s(BECMG)/g, "\n$1")
+    .replace(/\s(FM\d{6})/g, "\n$1");
+}
+
 export function buildWxPopupHtml(wx) {
   const metarRaw = escapeHtml(
     wx?.metar?.rawOb ||
@@ -77,9 +86,11 @@ export function buildWxPopupHtml(wx) {
   );
 
   const tafRaw = escapeHtml(
+    formatTaf(
     wx?.taf?.rawTAF ||
     wx?.taf?.raw_text ||
     (wx?.tafError ? `Fehler: ${wx.tafError}` : "Kein TAF verfügbar")
+    )
   );
 
   const fltCat = wx?.metar?.fltCat || "";
