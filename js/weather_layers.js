@@ -1,5 +1,6 @@
 let cloudLayerGroup = null;
 let precipLayerGroup = null;
+let weatherLoaded = false;
 
 const WEATHER_ENDPOINT = "https://api.open-meteo.com/v1/ecmwf";
 
@@ -115,6 +116,9 @@ function makeCell(lat, lon, style) {
 }
 
 export async function createWeatherLayers(map) {
+
+  if (weatherLoaded) return;
+
   const data = await fetchWeatherGrid();
 
   cloudLayerGroup = L.layerGroup();
@@ -132,9 +136,10 @@ export async function createWeatherLayers(map) {
     }
   }
 
-  // Start aus
   map._weatherCloudLayer = cloudLayerGroup;
   map._weatherPrecipLayer = precipLayerGroup;
+
+  weatherLoaded = true;
 }
 
 export function setWeatherVisible(map, isOn) {

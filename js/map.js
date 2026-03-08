@@ -1,8 +1,6 @@
 // ------------------ LEAFLET MAP ------------------
 import { createWeatherLayers, setWeatherVisible } from "./weather_layers.js";
 
-const LS_WEATHER_TOGGLE = "fp.map.weather.v1";
-
 function applyWeatherToggleUI(btn, isOn) {
   if (!btn) return;
 
@@ -18,18 +16,39 @@ function initWeatherToggle(map) {
   if (btn.dataset.bound === "1") return;
   btn.dataset.bound = "1";
 
-  const saved = localStorage.getItem(LS_WEATHER_TOGGLE);
-  const isOn = saved === "1";
+  // immer OFF starten, kein Auto-Reload des Layers
+  applyWeatherToggleUI(btn, false);
+  setWeatherVisible(map, false);
 
-  applyWeatherToggleUI(btn, isOn);
-  setWeatherVisible(map, isOn);
+  let weatherLoaded = false;
 
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", async () => {
     const nextOn = btn.dataset.state !== "on";
 
-    applyWeatherToggleUI(btn, nextOn);
-    setWeatherVisible(map, nextOn);
-    localStorage.setItem(LS_WEATHER_TOGGLE, nextOn ? "1" : "0");
+    if (nextOn) {
+      try {
+        btn.disabled = true;
+
+        if (!weatherLoaded) {
+          await createWeatherLayers(map);
+          weatherLoaded = true;
+        }
+
+        setWeatherVisible(map, true);
+        applyWeatherToggleUI(btn, true);
+      } catch (err) {
+        console.error("Weather layer fetch failed:", err);
+        setWeatherVisible(map, false);
+        applyWeatherToggleUI(btn, false);
+      } finally {
+        btn.disabled = false;
+      }
+
+      return;
+    }
+
+    setWeatherVisible(map, false);
+    applyWeatherToggleUI(btn, false);
   });
 }
 
@@ -39,12 +58,6 @@ export async function createMap() {
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OSM",
   }).addTo(map);
-
-  try {
-    await createWeatherLayers(map);
-  } catch (err) {
-    console.error("Weather layers init failed:", err);
-  }
 
   initWeatherToggle(map);
 
