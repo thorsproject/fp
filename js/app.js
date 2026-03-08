@@ -20,7 +20,7 @@ import {
   updateAltMarkers,
 } from "./airfields.js";
 
-import { createWeatherLayers } from "./weather_layers.js";
+import { createWeatherLayers, setWeatherVisible } from "./weather_layers.js";
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initChecklistUI } from "./checklist.js";
@@ -83,6 +83,7 @@ const LS_FDL_SELECTED = "fp.fdl.selected";
 
 // ---------- Map ----------
 const map = await createMap();
+await createWeatherLayers(map);
 initTopNav({ map, defaultView: "view-map" });
 
 // ---------- Weather + Wind state ----------
@@ -101,11 +102,7 @@ const { windLayer } = createWindLayers();
 wxBtn?.addEventListener("click", async () => {
   weatherOn = !weatherOn;
 
-  if (weatherOn) {
-    weatherLayer.addTo(map);
-  } else {
-    map.removeLayer(weatherLayer);
-  }
+  setWeatherVisible(map, weatherOn);
 
   setBtnState(wxBtn, weatherOn);
 });
