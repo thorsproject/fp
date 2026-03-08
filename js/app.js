@@ -87,25 +87,14 @@ await createWeatherLayers(map);
 initTopNav({ map, defaultView: "view-map" });
 
 // ---------- Weather + Wind state ----------
-let weatherOn = false;
 let windOn = false;
 let selectedWindLevel = "SFC";
 
 const windBtn = qs("#toggleWind");
-const wxBtn = qs("#toggleWeather");
 
 // ---------- Layers ----------
 const { weatherLayer } = createWeatherLayers();
 const { windLayer } = createWindLayers();
-
-// ---------- Weather button ----------
-wxBtn?.addEventListener("click", async () => {
-  weatherOn = !weatherOn;
-
-  setWeatherVisible(map, weatherOn);
-
-  setBtnState(wxBtn, weatherOn);
-});
 
 // ---------- Wind button ----------
 windBtn?.addEventListener("click", async () => {

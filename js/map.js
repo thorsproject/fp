@@ -1,54 +1,39 @@
 // ------------------ LEAFLET MAP ------------------
-import { createWeatherLayers, setWeatherVisible } from "./weather_layers.js";
+const OWM_API_KEY = "fa312700068b80ce4efac1751a51b543";
+const LS_WEATHER_TOGGLE = "fp.map.weather.v1";
 
-function applyWeatherToggleUI(btn, isOn) {
+function setBtnState(btn, onState) {
   if (!btn) return;
-
-  btn.dataset.state = isOn ? "on" : "off";
-  btn.textContent = isOn ? "ON" : "OFF";
-  btn.classList.toggle("is-active", isOn);
+  btn.textContent = onState ? "ON" : "OFF";
+  btn.classList.toggle("is-on", !!onState);
 }
 
-function initWeatherToggle(map) {
+function initWeatherToggle(map, cloudTiles) {
   const btn = document.getElementById("toggleWeather");
   if (!btn) return;
 
   if (btn.dataset.bound === "1") return;
   btn.dataset.bound = "1";
 
-  // immer OFF starten, kein Auto-Reload des Layers
-  applyWeatherToggleUI(btn, false);
-  setWeatherVisible(map, false);
+  const isOn = false;
 
-  let weatherLoaded = false;
+  if (isOn) {
+    cloudTiles.addTo(map);
+  }
 
-  btn.addEventListener("click", async () => {
-    const nextOn = btn.dataset.state !== "on";
+  setBtnState(btn, isOn);
+
+  btn.addEventListener("click", () => {
+    const nextOn = btn.textContent !== "ON";
 
     if (nextOn) {
-      try {
-        btn.disabled = true;
-
-        if (!weatherLoaded) {
-          await createWeatherLayers(map);
-          weatherLoaded = true;
-        }
-
-        setWeatherVisible(map, true);
-        applyWeatherToggleUI(btn, true);
-      } catch (err) {
-        console.error("Weather layer fetch failed:", err);
-        setWeatherVisible(map, false);
-        applyWeatherToggleUI(btn, false);
-      } finally {
-        btn.disabled = false;
-      }
-
-      return;
+      cloudTiles.addTo(map);
+    } else {
+      map.removeLayer(cloudTiles);
     }
 
-    setWeatherVisible(map, false);
-    applyWeatherToggleUI(btn, false);
+    localStorage.setItem(LS_WEATHER_TOGGLE, nextOn ? "1" : "0");
+    setBtnState(btn, nextOn);
   });
 }
 
@@ -59,7 +44,15 @@ export async function createMap() {
     attribution: "&copy; OSM",
   }).addTo(map);
 
-  initWeatherToggle(map);
+  const cloudTiles = L.tileLayer(
+    `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_API_KEY}`,
+    {
+      opacity: 0.45,
+      attribution: "Weather © OpenWeatherMap",
+    }
+  );
+
+  initWeatherToggle(map, cloudTiles);
 
   return map;
 }
