@@ -69,12 +69,16 @@ export function buildWxPopupHtml(wx) {
     (wx?.tafError ? `Fehler: ${wx.tafError}` : "Kein TAF verfügbar")
   );
 
-  const fltCat = escapeHtml(wx?.metar?.fltCat || "—");
+  const fltCat = wx?.metar?.fltCat || "";
+  const fltClass = fltCat ? `wx-cat-${fltCat.toLowerCase()}` : "";
 
   return `
     <div class="wx-popup">
-      <div class="wx-popup__title">${escapeHtml(wx.icao)}</div>
-      <div class="wx-popup__meta">Flight Category: ${fltCat}</div>
+
+      <div class="wx-popup__header">
+        <div class="wx-popup__title">${escapeHtml(wx.icao)}</div>
+        ${fltCat ? `<div class="wx-cat ${fltClass}">${fltCat}</div>` : ""}
+      </div>
 
       <div class="wx-popup__section">
         <div class="wx-popup__label">METAR</div>
@@ -85,6 +89,7 @@ export function buildWxPopupHtml(wx) {
         <div class="wx-popup__label">TAF</div>
         <pre class="wx-popup__raw">${tafRaw}</pre>
       </div>
+
     </div>
   `;
 }

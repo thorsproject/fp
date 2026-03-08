@@ -73,3 +73,39 @@
   border: 1px solid var(--border);
   background: #eef;
 }
+
+.wx-popup__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+
+.wx-popup__title{
+  font-weight:700;
+  font-size:14px;
+}
+
+.wx-cat{
+  font-weight:700;
+  padding:2px 8px;
+  border-radius:4px;
+  font-size:12px;
+  color:#fff;
+}
+
+.wx-cat-vfr{
+  background:#1faa59;
+}
+
+.wx-cat-mvfr{
+  background:#1976d2;
+}
+
+.wx-cat-ifr{
+  background:#d32f2f;
+}
+
+.wx-cat-lifr{
+  background:#8e24aa;
+}

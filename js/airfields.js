@@ -117,6 +117,10 @@ export function updateLegMarkers(map) {
     coords.push([a.lat, a.lon]);
 
     const m = L.marker([a.lat, a.lon]).addTo(map);
+    
+    // Wetter sofort im Hintergrund anstoßen
+    void loadAirportWx(code).catch(() => {});
+    
     m.bindPopup(`<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`);
 
     m.on("popupopen", async () => {
@@ -157,6 +161,10 @@ export function updateAltMarkers(map) {
 
     const a = alternatesDB[code];
     const m = L.marker([a.lat, a.lon]).addTo(map);
+    
+    // Wetter sofort im Hintergrund anstoßen
+    void loadAirportWx(code).catch(() => {});
+
     m.bindPopup(`<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`);
 
     m.on("popupopen", async () => {
