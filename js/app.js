@@ -92,7 +92,6 @@ let selectedWindLevel = "SFC";
 const windBtn = qs("#toggleWind");
 
 // ---------- Layers ----------
-const { weatherLayer } = createWeatherLayers();
 const { windLayer } = createWindLayers();
 
 // ---------- Wind button ----------
