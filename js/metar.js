@@ -1,10 +1,99 @@
-// ------------------ METAR/TAF -------------------
-  // MET Norway TAF/Metar API (Textformat) :contentReference[oaicite:2]{index=2}
-export async function fetchMetarTaf(icao) {
-  const url = `https://api.met.no/weatherapi/tafmetar/1.0/tafmetar.txt?icao=${encodeURIComponent(icao)}&ts=${Date.now()}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`METAR/TAF Fehler ${res.status}`);
-  const txt = await res.text();
-  // Antwort ist Text mit ggf. mehreren Zeilen; wir zeigen sie "raw" im <pre>
-  return txt.trim() || "Keine METAR/TAF-Daten gefunden (letzte 24h).";
+const WX_BASE = "https://fp-weather-proxy.thors-project.workers.dev";
+
+const wxCache = new Map();
+
+function cacheKey(type, icao) {
+  return `${type}:${icao.toUpperCase()}`;
+}
+
+async function fetchJson(url) {
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function loadAirportWx(icao) {
+  const id = String(icao || "").trim().toUpperCase();
+  if (!id) throw new Error("ICAO fehlt");
+
+  const metarKey = cacheKey("metar", id);
+  const tafKey = cacheKey("taf", id);
+
+  const metarPromise = wxCache.get(metarKey) ||
+    fetchJson(`${WX_BASE}/wx/metar?ids=${encodeURIComponent(id)}`)
+      .then(data => {
+        wxCache.set(metarKey, Promise.resolve(data));
+        return data;
+      });
+
+  wxCache.set(metarKey, metarPromise);
+
+  const tafPromise = wxCache.get(tafKey) ||
+    fetchJson(`${WX_BASE}/wx/taf?ids=${encodeURIComponent(id)}`)
+      .then(data => {
+        wxCache.set(tafKey, Promise.resolve(data));
+        return data;
+      });
+
+  wxCache.set(tafKey, tafPromise);
+
+  const [metarData, tafData] = await Promise.allSettled([metarPromise, tafPromise]);
+
+  return {
+    icao: id,
+    metar: metarData.status === "fulfilled" ? normalizeFirst(metarData.value) : null,
+    taf: tafData.status === "fulfilled" ? normalizeFirst(tafData.value) : null,
+    metarError: metarData.status === "rejected" ? metarData.reason?.message || "METAR Fehler" : "",
+    tafError: tafData.status === "rejected" ? tafData.reason?.message || "TAF Fehler" : ""
+  };
+}
+
+function normalizeFirst(data) {
+  if (Array.isArray(data)) return data[0] || null;
+  if (data && Array.isArray(data.data)) return data.data[0] || null;
+  return null;
+}
+
+export function buildWxPopupHtml(wx) {
+  const metarRaw = escapeHtml(
+    wx?.metar?.rawOb ||
+    wx?.metar?.raw_text ||
+    "Kein METAR verfügbar"
+  );
+
+  const tafRaw = escapeHtml(
+    wx?.taf?.rawTAF ||
+    wx?.taf?.raw_text ||
+    "Kein TAF verfügbar"
+  );
+
+  const fltCat = escapeHtml(wx?.metar?.fltCat || "—");
+
+  return `
+    <div class="wx-popup">
+      <div class="wx-popup__title">${escapeHtml(wx.icao)}</div>
+      <div class="wx-popup__meta">Flight Category: ${fltCat}</div>
+
+      <div class="wx-popup__section">
+        <div class="wx-popup__label">METAR</div>
+        <pre class="wx-popup__raw">${metarRaw}</pre>
+      </div>
+
+      <div class="wx-popup__section">
+        <div class="wx-popup__label">TAF</div>
+        <pre class="wx-popup__raw">${tafRaw}</pre>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }

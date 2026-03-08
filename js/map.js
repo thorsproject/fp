@@ -1,4 +1,24 @@
 // ------------------ LEAFLET MAP ------------------
+import { loadAirportWx, buildWxPopupHtml } from "./metar.js";
+
+function bindAirportWx(marker, icao) {
+  marker.on("click", async () => {
+    marker.bindPopup("<div class='wx-popup__loading'>Lade METAR / TAF …</div>").openPopup();
+
+    try {
+      const wx = await loadAirportWx(icao);
+      marker.setPopupContent(buildWxPopupHtml(wx));
+    } catch (err) {
+      marker.setPopupContent(`
+        <div class="wx-popup">
+          <div class="wx-popup__title">${icao}</div>
+          <div class="wx-popup__error">Wetterdaten konnten nicht geladen werden.</div>
+        </div>
+      `);
+    }
+  });
+}
+
 function setBtnState(btn, onState) {
   if (!btn) return;
   btn.textContent = onState ? "ON" : "OFF";
