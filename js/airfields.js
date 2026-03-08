@@ -130,6 +130,7 @@ export function updateLegMarkers(map) {
     m.on("popupopen", async () => {
       try {
         const wx = await loadAirportWx(code);
+        applyFlightCategoryToMarker(m, wx?.metar?.fltCat);
         m.setPopupContent(buildWxPopupHtml(wx));
       } catch (e) {
         m.setPopupContent(
