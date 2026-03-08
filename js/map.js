@@ -98,5 +98,9 @@ export async function createMap() {
     layer: radarTiles,
   });
 
+  // ---------- TEST MARKER ----------
+  const testMarker = L.marker([54.3795, 10.1453]).addTo(map);
+  bindAirportWx(testMarker, "EDHK");
+
   return map;
 }

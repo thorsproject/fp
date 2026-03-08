@@ -60,13 +60,13 @@ export function buildWxPopupHtml(wx) {
   const metarRaw = escapeHtml(
     wx?.metar?.rawOb ||
     wx?.metar?.raw_text ||
-    "Kein METAR verfügbar"
+    (wx?.metarError ? `Fehler: ${wx.metarError}` : "Kein METAR verfügbar")
   );
 
   const tafRaw = escapeHtml(
     wx?.taf?.rawTAF ||
     wx?.taf?.raw_text ||
-    "Kein TAF verfügbar"
+    (wx?.tafError ? `Fehler: ${wx.tafError}` : "Kein TAF verfügbar")
   );
 
   const fltCat = escapeHtml(wx?.metar?.fltCat || "—");
