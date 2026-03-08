@@ -8,10 +8,23 @@ function cacheKey(type, icao) {
 
 async function fetchJson(url) {
   const res = await fetch(url, { cache: "no-store" });
+
   if (!res.ok) {
     throw new Error(`HTTP ${res.status}`);
   }
-  return res.json();
+
+  const text = await res.text();
+
+  // Leerer Body = kein aktueller Datensatz
+  if (!text || !text.trim()) {
+    return [];
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return [];
+  }
 }
 
 export async function loadAirportWx(icao) {
