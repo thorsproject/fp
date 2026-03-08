@@ -24,12 +24,10 @@
   - .DS_Store
   - .github/workflows/update-state.yml
   - .github/workflows/update-weather.yml
+  - .github/workflows/update-runways.yml
   - .gitignore
   - .vscode/tasks.json
   - Layout_structure.txt
-  - OLD/checklistOLD.css
-  - OLD/components_OLD.css
-  - OLD/layout_OLD.css
   - css/base.css
   - css/components.css
   - css/layout.css
@@ -1032,7 +1030,7 @@ OWM_API_KEY
 Workflows:
 
 ```
-auto-update-AIRAC.yml
+update-runways.yml
 update-weather.yml
 update-state.yml
 ```
@@ -1043,6 +1041,7 @@ update-state.yml
 
 ### Map
 
+* METAR / TAF Integration
 * Radar Animation
 * bessere Cloud Opacity
 * Zoom-abhängige Layer Darstellung
