@@ -92,18 +92,22 @@ let selectedWindLevel = "SFC";
 const windBtn = qs("#toggleWind");
 const wxBtn = qs("#toggleWeather");
 
+// ---------- Layers ----------
+const { weatherLayer } = createWeatherLayers();
+const { windLayer } = createWindLayers();
+
 // ---------- Weather button ----------
 wxBtn?.addEventListener("click", async () => {
   weatherOn = !weatherOn;
 
-  // hier später echte Weather-Logik
-  // z. B. weatherLayer.addTo(map) / remove etc.
+  if (weatherOn) {
+    weatherLayer.addTo(map);
+  } else {
+    map.removeLayer(weatherLayer);
+  }
 
   setBtnState(wxBtn, weatherOn);
 });
-
-// ---------- Layers ----------
-const { windLayer } = createWindLayers();
 
 // ---------- Wind button ----------
 windBtn?.addEventListener("click", async () => {
