@@ -119,7 +119,11 @@ export function updateLegMarkers(map) {
     const m = L.marker([a.lat, a.lon]).addTo(map);
     
     // Wetter sofort im Hintergrund anstoßen
-    void loadAirportWx(code).catch(() => {});
+    loadAirportWx(code)
+      .then((wx) => {
+        applyFlightCategoryToMarker(m, wx?.metar?.fltCat);
+      })
+      .catch(() => {});
     
     m.bindPopup(`<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`);
 
@@ -186,7 +190,11 @@ export function updateAltMarkers(map) {
     const m = L.marker([a.lat, a.lon]).addTo(map);
     
     // Wetter sofort im Hintergrund anstoßen
-    void loadAirportWx(code).catch(() => {});
+    loadAirportWx(code)
+      .then((wx) => {
+        applyFlightCategoryToMarker(m, wx?.metar?.fltCat);
+      })
+      .catch(() => {});
 
     m.bindPopup(`<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`);
 
