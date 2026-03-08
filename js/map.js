@@ -1,5 +1,5 @@
 // ------------------ LEAFLET MAP ------------------
-const OWM_API_KEY = "fa312700068b80ce4efac1751a51b543";
+const OWM_API_KEY = "HIER_DEIN_OPENWEATHERMAP_API_KEY";
 const LS_WEATHER_TOGGLE = "fp.map.weather.v1";
 
 function setBtnState(btn, onState) {
