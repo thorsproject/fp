@@ -49,7 +49,7 @@ export async function createMap() {
   const cloudTiles = L.tileLayer(
     `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_API_KEY}`,
     {
-      opacity: 0.45,
+      opacity: 0.75,
       attribution: "Weather © OpenWeatherMap",
     }
   );

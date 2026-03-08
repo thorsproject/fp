@@ -85,7 +85,7 @@ const LS_FDL_SELECTED = "fp.fdl.selected";
 const map = await createMap();
 initTopNav({ map, defaultView: "view-map" });
 
-// ---------- Weather + Wind state ----------
+// ---------- Wind state ----------
 let windOn = false;
 let selectedWindLevel = "SFC";
 
