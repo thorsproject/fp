@@ -10,6 +10,8 @@ let aeroMarkers = [];
 let altMarkers = [];
 let routeLines = [];
 
+import { loadAirportWx, buildWxPopupHtml } from "./metar.js";
+
 // ------------------ LOADERS ------------------
 
 export async function loadAirfields() {
@@ -94,19 +96,6 @@ function clearFieldError(input) {
   if (err) err.remove();
 }
 
-// ------------------ METAR / TAF ------------------
-
-async function fetchMetarTaf(icao) {
-  const url =
-    `https://api.met.no/weatherapi/tafmetar/1.0/tafmetar.txt?icao=${encodeURIComponent(icao)}&ts=${Date.now()}`;
-
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`METAR/TAF Fehler ${res.status}`);
-
-  const txt = await res.text();
-  return txt.trim() || "Keine METAR/TAF-Daten gefunden (letzte 24h).";
-}
-
 // ------------------ DRAWING ------------------
 
 export function updateLegMarkers(map) {
@@ -132,15 +121,14 @@ export function updateLegMarkers(map) {
 
     m.on("popupopen", async () => {
       try {
-        const data = await fetchMetarTaf(code);
-        m.setPopupContent(
-          `<b>${code}</b> – ${a.name || ""}<br>` +
-          `<pre style="white-space:pre-wrap;margin:6px 0 0;">${data}</pre>`
-        );
+        const wx = await loadAirportWx(code);
+        m.setPopupContent(buildWxPopupHtml(wx));
       } catch (e) {
         m.setPopupContent(
-          `<b>${code}</b> – ${a.name || ""}<br>` +
-          `<span style="color:#ff8080;">METAR/TAF konnte nicht geladen werden.</span>`
+          `<div class="wx-popup">
+            <div class="wx-popup__title">${code}</div>
+            <div class="wx-popup__error">METAR/TAF konnte nicht geladen werden.</div>
+          </div>`
         );
       }
     });
@@ -168,8 +156,22 @@ export function updateAltMarkers(map) {
     if (!alternatesDB[code]) continue;
 
     const a = alternatesDB[code];
-    const m = L.marker([a.lat, a.lon]).addTo(map)
-      .bindPopup(`<b>${code}</b> – ${a.name || ""}`);
+    const m = L.marker([a.lat, a.lon]).addTo(map);
+    m.bindPopup(`<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`);
+
+    m.on("popupopen", async () => {
+      try {
+        const wx = await loadAirportWx(code);
+        m.setPopupContent(buildWxPopupHtml(wx));
+      } catch (e) {
+        m.setPopupContent(
+          `<div class="wx-popup">
+            <div class="wx-popup__title">${code}</div>
+            <div class="wx-popup__error">METAR/TAF konnte nicht geladen werden.</div>
+          </div>`
+        );
+      }
+    });
 
     altMarkers.push(m);
   }
