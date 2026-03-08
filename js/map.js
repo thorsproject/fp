@@ -1,4 +1,10 @@
 // ------------------ LEAFLET MAP ------------------
+function setBtnState(btn, onState) {
+  if (!btn) return;
+  btn.textContent = onState ? "ON" : "OFF";
+  btn.classList.toggle("is-on", !!onState);
+}
+
 function initTileToggle({ map, buttonId, layer, storageKey }) {
   const btn = document.getElementById(buttonId);
   if (!btn) return;
