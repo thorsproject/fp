@@ -83,7 +83,6 @@ const LS_FDL_SELECTED = "fp.fdl.selected";
 
 // ---------- Map ----------
 const map = await createMap();
-await createWeatherLayers(map);
 initTopNav({ map, defaultView: "view-map" });
 
 // ---------- Weather + Wind state ----------

@@ -1,6 +1,8 @@
 // ------------------ LEAFLET MAP ------------------
 const OWM_API_KEY = "HIER_DEIN_OPENWEATHERMAP_API_KEY";
+
 const LS_WEATHER_TOGGLE = "fp.map.weather.v1";
+const LS_RADAR_TOGGLE = "fp.map.radar.v1";
 
 function setBtnState(btn, onState) {
   if (!btn) return;
@@ -8,8 +10,8 @@ function setBtnState(btn, onState) {
   btn.classList.toggle("is-on", !!onState);
 }
 
-function initWeatherToggle(map, cloudTiles) {
-  const btn = document.getElementById("toggleWeather");
+function initTileToggle({ map, buttonId, layer, storageKey }) {
+  const btn = document.getElementById(buttonId);
   if (!btn) return;
 
   if (btn.dataset.bound === "1") return;
@@ -18,7 +20,7 @@ function initWeatherToggle(map, cloudTiles) {
   const isOn = false;
 
   if (isOn) {
-    cloudTiles.addTo(map);
+    layer.addTo(map);
   }
 
   setBtnState(btn, isOn);
@@ -27,12 +29,11 @@ function initWeatherToggle(map, cloudTiles) {
     const nextOn = btn.textContent !== "ON";
 
     if (nextOn) {
-      cloudTiles.addTo(map);
+      layer.addTo(map);
     } else {
-      map.removeLayer(cloudTiles);
+      map.removeLayer(layer);
     }
 
-    localStorage.setItem(LS_WEATHER_TOGGLE, nextOn ? "1" : "0");
     setBtnState(btn, nextOn);
   });
 }
@@ -44,6 +45,7 @@ export async function createMap() {
     attribution: "&copy; OSM",
   }).addTo(map);
 
+  // ---------- Clouds ----------
   const cloudTiles = L.tileLayer(
     `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_API_KEY}`,
     {
@@ -52,7 +54,28 @@ export async function createMap() {
     }
   );
 
-  initWeatherToggle(map, cloudTiles);
+  // ---------- Radar ----------
+  const radarTiles = L.tileLayer(
+    "https://tilecache.rainviewer.com/v2/radar/latest/256/{z}/{x}/{y}/2/1_1.png",
+    {
+      opacity: 0.5,
+      attribution: "Radar © RainViewer",
+    }
+  );
+
+  initTileToggle({
+    map,
+    buttonId: "toggleWeather",
+    layer: cloudTiles,
+    storageKey: LS_WEATHER_TOGGLE,
+  });
+
+  initTileToggle({
+    map,
+    buttonId: "toggleRadar",
+    layer: radarTiles,
+    storageKey: LS_RADAR_TOGGLE,
+  });
 
   return map;
 }
