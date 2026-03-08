@@ -148,6 +148,29 @@ export function updateLegMarkers(map) {
   }
 }
 
+function applyFlightCategoryToMarker(marker, fltCat) {
+  if (!marker || !fltCat) return;
+
+  const colors = {
+    VFR: "#1faa59",
+    MVFR: "#1976d2",
+    IFR: "#d32f2f",
+    LIFR: "#8e24aa",
+  };
+
+  const color = colors[fltCat];
+  if (!color) return;
+
+  const icon = L.divIcon({
+    className: "wx-marker",
+    html: `<div class="wx-dot" style="background:${color}"></div>`,
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+  });
+
+  marker.setIcon(icon);
+}
+
 export function updateAltMarkers(map) {
   // --- cleanup existing ---
   altMarkers.forEach(m => map.removeLayer(m));
@@ -170,6 +193,10 @@ export function updateAltMarkers(map) {
     m.on("popupopen", async () => {
       try {
         const wx = await loadAirportWx(code);
+
+        // Marker einfärben
+        applyFlightCategoryToMarker(m, wx?.metar?.fltCat);
+
         m.setPopupContent(buildWxPopupHtml(wx));
       } catch (e) {
         m.setPopupContent(
