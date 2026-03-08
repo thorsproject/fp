@@ -1,5 +1,5 @@
 // ------------------ LEAFLET MAP ------------------
-const OWM_API_KEY = "fa312700068b80ce4efac1751a51b543";
+const OWM_API_KEY = "HIER_DEIN_OPENWEATHERMAP_API_KEY";
 
 const LS_WEATHER_TOGGLE = "fp.map.weather.v1";
 const LS_RADAR_TOGGLE = "fp.map.radar.v1";
@@ -41,6 +41,17 @@ function initTileToggle({ map, buttonId, layer, storageKey }) {
 export async function createMap() {
   const map = L.map("map").setView([51, 10], 6);
 
+  // ---------- Panes ----------
+  map.createPane("cloudPane");
+  map.getPane("cloudPane").style.zIndex = 320;
+
+  map.createPane("radarPane");
+  map.getPane("radarPane").style.zIndex = 330;
+
+  map.createPane("windPane");
+  map.getPane("windPane").style.zIndex = 340;
+
+  // ---------- Base ----------
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OSM",
   }).addTo(map);
@@ -49,6 +60,7 @@ export async function createMap() {
   const cloudTiles = L.tileLayer(
     `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_API_KEY}`,
     {
+      pane: "cloudPane",
       opacity: 0.75,
       attribution: "Weather © OpenWeatherMap",
     }
@@ -58,7 +70,8 @@ export async function createMap() {
   const radarTiles = L.tileLayer(
     "https://tilecache.rainviewer.com/v2/radar/latest/256/{z}/{x}/{y}/2/1_1.png",
     {
-      opacity: 0.5,
+      pane: "radarPane",
+      opacity: 0.42,
       attribution: "Radar © RainViewer",
     }
   );
