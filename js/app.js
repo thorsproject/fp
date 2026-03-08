@@ -84,17 +84,28 @@ const LS_FDL_SELECTED = "fp.fdl.selected";
 const map = await createMap();
 initTopNav({ map, defaultView: "view-map" });
 
-// ---------- Wind state ----------
+// ---------- Weather + Wind state ----------
+let weatherOn = false;
 let windOn = false;
 let selectedWindLevel = "SFC";
 
 const windBtn = qs("#toggleWind");
-const wxBtn = qs("#toggleWeather"); // aktuell noch ungenutzt, aber ok
+const wxBtn = qs("#toggleWeather");
+
+// ---------- Weather button ----------
+wxBtn?.addEventListener("click", async () => {
+  weatherOn = !weatherOn;
+
+  // hier später echte Weather-Logik
+  // z. B. weatherLayer.addTo(map) / remove etc.
+
+  setBtnState(wxBtn, weatherOn);
+});
 
 // ---------- Layers ----------
 const { windLayer } = createWindLayers();
 
-// ---------- Wind buttons ----------
+// ---------- Wind button ----------
 windBtn?.addEventListener("click", async () => {
   windOn = !windOn;
 

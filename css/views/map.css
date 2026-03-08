@@ -48,6 +48,7 @@
   font-weight: 900;
   cursor: pointer;
 }
+
 .ctrl-chip button.is-on{
   background: var(--accent);
   color: #000;
