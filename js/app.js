@@ -20,6 +20,7 @@ import {
   updateAltMarkers,
 } from "./airfields.js";
 
+import { createWeatherLayers } from "./weather_layers.js";
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initChecklistUI } from "./checklist.js";
