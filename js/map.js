@@ -1,13 +1,4 @@
 // ------------------ LEAFLET MAP ------------------
-const LS_WEATHER_TOGGLE = "fp.map.weather.v1";
-const LS_RADAR_TOGGLE = "fp.map.radar.v1";
-
-function setBtnState(btn, onState) {
-  if (!btn) return;
-  btn.textContent = onState ? "ON" : "OFF";
-  btn.classList.toggle("is-on", !!onState);
-}
-
 function initTileToggle({ map, buttonId, layer, storageKey }) {
   const btn = document.getElementById(buttonId);
   if (!btn) return;
@@ -16,11 +7,6 @@ function initTileToggle({ map, buttonId, layer, storageKey }) {
   btn.dataset.bound = "1";
 
   const isOn = false;
-
-  if (isOn) {
-    layer.addTo(map);
-  }
-
   setBtnState(btn, isOn);
 
   btn.addEventListener("click", () => {
@@ -58,6 +44,7 @@ export async function createMap() {
   const cloudTiles = L.tileLayer(
     "https://fp-weather-proxy.thors-project.workers.dev/clouds/{z}/{x}/{y}.png",
     {
+      pane: "cloudPane",
       opacity: 0.75,
       attribution: "Weather © OpenWeatherMap",
     }
@@ -77,14 +64,12 @@ export async function createMap() {
     map,
     buttonId: "toggleWeather",
     layer: cloudTiles,
-    storageKey: LS_WEATHER_TOGGLE,
   });
 
   initTileToggle({
     map,
     buttonId: "toggleRadar",
     layer: radarTiles,
-    storageKey: LS_RADAR_TOGGLE,
   });
 
   return map;
