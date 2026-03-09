@@ -86,10 +86,6 @@
   background: #eef;
 }
 
-.wx-popup{
-  max-width: 420px;
-}
-
 .wx-popup__header{
   display:flex;
   align-items:center;
