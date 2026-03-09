@@ -76,6 +76,34 @@ export function attachDatalistToAltInputs() {
   });
 }
 
+function getWxColor(fltCat) {
+  const colors = {
+    VFR: "#1faa59",
+    MVFR: "#1976d2",
+    IFR: "#d32f2f",
+    LIFR: "#8e24aa",
+  };
+  return colors[fltCat] || null;
+}
+
+function getColorFromRawMetar(raw) {
+  const txt = String(raw || "").toUpperCase();
+
+  if (/\bBLU\+?\b/.test(txt)) return "#1faa59";
+  if (/\b(WHT|GRN)\b/.test(txt)) return "#1976d2";
+  if (/\b(YLO1|YLO2)\b/.test(txt)) return "#d32f2f";
+  if (/\b(AMB|RED)\b/.test(txt)) return "#8e24aa";
+
+  return "#6b7280";
+}
+
+function getMarkerColorFromWx(wx) {
+  const byFltCat = getWxColor(wx?.metar?.fltCat);
+  if (byFltCat) return byFltCat;
+
+  return getColorFromRawMetar(wx?.metar?.rawOb || wx?.metar?.raw_text);
+}
+
 // ------------------ WX MARKERS ------------------
 
 function makeWxMarker(color = "#6b7280") {
@@ -97,9 +125,9 @@ function getWxColor(fltCat) {
   return colors[fltCat] || "#6b7280";
 }
 
-function applyFlightCategoryToMarker(marker, fltCat) {
+function applyFlightCategoryToMarker(marker, wx) {
   if (!marker) return;
-  marker.setIcon(makeWxMarker(getWxColor(fltCat)));
+  marker.setIcon(makeWxMarker(getMarkerColorFromWx(wx)));
 }
 
 function getPopupWidth() {
@@ -142,7 +170,7 @@ function bindWxPopup(marker, code, name) {
 // debug:
       console.log("popup", code, wx);
 // debug end
-      applyFlightCategoryToMarker(marker, wx?.metar?.fltCat);
+      applyFlightCategoryToMarker(marker, wx);
       marker.setPopupContent(buildWxPopupHtml(wx));
     } catch {
       marker.setPopupContent(
@@ -162,9 +190,9 @@ async function createAirportMarker(map, code, airport) {
     const wx = await loadAirportWx(code);
 // debug:
       console.log(code, wx);
-      markerColor = getWxColor(wx?.metar?.fltCat);
+      markerColor = getMarkerColorFromWx(wx);
 // debug end
-    markerColor = getWxColor(wx?.metar?.fltCat);
+    markerColor = getMarkerColorFromWx(wx);
   } catch {
     // neutraler Marker bleibt
   }
