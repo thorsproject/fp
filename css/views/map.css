@@ -67,6 +67,18 @@
 }
 
 /* Map container */
+.leaflet-popup-content-wrapper{
+  max-width: 420px;
+}
+
+.leaflet-popup-content{
+  width: 420px;
+}
+
+.wx-popup{
+  width: 100%;
+}
+
 .map-frame{
   width: 100%;
   height: calc(100% - 70px);
