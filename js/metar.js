@@ -91,6 +91,35 @@ function formatTaf(raw) {
     });
 }
 
+function getWxBadge(rawMetar, fltCat) {
+  if (fltCat) {
+    return {
+      label: fltCat,
+      className: `wx-cat-${String(fltCat).toLowerCase()}`,
+    };
+  }
+
+  const raw = String(rawMetar || "").toUpperCase();
+
+  if (/\bBLU\+?\b/.test(raw)) {
+    return { label: "VFR", className: "wx-cat-vfr" };
+  }
+
+  if (/\b(WHT|GRN)\b/.test(raw)) {
+    return { label: "MVFR", className: "wx-cat-mvfr" };
+  }
+
+  if (/\b(YLO1|YLO2)\b/.test(raw)) {
+    return { label: "IFR", className: "wx-cat-ifr" };
+  }
+
+  if (/\b(AMB|RED)\b/.test(raw)) {
+    return { label: "LIFR", className: "wx-cat-lifr" };
+  }
+
+  return null;
+}
+
 export function buildWxPopupHtml(wx) {
   const metarRaw = escapeHtml(
     wx?.metar?.rawOb ||
@@ -106,15 +135,17 @@ export function buildWxPopupHtml(wx) {
     )
   );
 
-  const fltCat = wx?.metar?.fltCat || "";
-  const fltClass = fltCat ? `wx-cat-${fltCat.toLowerCase()}` : "";
+  const badge = getWxBadge(
+    wx?.metar?.rawOb || wx?.metar?.raw_text,
+    wx?.metar?.fltCat
+  );
 
   return `
     <div class="wx-popup">
 
       <div class="wx-popup__header">
         <div class="wx-popup__title">${escapeHtml(wx.icao)}</div>
-        ${fltCat ? `<div class="wx-cat ${fltClass}">${fltCat}</div>` : ""}
+        ${badge ? `<div class="wx-cat ${badge.className}">${badge.label}</div>` : ""}
       </div>
 
       <div class="wx-popup__section">
