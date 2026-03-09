@@ -85,6 +85,16 @@ function makeWxMarker(color = "#6b7280") {
   });
 }
 
+function getWxColor(fltCat) {
+  const colors = {
+    VFR: "#1faa59",
+    MVFR: "#1976d2",
+    IFR: "#d32f2f",
+    LIFR: "#8e24aa",
+  };
+  return colors[fltCat] || "#6b7280";
+}
+
 // ------------------ ERROR UI (gemeinsam) ------------------
 
 function showFieldError(input, msg) {
@@ -124,8 +134,15 @@ export function updateLegMarkers(map) {
     const a = airfieldsDB[code];
     coords.push([a.lat, a.lon]);
 
+    let markerColor = "#6b7280";
+
+    try {
+      const wx = await loadAirportWx(code);
+      markerColor = getWxColor(wx?.metar?.fltCat);
+    } catch {}
+
     const m = L.marker([a.lat, a.lon], {
-      icon: makeWxMarker(),
+      icon: makeWxMarker(markerColor),
     }).addTo(map);
     
     // Wetter sofort im Hintergrund anstoßen
@@ -200,8 +217,15 @@ export function updateAltMarkers(map) {
     if (!alternatesDB[code]) continue;
 
     const a = alternatesDB[code];
+    let markerColor = "#6b7280";
+
+    try {
+      const wx = await loadAirportWx(code);
+      markerColor = getWxColor(wx?.metar?.fltCat);
+    } catch {}
+
     const m = L.marker([a.lat, a.lon], {
-      icon: makeWxMarker(),
+      icon: makeWxMarker(markerColor),
     }).addTo(map);
 
     
