@@ -127,20 +127,47 @@ function applyDeclaredDistances(icao, rwy, { toraField, ldaField } = {}) {
 }
 
 // ---------- legs -> performance ----------
+function isLegActive(frame, legNum) {
+  const btn = qs(SEL.legs.toggleByLeg(legNum));
+
+  // Falls kein Toggle gefunden wird, Leg lieber als aktiv behandeln
+  if (!btn) return true;
+
+  const state = String(btn.dataset?.state || "").toLowerCase();
+
+  if (state === "off" || state === "inactive" || state === "disabled") return false;
+  if (state === "on" || state === "active" || state === "enabled") return true;
+
+  if (btn.classList.contains("is-off")) return false;
+  if (btn.classList.contains("is-inactive")) return false;
+  if (btn.classList.contains("is-disabled")) return false;
+
+  if (btn.classList.contains("is-on")) return true;
+  if (btn.classList.contains("is-active")) return true;
+
+  if (btn.getAttribute("aria-pressed") === "false") return false;
+  if (btn.getAttribute("aria-pressed") === "true") return true;
+
+  // Fallback: wenn Frame sichtbar ist, als aktiv behandeln
+  if (frame && frame.classList.contains("is-hidden")) return false;
+
+  return true;
+}
+
 function getLastActiveLegFrame() {
   const frames = qsa(SEL.legs.frames);
   if (!frames.length) return null;
 
-  let lastActive = frames[0] || null;
+  let lastActive = null;
 
-  for (let i = 1; i < frames.length; i++) {
+  for (let i = 0; i < frames.length; i++) {
     const legNum = i + 1;
-    const btn = qs(SEL.legs.toggleByLeg(legNum));
-    const isActive = btn?.dataset?.state !== "on";
-    if (isActive) lastActive = frames[i];
+    if (isLegActive(frames[i], legNum)) {
+      lastActive = frames[i];
+    }
   }
 
-  return lastActive;
+  return lastActive || frames[0] || null;
 }
 
 export function syncPerformanceAirfields() {
@@ -161,8 +188,15 @@ export function syncPerformanceAirfields() {
   const ldIcao = getField("ld_icao");
 
   if (toIcao) toIcao.value = depIcao;
-  if (rtIcao) rtIcao.value = depIcao; // Return/Div = departure airfield
+  if (rtIcao) rtIcao.value = depIcao;
   if (ldIcao) ldIcao.value = destIcao;
+
+  // Debug
+  console.log("[performance] syncPerformanceAirfields", {
+    depIcao,
+    destIcao,
+    lastLegIndex: lastLeg ? frames.indexOf(lastLeg) + 1 : null,
+  });
 }
 
 // ---------- runway selects ----------
