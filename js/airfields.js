@@ -127,7 +127,7 @@ export function updateLegMarkers(map) {
     
     m.bindPopup(
       `<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`,
-      { maxWidth: 560, minWidth: 560 });
+      { maxWidth: 500, minWidth: 500 });
 
     m.on("popupopen", async () => {
       try {
@@ -201,7 +201,7 @@ export function updateAltMarkers(map) {
 
     m.bindPopup(
       `<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`,
-      { maxWidth: 560, minWidth: 560 });
+      { maxWidth: 500, minWidth: 500 });
 
     m.on("popupopen", async () => {
       try {
