@@ -67,14 +67,6 @@
 }
 
 /* Map container */
-.leaflet-popup-content-wrapper{
-  max-width: 600px;
-}
-
-.leaflet-popup-content{
-  width: 600px;
-}
-
 .wx-popup{
   width: 100%;
 }
