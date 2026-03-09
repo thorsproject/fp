@@ -154,20 +154,49 @@ function isLegActive(frame, legNum) {
   return true;
 }
 
-function getLastActiveLegFrame() {
-  const frames = qsa(SEL.legs.frames);
-  if (!frames.length) return null;
+function isLegFrameActive(frame, legNum) {
+  if (!frame) return false;
 
-  let lastActive = null;
+  const toEl = qs(SEL.legs.aeroTo, frame);
+  const fromEl = qs(SEL.legs.aeroFrom, frame);
+  const btn = qs(SEL.legs.toggleByLeg(legNum));
+
+  // 1) expliziter Toggle-State, falls vorhanden
+  const state = String(btn?.dataset?.state || "").toLowerCase();
+  if (state === "off" || state === "inactive" || state === "disabled") return false;
+  if (state === "on" || state === "active" || state === "enabled") return true;
+
+  // 2) disabled Inputs sind praktisch inaktiv
+  if (toEl?.disabled && fromEl?.disabled) return false;
+
+  // 3) versteckte Frames als inaktiv behandeln
+  if (frame.classList.contains("is-hidden")) return false;
+  if (frame.hidden) return false;
+  if (frame.getAttribute("aria-hidden") === "true") return false;
+
+  // 4) Fallback: aktiv
+  return true;
+}
+
+function getLastActiveDestinationIcao() {
+  const frames = qsa(SEL.legs.frames);
+  if (!frames.length) return "";
+
+  let lastDest = "";
 
   for (let i = 0; i < frames.length; i++) {
+    const frame = frames[i];
     const legNum = i + 1;
-    if (isLegActive(frames[i], legNum)) {
-      lastActive = frames[i];
-    }
+
+    if (!isLegFrameActive(frame, legNum)) continue;
+
+    const toEl = qs(SEL.legs.aeroTo, frame);
+    const dest = normIcao(toEl?.value || "");
+
+    if (dest) lastDest = dest;
   }
 
-  return lastActive || frames[0] || null;
+  return lastDest;
 }
 
 export function syncPerformanceAirfields() {
@@ -175,13 +204,10 @@ export function syncPerformanceAirfields() {
   if (!frames.length) return;
 
   const firstLeg = frames[0];
-  const lastLeg = getLastActiveLegFrame();
-
   const firstFrom = firstLeg ? qs(SEL.legs.aeroFrom, firstLeg) : null;
-  const lastTo = lastLeg ? qs(SEL.legs.aeroTo, lastLeg) : null;
 
   const depIcao = normIcao(firstFrom?.value || "");
-  const destIcao = normIcao(lastTo?.value || "");
+  const destIcao = getLastActiveDestinationIcao();
 
   const toIcao = getField("to_icao");
   const rtIcao = getField("rt_icao");
@@ -190,13 +216,6 @@ export function syncPerformanceAirfields() {
   if (toIcao) toIcao.value = depIcao;
   if (rtIcao) rtIcao.value = depIcao;
   if (ldIcao) ldIcao.value = destIcao;
-
-  // Debug
-  console.log("[performance] syncPerformanceAirfields", {
-    depIcao,
-    destIcao,
-    lastLegIndex: lastLeg ? frames.indexOf(lastLeg) + 1 : null,
-  });
 }
 
 // ---------- runway selects ----------
