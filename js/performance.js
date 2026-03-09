@@ -136,7 +136,7 @@ function getLastActiveLegFrame() {
   for (let i = 1; i < frames.length; i++) {
     const legNum = i + 1;
     const btn = qs(SEL.legs.toggleByLeg(legNum));
-    const isActive = btn?.dataset?.state === "active";
+    const isActive = btn?.dataset?.state !== "off";
     if (isActive) lastActive = frames[i];
   }
 
