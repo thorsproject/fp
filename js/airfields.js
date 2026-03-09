@@ -76,6 +76,15 @@ export function attachDatalistToAltInputs() {
   });
 }
 
+function makeWxMarker(color = "#6b7280") {
+  return L.divIcon({
+    className: "wx-marker",
+    html: `<div class="wx-dot" style="background:${color}"></div>`,
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+  });
+}
+
 // ------------------ ERROR UI (gemeinsam) ------------------
 
 function showFieldError(input, msg) {
@@ -97,7 +106,6 @@ function clearFieldError(input) {
 }
 
 // ------------------ DRAWING ------------------
-
 export function updateLegMarkers(map) {
   // --- cleanup existing ---
   aeroMarkers.forEach(m => map.removeLayer(m));
@@ -116,7 +124,9 @@ export function updateLegMarkers(map) {
     const a = airfieldsDB[code];
     coords.push([a.lat, a.lon]);
 
-    const m = L.marker([a.lat, a.lon]).addTo(map);
+    const m = L.marker([a.lat, a.lon], {
+      icon: makeWxMarker(),
+    }).addTo(map);
     
     // Wetter sofort im Hintergrund anstoßen
     loadAirportWx(code)
@@ -156,7 +166,7 @@ export function updateLegMarkers(map) {
 }
 
 function applyFlightCategoryToMarker(marker, fltCat) {
-  if (!marker || !fltCat) return;
+  if (!marker) return;
 
   const colors = {
     VFR: "#1faa59",
@@ -165,8 +175,8 @@ function applyFlightCategoryToMarker(marker, fltCat) {
     LIFR: "#8e24aa",
   };
 
-  const color = colors[fltCat];
-  if (!color) return;
+  const color = colors[fltCat] || "#6b7280";
+  marker.setIcon(makeWxMarker(color));
 
   const icon = L.divIcon({
     className: "wx-marker",
@@ -190,7 +200,10 @@ export function updateAltMarkers(map) {
     if (!alternatesDB[code]) continue;
 
     const a = alternatesDB[code];
-    const m = L.marker([a.lat, a.lon]).addTo(map);
+    const m = L.marker([a.lat, a.lon], {
+      icon: makeWxMarker(),
+    }).addTo(map);
+
     
     // Wetter sofort im Hintergrund anstoßen
     loadAirportWx(code)
