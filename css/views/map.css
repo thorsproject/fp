@@ -68,11 +68,11 @@
 
 /* Map container */
 .leaflet-popup-content-wrapper{
-  max-width: 500px;
+  max-width: 600px;
 }
 
 .leaflet-popup-content{
-  width: 500px;
+  width: 600px;
 }
 
 .wx-popup{
