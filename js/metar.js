@@ -73,9 +73,22 @@ function formatTaf(raw) {
   if (!raw) return raw;
 
   return raw
-    .replace(/\s(TEMPO)/g, "\n$1")
+    // neue Zeile vor BECMG
     .replace(/\s(BECMG)/g, "\n$1")
-    .replace(/\s(FM\d{6})/g, "\n$1");
+
+    // neue Zeile vor FMxxxxxx
+    .replace(/\s(FM\d{6})/g, "\n$1")
+
+    // TEMPO umbrechen außer bei PROB30/PROB40
+    .replace(/\s(TEMPO)/g, (m, p1, offset, str) => {
+      const prev = str.slice(Math.max(0, offset - 12), offset);
+
+      if (/PROB(30|40)\s*$/.test(prev)) {
+        return " " + p1;
+      }
+
+      return "\n" + p1;
+    });
 }
 
 export function buildWxPopupHtml(wx) {

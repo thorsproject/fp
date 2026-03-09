@@ -125,7 +125,9 @@ export function updateLegMarkers(map) {
       })
       .catch(() => {});
     
-    m.bindPopup(`<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`);
+    m.bindPopup(
+      `<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`,
+      { maxWidth: 600 });
 
     m.on("popupopen", async () => {
       try {
