@@ -115,16 +115,6 @@ function makeWxMarker(color = "#6b7280") {
   });
 }
 
-function getWxColor(fltCat) {
-  const colors = {
-    VFR: "#1faa59",
-    MVFR: "#1976d2",
-    IFR: "#d32f2f",
-    LIFR: "#8e24aa",
-  };
-  return colors[fltCat] || "#6b7280";
-}
-
 function applyFlightCategoryToMarker(marker, wx) {
   if (!marker) return;
   marker.setIcon(makeWxMarker(getMarkerColorFromWx(wx)));
@@ -190,7 +180,6 @@ async function createAirportMarker(map, code, airport) {
     const wx = await loadAirportWx(code);
 // debug:
       console.log(code, wx);
-      markerColor = getMarkerColorFromWx(wx);
 // debug end
     markerColor = getMarkerColorFromWx(wx);
   } catch {
