@@ -178,25 +178,20 @@ function isLegFrameActive(frame, legNum) {
   return true;
 }
 
-function getLastActiveDestinationIcao() {
+function getLastActiveLegFrame() {
   const frames = qsa(SEL.legs.frames);
-  if (!frames.length) return "";
+  if (!frames.length) return null;
 
-  let lastDest = "";
+  let lastActive = frames[0] || null;
 
-  for (let i = 0; i < frames.length; i++) {
-    const frame = frames[i];
+  for (let i = 1; i < frames.length; i++) {
     const legNum = i + 1;
-
-    if (!isLegFrameActive(frame, legNum)) continue;
-
-    const toEl = qs(SEL.legs.aeroTo, frame);
-    const dest = normIcao(toEl?.value || "");
-
-    if (dest) lastDest = dest;
+    const btn = qs(SEL.legs.toggleByLeg(legNum));
+    const isActive = btn?.dataset?.state === "active";
+    if (isActive) lastActive = frames[i];
   }
 
-  return lastDest;
+  return lastActive;
 }
 
 export function syncPerformanceAirfields() {
@@ -204,17 +199,20 @@ export function syncPerformanceAirfields() {
   if (!frames.length) return;
 
   const firstLeg = frames[0];
+  const lastLeg = getLastActiveLegFrame();
+
   const firstFrom = firstLeg ? qs(SEL.legs.aeroFrom, firstLeg) : null;
+  const lastTo = lastLeg ? qs(SEL.legs.aeroTo, lastLeg) : null;
 
   const depIcao = normIcao(firstFrom?.value || "");
-  const destIcao = getLastActiveDestinationIcao();
+  const destIcao = normIcao(lastTo?.value || "");
 
   const toIcao = getField("to_icao");
   const rtIcao = getField("rt_icao");
   const ldIcao = getField("ld_icao");
 
   if (toIcao) toIcao.value = depIcao;
-  if (rtIcao) rtIcao.value = depIcao;
+  if (rtIcao) rtIcao.value = depIcao; // Return/Div = departure airfield
   if (ldIcao) ldIcao.value = destIcao;
 }
 
