@@ -1,7 +1,9 @@
 // js/airfields.js
 // Lädt approved airfields + approved alternates, macht Autocomplete, Validierung,
 // zeichnet AERO Marker + Route-Line, ALT Marker ohne Route-Line.
-// METAR/TAF wird bei AERO-Markern beim Popup-Open nachgeladen.
+// Wetter kommt aus metar.js, Marker werden direkt mit passender fltCat-Farbe gesetzt.
+
+import { loadAirportWx, buildWxPopupHtml } from "./metar.js";
 
 let airfieldsDB = {};     // approved airfields
 let alternatesDB = {};    // approved alternates
@@ -9,8 +11,6 @@ let alternatesDB = {};    // approved alternates
 let aeroMarkers = [];
 let altMarkers = [];
 let routeLines = [];
-
-import { loadAirportWx, buildWxPopupHtml } from "./metar.js";
 
 // ------------------ LOADERS ------------------
 
@@ -76,6 +76,8 @@ export function attachDatalistToAltInputs() {
   });
 }
 
+// ------------------ WX MARKERS ------------------
+
 function makeWxMarker(color = "#6b7280") {
   return L.divIcon({
     className: "wx-marker",
@@ -95,7 +97,16 @@ function getWxColor(fltCat) {
   return colors[fltCat] || "#6b7280";
 }
 
-// ------------------ ERROR UI (gemeinsam) ------------------
+function applyFlightCategoryToMarker(marker, fltCat) {
+  if (!marker) return;
+  marker.setIcon(makeWxMarker(getWxColor(fltCat)));
+}
+
+function getPopupWidth() {
+  return Math.min(Math.round(window.innerWidth * 0.85), 560);
+}
+
+// ------------------ ERROR UI ------------------
 
 function showFieldError(input, msg) {
   input.classList.add("invalid");
@@ -115,15 +126,59 @@ function clearFieldError(input) {
   if (err) err.remove();
 }
 
+// ------------------ POPUP HELPERS ------------------
+
+function bindWxPopup(marker, code, name) {
+  const popupWidth = getPopupWidth();
+
+  marker.bindPopup(
+    `<b>${code}</b> – ${name || ""}<br>METAR/TAF lädt...`,
+    { maxWidth: popupWidth, minWidth: popupWidth }
+  );
+
+  marker.on("popupopen", async () => {
+    try {
+      const wx = await loadAirportWx(code);
+      applyFlightCategoryToMarker(marker, wx?.metar?.fltCat);
+      marker.setPopupContent(buildWxPopupHtml(wx));
+    } catch {
+      marker.setPopupContent(
+        `<div class="wx-popup">
+          <div class="wx-popup__title">${code}</div>
+          <div class="wx-popup__error">METAR/TAF konnte nicht geladen werden.</div>
+        </div>`
+      );
+    }
+  });
+}
+
+async function createAirportMarker(map, code, airport) {
+  let markerColor = "#6b7280";
+
+  try {
+    const wx = await loadAirportWx(code);
+    markerColor = getWxColor(wx?.metar?.fltCat);
+  } catch {
+    // neutraler Marker bleibt
+  }
+
+  const marker = L.marker([airport.lat, airport.lon], {
+    icon: makeWxMarker(markerColor),
+  }).addTo(map);
+
+  bindWxPopup(marker, code, airport.name || "");
+  return marker;
+}
+
 // ------------------ DRAWING ------------------
-export function updateLegMarkers(map) {
-  // --- cleanup existing ---
+
+export async function updateLegMarkers(map) {
   aeroMarkers.forEach(m => map.removeLayer(m));
   aeroMarkers = [];
+
   routeLines.forEach(l => map.removeLayer(l));
   routeLines = [];
 
-  // --- collect AERO coords in order ---
   const inputs = Array.from(document.querySelectorAll("input.aero"));
   const coords = [];
 
@@ -134,47 +189,10 @@ export function updateLegMarkers(map) {
     const a = airfieldsDB[code];
     coords.push([a.lat, a.lon]);
 
-    let markerColor = "#6b7280";
-
-    try {
-      const wx = await loadAirportWx(code);
-      markerColor = getWxColor(wx?.metar?.fltCat);
-    } catch {}
-
-    const m = L.marker([a.lat, a.lon], {
-      icon: makeWxMarker(markerColor),
-    }).addTo(map);
-    
-    // Wetter sofort im Hintergrund anstoßen
-    loadAirportWx(code)
-      .then((wx) => {
-        applyFlightCategoryToMarker(m, wx?.metar?.fltCat);
-      })
-      .catch(() => {});
-    
-    m.bindPopup(
-      `<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`,
-      { maxWidth: 500, minWidth: 500 });
-
-    m.on("popupopen", async () => {
-      try {
-        const wx = await loadAirportWx(code);
-        applyFlightCategoryToMarker(m, wx?.metar?.fltCat);
-        m.setPopupContent(buildWxPopupHtml(wx));
-      } catch (e) {
-        m.setPopupContent(
-          `<div class="wx-popup">
-            <div class="wx-popup__title">${code}</div>
-            <div class="wx-popup__error">METAR/TAF konnte nicht geladen werden.</div>
-          </div>`
-        );
-      }
-    });
-
-    aeroMarkers.push(m);
+    const marker = await createAirportMarker(map, code, a);
+    aeroMarkers.push(marker);
   }
 
-  // --- route line only between AEROs ---
   if (coords.length > 1) {
     const poly = L.polyline(coords, { color: "cyan" }).addTo(map);
     routeLines.push(poly);
@@ -182,31 +200,7 @@ export function updateLegMarkers(map) {
   }
 }
 
-function applyFlightCategoryToMarker(marker, fltCat) {
-  if (!marker) return;
-
-  const colors = {
-    VFR: "#1faa59",
-    MVFR: "#1976d2",
-    IFR: "#d32f2f",
-    LIFR: "#8e24aa",
-  };
-
-  const color = colors[fltCat] || "#6b7280";
-  marker.setIcon(makeWxMarker(color));
-
-  const icon = L.divIcon({
-    className: "wx-marker",
-    html: `<div class="wx-dot" style="background:${color}"></div>`,
-    iconSize: [12, 12],
-    iconAnchor: [6, 6],
-  });
-
-  marker.setIcon(icon);
-}
-
-export function updateAltMarkers(map) {
-  // --- cleanup existing ---
+export async function updateAltMarkers(map) {
   altMarkers.forEach(m => map.removeLayer(m));
   altMarkers = [];
 
@@ -217,62 +211,17 @@ export function updateAltMarkers(map) {
     if (!alternatesDB[code]) continue;
 
     const a = alternatesDB[code];
-    let markerColor = "#6b7280";
-
-    try {
-      const wx = await loadAirportWx(code);
-      markerColor = getWxColor(wx?.metar?.fltCat);
-    } catch {}
-
-    const m = L.marker([a.lat, a.lon], {
-      icon: makeWxMarker(markerColor),
-    }).addTo(map);
-
-    
-    // Wetter sofort im Hintergrund anstoßen
-    loadAirportWx(code)
-      .then((wx) => {
-        applyFlightCategoryToMarker(m, wx?.metar?.fltCat);
-      })
-      .catch(() => {});
-
-    const popupWidth = window.innerWidth < 600 ? 320 : 560;
-
-    m.bindPopup(
-      `<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`,
-      { maxWidth: popupWidth, minWidth: popupWidth }
-    );
-
-    m.on("popupopen", async () => {
-      try {
-        const wx = await loadAirportWx(code);
-
-        // Marker einfärben
-        applyFlightCategoryToMarker(m, wx?.metar?.fltCat);
-
-        m.setPopupContent(buildWxPopupHtml(wx));
-      } catch (e) {
-        m.setPopupContent(
-          `<div class="wx-popup">
-            <div class="wx-popup__title">${code}</div>
-            <div class="wx-popup__error">METAR/TAF konnte nicht geladen werden.</div>
-          </div>`
-        );
-      }
-    });
-
-    altMarkers.push(m);
+    const marker = await createAirportMarker(map, code, a);
+    altMarkers.push(marker);
   }
 }
 
 // ------------------ WIRING (Input/Change Events) ------------------
 
 export function wireAeroValidationAndMarkers(map) {
-  // Eingabe normalisieren live + Marker aktualisieren
   document.addEventListener("input", (e) => {
     const t = e.target;
 
-    // AERO
     if (t.classList && t.classList.contains("aero")) {
       t.value = t.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 4);
       clearFieldError(t);
@@ -280,7 +229,6 @@ export function wireAeroValidationAndMarkers(map) {
       return;
     }
 
-    // ALT
     if (t.classList && t.classList.contains("alt")) {
       t.value = t.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 4);
       clearFieldError(t);
@@ -289,11 +237,9 @@ export function wireAeroValidationAndMarkers(map) {
     }
   });
 
-  // Validierung beim "fertig" (change / blur / enter)
   document.addEventListener("change", (e) => {
     const t = e.target;
 
-    // AERO
     if (t.classList && t.classList.contains("aero")) {
       const code = (t.value || "").toUpperCase().trim();
 
@@ -313,7 +259,6 @@ export function wireAeroValidationAndMarkers(map) {
       return;
     }
 
-    // ALT
     if (t.classList && t.classList.contains("alt")) {
       const code = (t.value || "").toUpperCase().trim();
 
