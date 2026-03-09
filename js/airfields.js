@@ -199,9 +199,12 @@ export function updateAltMarkers(map) {
       })
       .catch(() => {});
 
+    const popupWidth = window.innerWidth < 600 ? 320 : 560;
+
     m.bindPopup(
       `<b>${code}</b> – ${a.name || ""}<br>METAR/TAF lädt...`,
-      { maxWidth: 500, minWidth: 500 });
+      { maxWidth: popupWidth, minWidth: popupWidth }
+    );
 
     m.on("popupopen", async () => {
       try {
