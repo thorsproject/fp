@@ -216,18 +216,19 @@ function parseTafWindForEta(rawTaf = "", etaHm = null, routeDay = null) {
 
   const etaAbs = absMinutes(routeDay, etaHm.hh, etaHm.mm);
 
-  // nimmt den zuletzt gültigen BECMG-Wind vor/nach ETA
   const re = /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+
   let m;
 
   while ((m = re.exec(txt)) !== null) {
-    const startDay = Number(m[1]);
-    const startHour = Number(m[2]);
+    const endDay = Number(m[3]);
+    const endHour = Number(m[4]);
     const wind = m[5];
 
-    const startAbs = absMinutes(startDay, startHour, 0);
+    const endAbs = absMinutes(endDay, endHour, 0);
 
-    if (etaAbs >= startAbs) {
+    // neue Bedingungen gelten ab ENDZEIT
+    if (etaAbs >= endAbs) {
       selectedWind = wind;
     }
   }
