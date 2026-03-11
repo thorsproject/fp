@@ -182,7 +182,7 @@ function getRouteDateDay() {
 }
 
 function parseMetarWind(raw = "") {
-  const m = String(raw).toUpperCase().match(/\b((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/);
+  const m = String(raw).toUpperCase().match(/\b((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?)KT\b/);
   return m ? m[1] : "";
 }
 
@@ -200,7 +200,7 @@ function parseTafBaseWind(raw = "") {
   const txt = String(raw).toUpperCase();
 
   // TAF ICAO DDHHMMZ DDHH/DDHH WIND...
-  const m = txt.match(/\bTAF(?:\s+\w+)?\s+[A-Z]{4}\s+\d{6}Z\s+\d{4}\/\d{4}\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/);
+  const m = txt.match(/\bTAF(?:\s+\w+)?\s+[A-Z]{4}\s+\d{6}Z\s+\d{4}\/\d{4}\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?)KT\b/);
   return m ? m[1] : "";
 }
 
@@ -225,7 +225,7 @@ function parseTafWindForEta(rawTaf = "", etaHm = null) {
 
   // BECMG: neue Bedingungen gelten ab ENDZEIT
   const becmgRe =
-    /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+    /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?)KT\b/g;
 
   let m;
   while ((m = becmgRe.exec(txt)) !== null) {
@@ -241,7 +241,7 @@ function parseTafWindForEta(rawTaf = "", etaHm = null) {
 
   // FM: gilt ab exakt diesem Zeitpunkt
   const fmRe =
-    /\bFM(\d{2})(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+    /\bFM(\d{2})(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?)KT\b/g;
 
   while ((m = fmRe.exec(txt)) !== null) {
     const day = Number(m[1]);
