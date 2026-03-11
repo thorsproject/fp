@@ -1,6 +1,7 @@
 // performance.js
 
 import { qs, qsa, SEL } from "./ui/index.js";
+import { loadAirportWx } from "./metar.js";
 
 let runwayData = {};
 
@@ -73,6 +74,63 @@ function clearField(name) {
 
 function getField(name) {
   return qs(`[data-field="${name}"]`);
+}
+
+function setPerfWxOut(name, value) {
+  const el = qs(`[data-out="${name}"]`);
+  if (!el) return;
+  el.textContent = value ?? "";
+}
+
+function formatPerfMetar(wx) {
+  return (
+    wx?.metar?.rawOb ||
+    wx?.metar?.raw_text ||
+    "Kein aktuelles METAR verfügbar"
+  );
+}
+
+function formatPerfTaf(wx) {
+  return (
+    wx?.taf?.rawTAF ||
+    wx?.taf?.raw_text ||
+    "Kein aktueller TAF verfügbar"
+  );
+}
+
+async function syncPerformanceWeather() {
+  const toIcao = normIcao(getField("to_icao")?.value || "");
+  const ldIcao = normIcao(getField("ld_icao")?.value || "");
+
+  setPerfWxOut("perf_wx_to_icao", toIcao);
+  setPerfWxOut("perf_wx_ld_icao", ldIcao);
+
+  setPerfWxOut("perf_wx_to_metar", "");
+  setPerfWxOut("perf_wx_to_taf", "");
+  setPerfWxOut("perf_wx_ld_metar", "");
+  setPerfWxOut("perf_wx_ld_taf", "");
+
+  if (toIcao) {
+    try {
+      const wx = await loadAirportWx(toIcao);
+      setPerfWxOut("perf_wx_to_metar", formatPerfMetar(wx));
+      setPerfWxOut("perf_wx_to_taf", formatPerfTaf(wx));
+    } catch {
+      setPerfWxOut("perf_wx_to_metar", "METAR konnte nicht geladen werden");
+      setPerfWxOut("perf_wx_to_taf", "TAF konnte nicht geladen werden");
+    }
+  }
+
+  if (ldIcao) {
+    try {
+      const wx = await loadAirportWx(ldIcao);
+      setPerfWxOut("perf_wx_ld_metar", formatPerfMetar(wx));
+      setPerfWxOut("perf_wx_ld_taf", formatPerfTaf(wx));
+    } catch {
+      setPerfWxOut("perf_wx_ld_metar", "METAR konnte nicht geladen werden");
+      setPerfWxOut("perf_wx_ld_taf", "TAF konnte nicht geladen werden");
+    }
+  }
 }
 
 // ---------- data ----------
@@ -283,6 +341,7 @@ export function syncPerformanceDerived() {
   syncRunwaySelectsFromIcao();
   syncDeclaredDistances();
   syncReturnLm();
+  syncPerformanceWeather();
 }
 
 // ---------- init ----------
