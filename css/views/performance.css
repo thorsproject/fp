@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2px;
+  gap: 12px;
 }
 
 /* zur Zeit nicht verwendet
@@ -31,7 +31,7 @@
 
 .performance-head__meta{
   display: grid;
-  gap: 6px;
+  gap: 1px;
   justify-items: end;
 }
 
