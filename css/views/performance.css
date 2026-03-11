@@ -150,30 +150,14 @@
   border-top: 1px solid rgba(255,255,255,0.10);
 }
 
-.perf-wx__title{
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
 .perf-wx__grid{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 2fr;
   gap: 16px;
 }
 
 .perf-wx__col{
   min-width: 0;
-}
-
-.perf-wx__head{
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.perf-wx__label{
-  font-size: 12px;
-  opacity: 0.8;
-  margin: 8px 0 4px;
 }
 
 .perf-wx__raw{
