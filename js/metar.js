@@ -1,9 +1,41 @@
+const WX_CACHE_TTL = 5 * 60 * 1000; // 5 Minuten
 const WX_BASE = "https://fp-weather-proxy.thors-project.workers.dev";
 
 const wxCache = new Map();
 
 function cacheKey(type, icao) {
   return `${type}:${icao.toUpperCase()}`;
+}
+
+function getStorageKey(type, icao) {
+  return `fp.wx.${type}.${icao}`;
+}
+
+function readStoredWx(type, icao) {
+  try {
+    const raw = localStorage.getItem(getStorageKey(type, icao));
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredWx(type, icao, data) {
+  try {
+    localStorage.setItem(
+      getStorageKey(type, icao),
+      JSON.stringify({
+        ts: Date.now(),
+        data,
+      })
+    );
+  } catch {
+    // ignore storage errors
+  }
 }
 
 async function fetchJson(url) {
@@ -31,26 +63,52 @@ export async function loadAirportWx(icao) {
   const id = String(icao || "").trim().toUpperCase();
   if (!id) throw new Error("ICAO fehlt");
 
+  const now = Date.now();
+
   const metarKey = cacheKey("metar", id);
   const tafKey = cacheKey("taf", id);
 
-  const metarPromise = wxCache.get(metarKey) ||
-    fetchJson(`${WX_BASE}/wx/metar?ids=${encodeURIComponent(id)}`)
-      .then(data => {
-        wxCache.set(metarKey, Promise.resolve(data));
-        return data;
-      });
+  const metarCached = wxCache.get(metarKey);
+  const tafCached = wxCache.get(tafKey);
 
-  wxCache.set(metarKey, metarPromise);
+  const metarFresh = metarCached && (now - metarCached.ts < WX_CACHE_TTL);
+  const tafFresh = tafCached && (now - tafCached.ts < WX_CACHE_TTL);
 
-  const tafPromise = wxCache.get(tafKey) ||
-    fetchJson(`${WX_BASE}/wx/taf?ids=${encodeURIComponent(id)}`)
-      .then(data => {
-        wxCache.set(tafKey, Promise.resolve(data));
-        return data;
-      });
+  const metarPromise = metarFresh
+    ? metarCached.promise
+    : fetchJson(`${WX_BASE}/wx/metar?ids=${encodeURIComponent(id)}`)
+        .then((data) => {
+          writeStoredWx("metar", id, data);
+          return data;
+        })
+        .catch((err) => {
+          const stored = readStoredWx("metar", id);
+          if (stored?.data) return stored.data;
+          throw err;
+        });
 
-  wxCache.set(tafKey, tafPromise);
+  wxCache.set(metarKey, {
+    ts: now,
+    promise: metarPromise,
+  });
+
+  const tafPromise = tafFresh
+    ? tafCached.promise
+    : fetchJson(`${WX_BASE}/wx/taf?ids=${encodeURIComponent(id)}`)
+        .then((data) => {
+          writeStoredWx("taf", id, data);
+          return data;
+        })
+        .catch((err) => {
+          const stored = readStoredWx("taf", id);
+          if (stored?.data) return stored.data;
+          throw err;
+        });
+
+  wxCache.set(tafKey, {
+    ts: now,
+    promise: tafPromise,
+  });
 
   const [metarData, tafData] = await Promise.allSettled([metarPromise, tafPromise]);
 
@@ -58,10 +116,50 @@ export async function loadAirportWx(icao) {
     icao: id,
     metar: metarData.status === "fulfilled" ? normalizeFirst(metarData.value) : null,
     taf: tafData.status === "fulfilled" ? normalizeFirst(tafData.value) : null,
-    metarError: metarData.status === "rejected" ? metarData.reason?.message || "METAR Fehler" : "",
-    tafError: tafData.status === "rejected" ? tafData.reason?.message || "TAF Fehler" : ""
+    metarError: metarData.status === "rejected"
+      ? metarData.reason?.message || "METAR Fehler"
+      : "",
+    tafError: tafData.status === "rejected"
+      ? tafData.reason?.message || "TAF Fehler"
+      : "",
   };
 }
+
+// export async function loadAirportWx(icao) {
+//  const id = String(icao || "").trim().toUpperCase();
+//  if (!id) throw new Error("ICAO fehlt");
+
+//  const metarKey = cacheKey("metar", id);
+//  const tafKey = cacheKey("taf", id);
+
+//  const metarPromise = wxCache.get(metarKey) ||
+//    fetchJson(`${WX_BASE}/wx/metar?ids=${encodeURIComponent(id)}`)
+//      .then(data => {
+//        wxCache.set(metarKey, Promise.resolve(data));
+//        return data;
+//      });
+
+//  wxCache.set(metarKey, metarPromise);
+
+//  const tafPromise = wxCache.get(tafKey) ||
+//    fetchJson(`${WX_BASE}/wx/taf?ids=${encodeURIComponent(id)}`)
+//      .then(data => {
+//        wxCache.set(tafKey, Promise.resolve(data));
+//        return data;
+//      });
+
+//  wxCache.set(tafKey, tafPromise);
+
+//  const [metarData, tafData] = await Promise.allSettled([metarPromise, tafPromise]);
+
+//  return {
+//    icao: id,
+//    metar: metarData.status === "fulfilled" ? normalizeFirst(metarData.value) : null,
+//    taf: tafData.status === "fulfilled" ? normalizeFirst(tafData.value) : null,
+//    metarError: metarData.status === "rejected" ? metarData.reason?.message || "METAR Fehler" : "",
+//    tafError: tafData.status === "rejected" ? tafData.reason?.message || "TAF Fehler" : ""
+//  };
+//}
 
 function normalizeFirst(data) {
   if (Array.isArray(data)) return data[0] || null;
