@@ -109,18 +109,11 @@
 .perf-label,
 .perf-cell{
   min-height: 0;
-  height: 44px;
+  height: 38px; /* 44 Einheitliche Höhe für Label und Zelle */
   display: flex;
   align-items: center;
   box-sizing: border-box;
 }
-
-/*.perf-label,
-.perf-cell{
-  min-height: 34px; /* Einheitliche Höhe für Label und Zelle
-  display: flex;
-  align-items: center;
-}*/
 
 .perf-label{
   padding: 0 10px;
@@ -150,12 +143,6 @@
   text-align: center;
 }
 
-/*.perf-cell .c-input{
-  width: 100%;
-  min-width: 0;
-  text-align: center;
-}*/
-
 .perf-cell--out{
   justify-content: center;
   color: var(--text, #e8eef8);
@@ -174,17 +161,6 @@
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.08);
 }
-
-/*.perf-cell--out span{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 30px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-}*/
 
 /* ---------- Wx ---------- */
 .perf-wx{
