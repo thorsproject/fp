@@ -80,7 +80,7 @@
 }
 
 .perf-card__title{
-  padding: 1px 12px;
+  padding: 10px 12px; /* Abstand innerhalb des Titels */
   text-transform: uppercase;
   font-weight: 800;
   font-size: 13px;
@@ -91,7 +91,6 @@
 }
 
 /* ---------- Grid ---------- */
-
 .perf-grid{
   display: grid;
   grid-template-columns: 1fr 92px;
@@ -100,7 +99,7 @@
 
 .perf-label,
 .perf-cell{
-  min-height: 34px;
+  min-height: 25px; /* 34 Einheitliche Höhe für Label und Zelle */
   display: flex;
   align-items: center;
 }
