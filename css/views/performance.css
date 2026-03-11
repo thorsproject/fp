@@ -32,7 +32,7 @@
 
 .performance-head__meta{
   display: grid;
-  gap: 6px;
+  gap: var(--space-xs);
   justify-items: end;
 }
 
@@ -65,7 +65,6 @@
 }
 
 /* ---------- Layout ---------- */
-
 .performance-layout{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -74,7 +73,6 @@
 }
 
 /* ---------- Cards ---------- */
-
 .perf-card{
   border: 1px solid var(--border, rgba(255,255,255,0.12));
   border-radius: 10px;
@@ -83,7 +81,7 @@
 }
 
 .perf-card__title{
-  padding: 10px 12px;
+  padding: 10px 10px;
   text-transform: uppercase;
   font-weight: 800;
   font-size: 13px;
@@ -94,7 +92,6 @@
 }
 
 /* ---------- Grid ---------- */
-
 .perf-grid{
   display: grid;
   grid-template-columns: 1fr 92px;
@@ -109,7 +106,7 @@
 }
 
 .perf-label{
-  padding: 0 10px;
+  padding: 0 5px; /* 10px */
   font-size: 13px;
   color: var(--text, #e8eef8);
   border-right: 1px solid rgba(255,255,255,0.08);
