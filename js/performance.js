@@ -276,19 +276,8 @@ function writeLandingTafWindToField(rawTaf) {
   const etaEl = lastLeg ? qs(SEL.legs.eta, lastLeg) : null;
 
   const etaHm = normalizeHm(etaEl?.value || "");
-  const routeDay = getRouteDateDay();
+  const wind = parseTafWindForEta(rawTaf, etaHm);
 
-  const wind = parseTafWindForEta(rawTaf, etaHm, routeDay);
-
-  // debug
-  console.log("[LD wind]", {
-    etaRaw,
-    etaHm,
-    routeDay,
-    wind,
-    rawTaf,
-  });
-  // debug end
   setFieldIfExists("ld_wind", wind);
 }
 
