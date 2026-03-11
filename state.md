@@ -1,8 +1,154 @@
-# Flight Planning – Projektzustand (state)
-
+# Flight Planning Tool – Projektzustand (state)
 > **Zweck:** Kurzer, belastbarer Projekt-Checkpoint, damit neue Chats/Debug-Sessions ohne Context-Posting starten können.
 
+# Projekt
+  Webbasierte Flight-Planning-App (GitHub Pages).
+  > Funktionen:
+    - Route Planning mit bis zu 4 Legs
+    - Map mit ICAO-Markern
+    - METAR / TAF Anzeige
+    - Fuel Planning
+    - Performance Panel
+
+  > Technik:
+    - Vanilla JS
+    - modulare Struktur
+    - Leaflet Map
+    - Cloudflare Worker als Weather Proxy
+
 ---
+
+# Infrastruktur
+  # Hosting
+    - GitHub Pages
+    - Repository: thorsproject/fp
+
+  # Weather Proxy
+    - Cloudflare Worker
+    - Routen: /clouds/z/x/y.png
+              /wx/metar?ids=XXXX
+              /wx/taf?ids=XXXX
+    - Upstream: aviationweather.gov/api/data
+                tile.openweathermap.org
+    - Worker setzt Cache Header:  METAR/TAF: Cache-Control public max-age=300
+                                  Cloud Tiles: Cache-Control public max-age=600
+    - ZIEL: API Keys nicht im Frontend
+            weniger Adblock Probleme
+            Browser Cache nutzbar
+
+# SITE-Panels: 
+  0. Route / Legs → linkes Panel
+      * 4 Legs möglich
+      * Legs können deaktiviert / aktiviert werden.
+      * Performance nutzt:
+          - erstes FROM → TO ICAO
+          - letztes aktives TO → LD ICAO
+      * Aerodrome Validierung über `airfields.json`
+      * Alternates integriert
+      * Leg Toggle aktiviert/deaktiviert Legs
+      * ETD / ETA Eingabe
+      * Karte zeigt:
+        * Route
+        * Departure
+        * Destination
+        * Alternates
+
+  1. Map / Weather: Leaflet Map mit ICAO Markern
+      - Markerfarbe nach Flight Category
+      - Flight Category:
+          - VFR   → grün
+          - MVFR  → blau
+          - IFR   → rot
+          - LIFR  → magenta
+      - Militärplätze ohne fltCat werden über METAR Colour State erkannt:
+          - METAR enthält z.B.
+          - BLU+
+          - WHT
+          - GRN
+          - YLO
+          - AMB
+          - RED
+
+        > METAR / TAF
+        - Quelle: aviationweather.gov API.
+        - Anzeige:
+            - Map Popup zeigt:
+                    - ICAO
+                    - Flight Category Badge
+                    - METAR
+                    - TAF
+            - TAF wird formatiert mit Zeilenumbrüchen vor:
+                    - BECMG
+                    - FMxxxx
+                    - Sonderfall:
+                        - PROB30 TEMPO
+                        - PROB40 TEMPO
+                          bleiben zusammen.
+
+  3. Fuel Planning
+      Komplett funktionsfähig.
+      Berechnungen:
+        * Trip Fuel
+        * Company Fuel
+        * Contingency (5%)
+        * Alternate Fuel
+        * Final Reserve IFR / VFR
+        * Planned Takeoff Fuel
+        * Extra Fuel LRC
+        * Takeoff Fuel
+        * Block Fuel
+        * Taxi Fuel
+        * Landing Fuel
+
+      Features:
+        * Standard Block Fuel Toggle
+        * Aux Tank Toggle
+        * Leg-abhängige Trip-Berechnung
+        * Kompakte Grid Darstellung
+
+      UI:
+        * Aviation Style Table Layout
+        * Item Column teilweise über mehrere Grid-Spalten
+        * Hervorgehobene Zeilen:
+          * Takeoff Fuel
+          * Block Fuel
+          * Landing Fuel
+
+  4. Performance Panel
+      - 3 Spalten:
+          - TAKEOFF
+          - RETURN / DIV
+          - LANDING
+      - Layout:
+          - Label-Spalte flexibel
+          - Input/Output-Spalte feste Breite
+          - alle Grid-Zeilen gleiche Höhe
+          - Weather Integration unter Stop Margin.
+      - Anzeige:
+          - Takeoff METAR
+          - Landing TAF
+      - Performance Weather Parsing
+          - Takeoff
+              - Aus METAR werden übernommen:
+                  - Wind → Wind wird ohne KT angezeigt.
+                  - Temperatur
+                  - QNH
+          - Landing
+              - Wind wird aus TAF bestimmt.
+              - Priorität:
+                  1. FM Gruppen
+                  2. BECMG Gruppen
+                  3. Grundzeile
+                      Regel: BECMG DDHH/DDHH → gültig ab zweitem Zeitpunkt.
+                      Beispiel:
+                      BECMG 1109/1111 20012G22KT
+                      → gültig ab 11:00Z.
+                      ETA wird mit diesem Zeitpunkt verglichen.
+              > ETA Logik
+                  - ETA wird aus dem letzten aktiven Leg gelesen.
+                  - Wenn ein Leg deaktiviert wird:
+                      - LD ICAO wird neu bestimmt
+                      - Landing Wind wird neu berechnet.
 
 ## Auto-Update (wird per Script gepflegt)
 <!-- STATE:AUTO:BEGIN -->
@@ -318,7 +464,6 @@
 ## TL;DR (30 Sekunden)
 - **App:** PWA / GitHub Pages (thorsproject/fp)
 - **Views:** Map, Checklist, Fuel, Performance, Settings (Topbar Switch)
-- **Core-Fokus aktuell:** (kurz: z.B. “Telefon-Popup + Config-Access”, “ORM Workflow”, etc.)
 
 ---
 
@@ -395,13 +540,6 @@
 - PDF.js timing: `pdfDocument` ist anfangs null, erst später loaded
 - Blob-URL revoke erst nach `documentloaded` (sonst “leerer Viewer”)
 - Cross-realm ArrayBuffer/TypedArray: immer normalisieren, bevor pdf-lib verarbeitet
-
----
-
-## Offene Bugs / ToDos (Priorität)
-1. …
-2. …
-3. …
 
 ---
 
@@ -503,10 +641,9 @@
 
 ---
 
-## Aktueller Status 01.03.2026
+# Flight Planning Web App — State Update 01.03.2026
 
 Layout stabil in:
-
 * Chrome
 * Brave
 * Safari
@@ -519,30 +656,24 @@ ResetBars, Panels, Checklist, Fuel und Route funktionieren konsistent.
 # Flight Planning Web App — State Update 06.03.2026 (Checklist, Phones, FDL, Fuel)
 
 ## Checklist
-
 Checklist ist funktional abgeschlossen.
 
 ### Toggle-System
 Toggle Buttons nutzen:
-
-data-tb="..."
+  data-tb="..."
 
 Beispiele:
-
-data-tb="orm"  
-data-tb="wx"  
-data-tb="eo"
+  data-tb="orm"  
+  data-tb="wx"  
+  data-tb="eo"
 
 Zustände:
-
-✖ = rot  
-✔ = mint
+  ✖ = rot  
+  ✔ = mint
 
 ### Persistenz
-
 Checklist State wird gespeichert in:
-
-fp_checklist_v1
+  fp_checklist_v1
 
 Beim Laden der Checklist werden alle gespeicherten Toggle-States wiederhergestellt.
 
@@ -553,148 +684,116 @@ Dadurch entstehen keine weißen Toggle Buttons mehr nach einem Reload.
 ---
 
 ## ORM Workflow
-
 ORM Button befindet sich in Checklist.
-
-Button:
-
-btnOrm
-
+Button: btnOrm
 Button Text:
-
-"ORM öffnen"  
-"Entwurf öffnen"  
-"ORM finalisiert"
+  "ORM öffnen"  
+  "Entwurf öffnen"  
+  "ORM finalisiert"
 
 Statuslogik:
-
-template → Standardzustand  
-draft → Entwurf gespeichert  
-final → ORM finalisiert
+  template → Standardzustand  
+  draft → Entwurf gespeichert  
+  final → ORM finalisiert
 
 Speicherorte:
-
-fp.orm.draft.v1  
-fp.orm.status.v1
+  fp.orm.draft.v1  
+  fp.orm.status.v1
 
 Verhalten:
-
-Draft speichern  
-→ Status "Entwurf lokal gespeichert"  
-→ Checklist Toggle bleibt ✖
-
-Finalisieren  
-→ Badge "ORM finalisiert"  
-→ Checklist Toggle ✔  
-→ Button disabled
-
-Datum oder Callsign Änderung  
-→ ORM Status reset auf template
+  Draft speichern  
+    → Status "Entwurf lokal gespeichert"  
+    → Checklist Toggle bleibt ✖
+  Finalisieren  
+    → Badge "ORM finalisiert"  
+    → Checklist Toggle ✔  
+    → Button disabled
+  Datum oder Callsign Änderung  
+    → ORM Status reset auf template
 
 ---
 
 ## Mail EO
-
-Button:
-
-btnMailEO
+Button: btnMailEO
 
 Zustände:
-
-disabled → solange ORM nicht finalisiert  
-aktiv → wenn ORM finalisiert  
-mint → nach Klick (Mail gesendet)
+  disabled → solange ORM nicht finalisiert  
+  aktiv → wenn ORM finalisiert  
+  mint → nach Klick (Mail gesendet)
 
 Mint Zustand bleibt bis:
-
-Datum oder LFZ geändert wird.
+  Datum oder LFZ geändert wird.
 
 ---
 
 ## Phone System
-
 Telefon Buttons nutzen:
-
 data-phone-key="..."
 
 Beispiele:
-
-wx_muenster  
-bremen  
-laage_rdr
+  wx_muenster  
+  bremen  
+  laage_rdr
 
 Telefonnummern werden geladen aus:
-
-config.enc → phones{}
+  config.enc → phones{}
 
 Popup wird geöffnet über:
-
-showPhonePopup()
+  showPhonePopup()
 
 Wenn Config nicht entsperrt ist:
-
-Popup Hinweis  
-"Passwort in Settings erforderlich"
+  Popup Hinweis  
+  "Passwort in Settings erforderlich"
 
 ---
 
 ## FDL Button
-
 Neuer Telefonbutton in Checklist.
 
 HTML:
-
 <button class="c-btn c-phone c-fdl" id="btnFDL">
 <span class="ico">📞</span>
 <span class="label">FDL</span>
 </button>
 
 Der Buttontext wird dynamisch gesetzt über:
-
-applyFdlToHeader({ name, tel })
+  applyFdlToHeader({ name, tel })
 
 Dabei werden gesetzt:
-
-FDLoutput  
-TELoutput  
-Button Text (.label)
+  FDLoutput  
+  TELoutput  
+  Button Text (.label)
 
 Die Telefonnummer wird zusätzlich im Button gespeichert:
-
-data-phone
+  data-phone
 
 Damit kann das Phone Popup direkt darauf zugreifen.
 
 ---
 
 ## Layout Status
-
 Layout vollständig stabilisiert.
 
 Browser getestet:
-
-Chrome  
-Safari  
-Firefox  
-Edge  
-Brave
+  Chrome  
+  Safari  
+  Firefox  
+  Edge  
+  Brave
 
 Fixes:
-
-Scrollbar nur auf `.c-panel__body`  
-ResetBars außerhalb der Scrollbereiche  
-Symmetrische Panelabstände links/rechts
+  Scrollbar nur auf `.c-panel__body`  
+  ResetBars außerhalb der Scrollbereiche  
+  Symmetrische Panelabstände links/rechts
 
 Tablet Fix:
-
-Portrait Orientation Overlay (Rotate Hinweis)
+  Portrait Orientation Overlay (Rotate Hinweis)
 
 ---
 
 # Flight Planning Web App — State Update 06.03.2026 (Fuel Planning abgeschlossen)
 
 ## Fuel Planning
-
 Fuel Planning ist funktional und optisch vorerst abgeschlossen.
 
 ### Funktionen
@@ -736,151 +835,63 @@ Umgesetzt:
 Für breite Beschriftungen wurde ein flexibler Ansatz eingeführt:
 CSS-Klassen:
 - `c-desc--wide`
-
-Beispiel:
-```html
-<div class="c-desc c-desc--wide">Contingency (5% Trip + Company)</div>
-
+- Beispiel: ```html
+  <div class="c-desc c-desc--wide">Contingency (5% Trip + Company)</div>
 
 
 # Flight Planning Web App — State Update 08.03.2026
 
-## Projekt
-
-Webbasierte Flight-Planning App für GA-Operationen.
-
-Hosting:
-
-* GitHub Pages
-* Repository: `thorsproject/fp`
-
-Tech Stack:
-
-* Vanilla JS (ES Modules)
-* Leaflet Map
-* GitHub Actions
-* Cloudflare Worker (Tile Proxy)
-
----
-
-# Aktueller Stand
-
-## Route / Legs
-
-* 4 Legs möglich
-* Aerodrome Validierung über `airfields.json`
-* Alternates integriert
-* Leg Toggle aktiviert/deaktiviert Legs
-* ETD / ETA Eingabe
-* Karte zeigt:
-
-  * Route
-  * Departure
-  * Destination
-  * Alternates
-
----
-
-# Fuel Planning
-
-Komplett funktionsfähig.
-
-Berechnungen:
-
-* Trip Fuel
-* Company Fuel
-* Contingency (5%)
-* Alternate Fuel
-* Final Reserve IFR / VFR
-* Planned Takeoff Fuel
-* Extra Fuel LRC
-* Takeoff Fuel
-* Block Fuel
-* Taxi Fuel
-* Landing Fuel
-
-Features:
-
-* Standard Block Fuel Toggle
-* Aux Tank Toggle
-* Leg-abhängige Trip-Berechnung
-* Kompakte Grid Darstellung
-
-UI:
-
-* Aviation Style Table Layout
-* Item Column teilweise über mehrere Grid-Spalten
-* Hervorgehobene Zeilen:
-
-  * Takeoff Fuel
-  * Block Fuel
-  * Landing Fuel
-
----
-
 # Performance Panel
-
 Grundstruktur vorhanden.
-
 Felder:
-TAKEOFF
-RETURN/DIV
-LANDING
+  TAKEOFF
+  RETURN/DIV
+  LANDING
 
 Automatische Werte:
-
-* TO ICAO ← Leg1 Departure
-* LD ICAO ← letzter aktiver Leg Destination
-* RETURN/DIV ← Departure
+  * TO ICAO ← Leg1 Departure
+  * LD ICAO ← letzter aktiver Leg Destination
+  * RETURN/DIV ← Departure
 
 RWY Auswahl:
-
-* RWY Dropdown
-* TORA aus DFS Datensatz
-* LDA aus DFS Datensatz
+  * RWY Dropdown
+  * TORA aus DFS Datensatz
+  * LDA aus DFS Datensatz
 
 Weitere Felder:
-
-* Flaps (UP / APP / LDG)
-* EOSID Auswahl
-* LM Berechnung abhängig von EOSID
+  * Flaps (UP / APP / LDG)
+  * EOSID Auswahl
+  * LM Berechnung abhängig von EOSID
 
 ---
 
 # Runway Daten
-
 Quelle:
-DFS AIP Dataset (AIXM XML)
+  DFS AIP Dataset (AIXM XML)
 
 Script:
-
-```
-tools/update-runways-auto.mjs
-```
+  ```
+  tools/update-runways-auto.mjs
+  ```
 
 Funktion:
-
-* lädt aktuelle DFS Dataset Version
-* extrahiert:
-
-  * ICAO
-  * RWY
-  * TORA
-  * LDA
-* erzeugt:
-
-```
-data/performance_runways.json
-```
+  * lädt aktuelle DFS Dataset Version
+  * extrahiert:
+    * ICAO
+    * RWY
+    * TORA
+    * LDA
+  * erzeugt:
+  ```
+  data/performance_runways.json
+  ```
 
 Automatisierung:
-GitHub Action
-
-```
-auto-update-AIRAC.yml
-```
-
-läuft automatisch bei AIRAC Update.
+  GitHub Action
+  ```
+  auto-update-AIRAC.yml
+  ```
+  läuft automatisch bei AIRAC Update.
 
 ---
 
@@ -910,15 +921,13 @@ data/wind_grid.json
 ```
 
 Darstellung:
-
-* Wind Barbs
-* mehrere Höhen
-* Toggle Button
+  * Wind Barbs
+  * mehrere Höhen
+  * Toggle Button
 
 ---
 
 ## Weather Layer (Clouds)
-
 Darstellung:
 OpenWeatherMap Cloud Tiles
 
@@ -929,13 +938,11 @@ Lösung:
 Cloudflare Worker Proxy
 
 Worker URL:
-
 ```
 https://fp-weather-proxy.thors-project.workers.dev
 ```
 
 Worker übernimmt:
-
 ```
 /clouds/{z}/{x}/{y}.png
 ```
@@ -944,10 +951,23 @@ Worker übernimmt:
 → API Key bleibt geheim
 
 Leaflet Layer:
-
 ```
 https://fp-weather-proxy.thors-project.workers.dev/clouds/{z}/{x}/{y}.png
 ```
+
+## Weather Cache
+Bereits vorhanden:
+wxCache
+cacheKey()
+
+Promise-basierter Cache für:
+METAR
+TAF
+Parallel Requests werden zusammengeführt.
+
+## Map Weather Prefetch
+Beim Erstellen eines Markers wird Weather im Hintergrund geladen.
+Dadurch ist das Popup sofort verfügbar.
 
 ---
 
@@ -957,7 +977,6 @@ Quelle:
 RainViewer
 
 Layer:
-
 ```
 https://tilecache.rainviewer.com/v2/radar/latest/256/{z}/{x}/{y}/2/1_1.png
 ```
@@ -970,14 +989,12 @@ leicht transparent über Clouds.
 # Map Architektur
 
 Layer Reihenfolge:
-
-1. OSM Basemap
-2. Clouds (OWM via Worker)
-3. Radar (RainViewer)
-4. Wind (Barbs)
+  1. OSM Basemap
+  2. Clouds (OWM via Worker)
+  3. Radar (RainViewer)
+  4. Wind (Barbs)
 
 Leaflet Panes:
-
 ```
 cloudPane
 radarPane
@@ -989,7 +1006,6 @@ windPane
 # Map Controls
 
 Buttons:
-
 ```
 Weather  → Cloud Tiles
 Radar    → RainViewer
@@ -1037,14 +1053,20 @@ update-state.yml
 
 ---
 
+# Flight Planning Web App — State Update 12.03.2026
+
+# Adblocker Problem
+
+iPad Safari zeigte Fehler:
+
+Script error.
+
+Ursache: Adblocker blockierte Weather Requests.
+
+Nach Deaktivierung des Adblockers funktioniert alles korrekt.
+
+
 # Offene Punkte / Next Steps
-
-### Map
-
-* METAR / TAF Integration
-* Radar Animation
-* bessere Cloud Opacity
-* Zoom-abhängige Layer Darstellung
 
 ### Performance
 
@@ -1064,41 +1086,6 @@ update-state.yml
 * ggf. weitere Layer
 * Alternative Datenquellen prüfen
 
-### UI
-
-* Map Controls verfeinern
-* Layer Status Anzeige
-* Performance Panel Feinschliff
-
----
-
-# Struktur (wichtige Dateien)
-
-```
-/js
-  app.js
-  map.js
-  fuel.js
-  performance.js
-  legs.js
-  wind.js
-
-/data
-  airfields.json
-  performance_runways.json
-  wind_grid.json
-
-/tools
-  update-runways-auto.mjs
-
-/scripts
-  fetchWindGrid.js
-
-/workflows
-  auto-update-AIRAC.yml
-  update-weather.yml
-```
-
----
-
-Ende State Update
+* METAR/TAF Cache ggf. erweitern (TTL / localStorage)
+* Map Marker Weather Update optimieren
+* Tile Cache weiter verbessern
