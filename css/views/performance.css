@@ -8,7 +8,7 @@
 }
 
 #performancePanel .c-panel__body{
-  padding: 0; /* 10px */
+  padding: var(--space-xs);; /* 10px */
 }
 
 /* ---------- Header ---------- */
