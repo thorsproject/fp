@@ -118,7 +118,7 @@ align-items: flex-start;
 } 
 
 #view-checklist .mini-field__label{ 
-  min-width: 50px; /* 70 Label steht links “davor” */ 
+  min-width: 50px; /* Label steht links “davor” */ 
   font-weight: 700; 
   text-align: left; 
 }
@@ -130,13 +130,11 @@ align-items: flex-start;
 /* =========================
    Toggle Buttons kleiner
    ========================= */
-
 #view-checklist .cg-toggle{
   display: flex;
   justify-content: flex-end;
 }
 
-/* deine Toggle sind: .c-btn.c-btn--ghost.c-btn--sm[data-tb] */
 #view-checklist .cg-toggle .c-btn--sm{
   padding: 5px 8px;
   font-size: 11px;
@@ -152,7 +150,6 @@ align-items: flex-start;
 /* =========================
    ORM DRAFT INDICATOR
    ========================= */
-
 .orm-hint--draft {
   color: #ffd24d;
   font-weight: 700;
@@ -173,7 +170,6 @@ align-items: flex-start;
 /* =======================
    ORM STATUS COLORS
    ======================= */
-
 .orm-status-template {
   color: #bbb;
 }
@@ -191,7 +187,6 @@ align-items: flex-start;
 /* =========================
    ORM STATUS BADGE
    ========================= */
-
 #view-checklist .orm-status {
   display: inline-flex;
   align-items: center;

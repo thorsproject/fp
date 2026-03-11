@@ -8,7 +8,7 @@
 }
 
 #performancePanel .c-panel__body{
-  padding: var(--space-xs);; /* 5px */
+  padding: var(--space-xs);; /* 4px */
   /* padding: var(--space-md);; /* 10px */
 }
 
@@ -20,7 +20,7 @@
   gap: 12px;
 }
 
-/* zur Zeit nicht verwendet
+/* zur Zeit nicht verwendet; kann bei Bedarf reaktiviert werden
 .performance-head__status{
   display: flex;
   align-items: center;
@@ -99,7 +99,7 @@
 
 .perf-label,
 .perf-cell{
-  min-height: 25px; /* 34 Einheitliche Höhe für Label und Zelle */
+  min-height: 34px; /* Einheitliche Höhe für Label und Zelle */
   display: flex;
   align-items: center;
 }
@@ -175,7 +175,6 @@
 }
 
 /* ---------- Responsive ---------- */
-
 @media (max-width: 980px){
   .performance-layout{
     grid-template-columns: 1fr;

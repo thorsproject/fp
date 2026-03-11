@@ -77,7 +77,7 @@ html, body{
    [SHELL]  (App Layout)
    ========================================================= */
 
-/* Platz für fixed Topbar (wie bei dir vorher 60px) */
+/* Platz für fixed Topbar (60px) */
 .l-views{
   padding-top: calc(var(--topbar-h) + 10px);
 }
