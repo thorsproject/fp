@@ -278,7 +278,7 @@ function syncReturnLm() {
 }
 
 // ---------- master sync ----------
-function syncPerformanceDerived() {
+export function syncPerformanceDerived() {
   syncPerformanceAirfields();
   syncRunwaySelectsFromIcao();
   syncDeclaredDistances();

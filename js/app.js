@@ -27,7 +27,7 @@ import { initChecklistUI } from "./checklist.js";
 import { initPhones } from "./phones.js";
 import { initPhonePopup } from "./phone_popup.js";
 import { initFuelPlanning } from "./fuel.js";
-import { initPerformance } from "./performance.js";
+import { initPerformance, syncPerformanceDerived } from "./performance.js";
 import { initAutosave, loadAll } from "./storage.js";
 import { initResets } from "./reset.js";
 import { initOrmChecklist } from "./orm.js";
@@ -388,6 +388,7 @@ map.on("click", (e) => {
     onChange: () => {
       updateLegMarkers(map);
       updateAltMarkers(map);
+      syncPerformanceDerived();
     },
   });
 
