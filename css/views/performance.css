@@ -9,7 +9,7 @@
 }
 
 #performancePanel .c-panel__body{
-  padding: 10px;
+  padding: 4px;
 }
 
 /* ---------- Header ---------- */
@@ -21,13 +21,14 @@
   gap: 12px;
 }
 
+/* zur Zeit nicht verwendet, könnte aber später nochmal nützlich sein
 .performance-head__status{
   display: flex;
   align-items: center;
   gap: 10px;
   color: var(--text-muted, #9fb0c8);
   font-weight: 700;
-}
+} */
 
 .performance-head__meta{
   display: grid;
