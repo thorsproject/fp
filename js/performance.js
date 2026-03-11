@@ -204,71 +204,50 @@ function parseTafBaseWind(raw = "") {
   return m ? m[1] : "";
 }
 
-function parseTafWindForEta(rawTaf = "", etaHm = null, routeDay = null) {
+function parseTafWindForEta(rawTaf = "", etaHm = null) {
   const txt = String(rawTaf).toUpperCase();
   if (!txt) return "";
 
   let selectedWind = parseTafBaseWind(txt);
 
-  if (!etaHm || routeDay == null) {
-    // debug
-    console.log("[TAF wind] fallback base only", {
-      etaHm,
-      routeDay,
-      selectedWind,
-      rawTaf: txt,
-    });
-    // debug end
+  if (!etaHm) {
     return selectedWind;
   }
 
-  const etaAbs = absMinutes(routeDay, etaHm.hh, etaHm.mm);
+  // Gültigkeit direkt aus dem TAF lesen, z. B. 1100/1112 -> Tag 11
+  const validityMatch = txt.match(/\b\d{6}Z\s+(\d{2})\d{2}\/(\d{2})\d{2}\b/);
+  if (!validityMatch) {
+    return selectedWind;
+  }
 
-  // debug
-  console.log("[TAF wind] start", {
-    etaHm,
-    routeDay,
-    etaAbs,
-    baseWind: selectedWind,
-    rawTaf: txt,
-  });
-  // debug end
+  const tafDayFrom = Number(validityMatch[1]);
+  const etaAbs = absMinutes(tafDayFrom, etaHm.hh, etaHm.mm);
 
-  // 1) BECMG: neue Bedingungen gelten ab ENDZEIT
-  const becmgRe = /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+  // BECMG: neue Bedingungen gelten ab ENDZEIT
+  const becmgRe =
+    /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+
   let m;
-
   while ((m = becmgRe.exec(txt)) !== null) {
     const endDay = Number(m[3]);
     const endHour = Number(m[4]);
     const wind = m[5];
     const endAbs = absMinutes(endDay, endHour, 0);
 
-    // debug
-    console.log("[TAF wind] BECMG", {
-      match: m[0],
-      endDay,
-      endHour,
-      endAbs,
-      wind,
-      etaAbs,
-      applies: etaAbs >= endAbs,
-    });
-    // debug end
     if (etaAbs >= endAbs) {
       selectedWind = wind;
     }
   }
 
-  // 2) FM: gilt ab exakt diesem Zeitpunkt und überschreibt alles davor
-  const fmRe = /\bFM(\d{2})(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+  // FM: gilt ab exakt diesem Zeitpunkt
+  const fmRe =
+    /\bFM(\d{2})(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
 
   while ((m = fmRe.exec(txt)) !== null) {
     const day = Number(m[1]);
     const hour = Number(m[2]);
     const minute = Number(m[3]);
     const wind = m[4];
-
     const fmAbs = absMinutes(day, hour, minute);
 
     if (etaAbs >= fmAbs) {
