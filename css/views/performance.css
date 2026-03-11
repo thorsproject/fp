@@ -11,6 +11,10 @@
   padding: var(--space-xxs);; /* 3px */
 }
 
+.c-panel--stack{
+  padding-top: 10px;
+}
+
 /* ---------- Header ---------- */
 .performance-head{
   display: flex;
@@ -45,6 +49,7 @@
   font-weight: 700;
 }
 
+/* zur Zeit nicht verwendet; kann bei Bedarf reaktiviert werden
 .performance-status{
   display: inline-flex;
   align-items: center;
@@ -60,7 +65,7 @@
 
 .performance-status--active{
   color: var(--mint, #00ffcc);
-}
+} */
 
 /* ---------- Layout ---------- */
 .performance-layout{
@@ -92,9 +97,24 @@
 /* ---------- Grid ---------- */
 .perf-grid{
   display: grid;
-  grid-template-columns: 1fr 92px;
+  grid-template-columns: auto 1fr;
+  row-gap: 8px;
+  /* grid-template-columns: 1fr 92px; */
   align-items: center;
-  margin-top: 6px;
+}
+
+/* Label-Zellen */
+.perf-grid > label{
+  height: 34px;
+  display: flex;
+  align-items: center;
+}
+
+/* Input / Select / Output */
+.perf-grid input,
+.perf-grid select,
+.perf-grid .c-out{
+  height: 34px;
 }
 
 .perf-label,
