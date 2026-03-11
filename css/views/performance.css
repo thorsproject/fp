@@ -11,10 +11,6 @@
   padding: var(--space-xxs);; /* 3px */
 }
 
-.c-panel--stack{
-  padding-top: 10px;
-}
-
 /* ---------- Header ---------- */
 .performance-head{
   display: flex;
