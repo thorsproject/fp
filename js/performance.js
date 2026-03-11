@@ -211,10 +211,28 @@ function parseTafWindForEta(rawTaf = "", etaHm = null, routeDay = null) {
   let selectedWind = parseTafBaseWind(txt);
 
   if (!etaHm || routeDay == null) {
+    // debug
+    console.log("[TAF wind] fallback base only", {
+      etaHm,
+      routeDay,
+      selectedWind,
+      rawTaf: txt,
+    });
+    // debug end
     return selectedWind;
   }
 
   const etaAbs = absMinutes(routeDay, etaHm.hh, etaHm.mm);
+
+  // debug
+  console.log("[TAF wind] start", {
+    etaHm,
+    routeDay,
+    etaAbs,
+    baseWind: selectedWind,
+    rawTaf: txt,
+  });
+  // debug end
 
   // 1) BECMG: neue Bedingungen gelten ab ENDZEIT
   const becmgRe = /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
@@ -224,9 +242,19 @@ function parseTafWindForEta(rawTaf = "", etaHm = null, routeDay = null) {
     const endDay = Number(m[3]);
     const endHour = Number(m[4]);
     const wind = m[5];
-
     const endAbs = absMinutes(endDay, endHour, 0);
 
+    // debug
+    console.log("[TAF wind] BECMG", {
+      match: m[0],
+      endDay,
+      endHour,
+      endAbs,
+      wind,
+      etaAbs,
+      applies: etaAbs >= endAbs,
+    });
+    // debug end
     if (etaAbs >= endAbs) {
       selectedWind = wind;
     }
@@ -272,6 +300,16 @@ function writeLandingTafWindToField(rawTaf) {
   const routeDay = getRouteDateDay();
 
   const wind = parseTafWindForEta(rawTaf, etaHm, routeDay);
+
+  // debug
+  console.log("[LD wind]", {
+    etaRaw,
+    etaHm,
+    routeDay,
+    wind,
+    rawTaf,
+  });
+  // debug end
   setFieldIfExists("ld_wind", wind);
 }
 
