@@ -117,6 +117,13 @@
   height: 34px;
 }
 
+.perf-grid input,
+.perf-grid select{
+  line-height: 34px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .perf-label,
 .perf-cell{
   min-height: 34px; /* Einheitliche Höhe für Label und Zelle */
