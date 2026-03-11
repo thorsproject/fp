@@ -94,6 +94,7 @@
   display: grid;
   grid-template-columns: 1fr 92px;
   align-items: center;
+  margin-top: 6px;
 }
 
 .perf-label,
