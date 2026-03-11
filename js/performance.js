@@ -133,6 +133,177 @@ async function syncPerformanceWeather() {
   }
 }
 
+let perfWxSyncToken = 0;
+
+function normalizeHm(raw = "") {
+  const s = String(raw).trim().replace(":", "");
+  if (!/^\d{4}$/.test(s)) return null;
+
+  const hh = Number(s.slice(0, 2));
+  const mm = Number(s.slice(2, 4));
+
+  if (hh > 23 || mm > 59) return null;
+  return { hh, mm };
+}
+
+function absMinutes(day, hh, mm = 0) {
+  return day * 1440 + hh * 60 + mm;
+}
+
+function getLastActiveLegFrameForPerf() {
+  const frames = qsa(SEL.legs.frames);
+  if (!frames.length) return null;
+
+  let lastActive = frames[0] || null;
+
+  for (let i = 1; i < frames.length; i++) {
+    const legNum = i + 1;
+    const btn = qs(SEL.legs.toggleByLeg(legNum));
+    const state = String(btn?.dataset?.state || "").toLowerCase();
+
+    if (state !== "off") {
+      lastActive = frames[i];
+    }
+  }
+
+  return lastActive;
+}
+
+function getRouteDateDay() {
+  const routeDate =
+    document.getElementById("dateInput")?.value ||
+    qs('[data-field="date"]')?.value ||
+    "";
+
+  const m = String(routeDate).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+
+  return Number(m[3]);
+}
+
+function parseMetarWind(raw = "") {
+  const m = String(raw).toUpperCase().match(/\b((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/);
+  return m ? m[1] : "";
+}
+
+function parseMetarTemp(raw = "") {
+  const m = String(raw).toUpperCase().match(/\b(M?\d{2})\/M?\d{2}\b/);
+  return m ? m[1].replace(/^M/, "-") : "";
+}
+
+function parseMetarQnh(raw = "") {
+  const m = String(raw).toUpperCase().match(/\bQ(\d{4})\b/);
+  return m ? m[1] : "";
+}
+
+function parseTafBaseWind(raw = "") {
+  const txt = String(raw).toUpperCase();
+
+  // TAF ICAO DDHHMMZ DDHH/DDHH WIND...
+  const m = txt.match(/\bTAF(?:\s+\w+)?\s+[A-Z]{4}\s+\d{6}Z\s+\d{4}\/\d{4}\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/);
+  return m ? m[1] : "";
+}
+
+function parseTafWindForEta(rawTaf = "", etaHm = null, routeDay = null) {
+  const txt = String(rawTaf).toUpperCase();
+  if (!txt) return "";
+
+  let selectedWind = parseTafBaseWind(txt);
+
+  if (!etaHm || routeDay == null) {
+    return selectedWind;
+  }
+
+  const etaAbs = absMinutes(routeDay, etaHm.hh, etaHm.mm);
+
+  // nimmt den zuletzt gültigen BECMG-Wind vor/nach ETA
+  const re = /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+  let m;
+
+  while ((m = re.exec(txt)) !== null) {
+    const startDay = Number(m[1]);
+    const startHour = Number(m[2]);
+    const wind = m[5];
+
+    const startAbs = absMinutes(startDay, startHour, 0);
+
+    if (etaAbs >= startAbs) {
+      selectedWind = wind;
+    }
+  }
+
+  return selectedWind;
+}
+
+function setFieldIfExists(name, value) {
+  const el = getField(name);
+  if (!el) return;
+  el.value = value ?? "";
+}
+
+// Feldnamen hier anpassen, falls sie bei dir anders heißen
+function writeTakeoffMetarToFields(rawMetar) {
+  setFieldIfExists("to_wind", parseMetarWind(rawMetar));
+  setFieldIfExists("to_temp", parseMetarTemp(rawMetar));
+  setFieldIfExists("to_qnh", parseMetarQnh(rawMetar));
+}
+
+function writeLandingTafWindToField(rawTaf) {
+  const lastLeg = getLastActiveLegFrameForPerf();
+  const etaEl = lastLeg ? qs(SEL.legs.eta, lastLeg) : null;
+
+  const etaHm = normalizeHm(etaEl?.value || "");
+  const routeDay = getRouteDateDay();
+
+  const wind = parseTafWindForEta(rawTaf, etaHm, routeDay);
+  setFieldIfExists("ld_wind", wind);
+}
+
+async function syncPerformanceWeatherFields() {
+  const myToken = ++perfWxSyncToken;
+
+  const toIcao = normIcao(getField("to_icao")?.value || "");
+  const ldIcao = normIcao(getField("ld_icao")?.value || "");
+
+  if (!toIcao) {
+    setFieldIfExists("to_wind", "");
+    setFieldIfExists("to_temp", "");
+    setFieldIfExists("to_qnh", "");
+  }
+
+  if (!ldIcao) {
+    setFieldIfExists("ld_wind", "");
+  }
+
+  if (toIcao) {
+    try {
+      const wx = await loadAirportWx(toIcao);
+      if (myToken !== perfWxSyncToken) return;
+
+      const rawMetar = wx?.metar?.rawOb || wx?.metar?.raw_text || "";
+      writeTakeoffMetarToFields(rawMetar);
+    } catch {
+      if (myToken !== perfWxSyncToken) return;
+      setFieldIfExists("to_wind", "");
+      setFieldIfExists("to_temp", "");
+      setFieldIfExists("to_qnh", "");
+    }
+  }
+
+  if (ldIcao) {
+    try {
+      const wx = await loadAirportWx(ldIcao);
+      if (myToken !== perfWxSyncToken) return;
+
+      const rawTaf = wx?.taf?.rawTAF || wx?.taf?.raw_text || "";
+      writeLandingTafWindToField(rawTaf);
+    } catch {
+      if (myToken !== perfWxSyncToken) return;
+      setFieldIfExists("ld_wind", "");
+    }
+  }
+}
+
 // ---------- data ----------
 async function loadRunwayData() {
   try {
@@ -342,6 +513,7 @@ export function syncPerformanceDerived() {
   syncDeclaredDistances();
   syncReturnLm();
   syncPerformanceWeather();
+  syncPerformanceWeatherFields();
 }
 
 // ---------- init ----------
