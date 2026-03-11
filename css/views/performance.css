@@ -147,13 +147,15 @@
 .perf-wx{
   margin-top: 18px;
   padding-top: 14px;
+  grid-column: 1 / -1;
+  max-width: 900px;
   border-top: 1px solid rgba(255,255,255,0.10);
 }
 
 .perf-wx__grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 }
 
 .perf-wx__col{
@@ -164,6 +166,8 @@
   margin: 0;
   padding: 8px 10px;
   border-radius: 8px;
+  width: 100%;
+  white-space: pre-wrap;
   background: rgba(255,255,255,0.04);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
