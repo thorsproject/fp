@@ -158,7 +158,7 @@ function bindWxPopup(marker, code, name) {
     try {
       const wx = await loadAirportWx(code);
 // debug:
-      console.log("popup", code, wx);
+//      console.log("popup", code, wx);
 // debug end
       applyFlightCategoryToMarker(marker, wx);
       marker.setPopupContent(buildWxPopupHtml(wx));
@@ -179,7 +179,7 @@ async function createAirportMarker(map, code, airport) {
   try {
     const wx = await loadAirportWx(code);
 // debug:
-      console.log(code, wx);
+//      console.log(code, wx);
 // debug end
     markerColor = getMarkerColorFromWx(wx);
   } catch {
