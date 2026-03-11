@@ -9,7 +9,7 @@
 }
 
 #performancePanel .c-panel__body{
-  padding: 4px;
+  padding: var(--space-xs);
 }
 
 /* ---------- Header ---------- */
@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-xs);
 }
 
 /* zur Zeit nicht verwendet, könnte aber später nochmal nützlich sein
