@@ -216,19 +216,79 @@ function parseTafWindForEta(rawTaf = "", etaHm = null, routeDay = null) {
 
   const etaAbs = absMinutes(routeDay, etaHm.hh, etaHm.mm);
 
-  const re = /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
-
+  // 1) BECMG: neue Bedingungen gelten ab ENDZEIT
+  const becmgRe = /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
   let m;
 
-  while ((m = re.exec(txt)) !== null) {
+  while ((m = becmgRe.exec(txt)) !== null) {
     const endDay = Number(m[3]);
     const endHour = Number(m[4]);
     const wind = m[5];
 
     const endAbs = absMinutes(endDay, endHour, 0);
 
-    // neue Bedingungen gelten ab ENDZEIT
     if (etaAbs >= endAbs) {
+      selectedWind = wind;
+    }
+  }
+
+  // 2) FM: gilt ab exakt diesem Zeitpunkt und überschreibt alles davor
+  const fmRe = /\bFM(\d{2})(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+
+  while ((m = fmRe.exec(txt)) !== null) {
+    const day = Number(m[1]);
+    const hour = Number(m[2]);
+    const minute = Number(m[3]);
+    const wind = m[4];
+
+    const fmAbs = absMinutes(day, hour, minute);
+
+    if (etaAbs >= fmAbs) {
+      selectedWind = wind;
+    }
+  }
+
+  return selectedWind;
+}function parseTafWindForEta(rawTaf = "", etaHm = null, routeDay = null) {
+  const txt = String(rawTaf).toUpperCase();
+  if (!txt) return "";
+
+  let selectedWind = parseTafBaseWind(txt);
+
+  if (!etaHm || routeDay == null) {
+    return selectedWind;
+  }
+
+  const etaAbs = absMinutes(routeDay, etaHm.hh, etaHm.mm);
+
+  // 1) BECMG: neue Bedingungen gelten ab ENDZEIT
+  const becmgRe = /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+  let m;
+
+  while ((m = becmgRe.exec(txt)) !== null) {
+    const endDay = Number(m[3]);
+    const endHour = Number(m[4]);
+    const wind = m[5];
+
+    const endAbs = absMinutes(endDay, endHour, 0);
+
+    if (etaAbs >= endAbs) {
+      selectedWind = wind;
+    }
+  }
+
+  // 2) FM: gilt ab exakt diesem Zeitpunkt und überschreibt alles davor
+  const fmRe = /\bFM(\d{2})(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?KT)\b/g;
+
+  while ((m = fmRe.exec(txt)) !== null) {
+    const day = Number(m[1]);
+    const hour = Number(m[2]);
+    const minute = Number(m[3]);
+    const wind = m[4];
+
+    const fmAbs = absMinutes(day, hour, minute);
+
+    if (etaAbs >= fmAbs) {
       selectedWind = wind;
     }
   }
