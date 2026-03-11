@@ -7,6 +7,11 @@
   overflow: hidden;
 }
 
+/* Panel im Performance View kompakter unter die Überschrift */
+#performancePanel .c-panel__head{
+  margin-bottom: 4px;
+}
+
 #performancePanel .c-panel__body{
   padding: var(--space-xxs);; /* 3px */
 }
@@ -93,39 +98,29 @@
 /* ---------- Grid ---------- */
 .perf-grid{
   display: grid;
-  grid-template-columns: auto 1fr;
-  row-gap: 8px;
+  grid-template-columns: 132px minmax(0, 1fr);
+  align-items: stretch;
+  /*align-items: center;*/
+  row-gap: 0; /* 8px */
   /* grid-template-columns: 1fr 92px; */
-  align-items: center;
 }
 
-/* Label-Zellen */
-.perf-grid > label{
-  height: 34px;
-  display: flex;
-  align-items: center;
-}
-
-/* Input / Select / Output */
-.perf-grid input,
-.perf-grid select,
-.perf-grid .c-out{
-  height: 34px;
-}
-
-.perf-grid input,
-.perf-grid select{
-  line-height: 34px;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
+/* Label + Feldzelle wirklich gleich hoch */
 .perf-label,
 .perf-cell{
-  min-height: 34px; /* Einheitliche Höhe für Label und Zelle */
+  min-height: 0;
+  height: 44px;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
 }
+
+/*.perf-label,
+.perf-cell{
+  min-height: 34px; /* Einheitliche Höhe für Label und Zelle
+  display: flex;
+  align-items: center;
+}*/
 
 .perf-label{
   padding: 0 10px;
@@ -136,15 +131,30 @@
 }
 
 .perf-cell{
-  padding: 4px 8px;
+  /*padding: 4px 8px;*/
+  padding: 0 8px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.perf-cell .c-input{
+/* Eingabefelder / Selects / Outputs exakt auf Zellenhöhe abstimmen */
+.perf-cell .c-input,
+.perf-cell .c-select,
+.perf-cell .c-output{
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  min-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/*.perf-cell .c-input{
   width: 100%;
   min-width: 0;
   text-align: center;
-}
+}*/
 
 .perf-cell--out{
   justify-content: center;
@@ -152,7 +162,20 @@
   font-weight: 700;
 }
 
+/* reine Output-Felder */
 .perf-cell--out span{
+  width: 100%;
+  height: 30px;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/*.perf-cell--out span{
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -161,7 +184,7 @@
   border-radius: 8px;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.08);
-}
+}*/
 
 /* ---------- Wx ---------- */
 .perf-wx{
