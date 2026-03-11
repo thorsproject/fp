@@ -8,7 +8,7 @@
 }
 
 #performancePanel .c-panel__body{
-  padding: 0; /* 10px */
+  padding: 10px; /* 10px */
 }
 
 /* ---------- Header ---------- */
@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 2px;
 }
 
 /* zur Zeit nicht verwendet
