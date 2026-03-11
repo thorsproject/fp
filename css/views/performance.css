@@ -98,7 +98,7 @@
 /* ---------- Grid ---------- */
 .perf-grid{
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 90px;
+  grid-template-columns: minmax(0, 1fr) 100px;
   /*grid-template-columns: 132px minmax(0, 1fr);*/
   align-items: stretch;
   /*align-items: center;*/
