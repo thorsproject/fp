@@ -46,13 +46,40 @@ async function exportFuelPerfExcel() {
   // ---------- PERFORMANCE ----------
   XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_icao"]')]], { origin: "I7" });
   XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_rwy"]')]], { origin: "L7" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_tora"]')]], { origin: "M7" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_tom"]')]], { origin: "N7" });
   XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_wind"]')]], { origin: "I9" });
   XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_temp"]')]], { origin: "M9" });
   XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_qnh"]')]], { origin: "N9" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_flaps"]')]], { origin: "I11" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_XXX"]')]], { origin: "L11" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_asd"]')]], { origin: "M11" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="to_stop_margin"]')]], { origin: "N11" });
+
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_eosid"]')]], { origin: "J13" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_eosid"]')]], { origin: "J14" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_oei_roc"]')]], { origin: "N13" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_oei_sc"]')]], { origin: "N15" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_icao"]')]], { origin: "I17" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_rwy"]')]], { origin: "L17" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_lda"]')]], { origin: "M17" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_lm"]')]], { origin: "N17" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_flaps"]')]], { origin: "I19" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_XXX"]')]], { origin: "L19" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_ld_abn"]')]], { origin: "M19" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="rt_stop_margin"]')]], { origin: "N19" });
 
   XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_icao"]')]], { origin: "I22" });
   XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_rwy"]')]], { origin: "L22" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_lda"]')]], { origin: "M22" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_lm"]')]], { origin: "N22" });
   XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_wind"]')]], { origin: "I25" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_temp"]')]], { origin: "M25" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_qnh"]')]], { origin: "N25" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_flaps"]')]], { origin: "I27" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_XXX"]')]], { origin: "L27" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_ld"]')]], { origin: "M27" });
+  XLSX.utils.sheet_add_aoa(ws, [[v('[data-field="ld_stop_margin"]')]], { origin: "N27" });
 
   XLSX.writeFile(wb, "Fuel_Performance.xlsx");
 }
