@@ -107,8 +107,56 @@ export async function loadAirportWx(icao) {
   const metarKey = cacheKey("metar", id);
   const tafKey = cacheKey("taf", id);
 
-  const metarPromise = makeWxPromise("metar", id, metarKey, now);
-  const tafPromise = makeWxPromise("taf", id, tafKey, now);
+  const metarCached = wxCache.get(metarKey);
+  const tafCached = wxCache.get(tafKey);
+
+  const metarFresh = metarCached && (now - metarCached.ts < WX_CACHE_TTL);
+  const tafFresh = tafCached && (now - tafCached.ts < WX_CACHE_TTL);
+
+  let metarOffline = false;
+  let tafOffline = false;
+
+  const metarPromise = metarFresh
+    ? metarCached.promise
+    : fetchJson(`${WX_BASE}/wx/metar?ids=${encodeURIComponent(id)}`)
+        .then((data) => {
+          writeStoredWx("metar", id, data);
+          return data;
+        })
+        .catch((err) => {
+          const stored = readStoredWx("metar", id);
+          if (stored?.data) {
+            metarOffline = true;
+            return stored.data;
+          }
+          throw err;
+        });
+
+  wxCache.set(metarKey, {
+    ts: now,
+    promise: metarPromise,
+  });
+
+  const tafPromise = tafFresh
+    ? tafCached.promise
+    : fetchJson(`${WX_BASE}/wx/taf?ids=${encodeURIComponent(id)}`)
+        .then((data) => {
+          writeStoredWx("taf", id, data);
+          return data;
+        })
+        .catch((err) => {
+          const stored = readStoredWx("taf", id);
+          if (stored?.data) {
+            tafOffline = true;
+            return stored.data;
+          }
+          throw err;
+        });
+
+  wxCache.set(tafKey, {
+    ts: now,
+    promise: tafPromise,
+  });
 
   const [metarData, tafData] = await Promise.allSettled([metarPromise, tafPromise]);
 
@@ -123,6 +171,12 @@ export async function loadAirportWx(icao) {
     tafError:
       tafData.status === "rejected"
         ? tafData.reason?.message || "TAF Fehler"
+        : "",
+    metarOffline,
+    tafOffline,
+    offlineNotice:
+      metarOffline || tafOffline
+        ? "Offline-Modus: METAR / TAF evtl. nicht aktuell"
         : "",
   };
 }
@@ -240,6 +294,10 @@ export function buildWxPopupHtml(wx) {
     wx?.metar?.fltCat
   );
 
+  const offlineHint = wx?.offlineNotice
+  ? `<div class="wx-popup__offline">${escapeHtml(wx.offlineNotice)}</div>`
+  : "";
+
   return `
     <div class="wx-popup">
 
@@ -247,6 +305,8 @@ export function buildWxPopupHtml(wx) {
         <div class="wx-popup__title">${escapeHtml(wx.icao)}</div>
         ${badge ? `<div class="wx-cat ${badge.className}">${badge.label}</div>` : ""}
       </div>
+      
+      ${offlineHint}
 
       <div class="wx-popup__section">
         <div class="wx-popup__label">METAR</div>

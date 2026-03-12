@@ -82,6 +82,10 @@ function setPerfWxOut(name, value) {
   el.textContent = value ?? "";
 }
 
+function getWxOfflineNotice(wx) {
+  return wx?.offlineNotice || "";
+}
+
 function formatPerfMetar(wx) {
   return (
     wx?.metar?.rawOb ||
@@ -107,17 +111,21 @@ async function syncPerformanceWeather() {
 
   setPerfWxOut("perf_wx_to_metar", "");
   setPerfWxOut("perf_wx_to_taf", "");
+  setPerfWxOut("perf_wx_to_note", "");
   setPerfWxOut("perf_wx_ld_metar", "");
   setPerfWxOut("perf_wx_ld_taf", "");
+  setPerfWxOut("perf_wx_ld_note", "");
 
   if (toIcao) {
     try {
       const wx = await loadAirportWx(toIcao);
       setPerfWxOut("perf_wx_to_metar", formatPerfMetar(wx));
       setPerfWxOut("perf_wx_to_taf", formatPerfTaf(wx));
+      setPerfWxOut("perf_wx_to_note", getWxOfflineNotice(wx));
     } catch {
       setPerfWxOut("perf_wx_to_metar", "METAR konnte nicht geladen werden");
       setPerfWxOut("perf_wx_to_taf", "TAF konnte nicht geladen werden");
+      setPerfWxOut("perf_wx_to_note", "");
     }
   }
 
@@ -126,9 +134,11 @@ async function syncPerformanceWeather() {
       const wx = await loadAirportWx(ldIcao);
       setPerfWxOut("perf_wx_ld_metar", formatPerfMetar(wx));
       setPerfWxOut("perf_wx_ld_taf", formatPerfTaf(wx));
+      setPerfWxOut("perf_wx_ld_note", getWxOfflineNotice(wx));
     } catch {
       setPerfWxOut("perf_wx_ld_metar", "METAR konnte nicht geladen werden");
       setPerfWxOut("perf_wx_ld_taf", "TAF konnte nicht geladen werden");
+      setPerfWxOut("perf_wx_ld_note", "");
     }
   }
 }
