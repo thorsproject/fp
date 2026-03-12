@@ -49,7 +49,14 @@
 }
 /*   ========================================================= */
 
+/* Panel im Performance View kompakter unter die Überschrift */
+#fuelPanel .c-panel__head{
+  margin-bottom: 4px;
+}
 
+#fuelPanel .c-panel__body{
+  padding: var(--space-xxs);; /* 3px */
+}
 
 /* -------------------------
    [FUEL:HEAD]
@@ -58,11 +65,10 @@
   display: flex;
   align-items:center;
   justify-content: space-between;
-  gap: 12px;
 }
 
 .fuel-export-btn{
-  padding:6px 2px;
+  padding:6px 12px;
   font-size:13px;
   background:#1976d2;
   color:white;
