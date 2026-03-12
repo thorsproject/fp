@@ -55,8 +55,13 @@
    ------------------------- */
 .fuel-head{
   display: flex;
-  align-items:center;
+  align-items: center;
   justify-content: space-between;
+  padding: 4px 8px; /* c-panel__head Abstand */
+}
+
+.fuel-head h2{
+  margin: 0;
 }
 
 .fuel-export-btn{
