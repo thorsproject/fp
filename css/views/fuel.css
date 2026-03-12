@@ -49,14 +49,6 @@
 }
 /*   ========================================================= */
 
-/* Panel im Performance View kompakter unter die Überschrift */
-#fuelPanel .c-panel__head{
-  margin-bottom: 4px;
-}
-
-#fuelPanel .c-panel__body{
-  padding: var(--space-xxs);; /* 3px */
-}
 
 /* -------------------------
    [FUEL:HEAD]
