@@ -1,4 +1,5 @@
 const WX_CACHE_TTL = 5 * 60 * 1000; // 5 Minuten
+const WX_STORAGE_MAX_AGE = 12 * 60 * 60 * 1000; // 12 Stunden
 const WX_BASE = "https://fp-weather-proxy.thors-project.workers.dev";
 
 const wxCache = new Map();
@@ -18,6 +19,11 @@ function readStoredWx(type, icao) {
 
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return null;
+    if (typeof parsed.ts !== "number") return null;
+
+    const age = Date.now() - parsed.ts;
+    if (age > WX_STORAGE_MAX_AGE) return null;
+
     return parsed;
   } catch {
     return null;
@@ -59,6 +65,39 @@ async function fetchJson(url) {
   }
 }
 
+function getFreshCachedPromise(key, now) {
+  const cached = wxCache.get(key);
+  if (!cached) return null;
+  if (now - cached.ts >= WX_CACHE_TTL) return null;
+  return cached.promise;
+}
+
+function makeWxPromise(type, id, key, now) {
+  const cachedPromise = getFreshCachedPromise(key, now);
+  if (cachedPromise) return cachedPromise;
+
+  const promise = fetchJson(`${WX_BASE}/wx/${type}?ids=${encodeURIComponent(id)}`)
+    .then((data) => {
+      writeStoredWx(type, id, data);
+      return data;
+    })
+    .catch((err) => {
+      const stored = readStoredWx(type, id);
+      if (stored?.data) return stored.data;
+
+      // kein gültiger Fallback vorhanden -> kaputten Cache-Eintrag entfernen
+      wxCache.delete(key);
+      throw err;
+    });
+
+  wxCache.set(key, {
+    ts: now,
+    promise,
+  });
+
+  return promise;
+}
+
 export async function loadAirportWx(icao) {
   const id = String(icao || "").trim().toUpperCase();
   if (!id) throw new Error("ICAO fehlt");
@@ -68,47 +107,8 @@ export async function loadAirportWx(icao) {
   const metarKey = cacheKey("metar", id);
   const tafKey = cacheKey("taf", id);
 
-  const metarCached = wxCache.get(metarKey);
-  const tafCached = wxCache.get(tafKey);
-
-  const metarFresh = metarCached && (now - metarCached.ts < WX_CACHE_TTL);
-  const tafFresh = tafCached && (now - tafCached.ts < WX_CACHE_TTL);
-
-  const metarPromise = metarFresh
-    ? metarCached.promise
-    : fetchJson(`${WX_BASE}/wx/metar?ids=${encodeURIComponent(id)}`)
-        .then((data) => {
-          writeStoredWx("metar", id, data);
-          return data;
-        })
-        .catch((err) => {
-          const stored = readStoredWx("metar", id);
-          if (stored?.data) return stored.data;
-          throw err;
-        });
-
-  wxCache.set(metarKey, {
-    ts: now,
-    promise: metarPromise,
-  });
-
-  const tafPromise = tafFresh
-    ? tafCached.promise
-    : fetchJson(`${WX_BASE}/wx/taf?ids=${encodeURIComponent(id)}`)
-        .then((data) => {
-          writeStoredWx("taf", id, data);
-          return data;
-        })
-        .catch((err) => {
-          const stored = readStoredWx("taf", id);
-          if (stored?.data) return stored.data;
-          throw err;
-        });
-
-  wxCache.set(tafKey, {
-    ts: now,
-    promise: tafPromise,
-  });
+  const metarPromise = makeWxPromise("metar", id, metarKey, now);
+  const tafPromise = makeWxPromise("taf", id, tafKey, now);
 
   const [metarData, tafData] = await Promise.allSettled([metarPromise, tafPromise]);
 
@@ -116,12 +116,14 @@ export async function loadAirportWx(icao) {
     icao: id,
     metar: metarData.status === "fulfilled" ? normalizeFirst(metarData.value) : null,
     taf: tafData.status === "fulfilled" ? normalizeFirst(tafData.value) : null,
-    metarError: metarData.status === "rejected"
-      ? metarData.reason?.message || "METAR Fehler"
-      : "",
-    tafError: tafData.status === "rejected"
-      ? tafData.reason?.message || "TAF Fehler"
-      : "",
+    metarError:
+      metarData.status === "rejected"
+        ? metarData.reason?.message || "METAR Fehler"
+        : "",
+    tafError:
+      tafData.status === "rejected"
+        ? tafData.reason?.message || "TAF Fehler"
+        : "",
   };
 }
 

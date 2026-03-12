@@ -1,9 +1,6 @@
 // ------------------ LEAFLET MAP ------------------
 import { loadAirportWx, buildWxPopupHtml } from "./metar.js";
 
-const CLOUDS_STORAGE_KEY = "fp.map.layer.clouds.v1";
-const RADAR_STORAGE_KEY = "fp.map.layer.radar.v1";
-
 const AIRFIELDS_URL = "./data/airfields.json";
 const ALTERNATES_URL = "./data/alternates.json";
 
@@ -43,24 +40,6 @@ function setBtnState(btn, onState) {
   if (!btn) return;
   btn.textContent = onState ? "ON" : "OFF";
   btn.classList.toggle("is-on", !!onState);
-}
-
-function readBool(key, fallback = false) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw == null) return fallback;
-    return raw === "1";
-  } catch {
-    return fallback;
-  }
-}
-
-function writeBool(key, value) {
-  try {
-    localStorage.setItem(key, value ? "1" : "0");
-  } catch {
-    // ignore
-  }
 }
 
 function initTileToggle({ map, buttonId, layer, defaultOn = false }) {
