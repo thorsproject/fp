@@ -57,8 +57,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--text);
-  font-size: 12px;
 }
 
 .fuel-head h2{
