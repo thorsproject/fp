@@ -343,7 +343,7 @@ async function loadRunwayData() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     runwayData = await res.json();
   } catch (err) {
-    console.error("[performance] runway data load failed:", err);
+    // console.error("[performance] runway data load failed:", err);
     runwayData = {};
   }
 }
