@@ -387,3 +387,31 @@ Mögliche nächste Verbesserungen:
     * Offline vollständige PWA Unterstützung
 
 # Ende state.md
+
+# Standard-Workflow zum Ändern der Config
+  * Schritt 1 — config.enc → config.json entschlüsseln
+    - Im Local-Ordner:
+        FP_CONFIG_PASS="team2026" node tools/config-crypto.mjs dec data/config.enc data/config.json
+        Ergebnis: Ok: decrypted data/config.enc -> data/config.json
+        Jetzt hast du wieder die editierbare Klartext-Datei: data/config.json
+
+  * Schritt 2 — config.json bearbeiten und speichern
+    - In VS Code: data/config.json
+
+  * Schritt 3 — wieder verschlüsseln
+    - Im Local-Ordner:
+        FP_CONFIG_PASS="team2026" node tools/config-crypto.mjs enc data/config.json data/config.enc
+
+  * Schritt 4 — nur config.enc committen
+    - git add data/config.enc
+    - git commit -m "Update config"
+    - git push
+
+  * Wichtig
+    - Diese Datei bleibt IMMER lokal: data/config.json
+    - Diese Datei geht auf GitHub: data/config.enc
+
+  * Merksatz
+    - decrypt → edit → encrypt → commit → push
+FP_CONFIG_PASS="team2026" node tools/config-crypto.mjs enc data/config.json data/config.enc
+FP_CONFIG_PASS="team2026" node tools/config-crypto.mjs dec data/config.enc data/config.json
