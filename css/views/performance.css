@@ -110,7 +110,7 @@
 .perf-label,
 .perf-cell{
   min-height: 0;
-  height: 38px; /* 44 Einheitliche Höhe für Label und Zelle */
+  height: 34px; /* 44 Einheitliche Höhe für Label und Zelle */
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -138,8 +138,8 @@
 .perf-cell .c-output{
   width: 100%;
   min-width: 0;
-  height: 30px;
-  min-height: 30px;
+  height: 26px;
+  min-height: 26px;
   padding-top: 0;
   padding-bottom: 0;
   box-sizing: border-box;
