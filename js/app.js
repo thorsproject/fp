@@ -33,6 +33,7 @@ import { initResets } from "./reset.js";
 import { initOrmChecklist } from "./orm.js";
 import { initSignatureUI } from "./signature_ui.js";
 import { isInCompanyNetwork } from "./intranet_detect.js";
+import { initExcelExport } from "./excel_export.js";
 
 // ---------- Edge-Problem beseitigen ----------
 (function markPlatform() {
@@ -400,6 +401,7 @@ map.on("click", (e) => {
   initSignatureUI();
   initFuelPlanning();
   initResets();
+  initExcelExport();
 
   // ---------- SAFETY: erst rendern lassen, dann laden ----------
   requestAnimationFrame(() => {
