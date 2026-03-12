@@ -164,12 +164,11 @@ async function exportFuelPerfPdf() {
     if (!res.ok) throw new Error(`PDF-Vorlage nicht gefunden (HTTP ${res.status})`);
 
     const bytes = await res.arrayBuffer();
-    const { PDFDocument, StandardFonts } = window.PDFLib || {};
+    const { PDFDocument } = window.PDFLib || {};
     if (!PDFDocument) throw new Error("pdf-lib nicht geladen");
 
     const pdfDoc = await PDFDocument.load(bytes);
     const form = pdfDoc.getForm();
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
     // ---------- Kopf ----------
     setTextField(form, "CSREG", getCsRegLine());
@@ -256,7 +255,7 @@ async function exportFuelPerfPdf() {
 
     clearTextField(form, "LDSPEED");
 
-    form.updateFieldAppearances(font);
+    form.updateFieldAppearances();
     form.flatten();
 
     const pdfBytes = await pdfDoc.save();
