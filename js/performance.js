@@ -57,6 +57,48 @@ function bindPerfPersistence() {
   }
 }
 
+function bindPerformanceFormatting() {
+  // Meter
+  [
+    "to_tora", "to_roll", "to_asd", "to_stop_margin",
+    "rt_lda", "rt_roll", "rt_ld_abn", "rt_stop_margin",
+    "ld_lda", "ld_roll", "ld_ld", "ld_stop_margin"
+  ].forEach((name) => bindUnitField(name, (v) => formatWithSuffix(v, "m")));
+
+  // Temperatur
+  ["to_temp", "ld_temp"].forEach((name) =>
+    bindUnitField(name, (v) => formatWithSuffix(v, "°C"))
+  );
+
+  // QNH
+  ["to_qnh", "ld_qnh"].forEach((name) =>
+    bindUnitField(name, (v) => formatWithSuffix(v, "hpa"))
+  );
+
+  // KG
+  ["to_tom", "rt_lm", "ld_lm"].forEach((name) =>
+    bindUnitField(name, (v) => formatWithSuffix(v, "kg"))
+  );
+
+  // ROC
+  bindUnitField("rt_oei_roc", (v) => formatWithSuffix(v, "ft/Min"));
+
+  // Wind
+  ["to_wind", "ld_wind"].forEach((name) =>
+    bindUnitField(name, (v) => formatWind(v))
+  );
+
+  // Standardwert für OEI SC
+  const oeiSc = getField("rt_oei_sc");
+  if (oeiSc) {
+    ensureDefaultValue(oeiSc, ">10000 ft");
+
+    oeiSc.addEventListener("blur", () => {
+      ensureDefaultValue(oeiSc, ">10000 ft");
+    });
+  }
+}
+
 // ---------- helpers ----------
 function formatDateDE(isoDate) {
   if (!isoDate) return "";
@@ -153,6 +195,60 @@ function formatPerfTaf(wx) {
     "Kein aktueller TAF verfügbar"
   );
 }
+
+function stripUnit(val = "") {
+  return String(val)
+    .replace(/\s*m$/i, "")
+    .replace(/\s*°c$/i, "")
+    .replace(/\s*hpa$/i, "")
+    .replace(/\s*ft\/min$/i, "")
+    .replace(/\s*kg$/i, "")
+    .trim();
+}
+
+function formatWithSuffix(val, suffix) {
+  const raw = stripUnit(val);
+  if (!raw) return "";
+  return `${raw} ${suffix}`;
+}
+
+function formatWind(val = "") {
+  const raw = String(val).trim().toUpperCase().replace(/\s+/g, "");
+  if (!raw) return "";
+
+  // schon formatiert
+  if (/^\d{3}\/\d{2,3}(G\d{2,3})?$/.test(raw)) return raw;
+
+  // 23015 oder 230015
+  const m = raw.match(/^(\d{3})(\d{2,3})(G\d{2,3})?$/);
+  if (!m) return raw;
+
+  return `${m[1]}/${m[2]}${m[3] || ""}`;
+}
+
+function ensureDefaultValue(el, defaultValue) {
+  if (!el) return;
+  const v = String(el.value || "").trim();
+  if (!v) el.value = defaultValue;
+}
+
+function bindUnitField(name, formatter) {
+  const el = getField(name);
+  if (!el) return;
+
+  el.addEventListener("focus", () => {
+    el.value = stripUnit(el.value);
+  });
+
+  el.addEventListener("blur", () => {
+    el.value = formatter(el.value);
+  });
+
+  el.addEventListener("change", () => {
+    el.value = formatter(el.value);
+  });
+}
+// ---------- Ende helpers ----------
 
 async function syncPerformanceWeather() {
   const toIcao = normIcao(getField("to_icao")?.value || "");
@@ -328,9 +424,9 @@ function setFieldIfExists(name, value) {
 
 // Feldnamen hier anpassen, falls sie bei dir anders heißen
 function writeTakeoffMetarToFields(rawMetar) {
-  setFieldIfExists("to_wind", parseMetarWind(rawMetar));
-  setFieldIfExists("to_temp", parseMetarTemp(rawMetar));
-  setFieldIfExists("to_qnh", parseMetarQnh(rawMetar));
+  setFieldIfExists("to_wind", formatWind(parseMetarWind(rawMetar)));
+  setFieldIfExists("to_temp", formatWithSuffix(parseMetarTemp(rawMetar), "°C"));
+  setFieldIfExists("to_qnh", formatWithSuffix(parseMetarQnh(rawMetar), "hpa"));
 }
 
 function writeLandingTafWindToField(rawTaf) {
@@ -340,7 +436,7 @@ function writeLandingTafWindToField(rawTaf) {
   const etaHm = normalizeHm(etaEl?.value || "");
   const wind = parseTafWindForEta(rawTaf, etaHm);
 
-  setFieldIfExists("ld_wind", wind);
+  setFieldIfExists("ld_wind", formatWind(wind));
 }
 
 async function syncPerformanceWeatherFields() {
@@ -430,12 +526,12 @@ function applyDeclaredDistances(icao, rwy, { toraField, ldaField } = {}) {
 
   if (toraField) {
     const el = getField(toraField);
-    if (el) el.value = data.tora ?? "";
+    if (el) el.value = formatWithSuffix(data.tora ?? "", "m");
   }
 
   if (ldaField) {
     const el = getField(ldaField);
-    if (el) el.value = data.lda ?? "";
+    if (el) el.value = formatWithSuffix(data.lda ?? "", "m");
   }
 }
 
@@ -564,7 +660,7 @@ function syncDeclaredDistances() {
 
     const rtData = runwayData?.[rtIcao]?.runways?.[toRwy];
     if (rtData?.lda != null) {
-      setOut("rt_lda", String(rtData.lda));
+      setOut("rt_lda", formatWithSuffix(rtData.lda, "m"));
     }
   }
 
@@ -590,7 +686,7 @@ function syncReturnLm() {
       ? 3
       : 1;
 
-  setOut("rt_lm", formatNum(tom - minus));
+  setOut("rt_lm", formatWithSuffix(formatNum(tom - minus), "kg"));
 }
 
 // ---------- master sync ----------
@@ -608,6 +704,7 @@ export async function initPerformance() {
   await loadRunwayData();
   syncAiracHeader();
   restorePerfFields();
+  bindPerformanceFormatting();
   syncPerformanceDerived();
   bindPerfPersistence();
 
