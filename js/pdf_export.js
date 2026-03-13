@@ -165,6 +165,9 @@ async function exportFuelPerfPdf() {
   const btn = document.getElementById("btnExportFuelPerf");
   const oldLabel = btn?.textContent || "Export PDF";
 
+  btn.disabled = true;
+  btn.textContent = "Erzeuge PDF…";
+
   try {
     if (btn) {
       btn.disabled = true;
@@ -175,12 +178,12 @@ async function exportFuelPerfPdf() {
     if (!res.ok) throw new Error(`PDF-Vorlage nicht gefunden (HTTP ${res.status})`);
 
     const bytes = await res.arrayBuffer();
-
-    const { PDFDocument } = window.PDFLib || {};
+    const { PDFDocument, StandardFonts } = window.PDFLib || {};
     if (!PDFDocument) throw new Error("pdf-lib nicht geladen");
 
     const pdfDoc = await PDFDocument.load(bytes);
     const form = pdfDoc.getForm();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
     // ---------- Kopf ----------
     setTextField(form, "CSREG", getCsRegLine());
@@ -267,9 +270,9 @@ async function exportFuelPerfPdf() {
 
     clearTextField(form, "LDSPEED");
 
-    const pdfBytes = await pdfDoc.save({
-    updateFieldAppearances: false,
-    });
+    form.updateFieldAppearances();
+
+    const pdfBytes = await pdfDoc.save();
 
     const cs = safeFilenamePart(getCallsign() || "FP");
     const date = safeFilenamePart(getDate() || "undated");
@@ -283,6 +286,8 @@ async function exportFuelPerfPdf() {
       btn.textContent = oldLabel;
     }
   }
+  btn.disabled = false;
+  btn.textContent = oldLabel;
 }
 
 export function initPdfExport() {
