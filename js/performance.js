@@ -538,6 +538,27 @@ function numFromAny(name) {
 
   return 0;
 }
+function syncPerformanceMargins() {
+  const to_roll = numFromField("to_roll");
+  const rt_roll = numFromField("rt_roll");
+  const to_tora = numFromField("to_tora");
+
+  const rt_lda = numFromAny("rt_lda");
+  const rt_ld_abn = numFromField("rt_ld_abn");
+  const ld_ld = numFromField("ld_ld");
+
+  const to_asd = to_roll + rt_roll + 100;
+  setFieldIfExists("to_asd", formatWithSuffix(to_asd, "m"));
+
+  const to_stop = to_tora - to_asd;
+  setFieldIfExists("to_stop_margin", formatWithSuffix(to_stop, "m"));
+
+  const rt_stop = rt_lda - rt_ld_abn;
+  setFieldIfExists("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
+
+  const ld_stop = rt_lda - ld_ld;
+  setFieldIfExists("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
+}
 
 function bindMarginRecalc() {
   const sourceFields = [
@@ -561,28 +582,6 @@ function bindMarginRecalc() {
     el.addEventListener("change", recalc);
     el.addEventListener("blur", recalc);
   });
-}
-
-function syncPerformanceMargins() {
-  const to_roll = numFromField("to_roll");
-  const rt_roll = numFromField("rt_roll");
-  const to_tora = numFromField("to_tora");
-
-  const rt_lda = numFromAny("rt_lda");
-  const rt_ld_abn = numFromField("rt_ld_abn");
-  const ld_ld = numFromField("ld_ld");
-
-  const to_asd = to_roll + rt_roll + 100;
-  setFieldIfExists("to_asd", formatWithSuffix(to_asd, "m"));
-
-  const to_stop = to_tora - to_asd;
-  setFieldIfExists("to_stop_margin", formatWithSuffix(to_stop, "m"));
-
-  const rt_stop = rt_lda - rt_ld_abn;
-  setFieldIfExists("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
-
-  const ld_stop = rt_lda - ld_ld;
-  setFieldIfExists("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
 }
 
 async function syncPerformanceWeatherFields() {
