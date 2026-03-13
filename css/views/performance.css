@@ -175,6 +175,8 @@
 .perf-flaps-select{
   width: 50%;
   min-width: 0;
+  background: #0f141a;
+  color: var(--mint);
 }
 
 .perf-flaps-speed{
