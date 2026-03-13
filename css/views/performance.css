@@ -173,12 +173,16 @@
 }
 
 .perf-flaps-select{
+  /* Box model */
   width: 70%;
   min-width: 0;
-  height: 22px;
-  min-height: 22px;
-  border-radius: 4px;
+  height: 26px;
+  min-height: 26px;
+  /* Surface */
   background: #0f141a;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  /* Typography */
   color: var(--mint);
   font-size: 13px;
 }
