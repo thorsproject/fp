@@ -169,13 +169,16 @@
 .perf-flaps-row{
   display: flex;
   align-items: center;
-  gap: 4px;
+  width: 100%;
+  /*gap: 4px;*/
 }
 
 .perf-flaps-select{
   /* Box model */
-  width: 65%;
-  min-width: 0;
+  flex: 0 0 65%;
+  max-width: 65%;
+  /*width: 65%;
+  min-width: 0;*/
   height: 26px;
   min-height: 26px;
   /* Surface */
@@ -193,11 +196,12 @@
 }*/
 
 .perf-flaps-speed{
-  /*flex: 0 0 auto;*/
+  flex: 1;
+  margin-left: 6px;
   /*padding: 0 6px;*/
   font-size: 12px;
   white-space: nowrap;
-  opacity: 0.9;
+  /*opacity: 0.9;*/
 }
 
 /* ---------- Wx ---------- */
