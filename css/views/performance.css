@@ -148,8 +148,7 @@
 
 .perf-cell--out{
   justify-content: center;
-  /*color: var(--text, #e8eef8);*/
-  color: var(--text, #0642a2);
+  color: var(--text, #e8eef8);
   font-weight: 700;
 }
 
@@ -165,6 +164,7 @@
   /*background: rgba(255,255,255,0.05);*/
   background: #0f141a;
   border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text, #0642a2);
 }
 
 /* ---------- Flaps ---------- */
