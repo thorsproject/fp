@@ -32,7 +32,7 @@ export { EVT, emit, on, off } from "./events.js";
 
 // ----- zentraler Sync-Trigger -----
 export function triggerAppSync() {
-  emit("fp:sync");
+  document.dispatchEvent(new CustomEvent("fp:sync"));
 }
 
 export function onAppSync(handler) {
