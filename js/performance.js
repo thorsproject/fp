@@ -273,6 +273,18 @@ function getFlapsSpeedText(fieldName, flapsValue) {
 
   return "";
 }
+
+function numFromField(name) {
+  const el = getField(name);
+  if (!el) return 0;
+
+  const raw = String(el.value || "")
+    .replace(/[^\d.-]/g, "")
+    .trim();
+
+  const n = parseFloat(raw);
+  return Number.isFinite(n) ? n : 0;
+}
 // ---------- Ende helpers ----------
 
 async function syncPerformanceWeather() {
@@ -471,6 +483,42 @@ function syncFlapsSpeeds() {
   setOut("to_flaps_speed", getFlapsSpeedText("to_flaps", toFlaps));
   setOut("rt_flaps_speed", getFlapsSpeedText("rt_flaps", rtFlaps));
   setOut("ld_flaps_speed", getFlapsSpeedText("ld_flaps", ldFlaps));
+}
+
+function syncPerformanceMargins() {
+
+  const to_roll = numFromField("to_roll");
+  const rt_roll = numFromField("rt_roll");
+  const to_tora = numFromField("to_tora");
+
+  const rt_lda = numFromField("rt_lda");
+  const rt_ld_abn = numFromField("rt_ld_abn");
+
+  const ld_ld = numFromField("ld_ld");
+
+  // ---------- ASD ----------
+  const to_asd = to_roll + rt_roll + 100;
+  if (to_asd > 0) {
+    setFieldIfExists("to_asd", formatWithSuffix(to_asd, "m"));
+  }
+
+  // ---------- TO STOP ----------
+  const to_stop = to_tora - to_asd;
+  if (to_stop || to_stop === 0) {
+    setFieldIfExists("to_stop_margin", formatWithSuffix(to_stop, "m"));
+  }
+
+  // ---------- RT STOP ----------
+  const rt_stop = rt_lda - rt_ld_abn;
+  if (rt_stop || rt_stop === 0) {
+    setFieldIfExists("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
+  }
+
+  // ---------- LD STOP ----------
+  const ld_stop = rt_lda - ld_ld;
+  if (ld_stop || ld_stop === 0) {
+    setFieldIfExists("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
+  }
 }
 
 async function syncPerformanceWeatherFields() {
@@ -732,6 +780,7 @@ export function syncPerformanceDerived() {
   syncPerformanceWeather();
   syncPerformanceWeatherFields();
   syncFlapsSpeeds();
+  syncPerformanceMargins();
 }
 
 // ---------- init ----------
