@@ -654,5 +654,4 @@ export async function initPerformance() {
       syncPerformanceDerived();
     });
   });
-  requestAnimationFrame(() => syncPerformanceAirfields());
 }

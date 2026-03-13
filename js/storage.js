@@ -311,6 +311,13 @@ function applyRoute(route) {
     if (!btn) return;
     applyLegToggleToFrame(btn, state);
   });
+
+  // Nach Restore der Toggle-Zustände Derived-Logik erneut anstoßen
+  const legsContainer = qs(SEL.legs.container);
+  if (legsContainer) {
+    legsContainer.dispatchEvent(new Event("input", { bubbles: true }));
+    legsContainer.dispatchEvent(new Event("change", { bubbles: true }));
+  }
 }
 
 // ---------- FUEL ----------
