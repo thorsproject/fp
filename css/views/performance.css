@@ -175,14 +175,14 @@
 .perf-flaps-select{
   width: 60%;
   min-width: 0;
-  border-radius: 2px;
+  border-radius: 4px;
   background: #0f141a;
   color: var(--mint);
   font-size: 12px;
 }
 
 .perf-flaps-speed{
-  padding: 0 4px;
+  padding: 0 6px;
   font-size: 12px;
   white-space: nowrap;
   opacity: 0.9;
