@@ -1,6 +1,4 @@
 // js/ui/index.js
-import { emit, on } from "./events.js";
-
 export { qs, qsa, el, closest } from "./dom.js";
 
 export {
@@ -29,13 +27,3 @@ export {
 
 export { SEL } from "./selectors.js";
 export { EVT, emit, on, off } from "./events.js";
-
-// ----- zentraler Sync-Trigger -----
-export function triggerAppSync() {
-  document.dispatchEvent(new CustomEvent("fp:sync"));
-}
-
-export function onAppSync(handler) {
-  document.addEventListener("fp:sync", handler);
-}
-// ----- Ende: zentraler Sync-Trigger -----

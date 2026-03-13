@@ -1,6 +1,6 @@
 // performance.js
 
-import { qs, qsa, SEL, onAppSync } from "./ui/index.js";
+import { qs, qsa, SEL } from "./ui/index.js";
 import { loadAirportWx } from "./metar.js";
 import { loadPerformanceState, savePerformanceState } from "./storage.js";
 
@@ -611,52 +611,47 @@ export async function initPerformance() {
   syncPerformanceDerived();
   bindPerfPersistence();
 
-  onAppSync(() => {
-    syncPerformanceAirfields();
-    syncPerformanceDerived();
+  document.addEventListener("input", (e) => {
+    if (e.target.closest(SEL.legs.container)) {
+      syncPerformanceDerived();
+      return;
+    }
+
+    const perfPanel = e.target.closest("#performancePanel");
+    if (!perfPanel) return;
+
+    if (e.target.matches('[data-field="to_tom"]')) {
+      syncReturnLm();
+    }
   });
 
-  //document.addEventListener("input", (e) => {
-  //  if (e.target.closest(SEL.legs.container)) {
-  //    syncPerformanceDerived();
-  //    return;
-  //  }
+  document.addEventListener("change", (e) => {
+    if (e.target.closest(SEL.legs.container)) {
+      syncPerformanceDerived();
+      return;
+    }
 
-  //  const perfPanel = e.target.closest("#performancePanel");
-  //  if (!perfPanel) return;
+    const perfPanel = e.target.closest("#performancePanel");
+    if (!perfPanel) return;
 
-  //  if (e.target.matches('[data-field="to_tom"]')) {
-  //    syncReturnLm();
-  //  }
-  //});
+    if (
+      e.target.matches('[data-field="to_rwy"]') ||
+      e.target.matches('[data-field="ld_rwy"]')
+    ) {
+      syncDeclaredDistances();
+    }
 
-  //document.addEventListener("change", (e) => {
-  //  if (e.target.closest(SEL.legs.container)) {
-  //    syncPerformanceDerived();
-  //    return;
-  //  }
+    if (e.target.matches('[data-field="rt_eosid"]')) {
+      syncReturnLm();
+    }
+  });
 
-  //  const perfPanel = e.target.closest("#performancePanel");
-  //  if (!perfPanel) return;
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(SEL.legs.toggle);
+    if (!btn) return;
 
-  //  if (
-  //    e.target.matches('[data-field="to_rwy"]') ||
-  //    e.target.matches('[data-field="ld_rwy"]')
-  //  ) {
-  //    syncDeclaredDistances();
-  //  }
-
-  //  if (e.target.matches('[data-field="rt_eosid"]')) {
-  //    syncReturnLm();
-  //  }
-  //});
-
-  //document.addEventListener("click", (e) => {
-  //  const btn = e.target.closest(SEL.legs.toggle);
-  //  if (!btn) return;
-
-  //  queueMicrotask(() => {
-  //    syncPerformanceDerived();
-  //  });
-  //});
+    queueMicrotask(() => {
+      syncPerformanceDerived();
+    });
+  });
 }
