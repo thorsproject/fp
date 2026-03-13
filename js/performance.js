@@ -801,6 +801,18 @@ export async function initPerformance() {
     const perfPanel = e.target.closest("#performancePanel");
     if (!perfPanel) return;
 
+    if (
+      e.target.matches('[data-field="to_roll"]') ||
+      e.target.matches('[data-field="rt_roll"]') ||
+      e.target.matches('[data-field="rt_ld_abn"]') ||
+      e.target.matches('[data-field="ld_ld"]') ||
+      e.target.matches('[data-field="to_tora"]') ||
+      e.target.matches('[data-field="rt_lda"]')
+    ) {
+      syncPerformanceMargins();
+      return;
+    }
+
     if (e.target.matches('[data-field="to_tom"]')) {
       syncReturnLm();
     }
