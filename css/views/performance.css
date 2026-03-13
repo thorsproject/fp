@@ -169,7 +169,7 @@
 .perf-flaps-row{
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .perf-flaps-select{
@@ -193,7 +193,7 @@
 }*/
 
 .perf-flaps-speed{
-  flex: 0 6px auto;
+  /*flex: 0 0 auto;*/
   /*padding: 0 6px;*/
   font-size: 12px;
   white-space: nowrap;
