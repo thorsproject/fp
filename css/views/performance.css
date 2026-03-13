@@ -173,10 +173,10 @@
 }
 
 .perf-flaps-select{
-  width: 65%;
+  width: 70%;
   min-width: 0;
-  height: 20px;
-  min-height: 20px;
+  height: 22px;
+  min-height: 22px;
   border-radius: 4px;
   background: #0f141a;
   color: var(--mint);
