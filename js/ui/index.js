@@ -36,6 +36,6 @@ export function triggerAppSync() {
 }
 
 export function onAppSync(handler) {
-  on(document, "fp:sync", handler);
+  document.addEventListener("fp:sync", handler);
 }
 // ----- Ende: zentraler Sync-Trigger -----
