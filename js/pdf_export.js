@@ -165,9 +165,6 @@ async function exportFuelPerfPdf() {
   const btn = document.getElementById("btnExportFuelPerf");
   const oldLabel = btn?.textContent || "Export PDF";
 
-  btn.disabled = true;
-  btn.textContent = "Erzeuge PDF…";
-
   try {
     if (btn) {
       btn.disabled = true;
@@ -270,7 +267,7 @@ async function exportFuelPerfPdf() {
 
     clearTextField(form, "LDSPEED");
 
-    form.updateFieldAppearances();
+    form.updateFieldAppearances(font);
 
     const pdfBytes = await pdfDoc.save();
 
@@ -286,8 +283,6 @@ async function exportFuelPerfPdf() {
       btn.textContent = oldLabel;
     }
   }
-  btn.disabled = false;
-  btn.textContent = oldLabel;
 }
 
 export function initPdfExport() {
