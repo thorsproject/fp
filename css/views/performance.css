@@ -148,7 +148,8 @@
 
 .perf-cell--out{
   justify-content: center;
-  color: var(--text, #e8eef8);
+  /*color: var(--text, #e8eef8);*/
+  color: var(--text, #0642a2);
   font-weight: 700;
 }
 
@@ -160,8 +161,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  /*background: rgba(255,255,255,0.05);*/
+  background: #0f141a;
   border: 1px solid rgba(255,255,255,0.08);
 }
 
