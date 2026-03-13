@@ -1,4 +1,6 @@
 // js/ui/index.js
+import { emit, on } from "./events.js";
+
 export { qs, qsa, el, closest } from "./dom.js";
 
 export {
