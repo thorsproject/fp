@@ -2,8 +2,60 @@
 
 import { qs, qsa, SEL } from "./ui/index.js";
 import { loadAirportWx } from "./metar.js";
+import { loadPerformanceState, savePerformanceState } from "./storage.js";
 
 let runwayData = {};
+
+const PERF_FIELDS = [
+  "to_rwy",
+  "to_tom",
+  "to_roll",
+  "to_asd",
+  "to_stop_margin",
+
+  "rt_oei_roc",
+  "rt_oei_sc",
+  "rt_eosid",
+  "rt_roll",
+  "rt_ld_abn",
+  "rt_stop_margin",
+
+  "ld_rwy",
+  "ld_lm",
+  "ld_flaps",
+  "ld_roll",
+  "ld_ld",
+  "ld_stop_margin"
+];
+
+function restorePerfFields() {
+  const state = loadPerformanceState();
+
+  for (const name of PERF_FIELDS) {
+    const el = getField(name);
+    if (!el) continue;
+    if (state[name] == null) continue;
+
+    el.value = state[name];
+  }
+}
+
+function bindPerfPersistence() {
+
+  for (const name of PERF_FIELDS) {
+    const el = getField(name);
+    if (!el) continue;
+
+    const save = () => {
+      const state = loadPerformanceState();
+      state[name] = el.value || "";
+      savePerformanceState(state);
+    };
+
+    el.addEventListener("input", save);
+    el.addEventListener("change", save);
+  }
+}
 
 // ---------- helpers ----------
 function formatDateDE(isoDate) {
@@ -552,7 +604,9 @@ export function syncPerformanceDerived() {
 export async function initPerformance() {
   await loadRunwayData();
   syncAiracHeader();
+  restorePerfFields();
   syncPerformanceDerived();
+  bindPerfPersistence();
 
   document.addEventListener("input", (e) => {
     if (e.target.closest(SEL.legs.container)) {

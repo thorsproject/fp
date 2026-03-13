@@ -20,6 +20,7 @@ const SCHEMA_VERSION = 2;
 const LEGACY_KEYS = ["fp.v1"]; // alte Keys mit prüfen
 const EXPORT_COUNTER_KEY = "fp.exportCounter";
 const LAST_AUTOEXPORT_KEY = "fp.lastAutoExportBase";
+const PERF_STORAGE_KEY = "fp.performance.v1";
 
 // ---------- MIGRATION PIPELINE ---------- //
 function normalizeIncoming(obj) {
@@ -472,8 +473,17 @@ export function loadAll({ retryIfMissingDOM = true } = {}) {
   }
 }
 
+export function loadPerformanceState() {
+  try {
+    return JSON.parse(localStorage.getItem(PERF_STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
 export function clearAll() {
   localStorage.removeItem(KEY);
+  localStorage.removeItem(PERF_STORAGE_KEY);
   isDirty = false;
   lastFP = "";
   setSaveIndicator("saved", "Zurückgesetzt");
@@ -537,6 +547,14 @@ export function initAutosave({ delay = 300 } = {}) {
     e.preventDefault();
     e.returnValue = "";
   });
+}
+
+export function savePerformanceState(state) {
+  try {
+    localStorage.setItem(PERF_STORAGE_KEY, JSON.stringify(state || {}));
+  } catch {
+    // ignore
+  }
 }
 
 // ---------- Export / Import ----------
