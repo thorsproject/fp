@@ -125,10 +125,21 @@ function getFieldOrOut(...names) {
 
 function setTextField(form, name, value) {
   try {
-    const field = form.getTextField(name);
+    const field = form.getField(name);
+
+    if (!field) {
+      console.warn(`[pdf_export] Feld nicht gefunden: ${name}`);
+      return;
+    }
+
+    if (typeof field.setText !== "function") {
+      console.warn(`[pdf_export] Feld ist kein Textfeld: ${name}`, field);
+      return;
+    }
+
     field.setText(String(value ?? ""));
-  } catch {
-    // Feld existiert evtl. nicht oder ist kein Textfeld
+  } catch (err) {
+    console.warn(`[pdf_export] Fehler bei Feld ${name}:`, err);
   }
 }
 
@@ -164,11 +175,16 @@ async function exportFuelPerfPdf() {
     if (!res.ok) throw new Error(`PDF-Vorlage nicht gefunden (HTTP ${res.status})`);
 
     const bytes = await res.arrayBuffer();
+
     const { PDFDocument } = window.PDFLib || {};
     if (!PDFDocument) throw new Error("pdf-lib nicht geladen");
 
     const pdfDoc = await PDFDocument.load(bytes);
     const form = pdfDoc.getForm();
+
+    const pdfBytes = await pdfDoc.save({
+    updateFieldAppearances: false,
+    });
 
     // ---------- Kopf ----------
     setTextField(form, "CSREG", getCsRegLine());
@@ -255,10 +271,7 @@ async function exportFuelPerfPdf() {
 
     clearTextField(form, "LDSPEED");
 
-    form.updateFieldAppearances();
-    form.flatten();
-
-    const pdfBytes = await pdfDoc.save();
+    // const pdfBytes = await pdfDoc.save();
 
     const cs = safeFilenamePart(getCallsign() || "FP");
     const date = safeFilenamePart(getDate() || "undated");
