@@ -42,7 +42,14 @@ function getCallsign() {
 }
 
 function getReg() {
-  return value("#lfzSelect") || selectedText("#lfzSelect");
+  const el = document.querySelector("#lfzSelect");
+  if (!el) return "";
+
+  if (el.tagName === "SELECT") {
+    return (el.options[el.selectedIndex]?.text || "").trim();
+  }
+
+  return (el.value || el.textContent || "").trim();
 }
 
 function getDate() {
