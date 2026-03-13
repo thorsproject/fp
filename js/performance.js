@@ -285,7 +285,6 @@ function numFromField(name) {
   const n = parseFloat(raw);
   return Number.isFinite(n) ? n : 0;
 }
-// ---------- Ende helpers ----------
 
 async function syncPerformanceWeather() {
   const toIcao = normIcao(getField("to_icao")?.value || "");
@@ -521,6 +520,24 @@ function syncPerformanceMargins() {
   }
 }
 
+function numFromAny(name) {
+  const fieldEl = getField(name);
+  if (fieldEl) {
+    const raw = String(fieldEl.value || "").replace(/[^\d.-]/g, "").trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  const outEl = document.querySelector(`[data-out="${name}"]`);
+  if (outEl) {
+    const raw = String(outEl.textContent || "").replace(/[^\d.-]/g, "").trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  return 0;
+}
+
 async function syncPerformanceWeatherFields() {
   const myToken = ++perfWxSyncToken;
 
@@ -565,6 +582,53 @@ async function syncPerformanceWeatherFields() {
     }
   }
 }
+
+function bindMarginRecalc() {
+  const sourceFields = [
+    "to_roll",
+    "rt_roll",
+    "to_tora",
+    "rt_lda",
+    "rt_ld_abn",
+    "ld_ld",
+  ];
+
+  sourceFields.forEach((name) => {
+    const el = getField(name);
+    if (!el) return;
+
+    const recalc = () => {
+      syncPerformanceMargins();
+    };
+
+    el.addEventListener("input", recalc);
+    el.addEventListener("change", recalc);
+    el.addEventListener("blur", recalc);
+  });
+}
+
+function syncPerformanceMargins() {
+  const to_roll = numFromField("to_roll");
+  const rt_roll = numFromField("rt_roll");
+  const to_tora = numFromField("to_tora");
+
+  const rt_lda = numFromAny("rt_lda");
+  const rt_ld_abn = numFromField("rt_ld_abn");
+  const ld_ld = numFromField("ld_ld");
+
+  const to_asd = to_roll + rt_roll + 100;
+  setFieldIfExists("to_asd", formatWithSuffix(to_asd, "m"));
+
+  const to_stop = to_tora - to_asd;
+  setFieldIfExists("to_stop_margin", formatWithSuffix(to_stop, "m"));
+
+  const rt_stop = rt_lda - rt_ld_abn;
+  setFieldIfExists("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
+
+  const ld_stop = rt_lda - ld_ld;
+  setFieldIfExists("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
+}
+// ---------- Ende helpers ----------
 
 // ---------- data ----------
 async function loadRunwayData() {
@@ -791,6 +855,7 @@ export async function initPerformance() {
   bindPerformanceFormatting();
   syncPerformanceDerived();
   bindPerfPersistence();
+  bindMarginRecalc();
 
   document.addEventListener("input", (e) => {
     if (e.target.closest(SEL.legs.container)) {
