@@ -189,10 +189,9 @@
 
 .perf-flaps-speed{
   flex: 1;
-  margin-left: 6px;
+  margin-left: 4px;
   font-size: 12px;
   white-space: nowrap;
-  /*opacity: 0.9;*/
 }
 
 /* ---------- Wx ---------- */
