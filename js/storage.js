@@ -5,7 +5,7 @@
 // Keine eigenen qs/qsa/getValue/setValue mehr in storage.js
 // Optional: getInputValue(el) als kleine lokale Helper-Funktion (weil ui/ui.js absichtlich nur Schreibfunktionen enthält)
 
-import { qs, qsa, readValue, setValue, SEL } from "./ui/index.js";
+import { qs, qsa, readValue, setValue, SEL, triggerAppSync } from "./ui/index.js";
 
 // ---------- Debug-Funktion bei Bedarf ----------
 const DEBUG_STORAGE = false; // <- auf true setzen, wenn du Logs willst
@@ -313,11 +313,12 @@ function applyRoute(route) {
   });
 
   // Nach Restore der Toggle-Zustände Derived-Logik erneut anstoßen
-  const legsContainer = qs(SEL.legs.container);
-  if (legsContainer) {
-    legsContainer.dispatchEvent(new Event("input", { bubbles: true }));
-    legsContainer.dispatchEvent(new Event("change", { bubbles: true }));
-  }
+  triggerAppSync();
+  // const legsContainer = qs(SEL.legs.container);
+  //if (legsContainer) {
+  //  legsContainer.dispatchEvent(new Event("input", { bubbles: true }));
+  //  legsContainer.dispatchEvent(new Event("change", { bubbles: true }));
+  //}
 }
 
 // ---------- FUEL ----------

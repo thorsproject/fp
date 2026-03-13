@@ -1,6 +1,6 @@
 // performance.js
 
-import { qs, qsa, SEL } from "./ui/index.js";
+import { qs, qsa, SEL, onAppSync } from "./ui/index.js";
 import { loadAirportWx } from "./metar.js";
 import { loadPerformanceState, savePerformanceState } from "./storage.js";
 
@@ -610,6 +610,11 @@ export async function initPerformance() {
   restorePerfFields();
   syncPerformanceDerived();
   bindPerfPersistence();
+
+  onAppSync(() => {
+    syncPerformanceAirfields();
+    syncPerformanceDerived();
+  });
 
   document.addEventListener("input", (e) => {
     if (e.target.closest(SEL.legs.container)) {

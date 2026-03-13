@@ -27,3 +27,13 @@ export {
 
 export { SEL } from "./selectors.js";
 export { EVT, emit, on, off } from "./events.js";
+
+// ----- zentraler Sync-Trigger -----
+export function triggerAppSync() {
+  emit("fp:sync");
+}
+
+export function onAppSync(handler) {
+  on(document, "fp:sync", handler);
+}
+// ----- Ende: zentraler Sync-Trigger -----
