@@ -175,6 +175,7 @@
 .perf-flaps-select{
   width: 50%;
   min-width: 0;
+  border-radius: 8px;
   background: #0f141a;
   color: var(--mint);
 }
@@ -183,6 +184,7 @@
   font-size: 12px;
   white-space: nowrap;
   opacity: 0.9;
+  gap: 8 px;
 }
 
 /* ---------- Wx ---------- */
