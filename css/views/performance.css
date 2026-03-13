@@ -193,7 +193,7 @@
 }*/
 
 .perf-flaps-speed{
-  flex: 6px 0 auto;
+  flex: 0 6px auto;
   /*padding: 0 6px;*/
   font-size: 12px;
   white-space: nowrap;
