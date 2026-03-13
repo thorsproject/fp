@@ -188,7 +188,8 @@
 }
 
 .perf-flaps-speed{
-  padding: 0 6px;
+  flex: 0 0 auto;
+  /*padding: 0 6px;*/
   font-size: 12px;
   white-space: nowrap;
   opacity: 0.9;
