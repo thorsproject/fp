@@ -248,6 +248,31 @@ function bindUnitField(name, formatter) {
     el.value = formatter(el.value);
   });
 }
+
+function getFlapsSpeedText(fieldName, flapsValue) {
+  const v = String(flapsValue || "").trim().toUpperCase();
+
+  if (fieldName === "to_flaps") {
+    if (v === "UP") return "76 kt";
+    if (v === "APP") return "74 kt";
+    return "";
+  }
+
+  if (fieldName === "rt_flaps") {
+    if (v === "UP") return "92 kt";
+    if (v === "APP") return "88 kt";
+    return "";
+  }
+
+  if (fieldName === "ld_flaps") {
+    if (v === "UP") return "92 kt";
+    if (v === "APP") return "88 kt";
+    if (v === "LDG") return "86 kt";
+    return "";
+  }
+
+  return "";
+}
 // ---------- Ende helpers ----------
 
 async function syncPerformanceWeather() {
@@ -422,7 +447,6 @@ function setFieldIfExists(name, value) {
   el.value = value ?? "";
 }
 
-// Feldnamen hier anpassen, falls sie bei dir anders heißen
 function writeTakeoffMetarToFields(rawMetar) {
   setFieldIfExists("to_wind", formatWind(parseMetarWind(rawMetar)));
   setFieldIfExists("to_temp", formatWithSuffix(parseMetarTemp(rawMetar), "°C"));
@@ -437,6 +461,16 @@ function writeLandingTafWindToField(rawTaf) {
   const wind = parseTafWindForEta(rawTaf, etaHm);
 
   setFieldIfExists("ld_wind", formatWind(wind));
+}
+
+function syncFlapsSpeeds() {
+  const toFlaps = getField("to_flaps")?.value || "";
+  const rtFlaps = getField("rt_flaps")?.value || "";
+  const ldFlaps = getField("ld_flaps")?.value || "";
+
+  setOut("to_flaps_speed", getFlapsSpeedText("to_flaps", toFlaps));
+  setOut("rt_flaps_speed", getFlapsSpeedText("rt_flaps", rtFlaps));
+  setOut("ld_flaps_speed", getFlapsSpeedText("ld_flaps", ldFlaps));
 }
 
 async function syncPerformanceWeatherFields() {
@@ -697,6 +731,7 @@ export function syncPerformanceDerived() {
   syncReturnLm();
   syncPerformanceWeather();
   syncPerformanceWeatherFields();
+  syncFlapsSpeeds();
 }
 
 // ---------- init ----------
@@ -736,6 +771,14 @@ export async function initPerformance() {
       e.target.matches('[data-field="ld_rwy"]')
     ) {
       syncDeclaredDistances();
+    }
+
+    if (
+      e.target.matches('[data-field="to_flaps"]') ||
+      e.target.matches('[data-field="rt_flaps"]') ||
+      e.target.matches('[data-field="ld_flaps"]')
+    ) {
+      syncFlapsSpeeds();
     }
 
     if (e.target.matches('[data-field="rt_eosid"]')) {
