@@ -402,7 +402,7 @@ map.on("click", (e) => {
   initFuelPlanning();
   initResets();
   initPdfExport();
-
+  
   // ---------- SAFETY: erst rendern lassen, dann laden ----------
   requestAnimationFrame(() => {
     const hasLegs = qsa(SEL.legs.frames).length >= 1;
@@ -426,15 +426,4 @@ map.on("click", (e) => {
 
     initAutosave();
   });
-  let autoSaveTimer;
-
-  function autoSaveFP() {
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(() => {
-      saveAll();
-    }, 300);
-  }
-
-  document.addEventListener("input", autoSaveFP);
-  document.addEventListener("change", autoSaveFP);
 })();
