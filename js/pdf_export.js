@@ -182,10 +182,6 @@ async function exportFuelPerfPdf() {
     const pdfDoc = await PDFDocument.load(bytes);
     const form = pdfDoc.getForm();
 
-    const pdfBytes = await pdfDoc.save({
-    updateFieldAppearances: false,
-    });
-
     // ---------- Kopf ----------
     setTextField(form, "CSREG", getCsRegLine());
     setTextField(form, "ROUTEALT", getRouteAltLine());
@@ -271,7 +267,9 @@ async function exportFuelPerfPdf() {
 
     clearTextField(form, "LDSPEED");
 
-    // const pdfBytes = await pdfDoc.save();
+    const pdfBytes = await pdfDoc.save({
+    updateFieldAppearances: false,
+    });
 
     const cs = safeFilenamePart(getCallsign() || "FP");
     const date = safeFilenamePart(getDate() || "undated");
