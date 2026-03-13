@@ -403,9 +403,6 @@ map.on("click", (e) => {
   initResets();
   initPdfExport();
 
-  document.addEventListener("input", autoSaveFP);
-  document.addEventListener("change", autoSaveFP);
-
   // ---------- SAFETY: erst rendern lassen, dann laden ----------
   requestAnimationFrame(() => {
     const hasLegs = qsa(SEL.legs.frames).length >= 1;
