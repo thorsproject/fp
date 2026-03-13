@@ -616,47 +616,47 @@ export async function initPerformance() {
     syncPerformanceDerived();
   });
 
-  document.addEventListener("input", (e) => {
-    if (e.target.closest(SEL.legs.container)) {
-      syncPerformanceDerived();
-      return;
-    }
+  //document.addEventListener("input", (e) => {
+  //  if (e.target.closest(SEL.legs.container)) {
+  //    syncPerformanceDerived();
+  //    return;
+  //  }
 
-    const perfPanel = e.target.closest("#performancePanel");
-    if (!perfPanel) return;
+  //  const perfPanel = e.target.closest("#performancePanel");
+  //  if (!perfPanel) return;
 
-    if (e.target.matches('[data-field="to_tom"]')) {
-      syncReturnLm();
-    }
-  });
+  //  if (e.target.matches('[data-field="to_tom"]')) {
+  //    syncReturnLm();
+  //  }
+  //});
 
-  document.addEventListener("change", (e) => {
-    if (e.target.closest(SEL.legs.container)) {
-      syncPerformanceDerived();
-      return;
-    }
+  //document.addEventListener("change", (e) => {
+  //  if (e.target.closest(SEL.legs.container)) {
+  //    syncPerformanceDerived();
+  //    return;
+  //  }
 
-    const perfPanel = e.target.closest("#performancePanel");
-    if (!perfPanel) return;
+  //  const perfPanel = e.target.closest("#performancePanel");
+  //  if (!perfPanel) return;
 
-    if (
-      e.target.matches('[data-field="to_rwy"]') ||
-      e.target.matches('[data-field="ld_rwy"]')
-    ) {
-      syncDeclaredDistances();
-    }
+  //  if (
+  //    e.target.matches('[data-field="to_rwy"]') ||
+  //    e.target.matches('[data-field="ld_rwy"]')
+  //  ) {
+  //    syncDeclaredDistances();
+  //  }
 
-    if (e.target.matches('[data-field="rt_eosid"]')) {
-      syncReturnLm();
-    }
-  });
+  //  if (e.target.matches('[data-field="rt_eosid"]')) {
+  //    syncReturnLm();
+  //  }
+  //});
 
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(SEL.legs.toggle);
-    if (!btn) return;
+  //document.addEventListener("click", (e) => {
+  //  const btn = e.target.closest(SEL.legs.toggle);
+  //  if (!btn) return;
 
-    queueMicrotask(() => {
-      syncPerformanceDerived();
-    });
-  });
+  //  queueMicrotask(() => {
+  //    syncPerformanceDerived();
+  //  });
+  //});
 }
