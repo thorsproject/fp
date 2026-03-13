@@ -25,7 +25,7 @@ const PERF_FIELDS = [
   "ld_flaps",
   "ld_roll",
   "ld_ld",
-  "ld_stop_margin"
+  "ld_stop_margin",
 ];
 
 function restorePerfFields() {
@@ -41,7 +41,6 @@ function restorePerfFields() {
 }
 
 function bindPerfPersistence() {
-
   for (const name of PERF_FIELDS) {
     const el = getField(name);
     if (!el) continue;
@@ -58,41 +57,33 @@ function bindPerfPersistence() {
 }
 
 function bindPerformanceFormatting() {
-  // Meter
   [
     "to_tora", "to_roll", "to_asd", "to_stop_margin",
     "rt_lda", "rt_roll", "rt_ld_abn", "rt_stop_margin",
-    "ld_lda", "ld_roll", "ld_ld", "ld_stop_margin"
+    "ld_lda", "ld_roll", "ld_ld", "ld_stop_margin",
   ].forEach((name) => bindUnitField(name, (v) => formatWithSuffix(v, "m")));
 
-  // Temperatur
   ["to_temp", "ld_temp"].forEach((name) =>
     bindUnitField(name, (v) => formatWithSuffix(v, "°C"))
   );
 
-  // QNH
   ["to_qnh", "ld_qnh"].forEach((name) =>
     bindUnitField(name, (v) => formatWithSuffix(v, "hpa"))
   );
 
-  // KG
   ["to_tom", "rt_lm", "ld_lm"].forEach((name) =>
     bindUnitField(name, (v) => formatWithSuffix(v, "kg"))
   );
 
-  // ROC
   bindUnitField("rt_oei_roc", (v) => formatWithSuffix(v, "ft/Min"));
 
-  // Wind
   ["to_wind", "ld_wind"].forEach((name) =>
     bindUnitField(name, (v) => formatWind(v))
   );
 
-  // Standardwert für OEI SC
   const oeiSc = getField("rt_oei_sc");
   if (oeiSc) {
     ensureDefaultValue(oeiSc, ">10000 ft");
-
     oeiSc.addEventListener("blur", () => {
       ensureDefaultValue(oeiSc, ">10000 ft");
     });
@@ -216,10 +207,8 @@ function formatWind(val = "") {
   const raw = String(val).trim().toUpperCase().replace(/\s+/g, "");
   if (!raw) return "";
 
-  // schon formatiert
   if (/^\d{3}\/\d{2,3}(G\d{2,3})?$/.test(raw)) return raw;
 
-  // 23015 oder 230015
   const m = raw.match(/^(\d{3})(\d{2,3})(G\d{2,3})?$/);
   if (!m) return raw;
 
@@ -284,6 +273,85 @@ function numFromField(name) {
 
   const n = parseFloat(raw);
   return Number.isFinite(n) ? n : 0;
+}
+
+function numFromAny(name) {
+  const fieldEl = getField(name);
+  if (fieldEl) {
+    const raw = String(fieldEl.value || "").replace(/[^\d.-]/g, "").trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  const outEl = document.querySelector(`[data-out="${name}"]`);
+  if (outEl) {
+    const raw = String(outEl.textContent || "").replace(/[^\d.-]/g, "").trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  return 0;
+}
+
+function setFieldIfExists(name, value) {
+  const el = getField(name);
+  if (!el) return;
+  el.value = value ?? "";
+}
+
+function syncFlapsSpeeds() {
+  const toFlaps = getField("to_flaps")?.value || "";
+  const rtFlaps = getField("rt_flaps")?.value || "";
+  const ldFlaps = getField("ld_flaps")?.value || "";
+
+  setOut("to_flaps_speed", getFlapsSpeedText("to_flaps", toFlaps));
+  setOut("rt_flaps_speed", getFlapsSpeedText("rt_flaps", rtFlaps));
+  setOut("ld_flaps_speed", getFlapsSpeedText("ld_flaps", ldFlaps));
+}
+
+function syncPerformanceMargins() {
+  const to_roll = numFromField("to_roll");
+  const rt_roll = numFromField("rt_roll");
+  const to_tora = numFromField("to_tora");
+
+  const rt_lda = numFromAny("rt_lda");
+  const rt_ld_abn = numFromField("rt_ld_abn");
+  const ld_ld = numFromField("ld_ld");
+
+  const to_asd = to_roll + rt_roll + 100;
+  setFieldIfExists("to_asd", formatWithSuffix(to_asd, "m"));
+
+  const to_stop = to_tora - to_asd;
+  setFieldIfExists("to_stop_margin", formatWithSuffix(to_stop, "m"));
+
+  const rt_stop = rt_lda - rt_ld_abn;
+  setFieldIfExists("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
+
+  const ld_stop = rt_lda - ld_ld;
+  setFieldIfExists("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
+}
+
+function bindMarginRecalc() {
+  const sourceFields = [
+    "to_roll",
+    "rt_roll",
+    "to_tora",
+    "rt_ld_abn",
+    "ld_ld",
+  ];
+
+  sourceFields.forEach((name) => {
+    const el = getField(name);
+    if (!el) return;
+
+    const recalc = () => {
+      syncPerformanceMargins();
+    };
+
+    el.addEventListener("input", recalc);
+    el.addEventListener("change", recalc);
+    el.addEventListener("blur", recalc);
+  });
 }
 
 async function syncPerformanceWeather() {
@@ -392,8 +460,6 @@ function parseMetarQnh(raw = "") {
 
 function parseTafBaseWind(raw = "") {
   const txt = String(raw).toUpperCase();
-
-  // TAF ICAO DDHHMMZ DDHH/DDHH WIND...
   const m = txt.match(/\bTAF(?:\s+\w+)?\s+[A-Z]{4}\s+\d{6}Z\s+\d{4}\/\d{4}\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?)KT\b/);
   return m ? m[1] : "";
 }
@@ -404,20 +470,14 @@ function parseTafWindForEta(rawTaf = "", etaHm = null) {
 
   let selectedWind = parseTafBaseWind(txt);
 
-  if (!etaHm) {
-    return selectedWind;
-  }
+  if (!etaHm) return selectedWind;
 
-  // Gültigkeit direkt aus dem TAF lesen, z. B. 1100/1112 -> Tag 11
   const validityMatch = txt.match(/\b\d{6}Z\s+(\d{2})\d{2}\/(\d{2})\d{2}\b/);
-  if (!validityMatch) {
-    return selectedWind;
-  }
+  if (!validityMatch) return selectedWind;
 
   const tafDayFrom = Number(validityMatch[1]);
   const etaAbs = absMinutes(tafDayFrom, etaHm.hh, etaHm.mm);
 
-  // BECMG: neue Bedingungen gelten ab ENDZEIT
   const becmgRe =
     /\bBECMG\s+(\d{2})(\d{2})\/(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?)KT\b/g;
 
@@ -433,7 +493,6 @@ function parseTafWindForEta(rawTaf = "", etaHm = null) {
     }
   }
 
-  // FM: gilt ab exakt diesem Zeitpunkt
   const fmRe =
     /\bFM(\d{2})(\d{2})(\d{2})\s+((?:\d{3}|VRB)\d{2,3}(?:G\d{2,3})?)KT\b/g;
 
@@ -452,12 +511,6 @@ function parseTafWindForEta(rawTaf = "", etaHm = null) {
   return selectedWind;
 }
 
-function setFieldIfExists(name, value) {
-  const el = getField(name);
-  if (!el) return;
-  el.value = value ?? "";
-}
-
 function writeTakeoffMetarToFields(rawMetar) {
   setFieldIfExists("to_wind", formatWind(parseMetarWind(rawMetar)));
   setFieldIfExists("to_temp", formatWithSuffix(parseMetarTemp(rawMetar), "°C"));
@@ -472,70 +525,6 @@ function writeLandingTafWindToField(rawTaf) {
   const wind = parseTafWindForEta(rawTaf, etaHm);
 
   setFieldIfExists("ld_wind", formatWind(wind));
-}
-
-function syncFlapsSpeeds() {
-  const toFlaps = getField("to_flaps")?.value || "";
-  const rtFlaps = getField("rt_flaps")?.value || "";
-  const ldFlaps = getField("ld_flaps")?.value || "";
-
-  setOut("to_flaps_speed", getFlapsSpeedText("to_flaps", toFlaps));
-  setOut("rt_flaps_speed", getFlapsSpeedText("rt_flaps", rtFlaps));
-  setOut("ld_flaps_speed", getFlapsSpeedText("ld_flaps", ldFlaps));
-}
-
-function syncPerformanceMargins() {
-
-  const to_roll = numFromField("to_roll");
-  const rt_roll = numFromField("rt_roll");
-  const to_tora = numFromField("to_tora");
-
-  const rt_lda = numFromField("rt_lda");
-  const rt_ld_abn = numFromField("rt_ld_abn");
-
-  const ld_ld = numFromField("ld_ld");
-
-  // ---------- ASD ----------
-  const to_asd = to_roll + rt_roll + 100;
-  if (to_asd > 0) {
-    setFieldIfExists("to_asd", formatWithSuffix(to_asd, "m"));
-  }
-
-  // ---------- TO STOP ----------
-  const to_stop = to_tora - to_asd;
-  if (to_stop || to_stop === 0) {
-    setFieldIfExists("to_stop_margin", formatWithSuffix(to_stop, "m"));
-  }
-
-  // ---------- RT STOP ----------
-  const rt_stop = rt_lda - rt_ld_abn;
-  if (rt_stop || rt_stop === 0) {
-    setFieldIfExists("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
-  }
-
-  // ---------- LD STOP ----------
-  const ld_stop = rt_lda - ld_ld;
-  if (ld_stop || ld_stop === 0) {
-    setFieldIfExists("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
-  }
-}
-
-function numFromAny(name) {
-  const fieldEl = getField(name);
-  if (fieldEl) {
-    const raw = String(fieldEl.value || "").replace(/[^\d.-]/g, "").trim();
-    const n = parseFloat(raw);
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  const outEl = document.querySelector(`[data-out="${name}"]`);
-  if (outEl) {
-    const raw = String(outEl.textContent || "").replace(/[^\d.-]/g, "").trim();
-    const n = parseFloat(raw);
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  return 0;
 }
 
 async function syncPerformanceWeatherFields() {
@@ -558,7 +547,6 @@ async function syncPerformanceWeatherFields() {
     try {
       const wx = await loadAirportWx(toIcao);
       if (myToken !== perfWxSyncToken) return;
-
       const rawMetar = wx?.metar?.rawOb || wx?.metar?.raw_text || "";
       writeTakeoffMetarToFields(rawMetar);
     } catch {
@@ -573,7 +561,6 @@ async function syncPerformanceWeatherFields() {
     try {
       const wx = await loadAirportWx(ldIcao);
       if (myToken !== perfWxSyncToken) return;
-
       const rawTaf = wx?.taf?.rawTAF || wx?.taf?.raw_text || "";
       writeLandingTafWindToField(rawTaf);
     } catch {
@@ -581,52 +568,6 @@ async function syncPerformanceWeatherFields() {
       setFieldIfExists("ld_wind", "");
     }
   }
-}
-
-function bindMarginRecalc() {
-  const sourceFields = [
-    "to_roll",
-    "rt_roll",
-    "to_tora",
-    "rt_lda",
-    "rt_ld_abn",
-    "ld_ld",
-  ];
-
-  sourceFields.forEach((name) => {
-    const el = getField(name);
-    if (!el) return;
-
-    const recalc = () => {
-      syncPerformanceMargins();
-    };
-
-    el.addEventListener("input", recalc);
-    el.addEventListener("change", recalc);
-    el.addEventListener("blur", recalc);
-  });
-}
-
-function syncPerformanceMargins() {
-  const to_roll = numFromField("to_roll");
-  const rt_roll = numFromField("rt_roll");
-  const to_tora = numFromField("to_tora");
-
-  const rt_lda = numFromAny("rt_lda");
-  const rt_ld_abn = numFromField("rt_ld_abn");
-  const ld_ld = numFromField("ld_ld");
-
-  const to_asd = to_roll + rt_roll + 100;
-  setFieldIfExists("to_asd", formatWithSuffix(to_asd, "m"));
-
-  const to_stop = to_tora - to_asd;
-  setFieldIfExists("to_stop_margin", formatWithSuffix(to_stop, "m"));
-
-  const rt_stop = rt_lda - rt_ld_abn;
-  setFieldIfExists("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
-
-  const ld_stop = rt_lda - ld_ld;
-  setFieldIfExists("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
 }
 // ---------- Ende helpers ----------
 
@@ -636,8 +577,7 @@ async function loadRunwayData() {
     const res = await fetch("./data/performance_runways.json", { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     runwayData = await res.json();
-  } catch (err) {
-    // console.error("[performance] runway data load failed:", err);
+  } catch {
     runwayData = {};
   }
 }
@@ -684,8 +624,6 @@ function applyDeclaredDistances(icao, rwy, { toraField, ldaField } = {}) {
 // ---------- legs -> performance ----------
 function isLegActive(frame, legNum) {
   const btn = qs(SEL.legs.toggleByLeg(legNum));
-
-  // Falls kein Toggle gefunden wird, Leg lieber als aktiv behandeln
   if (!btn) return true;
 
   const state = String(btn.dataset?.state || "").toLowerCase();
@@ -703,7 +641,6 @@ function isLegActive(frame, legNum) {
   if (btn.getAttribute("aria-pressed") === "false") return false;
   if (btn.getAttribute("aria-pressed") === "true") return true;
 
-  // Fallback: wenn Frame sichtbar ist, als aktiv behandeln
   if (frame && frame.classList.contains("is-hidden")) return false;
 
   return true;
@@ -716,20 +653,15 @@ function isLegFrameActive(frame, legNum) {
   const fromEl = qs(SEL.legs.aeroFrom, frame);
   const btn = qs(SEL.legs.toggleByLeg(legNum));
 
-  // 1) expliziter Toggle-State, falls vorhanden
   const state = String(btn?.dataset?.state || "").toLowerCase();
   if (state === "off" || state === "inactive" || state === "disabled") return false;
   if (state === "on" || state === "active" || state === "enabled") return true;
 
-  // 2) disabled Inputs sind praktisch inaktiv
   if (toEl?.disabled && fromEl?.disabled) return false;
-
-  // 3) versteckte Frames als inaktiv behandeln
   if (frame.classList.contains("is-hidden")) return false;
   if (frame.hidden) return false;
   if (frame.getAttribute("aria-hidden") === "true") return false;
 
-  // 4) Fallback: aktiv
   return true;
 }
 
@@ -770,7 +702,7 @@ export function syncPerformanceAirfields() {
   const ldIcao = getField("ld_icao");
 
   if (toIcao) toIcao.value = depIcao;
-  if (rtIcao) rtIcao.value = depIcao; // Return/Div = departure airfield
+  if (rtIcao) rtIcao.value = depIcao;
   if (ldIcao) ldIcao.value = destIcao;
 }
 
@@ -801,7 +733,6 @@ function syncDeclaredDistances() {
       toraField: "to_tora",
     });
 
-    // RETURN/DIV übernimmt TAKEOFF RWY + LDA vom Departure Airfield
     setOut("rt_rwy", toRwy);
 
     const rtData = runwayData?.[rtIcao]?.runways?.[toRwy];
@@ -819,7 +750,7 @@ function syncDeclaredDistances() {
 
 // ---------- RT LM ----------
 function syncReturnLm() {
-  const tom = parseNum(getField("to_tom")?.value || "");
+  const tom = parseNum(stripUnit(getField("to_tom")?.value || ""));
   const eosid = getField("rt_eosid")?.value || "";
 
   if (!Number.isFinite(tom) || !eosid) {
@@ -866,18 +797,6 @@ export async function initPerformance() {
     const perfPanel = e.target.closest("#performancePanel");
     if (!perfPanel) return;
 
-    if (
-      e.target.matches('[data-field="to_roll"]') ||
-      e.target.matches('[data-field="rt_roll"]') ||
-      e.target.matches('[data-field="rt_ld_abn"]') ||
-      e.target.matches('[data-field="ld_ld"]') ||
-      e.target.matches('[data-field="to_tora"]') ||
-      e.target.matches('[data-field="rt_lda"]')
-    ) {
-      syncPerformanceMargins();
-      return;
-    }
-
     if (e.target.matches('[data-field="to_tom"]')) {
       syncReturnLm();
     }
@@ -897,6 +816,7 @@ export async function initPerformance() {
       e.target.matches('[data-field="ld_rwy"]')
     ) {
       syncDeclaredDistances();
+      syncPerformanceMargins();
     }
 
     if (
