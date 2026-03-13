@@ -187,8 +187,13 @@
   font-size: 13px;
 }
 
+/*.perf-flaps-row .perf-flaps-select{
+  flex: 0 0 50%;
+  max-width: 50%;
+}*/
+
 .perf-flaps-speed{
-  flex: 0 0 auto;
+  flex: 6px 0 auto;
   /*padding: 0 6px;*/
   font-size: 12px;
   white-space: nowrap;
