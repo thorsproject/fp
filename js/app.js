@@ -402,15 +402,6 @@ map.on("click", (e) => {
   initFuelPlanning();
   initResets();
   initPdfExport();
-  
-  let autoSaveTimer;
-
-  function autoSaveFP() {
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(() => {
-      saveAll();
-    }, 300);
-  }
 
   document.addEventListener("input", autoSaveFP);
   document.addEventListener("change", autoSaveFP);
