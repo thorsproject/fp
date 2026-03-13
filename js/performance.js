@@ -495,16 +495,19 @@ function getLastActiveLegFrame() {
   const frames = qsa(SEL.legs.frames);
   if (!frames.length) return null;
 
-  let lastActive = frames[0] || null;
-
-  for (let i = 1; i < frames.length; i++) {
+  for (let i = frames.length - 1; i >= 0; i--) {
     const legNum = i + 1;
-    const btn = qs(SEL.legs.toggleByLeg(legNum));
-    const isActive = btn?.dataset?.state === "active";
-    if (isActive) lastActive = frames[i];
+    const frame = frames[i];
+
+    if (!isLegFrameActive(frame, legNum)) continue;
+
+    const toEl = qs(SEL.legs.aeroTo, frame);
+    const toVal = normIcao(toEl?.value || "");
+
+    if (toVal) return frame;
   }
 
-  return lastActive;
+  return frames[0] || null;
 }
 
 export function syncPerformanceAirfields() {
