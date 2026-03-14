@@ -298,12 +298,14 @@ async function exportFuelPerfPdf() {
 
     const cs = safeFilenamePart(getCallsign() || "FP");
     const date = safeFilenamePart(getDate() || "undated");
+    const tabTitle = `Fuel+Perf – ${cs} – ${date}`;
 
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
 
     if (previewWin) {
-    previewWin.location.replace(url);
+      previewWin.document.title = tabTitle;
+      previewWin.location.replace(url);
     } else {
       const fallback = window.open(url, "_blank");
     // Download-Version (optional)
