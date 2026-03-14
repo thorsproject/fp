@@ -276,8 +276,11 @@
 }
 
 .fuel-miscs{
+  width: fit-content;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0,1fr));
+  /*grid-template-columns: repeat(3, 130px);*/
   gap: var(--space-md);
 }
 
@@ -311,7 +314,7 @@
   width: fit-content;
   max-width: 100%;
   grid-template-columns: 140px repeat(4, 56px) 68px 68px;
-  column-gap: 2px;
+  column-gap: 2px; /* alt: 8px; Abstand zwischen den Tripfuel-Legs */
 }
 
 .c-desc{
@@ -323,13 +326,6 @@
 .fuel-foot{
   width: fit-content;
   max-width: 100%;
-}
-
-.fuel-miscs{
-  width: fit-content;
-  max-width: 100%;
-  grid-template-columns: repeat(3, 130px);
-  gap: 10px;
 }
 
 .c-desc--wide{
