@@ -461,6 +461,131 @@ async function syncPerformanceWeather() {
 
 let perfWxSyncToken = 0;
 
+const landingWxCache = new Map();
+
+function getRouteDateIso() {
+  const routeDate =
+    document.getElementById("dateInput")?.value ||
+    qs('[data-field="date"]')?.value ||
+    "";
+
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(routeDate)) ? routeDate : "";
+}
+
+function getLastActiveLegEtaHm() {
+  const lastLeg = getLastActiveLegFrameForPerf();
+  const etaEl = lastLeg ? qs(SEL.legs.eta, lastLeg) : null;
+  return normalizeHm(etaEl?.value || "");
+}
+
+function buildLandingEtaLocalIso() {
+  const dateIso = getRouteDateIso();
+  const etaHm = getLastActiveLegEtaHm();
+
+  if (!dateIso || !etaHm) return "";
+
+  const hh = String(etaHm.hh).padStart(2, "0");
+  const mm = String(etaHm.mm).padStart(2, "0");
+
+  return `${dateIso}T${hh}:${mm}`;
+}
+
+function findNearestHourlyIndex(times = [], targetIso = "") {
+  if (!Array.isArray(times) || !times.length || !targetIso) return -1;
+
+  const target = new Date(targetIso);
+  if (Number.isNaN(target.getTime())) return -1;
+
+  let bestIdx = -1;
+  let bestDiff = Infinity;
+
+  for (let i = 0; i < times.length; i++) {
+    const t = new Date(times[i]);
+    if (Number.isNaN(t.getTime())) continue;
+
+    const diff = Math.abs(t.getTime() - target.getTime());
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      bestIdx = i;
+    }
+  }
+
+  return bestIdx;
+}
+
+async function loadLandingForecastAtEta(icao, etaLocalIso) {
+  const apt = getAirfieldByIcao(normIcao(icao));
+  if (!apt) return null;
+
+  const lat = Number(apt.lat);
+  const lon = Number(apt.lon);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+
+  const cacheKey = `${normIcao(icao)}|${etaLocalIso}`;
+  if (landingWxCache.has(cacheKey)) {
+    return landingWxCache.get(cacheKey);
+  }
+
+  const url =
+    `https://api.open-meteo.com/v1/dwd-icon` +
+    `?latitude=${encodeURIComponent(lat)}` +
+    `&longitude=${encodeURIComponent(lon)}` +
+    `&hourly=temperature_2m,pressure_msl` +
+    `&timezone=Europe%2FBerlin` +
+    `&forecast_days=7`;
+
+  const promise = fetch(url, { cache: "no-store" })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Open-Meteo HTTP ${res.status}`);
+      return res.json();
+    })
+    .then((data) => {
+      const hourly = data?.hourly;
+      const idx = findNearestHourlyIndex(hourly?.time || [], etaLocalIso);
+      if (idx < 0) return null;
+
+      const temp = hourly?.temperature_2m?.[idx];
+      const qnh = hourly?.pressure_msl?.[idx];
+
+      return {
+        temp: Number.isFinite(Number(temp)) ? Number(temp) : null,
+        qnh: Number.isFinite(Number(qnh)) ? Math.round(Number(qnh)) : null,
+        time: hourly?.time?.[idx] || "",
+      };
+    })
+    .catch(() => null);
+
+  landingWxCache.set(cacheKey, promise);
+  return promise;
+}
+
+async function writeLandingForecastToFields(icao) {
+  const etaLocalIso = buildLandingEtaLocalIso();
+  if (!icao || !etaLocalIso) {
+    setFieldIfExists("ld_temp", "");
+    setFieldIfExists("ld_qnh", "");
+    return;
+  }
+
+  const fx = await loadLandingForecastAtEta(icao, etaLocalIso);
+  if (!fx) {
+    setFieldIfExists("ld_temp", "");
+    setFieldIfExists("ld_qnh", "");
+    return;
+  }
+
+  setFieldIfExists("ld_temp", formatWithSuffix(
+    Number.isFinite(fx.temp) ? formatNum(fx.temp) : "",
+    "°C"
+  ));
+
+  setFieldIfExists("ld_qnh", formatWithSuffix(
+    Number.isFinite(fx.qnh) ? String(fx.qnh) : "",
+    "hpa"
+  ));
+}
+
 function normalizeHm(raw = "") {
   const s = String(raw).trim().replace(":", "");
   if (!/^\d{4}$/.test(s)) return null;
@@ -604,6 +729,8 @@ async function syncPerformanceWeatherFields() {
 
   if (!ldIcao) {
     setFieldIfExists("ld_wind", "");
+    setFieldIfExists("ld_temp", "");
+    setFieldIfExists("ld_qnh", "");    
   }
 
   if (toIcao) {
@@ -629,6 +756,8 @@ async function syncPerformanceWeatherFields() {
     } catch {
       if (myToken !== perfWxSyncToken) return;
       setFieldIfExists("ld_wind", "");
+      setFieldIfExists("ld_temp", "");
+      setFieldIfExists("ld_qnh", "");      
     }
   }
 }
