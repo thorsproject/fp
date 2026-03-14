@@ -267,7 +267,7 @@
 .fuel-total::before{
   content: "";
   position: absolute;
-  inset: 0 -6px;
+  inset: 0 -8px; /* Balkenposition */
   background: rgba(0,255,204,0.06);
   border-radius: 8px;
   z-index: 0;
