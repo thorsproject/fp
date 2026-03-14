@@ -664,7 +664,10 @@ async function writeLandingForecastToFields(icao) {
 
   setFieldIfExists(
     "ld_temp",
-    formatWithSuffix(Number.isFinite(fx.temp) ? formatNum(fx.temp) : "", "°C")
+    formatWithSuffix(
+      Number.isFinite(fx.temp) ? String(roundTempForDisplay(fx.temp)) : "",
+      "°C"
+    )
   );
 
   setFieldIfExists(
@@ -855,6 +858,15 @@ async function syncPerformanceWeatherFields() {
       setFieldIfExists("ld_qnh", "");
     }
   }
+}
+
+function roundTempForDisplay(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "";
+
+  return n >= 0
+    ? Math.floor(n + 0.5)
+    : Math.ceil(n - 0.5);
 }
 // ---------- Ende helpers ----------
 
