@@ -190,7 +190,7 @@ async function exportFuelPerfPdf() {
   const previewWin = window.open("", "_blank");
   const btn = document.getElementById("btnExportFuelPerf");
   const oldLabel = btn?.textContent || "Export PDF";
-  const previewWin = window.open("", "_blank"); // var zum pre-opening pdf-datei
+  const previewWin = window.open("", "_blank");
 
   try {
     if (btn) {
@@ -302,12 +302,12 @@ async function exportFuelPerfPdf() {
     const url = URL.createObjectURL(blob);
 
     if (previewWin) {
-      previewWin.location.href = url;
+    previewWin.location.replace(url);
     } else {
-      const fallback = window.open(url, "_blank");
-      if (!fallback) {
+    const fallback = window.open(url, "_blank");
+    if (!fallback) {
         alert("Popup wurde blockiert. Bitte Popup-Blocker für diese Seite deaktivieren.");
-      }
+    }
     }
 
     setTimeout(() => URL.revokeObjectURL(url), 60000);
