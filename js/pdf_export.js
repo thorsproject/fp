@@ -190,6 +190,7 @@ async function exportFuelPerfPdf() {
   const previewWin = window.open("", "_blank");
   const btn = document.getElementById("btnExportFuelPerf");
   const oldLabel = btn?.textContent || "Export PDF";
+  const previewWin = window.open("", "_blank"); // var zum pre-opening pdf-datei
 
   try {
     if (btn) {
@@ -296,15 +297,17 @@ async function exportFuelPerfPdf() {
 
     const cs = safeFilenamePart(getCallsign() || "FP");
     const date = safeFilenamePart(getDate() || "undated");
-    // await downloadBytes(pdfBytes, `Fuel_Perf_${date}_${cs}.pdf`);
 
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
 
     if (previewWin) {
-    previewWin.location.href = url;
+      previewWin.location.href = url;
     } else {
-    window.open(url, "_blank");
+      const fallback = window.open(url, "_blank");
+      if (!fallback) {
+        alert("Popup wurde blockiert. Bitte Popup-Blocker für diese Seite deaktivieren.");
+      }
     }
 
     setTimeout(() => URL.revokeObjectURL(url), 60000);
