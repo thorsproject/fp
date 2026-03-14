@@ -54,13 +54,19 @@
         * Alternates
 
   1. Map / Weather: Leaflet Map mit ICAO Markern
-      - Markerfarbe nach Flight Category
-      - Flight Category:
+      * OpenWeather Daten über Cloudflare Worker Proxy.
+      * Funktionen:
+          - METAR / TAF Anzeige
+          - Radar
+          - Cloud Layer
+          - Wind
+      * Markerfarbe nach Flight Category
+      * Flight Category:
           - VFR   → grün
           - MVFR  → blau
           - IFR   → rot
           - LIFR  → magenta
-      - Militärplätze ohne fltCat werden über METAR Colour State erkannt:
+      * Militärplätze ohne fltCat werden über METAR Colour State erkannt:
           - METAR enthält z.B.
           - BLU+
           - WHT
@@ -84,56 +90,83 @@
                         - PROB30 TEMPO
                         - PROB40 TEMPO
                           bleiben zusammen.
+      * Verbesserungen:
+          - Browser Cache für METAR/TAF
+          - Offline-Hinweis: Offline-Modus: METAR / TAF evtl. nicht aktuell
+
+      * Weather Layer werden nicht mehr gespeichert.
+      * Nach Reload immer OFF.
 
   3. Fuel Planning
-      Komplett funktionsfähig.
-      Berechnungen:
-        * Trip Fuel
-        * Company Fuel
-        * Contingency (5%)
-        * Alternate Fuel
-        * Final Reserve IFR / VFR
-        * Planned Takeoff Fuel
-        * Extra Fuel LRC
-        * Takeoff Fuel
-        * Block Fuel
-        * Taxi Fuel
-        * Landing Fuel
-
-      Features:
-        * Standard Block Fuel Toggle
-        * Aux Tank Toggle
-        * Leg-abhängige Trip-Berechnung
-        * Kompakte Grid Darstellung
-
-      UI:
-        * Aviation Style Table Layout
-        * Item Column teilweise über mehrere Grid-Spalten
-        * Hervorgehobene Zeilen:
-          * Takeoff Fuel
-          * Block Fuel
-          * Landing Fuel
+      * Komplett funktionsfähig.
+      * Einheiten werden automatisch angehängt:
+          - USG
+          - Time (hh:mm)
+      * Berechnungen:
+          - Trip Fuel
+          - Company Fuel
+          - Contingency (5%)
+          - Alternate Fuel
+          - Final Reserve IFR / VFR
+          - Planned Takeoff Fuel
+          - Extra Fuel LRC
+          - Takeoff Fuel
+          - Block Fuel
+          - Taxi Fuel
+          - Landing Fuel
+      * Features:
+          - Standard Block Fuel Toggle
+          - Aux Tank Toggle
+          - Leg-abhängige Trip-Berechnung
+          - Kompakte Grid Darstellung
+      * UI:
+          - Aviation Style Table Layout
+          - Item Column teilweise über mehrere Grid-Spalten
+          - Hervorgehobene Zeilen:
+            - Takeoff Fuel
+            - Block Fuel
+            - Landing Fuel
 
   4. Performance Panel
-      - 3 Spalten:
+      * 3 Spalten:
           - TAKEOFF
           - RETURN / DIV
           - LANDING
-      - Layout:
+      * Layout:
           - Label-Spalte flexibel
           - Input/Output-Spalte feste Breite
           - alle Grid-Zeilen gleiche Höhe
           - Weather Integration unter Stop Margin.
-      - Anzeige:
+          - Eingabefelder mit Einheit (/, m, kg, °C, hpa, ft/Min)
+              - Beim Fokus → Einheit verschwindet
+              - Beim Verlassen → Einheit wird angehängt
+              - Beispiele: 23015 → 230/15; 23015G25 → 230/15G25
+              - Einheiten:
+                  > TORA / Roll / LDA / ASD / STOP MARGIN / LD ABN / LD:	m
+                  > QNH:	hPa
+                  > Temp:	°C
+                  > Weight:	kg
+                  > ROC:	ft/Min
+          - Anzeige-Felder (kein Input)
+              - Diese Felder sind data-out:
+                  - to_icao
+                  - rt_icao
+                  - ld_icao
+                  - to_asd
+                  - to_stop_margin
+                  - rt_stop_margin
+                  - ld_stop_margin
+              - Sie werden automatisch berechnet / gesetzt.
+      * Anzeige:
           - Takeoff METAR
           - Landing TAF
-      - Performance Weather Parsing
-          - Takeoff
+      * Performance Weather Parsing
+          - TAKEOFF
               - Aus METAR werden übernommen:
                   - Wind → Wind wird ohne KT angezeigt.
                   - Temperatur
                   - QNH
-          - Landing
+          - LANDING
               - Wind wird aus TAF bestimmt.
               - Priorität:
                   1. FM Gruppen
@@ -149,6 +182,24 @@
                   - Wenn ein Leg deaktiviert wird:
                       - LD ICAO wird neu bestimmt
                       - Landing Wind wird neu berechnet.
+      * Flap Speed Anzeige
+          - Rechts neben Flap Select:
+              > TAKEOFF:
+                  UP  → 76 kt
+                  APP → 74 kt
+              > RETURN / DIV:
+                  UP  → 92 kt
+                  APP → 88 kt
+              > LANDING:
+                  UP  → 92 kt
+                  APP → 88 kt
+                  LDG → 86 kt
+      * Automatische Berechnungen
+          - to_asd        = to_roll + rt_roll + 100
+          - to_stop_margin = to_tora - to_asd
+          - rt_stop_margin = rt_lda - rt_ld_abn
+          - ld_stop_margin = rt_lda - ld_ld
+
 
 ## Auto-Update (wird per Script gepflegt)
 <!-- STATE:AUTO:BEGIN -->
@@ -486,6 +537,19 @@
 
 ---
 
+## Storage
+- Route wird über storage.js gespeichert:
+  - Route Head
+  - Legs
+  - Toggles
+
+- Performance Werte werden separat gespeichert.
+- Nach Restore wird zusätzlich ausgelöst:
+  - legsContainer.dispatchEvent("input")
+  - legsContainer.dispatchEvent("change")
+
+- Damit Derived Logic erneut läuft.
+
 ## Datenhaltung (localStorage Keys)
 - `fp.orm.draft.v1`: ORM Draft (Base64 ArrayBuffer)
 - `fp.orm.status.v1`: ORM Status (`template|draft|final`)
@@ -530,8 +594,6 @@
 - Phone/Contact: `.c-contact` (Pill, etwas auffälliger)
 - Checklist Toggle: `.c-toggle` (✔/✖ via `<span class="tgl">` + `.is-checked`)
 - Reset/Warn: `.c-warn`
-
-
 - Checklist Toggles: persistieren in `checklist.js`. Beim Init werden gespeicherte Toggles restored; unbekannte Toggles werden default auf ✖ gerendert (damit kein „nackter“ Button nach Reload entsteht).
 
 ---
@@ -557,15 +619,12 @@
 # Flight Planning Web App — State Update (Layout, Checklist, ORM)
 
 ## Architektur
-
 * Modularer Aufbau mit `index.html` + `partials/*` via `data-include`
 * Klare Trennung:
-
   * `layout.css` → Struktur (l-main, l-sidebar, views)
   * `components.css` → wiederverwendbare UI-Elemente
   * `route.css`, `checklist.css`, `fuel.css` → view-spezifisch
 * View-System:
-
   * `.view` → hidden
   * `.view.is-active` → sichtbar
   * `.view.is-active.is-flex` → flex-column Layout
@@ -573,10 +632,8 @@
 ---
 
 ## Panel- und ResetBar-System
-
 * ResetBars sind eigene Panels außerhalb der scrollenden Panel-Bodies
 * Struktur:
-
   * `.view-xyz__body` → flex:1, overflow hidden
   * `.c-panel.c-panel--stack`
 
@@ -588,7 +645,6 @@
 ---
 
 ## Sidebar / Route / Legs
-
 * `.l-sidebar` fix: `flex: 0 0 530px`
 * Scrollbar-Gutter nur auf `.c-panel__body`, nicht auf Sidebar
 * master-grid basiert auf 6 Spalten (Details später entfernt → jetzt 4 Hauptspalten)
@@ -597,7 +653,6 @@
 ---
 
 ## Checklist View
-
 * Struktur vereinheitlicht mit Route und Fuel
 * `.c-panel__body` hinzugefügt → ResetBar sitzt korrekt unten
 * ToDo-Schrift verkleinert (~12px)
@@ -609,7 +664,6 @@
 ---
 
 ## Fuel View
-
 * gleiche Architektur wie Checklist und Route
 * ResetBar vollständig getrennt vom Panel
 * keine Altlasten mehr (`fuel-card` entfernt)
@@ -617,7 +671,6 @@
 ---
 
 ## Icons und Buttons
-
 * SVG Icon-System aktiv (`assets/icons.svg`)
 * Phone Buttons → mint pill style
 * Reset Buttons → orange bevel style
@@ -626,7 +679,6 @@
 ---
 
 ## ORM Integration
-
 * Button ID: `btnOrm`
 * Listener in orm.js aktiv (`openOrm`)
 * ORM Viewer öffnet korrekt (pdf.js iframe)
@@ -634,7 +686,6 @@
 ---
 
 ## Edge-spezifische Erkenntnis
-
 * Edge reserviert Scrollbar-Breite strikt → scrollbar-gutter nur auf Scroll-Container
 * Border-width 1.11111px war Folge von Zoom ≠ 100%
 * Layout korrekt bei 100% Zoom
@@ -642,7 +693,6 @@
 ---
 
 # Flight Planning Web App — State Update 01.03.2026
-
 Layout stabil in:
 * Chrome
 * Brave
@@ -870,9 +920,7 @@ Quelle:
   DFS AIP Dataset (AIXM XML)
 
 Script:
-  ```
   tools/update-runways-auto.mjs
-  ```
 
 Funktion:
   * lädt aktuelle DFS Dataset Version
@@ -882,43 +930,28 @@ Funktion:
     * TORA
     * LDA
   * erzeugt:
-  ```
   data/performance_runways.json
-  ```
 
 Automatisierung:
   GitHub Action
-  ```
   auto-update-AIRAC.yml
-  ```
   läuft automatisch bei AIRAC Update.
 
 ---
 
 # Wetter
-
 ## Wind
-
 Quelle:
 Open-Meteo
 
 Script:
-
-```
 scripts/fetchWindGrid.js
-```
 
 GitHub Action:
-
-```
 update-weather.yml
-```
 
 Erzeugt:
-
-```
 data/wind_grid.json
-```
 
 Darstellung:
   * Wind Barbs
@@ -938,22 +971,16 @@ Lösung:
 Cloudflare Worker Proxy
 
 Worker URL:
-```
 https://fp-weather-proxy.thors-project.workers.dev
-```
 
 Worker übernimmt:
-```
 /clouds/{z}/{x}/{y}.png
-```
 
 → leitet an OpenWeatherMap weiter
 → API Key bleibt geheim
 
 Leaflet Layer:
-```
 https://fp-weather-proxy.thors-project.workers.dev/clouds/{z}/{x}/{y}.png
-```
 
 ## Weather Cache
 Bereits vorhanden:
@@ -972,14 +999,11 @@ Dadurch ist das Popup sofort verfügbar.
 ---
 
 ## Radar Layer
-
 Quelle:
 RainViewer
 
 Layer:
-```
 https://tilecache.rainviewer.com/v2/radar/latest/256/{z}/{x}/{y}/2/1_1.png
-```
 
 Darstellung:
 leicht transparent über Clouds.
@@ -987,7 +1011,6 @@ leicht transparent über Clouds.
 ---
 
 # Map Architektur
-
 Layer Reihenfolge:
   1. OSM Basemap
   2. Clouds (OWM via Worker)
@@ -995,22 +1018,17 @@ Layer Reihenfolge:
   4. Wind (Barbs)
 
 Leaflet Panes:
-```
 cloudPane
 radarPane
 windPane
-```
 
 ---
 
 # Map Controls
-
 Buttons:
-```
 Weather  → Cloud Tiles
 Radar    → RainViewer
 Wind     → Wind Barbs
-```
 
 UI:
 `.ctrl-chip` Toggle Buttons
@@ -1018,74 +1036,83 @@ UI:
 ---
 
 # Cloudflare Worker
-
 Proxy Code:
-
 Route:
-
-```
 /clouds/{z}/{x}/{y}.png
-```
 
 Forward:
-
-```
 https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png
-```
 
 Secret:
-
-```
 OWM_API_KEY
-```
 
 ---
 
 # GitHub Actions
-
 Workflows:
-
-```
 update-runways.yml
 update-weather.yml
 update-state.yml
-```
 
 ---
 
 # Flight Planning Web App — State Update 12.03.2026
 
 # Adblocker Problem
-
 iPad Safari zeigte Fehler:
-
 Script error.
-
 Ursache: Adblocker blockierte Weather Requests.
-
 Nach Deaktivierung des Adblockers funktioniert alles korrekt.
 
+# Flight Planning Web App — State Update 14.03.2026
+
+## Performance
+* Performance Panel ist funktional und optisch vorerst abgeschlossen.
+* PDF Export:
+  - Export mit pdf-lib.
+  - Datei:
+    - data/Fuel+Perf.pdf
+  - Button:
+    - Export PDF
+  - Verhalten
+    - Beim Klick:
+      1. neuer Tab wird sofort geöffnet
+      2. PDF wird generiert
+      3. Blob URL wird in den Tab geladen
+    - Kein "Speichern unter" Dialog.
+    - Funktion:
+      - exportFuelPerfPdf()
+  - EOSID Mapping
+    - Auswahl rt_eosid wird im PDF umgesetzt:
+    - Auswahl	PDF Text
+    - IFR	RadVec ILS RWY XX
+    - VFR	VisPattern RWY XX
+    - IFR/VFR OPT	RadVec ILS RWY XXVisPattern RWY XX
+    - VFR/IFR OPT	VisPattern RWY XXRadVec ILS RWY XX
+  - PDF Feld Mapping
+    - Performance-Felder werden über
+    - getFieldOrOut()
+    - gelesen, damit sowohl data-field als auch data-out funktionieren.
+  - PDF Feld Ausrichtung
+    - Da pdf-lib Feld-Appearances neu rendert, wird die Ausrichtung im Code gesetzt:
+      - DATE       → Left
+      - TRIPFUEL   → Right
+      - TOICAO, TORWY, TOM, TOWIND, TOTEMP, TOQNH, TOFLAPS, TOSPEED → Center
+    - Umgesetzt über:
+      - field.setAlignment(TextAlignment...)
+    - vor
+      -form.updateFieldAppearances(font)
 
 # Offene Punkte / Next Steps
+## mil. Flugplätze integrieren
+* TORA, LDA ...
 
-### Performance
+## Performance
+* Long Term: Aircraft Performance Daten integrieren
 
-* Aircraft Performance Daten integrieren
-* Berechnung:
-
-  * Takeoff Roll
-  * ASD
-  * Stop Margin
-  * Landing Roll
-  * LD ABN
-  * OEI ROC
-  * OEI SC
-
-### Weather
-
+## Weather
+* Fix toggle / map-update problem
 * ggf. weitere Layer
 * Alternative Datenquellen prüfen
-
-* METAR/TAF Cache ggf. erweitern (TTL / localStorage)
 * Map Marker Weather Update optimieren
 * Tile Cache weiter verbessern
