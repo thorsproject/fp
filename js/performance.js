@@ -897,6 +897,59 @@ function roundTempForDisplay(value) {
 }
 // ---------- Ende helpers ----------
 
+// ---------- Reset Helpers ----------
+const PERF_RESET_GROUPS = {
+  takeoff: ["to_tom", "to_roll"],
+  return: ["rt_oei_roc", "rt_eosid", "rt_roll", "rt_ld_abn"],
+  landing: ["ld_lm", "ld_roll", "ld_ld"],
+};
+
+function clearPerformanceFields(fieldNames = []) {
+  const state = loadPerformanceState();
+
+  for (const name of fieldNames) {
+    clearField(name);
+    state[name] = "";
+  }
+
+  savePerformanceState(state);
+
+  applyPerformanceFormattingNow();
+  syncPerformanceMargins();
+  syncFlapsSpeeds();
+}
+
+function bindPerformanceResetButtons() {
+  const actions = {
+    "reset-performance-takeoff": () => {
+      clearPerformanceFields(PERF_RESET_GROUPS.takeoff);
+    },
+    "reset-performance-return": () => {
+      clearPerformanceFields(PERF_RESET_GROUPS.return);
+    },
+    "reset-performance-landing": () => {
+      clearPerformanceFields(PERF_RESET_GROUPS.landing);
+    },
+    "reset-performance-all": () => {
+      clearPerformanceFields([
+        ...PERF_RESET_GROUPS.takeoff,
+        ...PERF_RESET_GROUPS.return,
+        ...PERF_RESET_GROUPS.landing,
+      ]);
+    },
+  };
+
+  Object.entries(actions).forEach(([action, handler]) => {
+    const btn = document.querySelector(`[data-action="${action}"]`);
+    if (!btn) return;
+    if (btn.dataset.bound === "1") return;
+
+    btn.dataset.bound = "1";
+    btn.addEventListener("click", handler);
+  });
+}
+// ---------- Ende Reset Helpers ----------
+
 // ---------- data ----------
 function normRwy(v = "") {
   return String(v).trim().toUpperCase();
@@ -1158,6 +1211,7 @@ export async function initPerformance() {
   syncPerformanceDerived();
   bindPerfPersistence();
   bindMarginRecalc();
+  bindPerformanceResetButtons();
 
   document.addEventListener("input", (e) => {
     if (e.target.closest(SEL.legs.container)) {
