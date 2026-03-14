@@ -311,13 +311,13 @@
   width: fit-content;
   max-width: 100%;
   grid-template-columns: 140px repeat(4, 56px) 68px 68px;
-  column-gap: 8px;
+  column-gap: 2px;
 }
 
 .c-desc{
   max-width: 185px;
   line-height: 1.08;
-  padding-left: 2px;
+  padding-left: 6px;
 }
 
 .fuel-foot{
