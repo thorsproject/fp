@@ -1064,7 +1064,7 @@ Script error.
 Ursache: Adblocker blockierte Weather Requests.
 Nach Deaktivierung des Adblockers funktioniert alles korrekt.
 
-# Flight Planning Web App — State Update 14.03.2026
+# Flight Planning Web App — State Update 14.03.2026 early
 
 ## Performance
 * Performance Panel ist funktional und optisch vorerst abgeschlossen.
@@ -1111,8 +1111,22 @@ Nach Deaktivierung des Adblockers funktioniert alles korrekt.
 * Long Term: Aircraft Performance Daten integrieren
 
 ## Weather
-* Fix toggle / map-update problem
 * ggf. weitere Layer
 * Alternative Datenquellen prüfen
 * Map Marker Weather Update optimieren
 * Tile Cache weiter verbessern
+
+---
+
+# Flight Planning Web App — State Update 14.03.2026 late
+## Map / Route Cleanup
+- Toggle-Bug behoben: Route/ALT-Marker in `airfields.js` berücksichtigen jetzt den Leg-Status (`active/inactive`).
+- Ursache war nicht `map.js`, sondern `airfields.js`: `updateLegMarkers()` und `updateAltMarkers()` hatten zuvor alle Legs verarbeitet, auch inaktive.
+- `map.js` wurde anschließend bereinigt und enthält jetzt nur noch Karten-Infrastruktur:
+  - Leaflet-Map
+  - Basemap
+  - Clouds / Radar Panes
+  - Tile-Toggle-Logik
+- Doppelte Routebene aus `map.js` entfernt, damit keine konkurrierenden Render-Logiken mehr existieren.
+- `app.js` wieder vereinfacht: kein `refreshMapRoute()` mehr, Route läuft nur noch über `airfields.js`.
+- Stand getestet: Leg aktiv/inaktiv, Route, Alternates, Weather/Radar funktionieren.
