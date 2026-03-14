@@ -794,7 +794,8 @@ async function syncPerformanceWeatherFields() {
 
       await writeLandingForecastToFields(ldIcao);
       if (myToken !== perfWxSyncToken) return;
-    } catch {
+    } catch (err) {
+      console.error("Landing wx sync failed:", err);
       if (myToken !== perfWxSyncToken) return;
       setFieldIfExists("ld_wind", "");
       setFieldIfExists("ld_temp", "");
