@@ -142,8 +142,8 @@ function getEosidPdfText() {
 
   if (eosid === "IFR") return ifr;
   if (eosid === "VFR") return vfr;
-  if (eosid === "IFR/VFR OPT") return `${ifr}\n--------------------------–\nOPTion: ${vfr}`;
-  if (eosid === "VFR/IFR OPT") return `${vfr}\n${ifr}`;
+  if (eosid === "IFR/VFR OPT") return `${ifr}\n--------------------------–------------\nOPTION: ${vfr}`;
+  if (eosid === "VFR/IFR OPT") return `${vfr}\n--------------------------–------------\nOPTION: ${ifr}`;
 
   return eosid;
 }
@@ -255,12 +255,10 @@ async function exportFuelPerfPdf() {
 
     setTextField(form, "TOM", field("to_tom"));
     setTextField(form, "TOFLAPS", field("to_flaps"));
+    setTextField(form, "TOSPEED", field("to_flaps_speed"));
     setTextField(form, "TOTORA", field("to_tora"));
     setTextField(form, "TOASD", field("to_asd"));
     setTextField(form, "TOSTOPMARGIN", field("to_stop_margin"));
-
-    // VREF/Speed aktuell in deiner App offenbar nicht separat vorhanden
-    clearTextField(form, "TOSPEED");
 
     // ---------- Return / Diversion ----------
     setTextField(form, "RTICAO", field("rt_icao"));
@@ -274,8 +272,8 @@ async function exportFuelPerfPdf() {
     setTextField(form, "RTLDABN", field("rt_ld_abn"));
 
     setTextField(form, "RTFLAPS", field("rt_flaps"));
+    setTextField(form, "RTSPEED", field("rt_flaps_speed"));
     setTextField(form, "RTSTOPMARGIN", field("rt_stop_margin"));
-    clearTextField(form, "RTSPEED");
 
     // ---------- Landing ----------
     setTextField(form, "LDICAO", field("ld_icao"));
@@ -285,12 +283,11 @@ async function exportFuelPerfPdf() {
     setTextField(form, "LDQNH", field("ld_qnh"));
 
     setTextField(form, "LDFLAPS", field("ld_flaps"));
+    setTextField(form, "LDSPEED", field("ld_flaps_speed"));
     setTextField(form, "LDLDA", field("ld_lda"));
     setTextField(form, "LDLM", field("ld_lm"));
     setTextField(form, "LDLD", field("ld_ld"));
     setTextField(form, "LDSTOPMARGIN", field("ld_stop_margin"));
-
-    clearTextField(form, "LDSPEED");
 
     form.updateFieldAppearances(font);
 
