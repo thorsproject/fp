@@ -190,7 +190,6 @@ async function exportFuelPerfPdf() {
   const previewWin = window.open("", "_blank");
   const btn = document.getElementById("btnExportFuelPerf");
   const oldLabel = btn?.textContent || "Export PDF";
-  const previewWin = window.open("", "_blank");
 
   try {
     if (btn) {
