@@ -13,11 +13,62 @@ let altMarkers = [];
 let routeLines = [];
 
 // ------------------ LOADERS ------------------
+function normalizeMilAirfield(row) {
+  const icao = String(row?.ICAO || "").trim().toUpperCase();
+  if (!icao) return null;
+
+  const lat = Number(row?.Lat);
+  const lon = Number(row?.lon);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+
+  return {
+    icao,
+    name: String(row?.Name || "").trim(),
+    lat,
+    lon,
+    rwys: Array.isArray(row?.RWYs)
+      ? row.RWYs.map((rwy) => ({
+          rwy: String(rwy?.RWY || "").trim().toUpperCase(),
+          tora: Number(rwy?.TORA) || 0,
+          lda: Number(rwy?.LDA) || 0,
+        }))
+      : [],
+    military: true,
+  };
+}
+
+function mergeAirfields(civilDb, milRows) {
+  const merged = { ...(civilDb || {}) };
+
+  for (const row of milRows || []) {
+    const norm = normalizeMilAirfield(row);
+    if (!norm) continue;
+
+    merged[norm.icao] = {
+      ...(merged[norm.icao] || {}),
+      ...norm,
+    };
+  }
+
+  return merged;
+}
 
 export async function loadAirfields() {
-  const res = await fetch("data/airfields.json?ts=" + Date.now(), { cache: "no-store" });
-  if (!res.ok) throw new Error("airfields.json konnte nicht geladen werden");
-  airfieldsDB = await res.json();
+  const ts = Date.now();
+
+  const [civilRes, milRes] = await Promise.all([
+    fetch("data/airfields.json?ts=" + ts, { cache: "no-store" }),
+    fetch("data/airfields_mil.json?ts=" + ts, { cache: "no-store" }),
+  ]);
+
+  if (!civilRes.ok) throw new Error("airfields.json konnte nicht geladen werden");
+  if (!milRes.ok) throw new Error("airfields_mil.json konnte nicht geladen werden");
+
+  const civilDb = await civilRes.json();
+  const milRows = await milRes.json();
+
+  airfieldsDB = mergeAirfields(civilDb, milRows);
 }
 
 export async function loadAlternates() {
