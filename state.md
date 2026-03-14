@@ -1130,3 +1130,40 @@ Nach Deaktivierung des Adblockers funktioniert alles korrekt.
 - Doppelte Routebene aus `map.js` entfernt, damit keine konkurrierenden Render-Logiken mehr existieren.
 - `app.js` wieder vereinfacht: kein `refreshMapRoute()` mehr, Route läuft nur noch über `airfields.js`.
 - Stand getestet: Leg aktiv/inaktiv, Route, Alternates, Weather/Radar funktionieren.
+
+## Military Airfields Germany
+- Neue Datei `data/airfields_mil.json` eingeführt.
+- Struktur der MIL-Daten:
+  - `meta.validFrom`
+  - `meta.validTo`
+  - `airfields[]` mit `ICAO`, `Lat`, `lon`, `Name`, `RWYs[{ RWY, TORA, LDA }]`
+- Nur Plätze behalten, die auch in der Approved Airport List relevant sind.
+
+## Airfields Integration
+- `airfields.js` lädt jetzt zivile und militärische Airfields zusammen.
+- Militärdaten werden intern auf das bestehende Format normalisiert:
+  - `icao`
+  - `name`
+  - `lat`
+  - `lon`
+  - `rwys`
+  - `military: true`
+- Getter für MIL-Meta ergänzt, damit Gültigkeitsdaten im UI genutzt werden können.
+
+## Performance Integration
+- `performance.html`: zusätzliches Feld für MIL-Gültigkeit ergänzt (`performanceMilValidTo`).
+- `performance.js` zeigt jetzt das MIL-Enddatum aus `airfields_mil.json` an.
+- RWY/TORA/LDA in `performance.js` erweitert:
+  - `performance_runways.json` bleibt Primärquelle
+  - `airfields_mil.json` dient als Fallback für militärische Plätze
+- Damit funktionieren RWY-Auswahl, TORA/LDA und Return/Landing-Distanzen jetzt auch für MIL-Plätze.
+
+## MIL AIP Import Script
+- Python-Script erstellt/angepasst, um RWY/TORA/LDA aus einer MIL-AIP-PDF in `airfields_mil.json` zu schreiben.
+- Script unterstützt lokales PDF oder PDF-URL.
+- Parser robuster gemacht:
+  - keine zusätzliche `AD 2 ICAO`-Beschneidung mehr
+  - Declared-Distances-Tabellen werden direkt geparst
+  - Klammerwerte und Fußnoten werden toleriert
+  - `TWY ...`-Intersection-Zeilen werden ignoriert
+- Endstand: alle Plätze aus `airfields_mil.json` erfolgreich aktualisiert.
