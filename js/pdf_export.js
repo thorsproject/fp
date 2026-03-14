@@ -172,8 +172,9 @@ function clearTextField(form, name) {
   setTextField(form, name, "");
 }
 
-// wird momentan nicht benötigt, da das pdf-dokument nicht gespeichert wird
-//async function downloadBytes(bytes, filename) {
+// optional fallback: klassischer Download statt PDF-Preview im neuen Tab
+// aktuell deaktiviert, weil das PDF direkt im Browser geöffnet wird
+// async function downloadBytes(bytes, filename) {
 //  const blob = new Blob([bytes], { type: "application/pdf" });
 //  const url = URL.createObjectURL(blob);
 
@@ -304,10 +305,13 @@ async function exportFuelPerfPdf() {
     if (previewWin) {
     previewWin.location.replace(url);
     } else {
-    const fallback = window.open(url, "_blank");
-    if (!fallback) {
+      const fallback = window.open(url, "_blank");
+    // Download-Version (optional)
+    // await downloadBytes(pdfBytes, `Fuel_Perf_${date}_${cs}.pdf`);
+      // die nächsten 3 zeilen löschen, wenn wieder lokal gespeichert werden soll
+      if (!fallback) {
         alert("Popup wurde blockiert. Bitte Popup-Blocker für diese Seite deaktivieren.");
-    }
+      }
     }
 
     setTimeout(() => URL.revokeObjectURL(url), 60000);
