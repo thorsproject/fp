@@ -235,15 +235,33 @@ function readFieldValue(el) {
 function isLegActive(toggleEl) {
   if (!toggleEl) return true;
 
-  const ds = toggleEl.dataset?.state;
-  if (ds === "off") return false;
-  if (ds === "on") return true;
+  const ds = String(toggleEl.dataset?.state || "").trim().toLowerCase();
+  if (["off", "inactive", "false", "0"].includes(ds)) return false;
+  if (["on", "active", "true", "1"].includes(ds)) return true;
 
-  if (toggleEl.classList.contains("is-off")) return false;
-  if (toggleEl.classList.contains("is-on")) return true;
-  if (toggleEl.classList.contains("is-active")) return true;
-  if (toggleEl.getAttribute("aria-pressed") === "false") return false;
-  if (toggleEl.getAttribute("aria-pressed") === "true") return true;
+  if (
+    toggleEl.classList.contains("is-off") ||
+    toggleEl.classList.contains("inactive") ||
+    toggleEl.classList.contains("is-inactive")
+  ) {
+    return false;
+  }
+
+  if (
+    toggleEl.classList.contains("is-on") ||
+    toggleEl.classList.contains("is-active") ||
+    toggleEl.classList.contains("active")
+  ) {
+    return true;
+  }
+
+  const aria = toggleEl.getAttribute("aria-pressed");
+  if (aria === "false") return false;
+  if (aria === "true") return true;
+
+  const txt = String(toggleEl.textContent || "").trim().toLowerCase();
+  if (txt === "inactive") return false;
+  if (txt === "active") return true;
 
   return true;
 }
