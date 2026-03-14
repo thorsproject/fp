@@ -305,7 +305,7 @@ async function exportFuelPerfPdf() {
     setTextField(form, "LDSTOPMARGIN", getFieldOrOut("ld_stop_margin"));
 
     // ---------- Feld-Ausrichtungen explizit setzen ----------
-    setFieldAlignment(form, "DATE", TextAlignment.Left);
+    setFieldAlignment(form, "CSREG", TextAlignment.Left);
     setFieldAlignment(form, "TRIPFUEL", TextAlignment.Right);
     [
     "TOICAO",
