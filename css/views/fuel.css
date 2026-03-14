@@ -127,21 +127,12 @@
   width: fit-content;
   max-width: 100%;
   display: grid;
-  grid-template-columns: 120px repeat(4, 56px) 64px 64px;
-  /*grid-template-columns: 140px repeat(4, 56px) 68px 68px;*/
-  column-gap: 2px; /* alt: 8px; Abstand zwischen den Tripfuel-Legs */
-  /* grid-template-columns: 240px repeat(4, 86px) 110px 110px;
-  column-gap: var(--space-md); */
+  grid-template-columns: 120px repeat(4, 56px) 64px 64px; /*140px repeat(4, 56px) 68px 68px;*/
+  column-gap: var(--space-xxs); /* alt: 8px; Abstand zwischen den Tripfuel-Legs */
+  /* grid-template-columns: 240px repeat(4, 86px) 110px 110px; <-- großer Abstand*/
   row-gap: 6px;
   align-items: center;
 }
-
-/*.fuel-grid{
-  width: fit-content;
-  max-width: 100%;
-  grid-template-columns: 140px repeat(4, 56px) 68px 68px;
-  column-gap: 2px; /* alt: 8px; Abstand zwischen den Tripfuel-Legs */
-/*}*/
 
 .fuel-header{
   margin-top: var(--space-md);
@@ -251,11 +242,18 @@
   padding: 8px 8px;
 }
 
-.fuel-total{
+/*.fuel-total{
   background: rgba(0,255,204,0.06);
   border-radius: 8px;
   margin-right: -6px;
   padding: 8px 8px 8px 6px;
+}*/
+
+.fuel-total{
+  background: rgba(0,255,204,0.06);
+  border-radius: 8px;
+  margin-right: 0;
+  padding: 8px 0;
 }
 
 /* Totals nicht einrücken */
