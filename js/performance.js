@@ -472,17 +472,25 @@ function getRouteDateIso() {
   const s = String(routeDate || "").trim();
   if (!s) return "";
 
-  // ISO: 2026-04-17
+  // 2026-03-15
   let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (m) return `${m[1]}-${m[2]}-${m[3]}`;
 
-  // DE: 17.04.2026
+  // 15.03.2026
   m = s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
   if (m) return `${m[3]}-${m[2]}-${m[1]}`;
 
-  // DE mit /
+  // 15.03.26
+  m = s.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
+
+  // 15/03/2026
   m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  // 15/03/26
+  m = s.match(/^(\d{2})\/(\d{2})\/(\d{2})$/);
+  if (m) return `20${m[3]}-${m[2]}-${m[1]}`;
 
   return "";
 }
@@ -618,7 +626,7 @@ async function loadLandingForecastAtEta(icao, etaLocalIso) {
       console.error("Open-Meteo landing forecast failed", { icao, etaLocalIso, err });
       return null;
     });
-    
+
   landingWxCache.set(cacheKey, promise);
   return promise;
 }
@@ -707,15 +715,11 @@ function getLastActiveLegFrameForPerf() {
 }
 
 function getRouteDateDay() {
-  const routeDate =
-    document.getElementById("dateInput")?.value ||
-    qs('[data-field="date"]')?.value ||
-    "";
+  const iso = getRouteDateIso();
+  if (!iso) return null;
 
-  const m = String(routeDate).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) return null;
-
-  return Number(m[3]);
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? Number(m[3]) : null;
 }
 
 function parseMetarWind(raw = "") {
