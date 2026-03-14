@@ -27,15 +27,6 @@
   min-height: 0;
 }
 
-/* Fuel content scroll area */
-/*.view-fuel__body{   <-- deaktiviert nachdem alles läuft --> soll scroll-Verhalten auf tablets verhindern; evtl. nach Site-Refac wieder aktivieren
-  flex: 1;
-  min-height: 0;
-  overflow: visible;
-} */
-
-/* =========================================================
-   eingefügt nachdem alles läuft --> soll scroll-Verhalten auf tablets verhindern */
 .view-fuel__body{
   flex: 1;
   min-height: 0;
@@ -178,7 +169,7 @@
 .fuel-grid span[data-out]{
   text-align: right;
   justify-self: end;
-  padding-left: 14px;
+  padding-left: 10px;
   font-weight: 900;
   font-size: 12px;
   color: var(--text);
