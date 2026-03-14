@@ -478,16 +478,52 @@ function getLastActiveLegEtaHm() {
   return normalizeHm(etaEl?.value || "");
 }
 
+function getActiveLegFramesForPerf() {
+  return qsa(SEL.legs.frames).filter((frame, idx) => {
+    if (idx === 0) return true; // Leg 1 immer aktiv
+    const tb = qs(SEL.legs.toggle, frame);
+    return !tb || tb.dataset.state !== "inactive";
+  });
+}
+
 function buildLandingEtaLocalIso() {
   const dateIso = getRouteDateIso();
-  const etaHm = getLastActiveLegEtaHm();
+  if (!dateIso) return "";
 
-  if (!dateIso || !etaHm) return "";
+  const frames = getActiveLegFramesForPerf();
+  if (!frames.length) return "";
 
-  const hh = String(etaHm.hh).padStart(2, "0");
-  const mm = String(etaHm.mm).padStart(2, "0");
+  let dayOffset = 0;
+  let prevEtaMin = null;
+  let lastEta = null;
 
-  return `${dateIso}T${hh}:${mm}`;
+  for (const frame of frames) {
+    const etaEl = qs(SEL.legs.eta, frame);
+    const eta = normalizeHm(etaEl?.value || "");
+    if (!eta) continue;
+
+    const etaMin = eta.hh * 60 + eta.mm;
+
+    if (prevEtaMin != null && etaMin < prevEtaMin) {
+      dayOffset += 1;
+    }
+
+    prevEtaMin = etaMin;
+    lastEta = { ...eta, dayOffset };
+  }
+
+  if (!lastEta) return "";
+
+  const base = new Date(`${dateIso}T00:00:00`);
+  base.setDate(base.getDate() + lastEta.dayOffset);
+
+  const yyyy = base.getFullYear();
+  const mm = String(base.getMonth() + 1).padStart(2, "0");
+  const dd = String(base.getDate()).padStart(2, "0");
+  const hh = String(lastEta.hh).padStart(2, "0");
+  const mi = String(lastEta.mm).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
 }
 
 function findNearestHourlyIndex(times = [], targetIso = "") {
