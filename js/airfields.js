@@ -105,7 +105,6 @@ function getMarkerColorFromWx(wx) {
 }
 
 // ------------------ WX MARKERS ------------------
-
 function makeWxMarker(color = "#6b7280") {
   return L.divIcon({
     className: "wx-marker",
@@ -125,7 +124,6 @@ function getPopupWidth() {
 }
 
 // ------------------ ERROR UI ------------------
-
 function showFieldError(input, msg) {
   input.classList.add("invalid");
 
@@ -145,7 +143,6 @@ function clearFieldError(input) {
 }
 
 // ------------------ POPUP HELPERS ------------------
-
 function bindWxPopup(marker, code, name) {
   const popupWidth = getPopupWidth();
 
@@ -195,6 +192,19 @@ async function createAirportMarker(map, code, airport) {
 }
 
 // ------------------ DRAWING ------------------
+function isLegActiveForInput(inp) {
+  const panel = inp.closest("#legsContainer .c-panel");
+  if (!panel) return true;
+
+  const toggle = panel.querySelector(".legToggle");
+  if (!toggle) return true; // Leg 1 hat keinen Toggle -> immer aktiv
+
+  const state = String(toggle.dataset.state || "").trim().toLowerCase();
+  if (state === "inactive") return false;
+  if (state === "active") return true;
+
+  return true;
+}
 
 export async function updateLegMarkers(map) {
   aeroMarkers.forEach(m => map.removeLayer(m));
@@ -207,6 +217,8 @@ export async function updateLegMarkers(map) {
   const coords = [];
 
   for (const inp of inputs) {
+    if (!isLegActiveForInput(inp)) continue;
+
     const code = (inp.value || "").toUpperCase().trim();
     if (!airfieldsDB[code]) continue;
 
@@ -231,6 +243,8 @@ export async function updateAltMarkers(map) {
   const inputs = Array.from(document.querySelectorAll("input.alt"));
 
   for (const inp of inputs) {
+    if (!isLegActiveForInput(inp)) continue;
+
     const code = (inp.value || "").toUpperCase().trim();
     if (!alternatesDB[code]) continue;
 
@@ -241,7 +255,6 @@ export async function updateAltMarkers(map) {
 }
 
 // ------------------ WIRING (Input/Change Events) ------------------
-
 export function wireAeroValidationAndMarkers(map) {
   document.addEventListener("input", (e) => {
     const t = e.target;
