@@ -86,6 +86,36 @@ function bindPerformanceFormatting() {
   }
 }
 
+function applyPerformanceFormattingNow() {
+  // m
+  [
+    "rt_roll",
+    "rt_ld_abn",
+    "ld_roll",
+    "ld_ld",
+  ].forEach((name) => {
+    const el = getField(name);
+    if (!el) return;
+    el.value = formatWithSuffix(el.value, "m");
+  });
+
+  // kg
+  [
+    "to_tom",
+    "ld_lm",
+  ].forEach((name) => {
+    const el = getField(name);
+    if (!el) return;
+    el.value = formatWithSuffix(el.value, "kg");
+  });
+
+  // ft/Min
+  {
+    const el = getField("rt_oei_roc");
+    if (el) el.value = formatWithSuffix(el.value, "ft/Min");
+  }
+}
+
 // ---------- helpers ----------
 function formatDateDE(isoDate) {
   if (!isoDate) return "";
@@ -785,6 +815,7 @@ export async function initPerformance() {
   syncAiracHeader();
   restorePerfFields();
   bindPerformanceFormatting();
+  applyPerformanceFormattingNow();
   syncPerformanceDerived();
   bindPerfPersistence();
   bindMarginRecalc();
