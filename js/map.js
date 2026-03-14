@@ -379,32 +379,32 @@ function scheduleRender() {
   }, 120);
 }
 
-function bindMapRefreshEvents() {
-  if (document.body.dataset.mapRefreshBound === "1") return;
-  document.body.dataset.mapRefreshBound = "1";
+//function bindMapRefreshEvents() {
+//  if (document.body.dataset.mapRefreshBound === "1") return;
+//  document.body.dataset.mapRefreshBound = "1";
 
-  const events = ["input", "change", "click"];
+//  const events = ["input", "change", "click"];
 
-  for (const evtName of events) {
-    document.addEventListener(
-      evtName,
-      (ev) => {
-        const t = ev.target;
-        if (!(t instanceof Element)) return;
+//  for (const evtName of events) {
+//    document.addEventListener(
+//      evtName,
+//      (ev) => {
+//        const t = ev.target;
+//        if (!(t instanceof Element)) return;
 
-        if (
-          t.matches(".legField.aeroFrom") ||
-          t.matches(".legField.aeroTo") ||
-          t.matches(".legField.alt") ||
-          t.matches(".legToggle")
-        ) {
-          scheduleRender();
-        }
-      },
-      true
-    );
-  }
-}
+//        if (
+//          t.matches(".legField.aeroFrom") ||
+//          t.matches(".legField.aeroTo") ||
+//          t.matches(".legField.alt") ||
+//          t.matches(".legToggle")
+//        ) {
+//          scheduleRender();
+//        }
+//      },
+//      true
+//    );
+//  }
+//}
 
 function escapeHtml(str) {
   return String(str ?? "")

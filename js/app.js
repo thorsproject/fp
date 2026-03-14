@@ -7,7 +7,7 @@ import { loadConfig, setConfigPassword, getConfigPassword, clearConfigCache } fr
 import { initDateInput } from "./date.js";
 import { initLFZ } from "./lfz.js";
 import { initLegActivation } from "./legs.js";
-import { createMap } from "./map.js";
+import { createMap, refreshMapRoute } from "./map.js";
 import {
   loadAirfields,
   loadAlternates,
@@ -390,6 +390,7 @@ map.on("click", (e) => {
       updateLegMarkers(map);
       updateAltMarkers(map);
       syncPerformanceDerived();
+      refreshMapRoute(); 
     },
   });
 
