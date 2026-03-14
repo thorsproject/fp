@@ -90,8 +90,8 @@ function getRouteLine() {
   const frames = getActiveLegFrames();
   const parts = [];
 
-  const dep = normIcao(field("to_icao"));
-  const dest = normIcao(field("ld_icao"));
+  const dep = normIcao(getFieldOrOut("to_icao"));
+  const dest = normIcao(getFieldOrOut("ld_icao"));
 
   if (dep) parts.push(dep);
 
@@ -247,47 +247,47 @@ async function exportFuelPerfPdf() {
     setTextField(form, "LDTIME", out("landing_time"));
 
     // ---------- Takeoff ----------
-    setTextField(form, "TOICAO", field("to_icao"));
-    setTextField(form, "TORWY", field("to_rwy"));
-    setTextField(form, "TOWIND", field("to_wind"));
-    setTextField(form, "TOTEMP", field("to_temp"));
-    setTextField(form, "TOQNH", field("to_qnh"));
+    setTextField(form, "TOICAO", getFieldOrOut("to_icao"));
+    setTextField(form, "TORWY", getFieldOrOut("to_rwy"));
+    setTextField(form, "TOWIND", getFieldOrOut("to_wind"));
+    setTextField(form, "TOTEMP", getFieldOrOut("to_temp"));
+    setTextField(form, "TOQNH", getFieldOrOut("to_qnh"));
 
-    setTextField(form, "TOM", field("to_tom"));
-    setTextField(form, "TOFLAPS", field("to_flaps"));
-    setTextField(form, "TOSPEED", field("to_flaps_speed"));
-    setTextField(form, "TOTORA", field("to_tora"));
-    setTextField(form, "TOASD", field("to_asd"));
-    setTextField(form, "TOSTOPMARGIN", field("to_stop_margin"));
+    setTextField(form, "TOM", getFieldOrOut("to_tom"));
+    setTextField(form, "TOFLAPS", getFieldOrOut("to_flaps"));
+    setTextField(form, "TOSPEED", getFieldOrOut("to_flaps_speed"));
+    setTextField(form, "TOTORA", getFieldOrOut("to_tora"));
+    setTextField(form, "TOASD", getFieldOrOut("to_asd"));
+    setTextField(form, "TOSTOPMARGIN", getFieldOrOut("to_stop_margin"));
 
     // ---------- Return / Diversion ----------
-    setTextField(form, "RTICAO", field("rt_icao"));
+    setTextField(form, "RTICAO", getFieldOrOut("rt_icao"));
     setTextField(form, "RTRWY", getFieldOrOut("rt_rwy"));
     setTextField(form, "RTLDA", getFieldOrOut("rt_lda"));
     setTextField(form, "RTLM", getFieldOrOut("rt_lm"));
 
     setTextField(form, "EOSID", getEosidPdfText());
-    setTextField(form, "OEIROC", field("rt_oei_roc"));
-    setTextField(form, "OEISC", field("rt_oei_sc"));
-    setTextField(form, "RTLDABN", field("rt_ld_abn"));
+    setTextField(form, "OEIROC", getFieldOrOut("rt_oei_roc"));
+    setTextField(form, "OEISC", getFieldOrOut("rt_oei_sc"));
+    setTextField(form, "RTLDABN", getFieldOrOut("rt_ld_abn"));
 
-    setTextField(form, "RTFLAPS", field("rt_flaps"));
-    setTextField(form, "RTSPEED", field("rt_flaps_speed"));
-    setTextField(form, "RTSTOPMARGIN", field("rt_stop_margin"));
+    setTextField(form, "RTFLAPS", getFieldOrOut("rt_flaps"));
+    setTextField(form, "RTSPEED", getFieldOrOut("rt_flaps_speed"));
+    setTextField(form, "RTSTOPMARGIN", getFieldOrOut("rt_stop_margin"));
 
     // ---------- Landing ----------
-    setTextField(form, "LDICAO", field("ld_icao"));
-    setTextField(form, "LDRWY", field("ld_rwy"));
-    setTextField(form, "LDWIND", field("ld_wind"));
-    setTextField(form, "LDTEMP", field("ld_temp"));
-    setTextField(form, "LDQNH", field("ld_qnh"));
+    setTextField(form, "LDICAO", getFieldOrOut("ld_icao"));
+    setTextField(form, "LDRWY", getFieldOrOut("ld_rwy"));
+    setTextField(form, "LDWIND", getFieldOrOut("ld_wind"));
+    setTextField(form, "LDTEMP", getFieldOrOut("ld_temp"));
+    setTextField(form, "LDQNH", getFieldOrOut("ld_qnh"));
 
-    setTextField(form, "LDFLAPS", field("ld_flaps"));
-    setTextField(form, "LDSPEED", field("ld_flaps_speed"));
-    setTextField(form, "LDLDA", field("ld_lda"));
-    setTextField(form, "LDLM", field("ld_lm"));
-    setTextField(form, "LDLD", field("ld_ld"));
-    setTextField(form, "LDSTOPMARGIN", field("ld_stop_margin"));
+    setTextField(form, "LDFLAPS", getFieldOrOut("ld_flaps"));
+    setTextField(form, "LDSPEED", getFieldOrOut("ld_flaps_speed"));
+    setTextField(form, "LDLDA", getFieldOrOut("ld_lda"));
+    setTextField(form, "LDLM", getFieldOrOut("ld_lm"));
+    setTextField(form, "LDLD", getFieldOrOut("ld_ld"));
+    setTextField(form, "LDSTOPMARGIN", getFieldOrOut("ld_stop_margin"));
 
     form.updateFieldAppearances(font);
 
