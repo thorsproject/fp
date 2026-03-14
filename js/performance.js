@@ -620,6 +620,7 @@ async function writeLandingForecastToFields(icao) {
     Number.isFinite(fx.qnh) ? String(fx.qnh) : "",
     "hpa"
   ));
+  console.log("ld forecast", icao, buildLandingEtaLocalIso());
 }
 
 function normalizeHm(raw = "") {
