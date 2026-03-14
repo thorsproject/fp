@@ -200,7 +200,7 @@ function clearTextField(form, name) {
 //  setTimeout(() => URL.revokeObjectURL(url), 1500);
 //}
 
-async function exportFuelPerfPdf() {
+async function exportFuelPerfPdf(ev) {
   const previewWin = window.open("", "_blank");
   const btn = ev?.currentTarget || null;
   const oldLabel = btn?.textContent || "Export PDF";
