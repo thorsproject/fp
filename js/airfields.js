@@ -13,6 +13,8 @@ let altMarkers = [];
 let routeLines = [];
 
 // ------------------ LOADERS ------------------
+let airfieldsMilMeta = null;
+
 function normalizeMilAirfield(row) {
   const icao = String(row?.ICAO || "").trim().toUpperCase();
   if (!icao) return null;
@@ -66,9 +68,16 @@ export async function loadAirfields() {
   if (!milRes.ok) throw new Error("airfields_mil.json konnte nicht geladen werden");
 
   const civilDb = await civilRes.json();
-  const milRows = await milRes.json();
+  const milPayload = await milRes.json();
+
+  const milRows = Array.isArray(milPayload?.airfields) ? milPayload.airfields : [];
+  airfieldsMilMeta = milPayload?.meta || null;
 
   airfieldsDB = mergeAirfields(civilDb, milRows);
+}
+
+export function getMilAirfieldsMeta() {
+  return airfieldsMilMeta;
 }
 
 export async function loadAlternates() {
