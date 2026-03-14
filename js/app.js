@@ -387,8 +387,8 @@ map.on("click", (e) => {
   initLFZ();
   initLegActivation({
     onChange: () => {
-      updateLegMarkers(map);
-      updateAltMarkers(map);
+      //updateLegMarkers(map);
+      //updateAltMarkers(map);
       syncPerformanceDerived();
       refreshMapRoute(); 
     },
