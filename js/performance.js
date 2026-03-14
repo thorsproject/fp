@@ -469,7 +469,22 @@ function getRouteDateIso() {
     qs('[data-field="date"]')?.value ||
     "";
 
-  return /^\d{4}-\d{2}-\d{2}$/.test(String(routeDate)) ? routeDate : "";
+  const s = String(routeDate || "").trim();
+  if (!s) return "";
+
+  // ISO: 2026-04-17
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+
+  // DE: 17.04.2026
+  m = s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  // DE mit /
+  m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  return "";
 }
 
 function getLastActiveLegEtaHm() {
@@ -579,6 +594,15 @@ async function loadLandingForecastAtEta(icao, etaLocalIso) {
     .then((data) => {
       const hourly = data?.hourly;
       const idx = findNearestHourlyIndex(hourly?.time || [], etaLocalIso);
+
+      console.log("open-meteo hourly", {
+        icao,
+        etaLocalIso,
+        idx,
+        firstTime: hourly?.time?.[0],
+        lastTime: hourly?.time?.[hourly?.time?.length - 1],
+      });
+
       if (idx < 0) return null;
 
       const temp = hourly?.temperature_2m?.[idx];
@@ -590,37 +614,62 @@ async function loadLandingForecastAtEta(icao, etaLocalIso) {
         time: hourly?.time?.[idx] || "",
       };
     })
-    .catch(() => null);
-
+    .catch((err) => {
+      console.error("Open-Meteo landing forecast failed", { icao, etaLocalIso, err });
+      return null;
+    });
+    
   landingWxCache.set(cacheKey, promise);
   return promise;
 }
 
 async function writeLandingForecastToFields(icao) {
   const etaLocalIso = buildLandingEtaLocalIso();
+  console.log("ld forecast start", {
+    icao,
+    routeDate: document.getElementById("dateInput")?.value || "",
+    etaLocalIso,
+  });
+
   if (!icao || !etaLocalIso) {
+    console.warn("ld forecast aborted: missing icao or etaLocalIso", {
+      icao,
+      etaLocalIso,
+    });
     setFieldIfExists("ld_temp", "");
     setFieldIfExists("ld_qnh", "");
     return;
   }
 
   const fx = await loadLandingForecastAtEta(icao, etaLocalIso);
+  console.log("ld forecast result", fx);
+
   if (!fx) {
+    console.warn("ld forecast aborted: no forecast found", {
+      icao,
+      etaLocalIso,
+    });
     setFieldIfExists("ld_temp", "");
     setFieldIfExists("ld_qnh", "");
     return;
   }
 
-  setFieldIfExists("ld_temp", formatWithSuffix(
-    Number.isFinite(fx.temp) ? formatNum(fx.temp) : "",
-    "°C"
-  ));
+  setFieldIfExists(
+    "ld_temp",
+    formatWithSuffix(Number.isFinite(fx.temp) ? formatNum(fx.temp) : "", "°C")
+  );
 
-  setFieldIfExists("ld_qnh", formatWithSuffix(
-    Number.isFinite(fx.qnh) ? String(fx.qnh) : "",
-    "hpa"
-  ));
-  console.log("ld forecast", icao, buildLandingEtaLocalIso());
+  setFieldIfExists(
+    "ld_qnh",
+    formatWithSuffix(Number.isFinite(fx.qnh) ? String(fx.qnh) : "", "hpa")
+  );
+
+  console.log("ld forecast written", {
+    icao,
+    etaLocalIso,
+    temp: fx.temp,
+    qnh: fx.qnh,
+  });
 }
 
 function normalizeHm(raw = "") {
