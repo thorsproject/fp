@@ -130,6 +130,24 @@ function getFieldOrOut(...names) {
   return "";
 }
 
+function getEosidPdfText() {
+  const eosid = String(field("rt_eosid") || "").trim().toUpperCase();
+  const rtRwy = String(getFieldOrOut("rt_rwy") || "").trim().toUpperCase();
+
+  if (!eosid) return "";
+  if (!rtRwy) return "";
+
+  const ifr = `RadVec ILS RWY ${rtRwy}`;
+  const vfr = `VisPattern RWY ${rtRwy}`;
+
+  if (eosid === "IFR") return ifr;
+  if (eosid === "VFR") return vfr;
+  if (eosid === "IFR/VFR OPT") return `${ifr}\n${vfr}`;
+  if (eosid === "VFR/IFR OPT") return `${vfr}\n${ifr}`;
+
+  return eosid;
+}
+
 function setTextField(form, name, value) {
   try {
     const field = form.getField(name);
@@ -250,7 +268,7 @@ async function exportFuelPerfPdf() {
     setTextField(form, "RTLDA", getFieldOrOut("rt_lda"));
     setTextField(form, "RTLM", getFieldOrOut("rt_lm"));
 
-    setTextField(form, "EOSID", field("rt_eosid"));
+    setTextField(form, "EOSID", getEosidPdfText());
     setTextField(form, "OEIROC", field("rt_oei_roc"));
     setTextField(form, "OEISC", field("rt_oei_sc"));
     setTextField(form, "RTLDABN", field("rt_ld_abn"));
