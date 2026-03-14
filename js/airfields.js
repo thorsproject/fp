@@ -73,8 +73,6 @@ export async function loadAirfields() {
 
   const civilDb = await civilRes.json();
   const milPayload = await milRes.json();
-  const milRows = Array.isArray(milPayload?.airfields) ? milPayload.airfields : [];
-  airfieldsMilMeta = milPayload?.meta || null;
 
   const milRows = Array.isArray(milPayload?.airfields) ? milPayload.airfields : [];
   airfieldsMilMeta = milPayload?.meta || null;
