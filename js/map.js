@@ -481,7 +481,7 @@ export async function createMap() {
     defaultOn: false,
   });
 
-  bindMapRefreshEvents();
+  //bindMapRefreshEvents();
   renderRoute();
 
   setTimeout(() => mapInstance.invalidateSize(), 0);
