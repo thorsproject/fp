@@ -15,6 +15,10 @@ let routeLines = [];
 // ------------------ LOADERS ------------------
 let airfieldsMilMeta = null;
 
+export function getMilAirfieldsMeta() {
+  return airfieldsMilMeta;
+}
+
 function normalizeMilAirfield(row) {
   const icao = String(row?.ICAO || "").trim().toUpperCase();
   if (!icao) return null;
@@ -69,6 +73,8 @@ export async function loadAirfields() {
 
   const civilDb = await civilRes.json();
   const milPayload = await milRes.json();
+  const milRows = Array.isArray(milPayload?.airfields) ? milPayload.airfields : [];
+  airfieldsMilMeta = milPayload?.meta || null;
 
   const milRows = Array.isArray(milPayload?.airfields) ? milPayload.airfields : [];
   airfieldsMilMeta = milPayload?.meta || null;
