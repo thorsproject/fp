@@ -80,10 +80,6 @@ export async function loadAirfields() {
   airfieldsDB = mergeAirfields(civilDb, milRows);
 }
 
-export function getMilAirfieldsMeta() {
-  return airfieldsMilMeta;
-}
-
 export async function loadAlternates() {
   const res = await fetch("data/alternates.json?ts=" + Date.now(), { cache: "no-store" });
   if (!res.ok) throw new Error("alternates.json konnte nicht geladen werden");
