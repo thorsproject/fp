@@ -10,8 +10,16 @@
       "lon": 9.08217,
       "Name": "Bückeburg Air Base",
       "RWYs": [
-        { "RWY": "08", "TORA": 1831, "LDA": 1831 },
-        { "RWY": "26", "TORA": 1831, "LDA": 1831 }
+        {
+          "RWY": "07",
+          "TORA": 1832,
+          "LDA": 1669
+        },
+        {
+          "RWY": "25",
+          "TORA": 1832,
+          "LDA": 1832
+        }
       ]
     },
     {
@@ -20,8 +28,11 @@
       "lon": 10.0221,
       "Name": "Celle Army Airfield",
       "RWYs": [
-        { "RWY": "08", "TORA": 2135, "LDA": 2135 },
-        { "RWY": "26", "TORA": 2135, "LDA": 2135 }
+        {
+          "RWY": "26",
+          "TORA": 1831,
+          "LDA": 1831
+        }
       ]
     },
     {
@@ -30,8 +41,16 @@
       "lon": 9.958167,
       "Name": "Niederstetten",
       "RWYs": [
-        { "RWY": "07", "TORA": 1311, "LDA": 1311 },
-        { "RWY": "25", "TORA": 1311, "LDA": 1210 }
+        {
+          "RWY": "07",
+          "TORA": 1311,
+          "LDA": 1311
+        },
+        {
+          "RWY": "25",
+          "TORA": 1311,
+          "LDA": 1210
+        }
       ]
     },
     {
@@ -40,8 +59,16 @@
       "lon": 10.185827,
       "Name": "Faßberg Air Base",
       "RWYs": [
-        { "RWY": "09", "TORA": 1000, "LDA": 1000 },
-        { "RWY": "27", "TORA": 1000, "LDA": 1000 }
+        {
+          "RWY": "09",
+          "TORA": 2440,
+          "LDA": 2440
+        },
+        {
+          "RWY": "27",
+          "TORA": 2440,
+          "LDA": 2440
+        }
       ]
     },
     {
@@ -50,8 +77,16 @@
       "lon": 8.659201,
       "Name": "Sea-Airport Cuxhaven/Nordholz / Nordholz Naval Airbase",
       "RWYs": [
-        { "RWY": "08", "TORA": 2439, "LDA": 2439 },
-        { "RWY": "26", "TORA": 2439, "LDA": 2439 }
+        {
+          "RWY": "08",
+          "TORA": 2440,
+          "LDA": 2440
+        },
+        {
+          "RWY": "26",
+          "TORA": 2440,
+          "LDA": 2440
+        }
       ]
     },
     {
@@ -60,18 +95,34 @@
       "lon": 12.2783,
       "Name": "Rostock-Laage Airport",
       "RWYs": [
-        { "RWY": "10", "TORA": 2500, "LDA": 2500 },
-        { "RWY": "28", "TORA": 2500, "LDA": 2500 }
+        {
+          "RWY": "09",
+          "TORA": 2520,
+          "LDA": 2520
+        },
+        {
+          "RWY": "27",
+          "TORA": 2520,
+          "LDA": 2520
+        }
       ]
     },
     {
       "ICAO": "ETNN",
-      "Lat": 50.831200,
-      "lon": 6.658170,
+      "Lat": 50.8312,
+      "lon": 6.65817,
       "Name": "Nörvenich",
       "RWYs": [
-        { "RWY": "06", "TORA": 2442, "LDA": 2442 },
-        { "RWY": "24", "TORA": 2442, "LDA": 2442 }
+        {
+          "RWY": "06",
+          "TORA": 2442,
+          "LDA": 2442
+        },
+        {
+          "RWY": "24",
+          "TORA": 2442,
+          "LDA": 2442
+        }
       ]
     },
     {
@@ -80,8 +131,26 @@
       "lon": 9.51633,
       "Name": "Schleswig Air Base",
       "RWYs": [
-        { "RWY": "05", "TORA": 2439, "LDA": 2439 },
-        { "RWY": "23", "TORA": 2439, "LDA": 2439 }
+        {
+          "RWY": "04",
+          "TORA": 2439,
+          "LDA": 2439
+        },
+        {
+          "RWY": "07",
+          "TORA": 2460,
+          "LDA": 2460
+        },
+        {
+          "RWY": "22",
+          "TORA": 2439,
+          "LDA": 2439
+        },
+        {
+          "RWY": "25",
+          "TORA": 2460,
+          "LDA": 2460
+        }
       ]
     },
     {
@@ -90,30 +159,62 @@
       "lon": 7.66733,
       "Name": "Wittmundhafen Air Base",
       "RWYs": [
-        { "RWY": "08", "TORA": 2440, "LDA": 2440 },
-        { "RWY": "26", "TORA": 2440, "LDA": 2440 }
+        {
+          "RWY": "07",
+          "TORA": 2440,
+          "LDA": 2440
+        },
+        {
+          "RWY": "25",
+          "TORA": 2440,
+          "LDA": 2440
+        }
       ]
-    }, 
+    },
     {
       "ICAO": "ETSH",
       "Lat": 51.767799,
       "lon": 13.1677,
       "Name": "Holzdorf Air Base",
       "RWYs": [
-        { "RWY": "09", "TORA": 2419, "LDA": 2419 },
-        { "RWY": "27", "TORA": 2419, "LDA": 2419 }
+        {
+          "RWY": "09",
+          "TORA": 2419,
+          "LDA": 2419
+        },
+        {
+          "RWY": "27",
+          "TORA": 2419,
+          "LDA": 2419
+        }
       ]
     },
     {
       "ICAO": "ETSI",
-      "Lat": 48.715700,
-      "lon": 11.534000,
+      "Lat": 48.7157,
+      "lon": 11.534,
       "Name": "Ingolstadt/Manching",
       "RWYs": [
-        { "RWY": "06L", "TORA": 2439, "LDA": 2439 },
-        { "RWY": "24R", "TORA": 2439, "LDA": 2439 },
-        { "RWY": "06R", "TORA": 2940, "LDA": 2940 },
-        { "RWY": "24L", "TORA": 2940, "LDA": 2940 }
+        {
+          "RWY": "06L",
+          "TORA": 2439,
+          "LDA": 2439
+        },
+        {
+          "RWY": "06R",
+          "TORA": 2940,
+          "LDA": 2940
+        },
+        {
+          "RWY": "24L",
+          "TORA": 2940,
+          "LDA": 2940
+        },
+        {
+          "RWY": "24R",
+          "TORA": 2439,
+          "LDA": 2439
+        }
       ]
     },
     {
@@ -122,8 +223,16 @@
       "lon": 11.2115,
       "Name": "Neuburg Air Base",
       "RWYs": [
-        { "RWY": "09", "TORA": 2440, "LDA": 2440 },
-        { "RWY": "27", "TORA": 2440, "LDA": 2440 }
+        {
+          "RWY": "09",
+          "TORA": 2518,
+          "LDA": 2484
+        },
+        {
+          "RWY": "27",
+          "TORA": 2518,
+          "LDA": 2518
+        }
       ]
     }
   ]
