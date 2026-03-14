@@ -20,6 +20,16 @@
     ]
   },
   {
+    "ICAO": "ETHN",
+    "Lat": 49.391833,
+    "lon": 9.958167,
+    "Name": "Niederstetten",
+    "RWYs": [
+      { "RWY": "07", "TORA": 1311, "LDA": 1311 },
+      { "RWY": "25", "TORA": 1311, "LDA": 1210 }
+    ]
+  },
+  {
     "ICAO": "ETHS",
     "Lat": 52.919399,
     "lon": 10.185827,
@@ -50,6 +60,16 @@
     ]
   },
   {
+    "ICAO": "ETNN",
+    "Lat": 50.831200,
+    "lon": 6.658170,
+    "Name": "Nörvenich",
+    "RWYs": [
+      { "RWY": "06", "TORA": 2442, "LDA": 2442 },
+      { "RWY": "24", "TORA": 2442, "LDA": 2442 }
+    ]
+  },
+  {
     "ICAO": "ETNS",
     "Lat": 54.459301,
     "lon": 9.51633,
@@ -77,6 +97,18 @@
     "RWYs": [
       { "RWY": "09", "TORA": 2419, "LDA": 2419 },
       { "RWY": "27", "TORA": 2419, "LDA": 2419 }
+    ]
+  },
+  {
+    "ICAO": "ETSI",
+    "Lat": 48.715700,
+    "lon": 11.534000,
+    "Name": "Ingolstadt/Manching",
+    "RWYs": [
+      { "RWY": "06L", "TORA": 2439, "LDA": 2439 },
+      { "RWY": "24R", "TORA": 2439, "LDA": 2439 },
+      { "RWY": "06R", "TORA": 2940, "LDA": 2940 },
+      { "RWY": "24L", "TORA": 2940, "LDA": 2940 }
     ]
   },
   {
