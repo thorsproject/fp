@@ -168,6 +168,18 @@ function setTextField(form, name, value) {
   }
 }
 
+function setFieldAlignment(form, name, alignment) {
+  try {
+    const field = form.getField(name);
+    if (!field) return;
+    if (typeof field.setAlignment !== "function") return;
+
+    field.setAlignment(alignment);
+  } catch (err) {
+    console.warn(`[pdf_export] Konnte Ausrichtung für ${name} nicht setzen:`, err);
+  }
+}
+
 function clearTextField(form, name) {
   setTextField(form, name, "");
 }
@@ -203,7 +215,7 @@ async function exportFuelPerfPdf() {
     if (!res.ok) throw new Error(`PDF-Vorlage nicht gefunden (HTTP ${res.status})`);
 
     const bytes = await res.arrayBuffer();
-    const { PDFDocument, StandardFonts } = window.PDFLib || {};
+    const { PDFDocument, StandardFonts, TextAlignment } = window.PDFLib || {};
     if (!PDFDocument) throw new Error("pdf-lib nicht geladen");
 
     const pdfDoc = await PDFDocument.load(bytes);
@@ -291,6 +303,22 @@ async function exportFuelPerfPdf() {
     setTextField(form, "LDLM", getFieldOrOut("ld_lm"));
     setTextField(form, "LDLD", getFieldOrOut("ld_ld"));
     setTextField(form, "LDSTOPMARGIN", getFieldOrOut("ld_stop_margin"));
+
+    // ---------- Feld-Ausrichtungen explizit setzen ----------
+    setFieldAlignment(form, "DATE", TextAlignment.Left);
+    setFieldAlignment(form, "TRIPFUEL", TextAlignment.Right);
+    [
+    "TOICAO",
+    "TORWY",
+    "TOM",
+    "TOWIND",
+    "TOTEMP",
+    "TOQNH",
+    "TOFLAPS",
+    "TOSPEED",
+    ].forEach((name) => {
+    setFieldAlignment(form, name, TextAlignment.Center);
+    });
 
     form.updateFieldAppearances(font);
 
