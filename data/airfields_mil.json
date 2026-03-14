@@ -1,15 +1,5 @@
 [
   {
-    "ICAO": "ETHA",
-    "Lat": 47.835499,
-    "lon": 10.8712,
-    "Name": "Altenstadt Army Airfield",
-    "RWYs": [
-      { "RWY": "09", "TORA": 700, "LDA": 700 },
-      { "RWY": "27", "TORA": 700, "LDA": 700 }
-    ]
-  },
-  {
     "ICAO": "ETHB",
     "Lat": 52.2785,
     "lon": 9.08217,
@@ -30,26 +20,6 @@
     ]
   },
   {
-    "ICAO": "ETSB",
-    "Lat": 50.173801,
-    "lon": 7.06333,
-    "Name": "Büchel Air Base",
-    "RWYs": [
-      { "RWY": "03", "TORA": 2507, "LDA": 2507 },
-      { "RWY": "21", "TORA": 2507, "LDA": 2507 }
-    ]
-  },
-  {
-    "ICAO": "ETND",
-    "Lat": 52.585556,
-    "lon": 8.342222,
-    "Name": "Diepholz Air Base",
-    "RWYs": [
-      { "RWY": "08", "TORA": 1283, "LDA": 1283 },
-      { "RWY": "26", "TORA": 1283, "LDA": 1283 }
-    ]
-  },
-  {
     "ICAO": "ETHS",
     "Lat": 52.919399,
     "lon": 10.185827,
@@ -60,88 +30,6 @@
     ]
   },
   {
-    "ICAO": "ETHF",
-    "Lat": 51.1146,
-    "lon": 9.286,
-    "Name": "Fritzlar Army Airfield",
-    "RWYs": [
-      { "RWY": "11", "TORA": 1043, "LDA": 1043 },
-      { "RWY": "29", "TORA": 1043, "LDA": 1043 }
-    ]
-  },
-  {
-    "ICAO": "ETNG",
-    "Lat": 50.9608,
-    "lon": 6.04242,
-    "Name": "Geilenkirchen Air Base",
-    "RWYs": [
-      { "RWY": "09", "TORA": 3051, "LDA": 3051 },
-      { "RWY": "27", "TORA": 3051, "LDA": 3051 }
-    ]
-  },
-  {
-    "ICAO": "ETNH",
-    "Lat": 54.312199,
-    "lon": 9.53817,
-    "Name": "Hohn Air Base",
-    "RWYs": [
-      { "RWY": "08", "TORA": 2440, "LDA": 2440 },
-      { "RWY": "26", "TORA": 2440, "LDA": 2440 }
-    ]
-  },
-  {
-    "ICAO": "ETSH",
-    "Lat": 51.767799,
-    "lon": 13.1677,
-    "Name": "Holzdorf Air Base",
-    "RWYs": [
-      { "RWY": "09", "TORA": 2419, "LDA": 2419 },
-      { "RWY": "27", "TORA": 2419, "LDA": 2419 }
-    ]
-  },
-  {
-    "ICAO": "ETNL",
-    "Lat": 53.918201,
-    "lon": 12.2783,
-    "Name": "Rostock-Laage Airport",
-    "RWYs": [
-      { "RWY": "10", "TORA": 2500, "LDA": 2500 },
-      { "RWY": "28", "TORA": 2500, "LDA": 2500 }
-    ]
-  },
-  {
-    "ICAO": "ETHL",
-    "Lat": 48.2203,
-    "lon": 9.91,
-    "Name": "Laupheim Air Base",
-    "RWYs": [
-      { "RWY": "09", "TORA": 1646, "LDA": 1646 },
-      { "RWY": "27", "TORA": 1646, "LDA": 1646 },
-      { "RWY": "03", "TORA": 600, "LDA": 600 },
-      { "RWY": "21", "TORA": 600, "LDA": 600 }
-    ]
-  },
-  {
-    "ICAO": "ETSL",
-    "Lat": 48.185504,
-    "lon": 10.8612,
-    "Name": "Lechfeld Air Base",
-    "RWYs": [
-      { "RWY": "03", "TORA": 2678, "LDA": 2678 },
-      { "RWY": "21", "TORA": 2678, "LDA": 2678 }
-    ]
-  },
-  {
-    "ICAO": "ETSN",
-    "Lat": 48.710999,
-    "lon": 11.2115,
-    "Name": "Neuburg Air Base",
-    "RWYs": [
-      { "RWY": "09", "TORA": 2440, "LDA": 2440 },
-      { "RWY": "27", "TORA": 2440, "LDA": 2440 }
-    ]
-  },
-  {
     "ICAO": "ETMN",
     "Lat": 53.767689,
     "lon": 8.659201,
@@ -149,6 +37,16 @@
     "RWYs": [
       { "RWY": "08", "TORA": 2439, "LDA": 2439 },
       { "RWY": "26", "TORA": 2439, "LDA": 2439 }
+    ]
+  },
+    {
+    "ICAO": "ETNL",
+    "Lat": 53.918201,
+    "lon": 12.2783,
+    "Name": "Rostock-Laage Airport",
+    "RWYs": [
+      { "RWY": "10", "TORA": 2500, "LDA": 2500 },
+      { "RWY": "28", "TORA": 2500, "LDA": 2500 }
     ]
   },
   {
@@ -170,17 +68,24 @@
       { "RWY": "08", "TORA": 2440, "LDA": 2440 },
       { "RWY": "26", "TORA": 2440, "LDA": 2440 }
     ]
+  }, 
+  {
+    "ICAO": "ETSH",
+    "Lat": 51.767799,
+    "lon": 13.1677,
+    "Name": "Holzdorf Air Base",
+    "RWYs": [
+      { "RWY": "09", "TORA": 2419, "LDA": 2419 },
+      { "RWY": "27", "TORA": 2419, "LDA": 2419 }
+    ]
   },
   {
-    "ICAO": "ETNW",
-    "Lat": 52.457298,
-    "lon": 9.42717,
-    "Name": "Wunstorf Air Base",
+    "ICAO": "ETSN",
+    "Lat": 48.710999,
+    "lon": 11.2115,
+    "Name": "Neuburg Air Base",
     "RWYs": [
-      { "RWY": "08", "TORA": 2499, "LDA": 2499 },
-      { "RWY": "26", "TORA": 2499, "LDA": 2499 },
-      { "RWY": "03", "TORA": 1699, "LDA": 1699 },
-      { "RWY": "21", "TORA": 1699, "LDA": 1699 }
+      { "RWY": "09", "TORA": 2440, "LDA": 2440 },
+      { "RWY": "27", "TORA": 2440, "LDA": 2440 }
     ]
-  }
-]
+  },
