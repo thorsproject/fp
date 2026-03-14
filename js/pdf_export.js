@@ -187,6 +187,7 @@ async function downloadBytes(bytes, filename) {
 }
 
 async function exportFuelPerfPdf() {
+  const previewWin = window.open("", "_blank");
   const btn = document.getElementById("btnExportFuelPerf");
   const oldLabel = btn?.textContent || "Export PDF";
 
@@ -296,6 +297,18 @@ async function exportFuelPerfPdf() {
     const cs = safeFilenamePart(getCallsign() || "FP");
     const date = safeFilenamePart(getDate() || "undated");
     await downloadBytes(pdfBytes, `Fuel_Perf_${date}_${cs}.pdf`);
+
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    if (previewWin) {
+    previewWin.location.href = url;
+    } else {
+    window.open(url, "_blank");
+    }
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+
   } catch (err) {
     console.error("[pdf_export]", err);
     alert(`PDF-Export fehlgeschlagen:\n${err?.message || err}`);
