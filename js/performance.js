@@ -3,6 +3,7 @@
 import { qs, qsa, SEL } from "./ui/index.js";
 import { loadAirportWx } from "./metar.js";
 import { loadPerformanceState, savePerformanceState } from "./storage.js";
+import { getMilAirfieldsMeta } from "./airfields.js";
 
 let runwayData = {};
 
@@ -132,6 +133,7 @@ function todayIsoLocal() {
   return `${y}-${m}-${day}`;
 }
 
+// ---------- AIRAC Daten ---------
 function syncAiracHeader() {
   const el = document.getElementById("performanceAiracStatus");
   if (!el) return;
@@ -154,6 +156,32 @@ function syncAiracHeader() {
 
   el.textContent = `AIRAC-Daten gültig bis: ${formatDateDE(validUntil)}`;
 }
+
+function formatIsoDateDE(value) {
+  const s = String(value || "").trim();
+  if (!s) return "";
+
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return s;
+
+  return `${m[3]}.${m[2]}.${m[1]}`;
+}
+
+function applyMilValidTo() {
+  const el = document.getElementById("performanceMilValidTo");
+  if (!el) return;
+
+  const meta = getMilAirfieldsMeta();
+  const validTo = meta?.validTo || "";
+
+  if (!validTo) {
+    el.textContent = "";
+    return;
+  }
+
+  el.textContent = `MIL gültig bis: ${formatIsoDateDE(validTo)}`;
+}
+// ---------- Ende AIRAC Daten ---------
 
 function normIcao(v = "") {
   return String(v).trim().toUpperCase();
@@ -813,6 +841,7 @@ export function syncPerformanceDerived() {
 export async function initPerformance() {
   await loadRunwayData();
   syncAiracHeader();
+  applyMilValidTo();
   restorePerfFields();
   bindPerformanceFormatting();
   applyPerformanceFormattingNow();
