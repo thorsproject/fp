@@ -1167,3 +1167,9 @@ Nach Deaktivierung des Adblockers funktioniert alles korrekt.
   - Klammerwerte und Fußnoten werden toleriert
   - `TWY ...`-Intersection-Zeilen werden ignoriert
 - Endstand: alle Plätze aus `airfields_mil.json` erfolgreich aktualisiert.
+
+## PDF Export
+- Export-to-PDF-Button zusätzlich im Performance-Panel eingebunden.
+- Neuer Performance-Button mit eigener ID versehen.
+- `pdf_export.js` so erweitert, dass beide Export-Buttons denselben Export auslösen.
+- `exportFuelPerfPdf()` nimmt jetzt das Event-Argument und verwendet `ev.currentTarget`, damit jeweils der geklickte Button disabled/aktualisiert wird.

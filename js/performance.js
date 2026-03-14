@@ -450,11 +450,18 @@ async function syncPerformanceWeather() {
       const wx = await loadAirportWx(ldIcao);
       setPerfWxOut("perf_wx_ld_metar", formatPerfMetar(wx));
       setPerfWxOut("perf_wx_ld_taf", formatPerfTaf(wx));
-      setPerfWxOut("perf_wx_ld_note", getWxOfflineNotice(wx));
+
+      const sourceNote = getLandingTempQnhSourceNote();
+      const offlineNote = getWxOfflineNotice(wx);
+
+      setPerfWxOut(
+        "perf_wx_ld_note",
+        [sourceNote, offlineNote].filter(Boolean).join(" • ")
+      );
     } catch {
       setPerfWxOut("perf_wx_ld_metar", "METAR konnte nicht geladen werden");
       setPerfWxOut("perf_wx_ld_taf", "TAF konnte nicht geladen werden");
-      setPerfWxOut("perf_wx_ld_note", "");
+      setPerfWxOut("perf_wx_ld_note", getLandingTempQnhSourceNote());
     }
   }
 }
@@ -547,6 +554,26 @@ function buildLandingEtaLocalIso() {
   const mi = String(lastEta.mm).padStart(2, "0");
 
   return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+}
+
+function formatEtaSourceLabel(etaLocalIso = "") {
+  if (!etaLocalIso) return "";
+
+  const m = String(etaLocalIso).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (!m) return etaLocalIso;
+
+  return `${m[4]}:${m[5]} LT`;
+}
+
+function getLandingTempQnhSourceNote() {
+  const etaLocalIso = buildLandingEtaLocalIso();
+  const etaLabel = formatEtaSourceLabel(etaLocalIso);
+
+  if (!etaLabel) {
+    return "Temp/QNH: Open-Meteo Forecast";
+  }
+
+  return `Temp/QNH: Open-Meteo Forecast (${etaLabel})`;
 }
 
 function findNearestHourlyIndex(times = [], targetIso = "") {
