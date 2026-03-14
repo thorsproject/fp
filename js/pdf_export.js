@@ -202,7 +202,7 @@ function clearTextField(form, name) {
 
 async function exportFuelPerfPdf() {
   const previewWin = window.open("", "_blank");
-  const btn = document.getElementById("btnExportFuelPerf");
+  const btn = ev?.currentTarget || null;
   const oldLabel = btn?.textContent || "Export PDF";
 
   try {
@@ -358,10 +358,14 @@ async function exportFuelPerfPdf() {
 }
 
 export function initPdfExport() {
-  const btn = document.getElementById("btnExportFuelPerf");
-  if (!btn) return;
-  if (btn.dataset.bound === "1") return;
+  const buttons = [
+    document.getElementById("btnExportFuelPerf"),
+    document.getElementById("btnExportFuelPerfPerformance"),
+  ].filter(Boolean);
 
-  btn.dataset.bound = "1";
-  btn.addEventListener("click", exportFuelPerfPdf);
+  for (const btn of buttons) {
+    if (btn.dataset.bound === "1") continue;
+    btn.dataset.bound = "1";
+    btn.addEventListener("click", exportFuelPerfPdf);
+  }
 }
