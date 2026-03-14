@@ -648,7 +648,7 @@ function getLastActiveLegFrameForPerf() {
     const btn = qs(SEL.legs.toggleByLeg(legNum));
     const state = String(btn?.dataset?.state || "").toLowerCase();
 
-    if (state !== "off") {
+    if (state !== "off" && state !== "inactive" && state !== "disabled") {
       lastActive = frames[i];
     }
   }
@@ -787,13 +787,17 @@ async function syncPerformanceWeatherFields() {
     try {
       const wx = await loadAirportWx(ldIcao);
       if (myToken !== perfWxSyncToken) return;
+
       const rawTaf = wx?.taf?.rawTAF || wx?.taf?.raw_text || "";
       writeLandingTafWindToField(rawTaf);
+
+      await writeLandingForecastToFields(ldIcao);
+      if (myToken !== perfWxSyncToken) return;
     } catch {
       if (myToken !== perfWxSyncToken) return;
       setFieldIfExists("ld_wind", "");
       setFieldIfExists("ld_temp", "");
-      setFieldIfExists("ld_qnh", "");      
+      setFieldIfExists("ld_qnh", "");
     }
   }
 }
