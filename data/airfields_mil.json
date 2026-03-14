@@ -1,124 +1,131 @@
-[
-  {
-    "ICAO": "ETHB",
-    "Lat": 52.2785,
-    "lon": 9.08217,
-    "Name": "Bückeburg Air Base",
-    "RWYs": [
-      { "RWY": "08", "TORA": 1831, "LDA": 1831 },
-      { "RWY": "26", "TORA": 1831, "LDA": 1831 }
-    ]
+{
+  "meta": {
+    "airac": "2602",
+    "validFrom": "2026-02-19",
+    "validTo": "2026-03-18"
   },
-  {
-    "ICAO": "ETHC",
-    "Lat": 52.591202,
-    "lon": 10.0221,
-    "Name": "Celle Army Airfield",
-    "RWYs": [
-      { "RWY": "08", "TORA": 2135, "LDA": 2135 },
-      { "RWY": "26", "TORA": 2135, "LDA": 2135 }
-    ]
-  },
-  {
-    "ICAO": "ETHN",
-    "Lat": 49.391833,
-    "lon": 9.958167,
-    "Name": "Niederstetten",
-    "RWYs": [
-      { "RWY": "07", "TORA": 1311, "LDA": 1311 },
-      { "RWY": "25", "TORA": 1311, "LDA": 1210 }
-    ]
-  },
-  {
-    "ICAO": "ETHS",
-    "Lat": 52.919399,
-    "lon": 10.185827,
-    "Name": "Faßberg Air Base",
-    "RWYs": [
-      { "RWY": "09", "TORA": 1000, "LDA": 1000 },
-      { "RWY": "27", "TORA": 1000, "LDA": 1000 }
-    ]
-  },
-  {
-    "ICAO": "ETMN",
-    "Lat": 53.767689,
-    "lon": 8.659201,
-    "Name": "Sea-Airport Cuxhaven/Nordholz / Nordholz Naval Airbase",
-    "RWYs": [
-      { "RWY": "08", "TORA": 2439, "LDA": 2439 },
-      { "RWY": "26", "TORA": 2439, "LDA": 2439 }
-    ]
-  },
-  {
-    "ICAO": "ETNL",
-    "Lat": 53.918201,
-    "lon": 12.2783,
-    "Name": "Rostock-Laage Airport",
-    "RWYs": [
-      { "RWY": "10", "TORA": 2500, "LDA": 2500 },
-      { "RWY": "28", "TORA": 2500, "LDA": 2500 }
-    ]
-  },
-  {
-    "ICAO": "ETNN",
-    "Lat": 50.831200,
-    "lon": 6.658170,
-    "Name": "Nörvenich",
-    "RWYs": [
-      { "RWY": "06", "TORA": 2442, "LDA": 2442 },
-      { "RWY": "24", "TORA": 2442, "LDA": 2442 }
-    ]
-  },
-  {
-    "ICAO": "ETNS",
-    "Lat": 54.459301,
-    "lon": 9.51633,
-    "Name": "Schleswig Air Base",
-    "RWYs": [
-      { "RWY": "05", "TORA": 2439, "LDA": 2439 },
-      { "RWY": "23", "TORA": 2439, "LDA": 2439 }
-    ]
-  },
-  {
-    "ICAO": "ETNT",
-    "Lat": 53.547798,
-    "lon": 7.66733,
-    "Name": "Wittmundhafen Air Base",
-    "RWYs": [
-      { "RWY": "08", "TORA": 2440, "LDA": 2440 },
-      { "RWY": "26", "TORA": 2440, "LDA": 2440 }
-    ]
-  }, 
-  {
-    "ICAO": "ETSH",
-    "Lat": 51.767799,
-    "lon": 13.1677,
-    "Name": "Holzdorf Air Base",
-    "RWYs": [
-      { "RWY": "09", "TORA": 2419, "LDA": 2419 },
-      { "RWY": "27", "TORA": 2419, "LDA": 2419 }
-    ]
-  },
-  {
-    "ICAO": "ETSI",
-    "Lat": 48.715700,
-    "lon": 11.534000,
-    "Name": "Ingolstadt/Manching",
-    "RWYs": [
-      { "RWY": "06L", "TORA": 2439, "LDA": 2439 },
-      { "RWY": "24R", "TORA": 2439, "LDA": 2439 },
-      { "RWY": "06R", "TORA": 2940, "LDA": 2940 },
-      { "RWY": "24L", "TORA": 2940, "LDA": 2940 }
-    ]
-  },
-  {
-    "ICAO": "ETSN",
-    "Lat": 48.710999,
-    "lon": 11.2115,
-    "Name": "Neuburg Air Base",
-    "RWYs": [
-      { "RWY": "09", "TORA": 2440, "LDA": 2440 },
-      { "RWY": "27", "TORA": 2440, "LDA": 2440 }
-    ]
-  }
-]
+  "airfields": [
+    {
+      "ICAO": "ETHB",
+      "Lat": 52.2785,
+      "lon": 9.08217,
+      "Name": "Bückeburg Air Base",
+      "RWYs": [
+        { "RWY": "08", "TORA": 1831, "LDA": 1831 },
+        { "RWY": "26", "TORA": 1831, "LDA": 1831 }
+      ]
+    },
+    {
+      "ICAO": "ETHC",
+      "Lat": 52.591202,
+      "lon": 10.0221,
+      "Name": "Celle Army Airfield",
+      "RWYs": [
+        { "RWY": "08", "TORA": 2135, "LDA": 2135 },
+        { "RWY": "26", "TORA": 2135, "LDA": 2135 }
+      ]
+    },
+    {
+      "ICAO": "ETHN",
+      "Lat": 49.391833,
+      "lon": 9.958167,
+      "Name": "Niederstetten",
+      "RWYs": [
+        { "RWY": "07", "TORA": 1311, "LDA": 1311 },
+        { "RWY": "25", "TORA": 1311, "LDA": 1210 }
+      ]
+    },
+    {
+      "ICAO": "ETHS",
+      "Lat": 52.919399,
+      "lon": 10.185827,
+      "Name": "Faßberg Air Base",
+      "RWYs": [
+        { "RWY": "09", "TORA": 1000, "LDA": 1000 },
+        { "RWY": "27", "TORA": 1000, "LDA": 1000 }
+      ]
+    },
+    {
+      "ICAO": "ETMN",
+      "Lat": 53.767689,
+      "lon": 8.659201,
+      "Name": "Sea-Airport Cuxhaven/Nordholz / Nordholz Naval Airbase",
+      "RWYs": [
+        { "RWY": "08", "TORA": 2439, "LDA": 2439 },
+        { "RWY": "26", "TORA": 2439, "LDA": 2439 }
+      ]
+    },
+    {
+      "ICAO": "ETNL",
+      "Lat": 53.918201,
+      "lon": 12.2783,
+      "Name": "Rostock-Laage Airport",
+      "RWYs": [
+        { "RWY": "10", "TORA": 2500, "LDA": 2500 },
+        { "RWY": "28", "TORA": 2500, "LDA": 2500 }
+      ]
+    },
+    {
+      "ICAO": "ETNN",
+      "Lat": 50.831200,
+      "lon": 6.658170,
+      "Name": "Nörvenich",
+      "RWYs": [
+        { "RWY": "06", "TORA": 2442, "LDA": 2442 },
+        { "RWY": "24", "TORA": 2442, "LDA": 2442 }
+      ]
+    },
+    {
+      "ICAO": "ETNS",
+      "Lat": 54.459301,
+      "lon": 9.51633,
+      "Name": "Schleswig Air Base",
+      "RWYs": [
+        { "RWY": "05", "TORA": 2439, "LDA": 2439 },
+        { "RWY": "23", "TORA": 2439, "LDA": 2439 }
+      ]
+    },
+    {
+      "ICAO": "ETNT",
+      "Lat": 53.547798,
+      "lon": 7.66733,
+      "Name": "Wittmundhafen Air Base",
+      "RWYs": [
+        { "RWY": "08", "TORA": 2440, "LDA": 2440 },
+        { "RWY": "26", "TORA": 2440, "LDA": 2440 }
+      ]
+    }, 
+    {
+      "ICAO": "ETSH",
+      "Lat": 51.767799,
+      "lon": 13.1677,
+      "Name": "Holzdorf Air Base",
+      "RWYs": [
+        { "RWY": "09", "TORA": 2419, "LDA": 2419 },
+        { "RWY": "27", "TORA": 2419, "LDA": 2419 }
+      ]
+    },
+    {
+      "ICAO": "ETSI",
+      "Lat": 48.715700,
+      "lon": 11.534000,
+      "Name": "Ingolstadt/Manching",
+      "RWYs": [
+        { "RWY": "06L", "TORA": 2439, "LDA": 2439 },
+        { "RWY": "24R", "TORA": 2439, "LDA": 2439 },
+        { "RWY": "06R", "TORA": 2940, "LDA": 2940 },
+        { "RWY": "24L", "TORA": 2940, "LDA": 2940 }
+      ]
+    },
+    {
+      "ICAO": "ETSN",
+      "Lat": 48.710999,
+      "lon": 11.2115,
+      "Name": "Neuburg Air Base",
+      "RWYs": [
+        { "RWY": "09", "TORA": 2440, "LDA": 2440 },
+        { "RWY": "27", "TORA": 2440, "LDA": 2440 }
+      ]
+    }
+  ]
+}
