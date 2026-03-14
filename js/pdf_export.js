@@ -296,7 +296,7 @@ async function exportFuelPerfPdf() {
 
     const cs = safeFilenamePart(getCallsign() || "FP");
     const date = safeFilenamePart(getDate() || "undated");
-    await downloadBytes(pdfBytes, `Fuel_Perf_${date}_${cs}.pdf`);
+    // await downloadBytes(pdfBytes, `Fuel_Perf_${date}_${cs}.pdf`);
 
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
