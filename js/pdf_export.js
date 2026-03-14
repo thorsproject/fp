@@ -142,7 +142,7 @@ function getEosidPdfText() {
 
   if (eosid === "IFR") return ifr;
   if (eosid === "VFR") return vfr;
-  if (eosid === "IFR/VFR OPT") return `${ifr}\n${vfr}`;
+  if (eosid === "IFR/VFR OPT") return `${ifr}\n--------------------------–\nOPTion: ${vfr}`;
   if (eosid === "VFR/IFR OPT") return `${vfr}\n${ifr}`;
 
   return eosid;
