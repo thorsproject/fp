@@ -172,19 +172,20 @@ function clearTextField(form, name) {
   setTextField(form, name, "");
 }
 
-async function downloadBytes(bytes, filename) {
-  const blob = new Blob([bytes], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
+// wird momentan nicht benötigt, da das pdf-dokument nicht gespeichert wird
+//async function downloadBytes(bytes, filename) {
+//  const blob = new Blob([bytes], { type: "application/pdf" });
+//  const url = URL.createObjectURL(blob);
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+//  const a = document.createElement("a");
+//  a.href = url;
+//  a.download = filename;
+//  document.body.appendChild(a);
+//  a.click();
+//  a.remove();
 
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
-}
+//  setTimeout(() => URL.revokeObjectURL(url), 1500);
+//}
 
 async function exportFuelPerfPdf() {
   const previewWin = window.open("", "_blank");
