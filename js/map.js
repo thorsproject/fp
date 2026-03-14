@@ -199,24 +199,21 @@ function createAirportMarker(apt, role) {
 }
 
 function readLegRows() {
-  const fromEls = Array.from(document.querySelectorAll(".legField.aeroFrom"));
-  const toEls = Array.from(document.querySelectorAll(".legField.aeroTo"));
-  const altEls = Array.from(document.querySelectorAll(".legField.alt"));
-  const toggleEls = Array.from(document.querySelectorAll(".legToggle"));
-
-  const maxLen = Math.max(fromEls.length, toEls.length, altEls.length, toggleEls.length);
-
+  const frames = Array.from(document.querySelectorAll("#legsContainer .c-panel"));
   const rows = [];
 
-  for (let i = 0; i < maxLen; i += 1) {
-    const fromEl = fromEls[i] || null;
-    const toEl = toEls[i] || null;
-    const altEl = altEls[i] || null;
-    const toggleEl = toggleEls[i] || null;
+  for (let i = 0; i < frames.length; i += 1) {
+    const frame = frames[i];
+    const legNum = i + 1;
+
+    const fromEl = frame.querySelector(".legField.aeroFrom");
+    const toEl = frame.querySelector(".legField.aeroTo");
+    const altEl = frame.querySelector(".legField.alt");
+    const toggleEl = frame.querySelector(".legToggle");
 
     rows.push({
-      leg: i + 1,
-      active: isLegActive(toggleEl),
+      leg: legNum,
+      active: legNum === 1 ? true : isLegActive(toggleEl),
       from: normalizeIcao(readFieldValue(fromEl)),
       to: normalizeIcao(readFieldValue(toEl)),
       alt: normalizeIcao(readFieldValue(altEl)),
