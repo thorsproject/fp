@@ -330,7 +330,7 @@
 .c-desc{
   max-width: 185px;
   line-height: 1.08;
-  padding-left: 6px;
+  padding-left: 0;
 }
 
 .c-desc--wide{
