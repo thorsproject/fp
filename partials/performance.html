@@ -20,9 +20,11 @@
           <div class="perf-card__title">Takeoff</div>
 
           <div class="perf-grid">
+            <!--<div class="perf-label">ICAO</div>
+            <div class="perf-cell"><input class="c-input" data-field="to_icao" /></div>-->
             <div class="perf-label">ICAO</div>
-            <div class="perf-cell"><input class="c-input" data-field="to_icao" /></div>
-
+            <div class="perf-cell perf-cell--out"><span data-out="to_icao"></span></div>
+            
             <div class="perf-label">RWY</div>
             <div class="perf-cell"><select class="c-select" data-field="to_rwy"><option value="">RWY</option></select></div>
 
@@ -58,11 +60,16 @@
             <div class="perf-label">Takeoff Roll</div>
             <div class="perf-cell"><input class="c-input" data-field="to_roll" /></div>
 
-            <div class="perf-label">ASD</div>
+            <!--<div class="perf-label">ASD</div>
             <div class="perf-cell"><input class="c-input" data-field="to_asd" /></div>
 
             <div class="perf-label">Stop Margin</div>
-            <div class="perf-cell"><input class="c-input" data-field="to_stop_margin" /></div>
+            <div class="perf-cell"><input class="c-input" data-field="to_stop_margin" /></div>-->
+            <div class="perf-label">ASD</div>
+            <div class="perf-cell perf-cell--out"><span data-out="to_asd"></span></div>
+
+            <div class="perf-label">Stop Margin</div>
+            <div class="perf-cell perf-cell--out"><span data-out="to_stop_margin"></span></div>
           </div>
         </section>
 
@@ -71,8 +78,10 @@
           <div class="perf-card__title">Return / Div</div>
 
           <div class="perf-grid">
+            <!--<div class="perf-label">ICAO</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_icao" /></div>-->
             <div class="perf-label">ICAO</div>
-            <div class="perf-cell"><input class="c-input" data-field="rt_icao" /></div>
+            <div class="perf-cell perf-cell--out"><span data-out="rt_icao"></span></div>
 
             <div class="perf-label">RWY</div>
             <div class="perf-cell perf-cell--out"><span data-out="rt_rwy"></span></div>
@@ -120,8 +129,10 @@
             <div class="perf-label">LD ABN</div>
             <div class="perf-cell"><input class="c-input" data-field="rt_ld_abn" /></div>
 
+            <!--<div class="perf-label">Stop Margin</div>
+            <div class="perf-cell"><input class="c-input" data-field="rt_stop_margin" /></div>-->
             <div class="perf-label">Stop Margin</div>
-            <div class="perf-cell"><input class="c-input" data-field="rt_stop_margin" /></div>
+            <div class="perf-cell perf-cell--out"><span data-out="rt_stop_margin"></span></div>
           </div>
         </section>
 
@@ -130,8 +141,10 @@
           <div class="perf-card__title">Landing</div>
 
           <div class="perf-grid">
+            <!--<div class="perf-label">ICAO</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_icao" /></div>-->
             <div class="perf-label">ICAO</div>
-            <div class="perf-cell"><input class="c-input" data-field="ld_icao" /></div>
+            <div class="perf-cell perf-cell--out"><span data-out="ld_icao"></span></div>
 
             <div class="perf-label">RWY</div>
             <div class="perf-cell"><select class="c-select" data-field="ld_rwy"><option value="">RWY</option></select></div>
@@ -172,8 +185,10 @@
             <div class="perf-label">LD</div>
             <div class="perf-cell"><input class="c-input" data-field="ld_ld" /></div>
 
+            <!--<div class="perf-label">Stop Margin</div>
+            <div class="perf-cell"><input class="c-input" data-field="ld_stop_margin" /></div>-->
             <div class="perf-label">Stop Margin</div>
-            <div class="perf-cell"><input class="c-input" data-field="ld_stop_margin" /></div>
+            <div class="perf-cell perf-cell--out"><span data-out="ld_stop_margin"></span></div>
           </div>
         </section>
         <div class="perf-wx">

@@ -10,22 +10,18 @@ const PERF_FIELDS = [
   "to_rwy",
   "to_tom",
   "to_roll",
-  "to_asd",
-  "to_stop_margin",
 
   "rt_oei_roc",
   "rt_oei_sc",
   "rt_eosid",
   "rt_roll",
   "rt_ld_abn",
-  "rt_stop_margin",
 
   "ld_rwy",
   "ld_lm",
   "ld_flaps",
   "ld_roll",
   "ld_ld",
-  "ld_stop_margin",
 ];
 
 function restorePerfFields() {
@@ -58,9 +54,9 @@ function bindPerfPersistence() {
 
 function bindPerformanceFormatting() {
   [
-    "to_tora", "to_roll", "to_asd", "to_stop_margin",
-    "rt_lda", "rt_roll", "rt_ld_abn", "rt_stop_margin",
-    "ld_lda", "ld_roll", "ld_ld", "ld_stop_margin",
+    "to_tora", "to_roll",
+    "rt_lda", "rt_roll", "rt_ld_abn",
+    "ld_lda", "ld_roll", "ld_ld",
   ].forEach((name) => bindUnitField(name, (v) => formatWithSuffix(v, "m")));
 
   ["to_temp", "ld_temp"].forEach((name) =>
@@ -151,6 +147,7 @@ function setOut(name, value) {
   el.textContent = value ?? "";
 }
 
+
 function clearField(name) {
   const el = qs(`[data-field="${name}"]`);
   if (!el) return;
@@ -159,6 +156,15 @@ function clearField(name) {
 
 function getField(name) {
   return qs(`[data-field="${name}"]`);
+}
+
+function setDerivedOut(name, value) {
+  setOut(name, value ?? "");
+}
+
+function getOutText(name) {
+  const el = document.querySelector(`[data-out="${name}"]`);
+  return (el?.textContent || "").trim();
 }
 
 function setPerfWxOut(name, value) {
@@ -319,16 +325,16 @@ function syncPerformanceMargins() {
   const ld_ld = numFromField("ld_ld");
 
   const to_asd = to_roll + rt_roll + 100;
-  setFieldIfExists("to_asd", formatWithSuffix(to_asd, "m"));
+  setDerivedOut("to_asd", formatWithSuffix(to_asd, "m"));
 
   const to_stop = to_tora - to_asd;
-  setFieldIfExists("to_stop_margin", formatWithSuffix(to_stop, "m"));
+  setDerivedOut("to_stop_margin", formatWithSuffix(to_stop, "m"));
 
   const rt_stop = rt_lda - rt_ld_abn;
-  setFieldIfExists("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
+  setDerivedOut("rt_stop_margin", formatWithSuffix(rt_stop, "m"));
 
   const ld_stop = rt_lda - ld_ld;
-  setFieldIfExists("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
+  setDerivedOut("ld_stop_margin", formatWithSuffix(ld_stop, "m"));
 }
 
 function bindMarginRecalc() {
@@ -355,8 +361,8 @@ function bindMarginRecalc() {
 }
 
 async function syncPerformanceWeather() {
-  const toIcao = normIcao(getField("to_icao")?.value || "");
-  const ldIcao = normIcao(getField("ld_icao")?.value || "");
+  const toIcao = normIcao(getOutText("to_icao"));
+  const ldIcao = normIcao(getOutText("ld_icao"));
 
   setPerfWxOut("perf_wx_to_icao", toIcao);
   setPerfWxOut("perf_wx_ld_icao", ldIcao);
@@ -529,9 +535,8 @@ function writeLandingTafWindToField(rawTaf) {
 
 async function syncPerformanceWeatherFields() {
   const myToken = ++perfWxSyncToken;
-
-  const toIcao = normIcao(getField("to_icao")?.value || "");
-  const ldIcao = normIcao(getField("ld_icao")?.value || "");
+  const toIcao = normIcao(getOutText("to_icao"));
+  const ldIcao = normIcao(getOutText("ld_icao"));
 
   if (!toIcao) {
     setFieldIfExists("to_wind", "");
@@ -697,28 +702,24 @@ export function syncPerformanceAirfields() {
   const depIcao = normIcao(firstFrom?.value || "");
   const destIcao = normIcao(lastTo?.value || "");
 
-  const toIcao = getField("to_icao");
-  const rtIcao = getField("rt_icao");
-  const ldIcao = getField("ld_icao");
-
-  if (toIcao) toIcao.value = depIcao;
-  if (rtIcao) rtIcao.value = depIcao;
-  if (ldIcao) ldIcao.value = destIcao;
+  setDerivedOut("to_icao", depIcao);
+  setDerivedOut("rt_icao", depIcao);
+  setDerivedOut("ld_icao", destIcao);
 }
 
 // ---------- runway selects ----------
 function syncRunwaySelectsFromIcao() {
-  const toIcao = normIcao(getField("to_icao")?.value || "");
-  const ldIcao = normIcao(getField("ld_icao")?.value || "");
+  const toIcao = normIcao(getOutText("to_icao"));
+  const ldIcao = normIcao(getOutText("ld_icao"));
 
   fillRunwaySelect(getField("to_rwy"), getRunwaysForIcao(toIcao));
   fillRunwaySelect(getField("ld_rwy"), getRunwaysForIcao(ldIcao));
 }
 
 function syncDeclaredDistances() {
-  const toIcao = normIcao(getField("to_icao")?.value || "");
-  const rtIcao = normIcao(getField("rt_icao")?.value || "");
-  const ldIcao = normIcao(getField("ld_icao")?.value || "");
+  const toIcao = normIcao(getOutText("to_icao"));
+  const rtIcao = normIcao(getOutText("rt_icao"));
+  const ldIcao = normIcao(getOutText("ld_icao"));
 
   const toRwy = getField("to_rwy")?.value || "";
   const ldRwy = getField("ld_rwy")?.value || "";
