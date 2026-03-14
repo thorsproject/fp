@@ -3,7 +3,7 @@
 import { qs, qsa, SEL } from "./ui/index.js";
 import { loadAirportWx } from "./metar.js";
 import { loadPerformanceState, savePerformanceState } from "./storage.js";
-import { getMilAirfieldsMeta } from "./airfields.js";
+import { getMilAirfieldsMeta, getAirfieldByIcao } from "./airfields.js";
 
 let runwayData = {};
 
@@ -635,6 +635,55 @@ async function syncPerformanceWeatherFields() {
 // ---------- Ende helpers ----------
 
 // ---------- data ----------
+function normRwy(v = "") {
+  return String(v).trim().toUpperCase();
+}
+
+function getMilRunwayMapForIcao(icao) {
+  const airport = getAirfieldByIcao(normIcao(icao));
+  if (!airport) return {};
+
+  const rows = Array.isArray(airport?.rwys)
+    ? airport.rwys
+    : Array.isArray(airport?.RWYs)
+      ? airport.RWYs
+      : [];
+
+  const out = {};
+
+  for (const row of rows) {
+    const rwy = normRwy(row?.rwy ?? row?.RWY);
+    if (!rwy) continue;
+
+    const tora = Number(row?.tora ?? row?.TORA);
+    const lda = Number(row?.lda ?? row?.LDA);
+
+    out[rwy] = {
+      ...(Number.isFinite(tora) ? { tora } : {}),
+      ...(Number.isFinite(lda) ? { lda } : {}),
+    };
+  }
+
+  return out;
+}
+
+function getRunwayMapForIcao(icao) {
+  const key = normIcao(icao);
+  if (!key) return {};
+
+  const perfRunways = runwayData?.[key]?.runways;
+  if (perfRunways && Object.keys(perfRunways).length) {
+    return perfRunways;
+  }
+
+  return getMilRunwayMapForIcao(key);
+}
+
+function getRunwayDataForIcaoRwy(icao, rwy) {
+  const map = getRunwayMapForIcao(icao);
+  return map?.[normRwy(rwy)] || null;
+}
+
 async function loadRunwayData() {
   try {
     const res = await fetch("./data/performance_runways.json", { cache: "no-store" });
@@ -646,9 +695,7 @@ async function loadRunwayData() {
 }
 
 function getRunwaysForIcao(icao) {
-  const airport = runwayData[normIcao(icao)];
-  if (!airport?.runways) return [];
-  return Object.keys(airport.runways).sort();
+  return Object.keys(getRunwayMapForIcao(icao)).sort();
 }
 
 function fillRunwaySelect(selectEl, runways) {
@@ -670,7 +717,7 @@ function fillRunwaySelect(selectEl, runways) {
 }
 
 function applyDeclaredDistances(icao, rwy, { toraField, ldaField } = {}) {
-  const data = runwayData?.[normIcao(icao)]?.runways?.[rwy];
+  const data = getRunwayDataForIcaoRwy(icao, rwy);
   if (!data) return;
 
   if (toraField) {
@@ -794,7 +841,7 @@ function syncDeclaredDistances() {
 
     setOut("rt_rwy", toRwy);
 
-    const rtData = runwayData?.[rtIcao]?.runways?.[toRwy];
+    const rtData = getRunwayDataForIcaoRwy(rtIcao, toRwy);
     if (rtData?.lda != null) {
       setOut("rt_lda", formatWithSuffix(rtData.lda, "m"));
     }

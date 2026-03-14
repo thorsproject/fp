@@ -19,6 +19,12 @@ export function getMilAirfieldsMeta() {
   return airfieldsMilMeta;
 }
 
+export function getAirfieldByIcao(icao) {
+  const key = String(icao || "").trim().toUpperCase();
+  if (!key) return null;
+  return airfieldsDB[key] || null;
+}
+
 function normalizeMilAirfield(row) {
   const icao = String(row?.ICAO || "").trim().toUpperCase();
   if (!icao) return null;
@@ -87,7 +93,6 @@ export async function loadAlternates() {
 }
 
 // ------------------ DATALISTS ------------------
-
 export function buildAirfieldsDatalist() {
   const dl = document.getElementById("airfieldsList");
   if (!dl) return;
