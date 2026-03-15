@@ -1,19 +1,25 @@
 <!-- settings.html -->
- <!-- fuel.html -->
 <div class="view-settings__body">
   <div class="c-panel c-panel--stack" id="settingsPanel">
     <div class="c-panel__head settings-head">
       <h2 class="c-title">Settings</h2>
     </div>
-      <div class="setting-row">
-        <label for="cfgPass">Team-Passwort (Config)</label><br>
+    <div class="c-panel__body">
+
+      <!-- PASSWORT -->
+      <div class="fuel-grid fuel-row">
+        <div class="c-desc">Passwort (Config)</div>
+        <!--<div class="c-leg trip" data-trip-leg="1"><input class="c-input" data-trip-usg="1" inputmode="decimal"></div>-->
         <input class="c-input" id="cfgPass" type="password" autocomplete="current-password" placeholder="Passwort eingeben">
+        <button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
+        <button class="c-btn" id="btnCfgClearPass" type="button">Passwort löschen</button>
+        <span id="cfgStatus" style="margin-left:8px;"></span>        
       </div>
 
       <div class="setting-row">
-        <button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
+        <!--<button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
         <button class="c-btn" id="btnCfgClearPass" type="button">Passwort löschen</button>
-        <span id="cfgStatus" style="margin-left:8px;"></span>
+        <span id="cfgStatus" style="margin-left:8px;"></span>-->
       </div>
       <div class="setting-row">
         <label for="fdlSelect">FDL</label><br>
