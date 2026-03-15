@@ -73,6 +73,27 @@
   opacity: 0.9;
 }
 
+/* Passwort Zeile */
+#view-settings .cg-row--config .cg-actions{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+#view-settings .cg-status-inline{
+  font-size: 13px;
+  line-height: 1.2;
+  opacity: 0.85;
+  white-space: nowrap;
+  margin-left: 2px;
+}
+
+#view-settings .cg-row--config .cg-status{
+  display: none;
+}
+/* Ende Passwort Zeile */
+
 /* Checkbox-Zeile */
 #view-settings .cg-check{
   display: inline-flex;
