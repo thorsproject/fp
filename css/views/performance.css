@@ -79,7 +79,7 @@
 /* ---------- Cards ---------- */
 .perf-card{
   border: 1px solid var(--border, rgba(255,255,255,0.12));
-  border-radius: 10px; /* Rundung der Ecken */
+  border-radius: var(--space-xs); /*10px; Rundung der Ecken */
   background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
   overflow: hidden;
 }
@@ -219,7 +219,7 @@
 .perf-wx__raw{
   margin: 0;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: var(--space-xs);
   width: 100%;
   white-space: pre-wrap;
   background: rgba(255,255,255,0.04);
