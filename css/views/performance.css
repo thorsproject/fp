@@ -72,14 +72,15 @@
 .performance-layout{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px; /* Abstand zwischen Grid und Wetter */
+  column-gap: 14px;
+  row-gap: var(--space-xs); /* Abstand zwischen Grid und Wetter */
   align-items: start;
 }
 
 /* ---------- Cards ---------- */
 .perf-card{
   border: 1px solid var(--border, rgba(255,255,255,0.12));
-  border-radius: var(--space-xs); /*10px; Rundung der Ecken */
+  border-radius: var(--space-xs); /* Rundung der Ecken */
   background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
   overflow: hidden;
 }
