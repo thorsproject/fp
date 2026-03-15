@@ -35,7 +35,7 @@
   overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
-  padding-inline: 6px;
+  padding-inline: 0;
 }
 /*   ========================================================= */
 
@@ -135,7 +135,7 @@
 
 .fuel-header{
   margin-top: var(--space-md);
-  padding: 8px 0;
+  padding: 8px 6px; /*0;*/
   border-bottom: 1px solid var(--border);
   color: var(--muted);
   font-weight: 800;
@@ -146,7 +146,7 @@
    [FUEL:ROWS]
    ------------------------- */
 .fuel-row{
-  padding: 6px 0;
+  padding: 6px 6px; /*0;*/
   border-bottom: 1px dashed rgba(46,59,78,0.55);
 }
 
@@ -244,7 +244,7 @@
 .fuel-total{
   background: rgba(0,255,204,0.06);
   border-radius: 8px;
-  padding: 8px 0;
+  /*padding: 8px 0;*/
   margin: 0;
 }
   /*margin-right: -6px;
