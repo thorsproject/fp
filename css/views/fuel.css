@@ -30,13 +30,12 @@
 .view-fuel__body{
   flex: 1;
   min-height: 0;
-
   /* horizontal scroll fürs breite Grid */
   overflow-x: auto;
   overflow-y: visible;
-
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
+  padding-inline: 6px;
 }
 /*   ========================================================= */
 
@@ -242,12 +241,14 @@
   padding: 8px 8px;
 }
 
-/*.fuel-total{
+.fuel-total{
   background: rgba(0,255,204,0.06);
   border-radius: 8px;
-  margin-right: -6px;
-  padding: 8px 8px 8px 6px;
-}*/
+  padding: 8px 0;
+  margin: 0;
+  /*margin-right: -6px;
+  padding: 8px 8px 8px 6px;*/
+}
 
 /*.fuel-total{
   background: rgba(0,255,204,0.06);
@@ -261,14 +262,6 @@
   padding-left: 0;
   margin-left: 0;
 }*/
-
-.fuel-total{
-  position: relative;
-  margin: 0;
-  padding: 8px 0;
-  background: rgba(0,255,204,0.06);
-  border-radius: 8px;
-}
 
 /* -------------------------
    [FUEL:WARN]
