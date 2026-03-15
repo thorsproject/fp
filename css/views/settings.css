@@ -24,7 +24,7 @@
 #view-settings .cg-row{
   display: grid;
   /*grid-template-columns: 220px minmax(260px, 1.1fr) auto minmax(140px, 0.8fr);*/
-  grid-template-columns: 160px 140px 300px;
+  grid-template-columns: 160px 140px 200px 300px;
   gap: 10px 12px;
   align-items: center;
   min-width: 0;
