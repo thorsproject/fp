@@ -73,10 +73,14 @@
   opacity: 0.9;
 }
 
-/* Passwort Zeile */
+/* Config Zeile */
+#view-settings .cg-row--config{
+  grid-template-columns: 220px minmax(260px, 1fr) auto;
+}
+
 #view-settings .cg-row--config .cg-actions{
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 8px;
 }
@@ -87,12 +91,13 @@
   opacity: 0.85;
   white-space: nowrap;
   margin-left: 2px;
+  flex: 0 0 auto;
 }
 
 #view-settings .cg-row--config .cg-status{
   display: none;
 }
-/* Ende Passwort Zeile */
+/* Ende Config Zeile */
 
 /* Checkbox-Zeile */
 #view-settings .cg-check{
