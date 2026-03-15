@@ -244,23 +244,9 @@
 .fuel-total{
   background: rgba(0,255,204,0.06);
   border-radius: 8px;
-  /*padding: 8px 0;*/
   margin: 0;
 }
-  /*margin-right: -6px;
-  padding: 8px 8px 8px 6px;*/
-/*.fuel-total{
-  background: rgba(0,255,204,0.06);
-  border-radius: 8px;
-  margin-right: 0;
-  padding: 8px 0;
-}
 
-/* Totals nicht einrücken */
-/*.fuel-grid.fuel-total .c-desc{
-  padding-left: 0;
-  margin-left: 0;
-}*/
 
 /* -------------------------
    [FUEL:WARN]
@@ -290,7 +276,6 @@
   max-width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0,1fr));
-  /*grid-template-columns: repeat(3, 130px);*/
   gap: var(--space-md);
 }
 
