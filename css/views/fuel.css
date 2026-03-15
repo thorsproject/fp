@@ -78,7 +78,7 @@
   background: var(--bg);
   color: var(--muted);
   font-size: 12px;
-  font-weight: 700;
+  /*font-weight: 700;*/
 }
 .fuel-chip input,
 .fuel-chip select{
@@ -100,7 +100,7 @@
   border: 1px solid #444;
   background: #2b3138;
   color: #ddd;
-  font-weight: 600;
+  /*font-weight: 600;*/
   cursor: pointer;
   transition: all .15s ease;
 }
