@@ -72,9 +72,9 @@
   display: flex;
   gap: 6px;
   align-items: center;
-  padding: 6px 10px;
+  padding: 6px 6px;
   border: 1px solid var(--border);
-  border-radius: var(--space-md);
+  border-radius: var(--space-xs);
   background: var(--bg);
   color: var(--muted);
   font-size: 12px;
