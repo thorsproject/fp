@@ -102,16 +102,14 @@
   grid-template-columns: minmax(0, 1fr) 100px;
   /*grid-template-columns: 132px minmax(0, 1fr);*/
   align-items: stretch;
-  /*align-items: center;*/
-  row-gap: 0; /* 8px */
-  /* grid-template-columns: 1fr 92px; */
+  row-gap: 0;
 }
 
 /* Label + Feldzelle wirklich gleich hoch */
 .perf-label,
 .perf-cell{
   min-height: 0;
-  height: 34px; /* 44 Einheitliche Höhe für Label und Zelle */
+  height: 30px; /* 44 Einheitliche Höhe für Label und Zelle */
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -139,8 +137,8 @@
 .perf-cell .c-output{
   width: 100%;
   min-width: 0;
-  height: 26px;
-  min-height: 26px;
+  height: 22px;
+  min-height: 22px;
   padding-top: 0;
   padding-bottom: 0;
   box-sizing: border-box;
@@ -156,8 +154,8 @@
 /* reine Output-Felder */
 .perf-cell--out span{
   width: 100%;
-  height: 26px;
-  min-height: 26px;
+  height: 22px;
+  min-height: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -180,8 +178,8 @@
   /* Box model */
   flex: 0 0 65%;
   max-width: 65%;
-  height: 26px;
-  min-height: 26px;
+  height: 22px;
+  min-height: 22px;
   /* Surface */
   background: #0f141a;
   border: 1px solid var(--border);
