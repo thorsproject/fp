@@ -415,3 +415,33 @@ Mögliche nächste Verbesserungen:
     - decrypt → edit → encrypt → commit → push
 FP_CONFIG_PASS="team2026" node tools/config-crypto.mjs enc data/config.json data/config.enc
 FP_CONFIG_PASS="team2026" node tools/config-crypto.mjs dec data/config.enc data/config.json
+
+# Standard-Workflow zum Aktualisieren der MilAip
+  * Schritt 1 — MilAip von ForeFlight herunterladen
+    - ForeFlight: Documents/Bundeswehr/ACC – Aero Info
+    - Speicherort lokal: Nutzer/Webhosting/update_milaip
+  * Schritt 2 — aktuelle "airfields_mil.json" aus reposite herunterladen
+    - Reposite: fp/Data/airfields_mil.json
+    - Speicherort lokal: Nutzer/Webhosting/update_milaip
+  * Schritt 3 — Terminal öffnen
+    - cd Webhosting
+    - cd update_milaip
+    - folgenden Befehl ausführen: python3 update_milaip_json.py --pdf "MILAIP19FEB-18MAR26.pdf" --json "airfields_mil.json"
+    - Ergebnis sollte folgendermaße sein:
+        Written: airfields_mil.json
+        ETHB: updated 2 runway entries
+        ETHC: updated 1 runway entries
+        ETHN: updated 2 runway entries
+        ETHS: updated 2 runway entries
+        ETMN: updated 2 runway entries
+        ETNL: updated 2 runway entries
+        ETNN: updated 2 runway entries
+        ETNS: updated 4 runway entries
+        ETNT: updated 2 runway entries
+        ETSH: updated 2 runway entries
+        ETSI: updated 4 runway entries
+        ETSN: updated 2 runway entries
+  * Schritt 4 — "airfields_mil.json" wieder ins reposite hochladen
+    - Reposite: fp/Data/airfields_mil.json
+    - Site nach Commit neu laden. Mac: CMD+Shift+R, Windows: ?
+

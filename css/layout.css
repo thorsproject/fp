@@ -13,18 +13,38 @@
 
 
 /* =========================================================
+   [What for]
+   1. margin: 
+    - Das ist Abstand um ein Element herum.
+    - Er schiebt das Element von anderen weg.
+    - Beispiel:
+        - margin-left: 10px → das ganze Element rückt 10px nach rechts
+        - der Hintergrund des Elements füllt diesen Bereich nicht
+
+   2. padding
+    - Das ist Abstand im Element zwischen Rand und Inhalt.
+    - Beispiel:
+        - padding-left: 10px → der Inhalt beginnt 10px weiter rechts
+        - der Hintergrund des Elements läuft über das Padding mit
+
+   3. gap: 
+    - Das ist Abstand zwischen direkten Kindern eines grid- oder flex-Containers.
+    - Beispiel:
+        - display: grid; gap: 10px; → zwischen den Grid-Kindern liegen 10px
+        - display: flex; gap: 8px;  → zwischen den Flex-Kindern liegen 8px
+
+   ========================================================= */
+
+   /* =========================================================
    [VARS]
    ========================================================= */
 :root{
   /* heights */
   --topbar-h: 50px;
-
   /* outer frame */
-  --app-pad: 5px;         /* Außenrand um die ganze App */
-  --col-gap: 5px;         /* Abstand zwischen Sidebar und Main */
-
-  --panel-gutter: 10px;   /* symmetric inner spacing for both columns */
-
+  --app-pad: 5px;         /* Abstand der ganzen App zum Browserrand */
+  --col-gap: 5px;         /* Abstand zwischen Sidebar (links) und Main (rechts) */
+  --panel-gutter: 10px;   /* Innenluft innerhalb der Spalten und auch vertikaler Abstand in einigen Views */
   --sidebar-w: 530px;     /* desktop sidebar width */
 }
 
@@ -79,22 +99,19 @@ html, body{
 
 /* Platz für fixed Topbar (60px) */
 .l-views{
-  padding-top: calc(var(--topbar-h) + 10px);
+  padding-top: calc(var(--topbar-h) + 5px); /* reserviert oben Platz für die feste Topbar */
 }
 
 /* 2-column grid => stabil + symmetrische Ränder */
 .l-shell{
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr;
-  gap: var(--col-gap);
-
-  padding: var(--app-pad);
+  gap: var(--col-gap); /* Abstand zwischen Sidebar (links) und Main (rechts) */
+  padding: var(--app-pad); /* Abstand der ganzen App zum Browserrand */
   box-sizing: border-box;
-
   /* feste viewport-basierte Höhe => keine Page-Scrollbars */
   height: calc(100vh - (var(--topbar-h) + 2 * var(--app-pad)));
   overflow: hidden;
-
   min-height: 0;
 }
 
@@ -114,17 +131,14 @@ html, body{
   /* 2 rows: content + footer/reset */
   display: grid;
   grid-template-rows: 1fr auto; /* oben flexibel, unten ResetBar */
-  gap: var(--panel-gutter);
-
+  gap: var(--panel-gutter); /* vertikaler Abstand zwischen Sidebar-Content und Sidebar-Footer/Resetbar */
   height: 100%;
   min-width: 0;
   min-height: 0;
-
   /* symmetrische Abstände links/rechts */
-  padding-left: var(--panel-gutter);
-  padding-right: var(--panel-gutter);
+  padding-left: var(--panel-gutter); /* Innenabstand in der linken Spalte */
+  padding-right: var(--panel-gutter); /* Innenabstand in der rechten Spalte */
   box-sizing: border-box;
-
   /* Spalten bleiben fest */
   overflow: hidden;
 }
@@ -132,12 +146,11 @@ html, body{
 /* RECHTS: Main ist nur Container für die aktive View (Footer sitzt in der View) */
 .l-main{
   position: relative;
-
   height: 100%;
   min-width: 0;
   min-height: 0;
-
-  padding-left: var(--col-gap); /* Abstand zwischen left und main panel */
+  /* padding-left: var(--col-gap); /* Abstand zwischen Sidebar und main panel */
+  padding-left: 0; /* Abstand zwischen Sidebar und main panel */
   padding-right: var(--panel-gutter);  /* Abstand zwischen main panel und Rand */
   box-sizing: border-box;
   overflow: hidden;
