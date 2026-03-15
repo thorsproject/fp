@@ -137,8 +137,8 @@ html, body{
   min-width: 0;
   min-height: 0;
 
-  padding-left: var(--panel-gutter);
-  padding-right: var(--panel-gutter);
+  padding-left: var(--col-gap);
+  padding-right: var(--col-gap);
   box-sizing: border-box;
   overflow: hidden;
 }
