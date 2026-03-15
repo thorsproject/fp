@@ -2,227 +2,129 @@
 /* =========================
    SETTINGS VIEW-PANEL
    ========================= */
-/* Settings view: column layout */
 #view-settings.is-active{
-  flex-direction:column;
-  min-height:0;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .view-settings__body{
-  flex:1;
-  min-height:0;
+  flex: 1;
+  min-height: 0;
   overflow: visible;
 }
 
 /* =========================
-   SETTINGS GRID (cg-*)
+   SETTINGS GRID
    ========================= */
-#view-settings .check-grid{
+#view-settings .c-panel__body{
   display: grid;
-  gap: var(--space-md);
+  gap: 0;
 }
 
-#view-settings .cg-head{
-  margin-bottom: var(--space-md);
-}
-
-/* Jede Zeile als 5-Spalten-Raster */
 #view-settings .cg-row{
   display: grid;
-  grid-template-columns: 1.2fr 1.1fr 1.2fr 1.3fr auto; /* Item | Kontakt | Aktion | Status | Toggle */
+  grid-template-columns: 220px minmax(260px, 1.1fr) auto minmax(140px, 0.8fr);
   gap: 10px 12px;
   align-items: center;
-}
-
-/* Header-Zeile */
-#view-settings .cg-row.cg-head{
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  padding: 8px 10px;
-  font-weight: 700;
-  opacity: .9;
-  background: rgba(0,0,0,.25);
-  border-radius: var(--space-xs);
-}
-
-#view-settings .cg-row{
   min-width: 0;
   padding-bottom: var(--space-sm);
   margin-bottom: var(--space-sm);
   border-bottom: 1px solid var(--border);
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 #view-settings .cg-row:last-child{
   border-bottom: none;
+  margin-bottom: 0;
 }
 
-/* Status-Spalte etwas ruhiger */
-#view-settings .cg-status{
-  opacity: .9;
-}
-
-/* Muted helper */
-#view-settings .muted{
-  opacity: .6;
-}
-
-#view-settings .cg-row .cg-item{
+#view-settings .cg-item{
   font-size: 14px;
   line-height: 1.3;
   opacity: 0.9;
 }
 
-#view-settings .cg-contacts-text{
+#view-settings .cg-main{
+  min-width: 0;
+}
+
+#view-settings .cg-main .c-input,
+#view-settings .cg-main .c-select{
+  width: 100%;
+}
+
+#view-settings .cg-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+#view-settings .cg-status{
   font-size: 13px;
   line-height: 1.3;
-  opacity: 0.9;
+  opacity: 0.85;
+  min-width: 0;
 }
 
-#view-settings .cg-contacts--wide{
-  grid-column: span 2;
-}
-
-#view-settings .cg-status{
-  font-size: 14px;
+#view-settings .cg-value{
+  font-weight: 600;
   line-height: 1.3;
   opacity: 0.9;
 }
-/* =========================
-   WACHLEITER: Buttons untereinander
-   ========================= */
-#view-settings .cg-contacts--stack{
-display: flex;
-flex-direction: column;
-gap: 8px;
-align-items: flex-start;
+
+/* Checkbox-Zeile */
+#view-settings .cg-check{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.3;
+  cursor: pointer;
 }
 
-/* =========================
-   WX CHECK: Inputs untereinander
-   ========================= */
-/* cg-action ist Spalte 3; dort sollen die mini-field Labels untereinander */
-#view-settings .cg-action{
+#view-settings .cg-check input[type="checkbox"]{
+  margin: 0;
+}
+
+/* Signatur-Zeile */
+#view-settings .cg-row--signature{
+  align-items: start;
+}
+
+#view-settings .settings-signature{
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
-/* jedes mini-field: Label links, Input daneben */
-#view-settings .mini-field{
-  display: flex; 
-  align-items: center; 
-  gap: var(--space-md); 
-  font-size: 12px; 
-  line-height: 1.1; 
-  opacity: .95; 
-} 
-
-#view-settings .mini-field__label{ 
-  min-width: 50px; /* Label steht links “davor” */ 
-  font-weight: 700; 
-  text-align: left; 
+#view-settings .settings-signature__subtitle{
+  font-size: 13px;
+  opacity: 0.75;
 }
 
-#view-settings .mini-field .c-input--sm{ 
-  width: 60px; 
-}
-
-/* =========================
-   Toggle Buttons kleiner
-   ========================= */
-#view-settings .cg-toggle{
+#view-settings .settings-signature__actions{
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-#view-settings .cg-toggle .c-btn--sm{
-  padding: 5px 8px;
-  font-size: 11px;
-  line-height: 1.05;
-  border-radius: var(--space-md);
+#view-settings .settings-signature__status{
+  font-size: 13px;
+  opacity: 0.75;
 }
 
-/* Optional: damit sie “kompakter” wirken */
-#view-settings .cg-toggle .c-btn--sm{
-  min-height: 28px;
+#view-settings .settings-signature__preview{
+  display: grid;
+  gap: 6px;
 }
 
-/* =========================
-   ORM DRAFT INDICATOR
-   ========================= */
-.orm-hint--draft {
-  color: #ffd24d;
-  font-weight: 700;
-}
+/* etwas schmaler */
+@media (max-width: 1100px){
+  #view-settings .cg-row{
+    grid-template-columns: 190px minmax(220px, 1fr) auto;
+  }
 
-.orm-hint--template {
-  color: var(--mint);
-}
-
-.orm-overlay-bar.is-draft {
-  border-bottom: 2px solid #ffd24d;
-}
-
-.orm-overlay-bar.is-template {
-  border-bottom: 2px solid transparent;
-}
-
-/* =======================
-   ORM STATUS COLORS
-   ======================= */
-.orm-status-template {
-  color: #bbb;
-}
-
-.orm-status-draft {
-  color: #ffd24d;
-  font-weight: 600;
-}
-
-.orm-status-final {
-  color: #3ddc84;
-  font-weight: 700;
-}
-
-/* =========================
-   ORM STATUS BADGE
-   ========================= */
-#view-settings .orm-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#view-settings .orm-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
-  user-select: none;
-  white-space: nowrap;
-}
-
-#view-settings .orm-badge.is-template {
-  color: var(--muted);
-}
-
-#view-settings .orm-badge.is-draft {
-  color: #ffcc00; /* bewusst nicht als var, damit’s sofort sichtbar ist */
-  border-color: rgba(255,204,0,0.35);
-}
-
-#view-settings .orm-badge.is-final {
-  color: var(--mint);
-  border-color: rgba(0,255,204,0.35);
-}
-
-#view-settings .orm-status-text {
-  opacity: 0.9;
-  min-width: 0;
+  #view-settings .cg-status{
+    grid-column: 2 / -1;
+  }
 }

@@ -4,75 +4,105 @@
     <div class="c-panel__head">
       <h2 class="c-title">Settings</h2>
     </div>
-    <!-- Header -->
-    <div class="cg-row cg-head">
-      <div></div>  <!-- Spalte 1 -->
-      <div></div>  <!-- Spalte 2 -->
-      <div></div>  <!-- Spalte 3 -->
-      <div></div>  <!-- Spalte 4+5 -->
-      <div></div>
-    </div>
 
     <div class="c-panel__body">
       <!-- PASSWORT -->
       <div class="cg-row">
         <div class="cg-item">Passwort (Config)</div>
-        <div class="cg-contacts cg-contacts--stack"> 
-          <input class="c-input" id="cfgPass" type="password" autocomplete="current-password" placeholder="Passwort eingeben">
-      </div>
-      <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
 
-
-          <button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
-          <button class="c-btn" id="btnCfgClearPass" type="button">Passwort löschen</button>
-          <span id="cfgStatus" style="margin-left:8px;"></span>        
-
-
-
-      <div class="setting-row">
-        <!--<button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
-        <button class="c-btn" id="btnCfgClearPass" type="button">Passwort löschen</button>
-        <span id="cfgStatus" style="margin-left:8px;"></span>-->
-      </div>
-      <div class="setting-row">
-        <label for="fdlSelect">FDL</label><br>
-        <select class="c-select" id="fdlSelect"></select>
-      </div>
-
-      <div class="setting-row">
-        <label>FDL Telefon</label><br>
-        <div id="fdlTel" style="font-weight:600;"></div>
-      </div>
-      <label class="setting-row">
-        <input class="c-input" type="checkbox" id="mailEoUsePicker">
-        <span>Dateien manuell auswählen (Mail EO)</span>
-      </label>
-
-      <div class="c-panel">
-        <div class="c-panel__head">
-          <h3 class="c-title">Unterschrift</h3>
-          <p class="c-subtitle">Wird lokal auf diesem Gerät/Browser gespeichert.</p>
+        <div class="cg-main">
+          <input
+            class="c-input"
+            id="cfgPass"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Passwort eingeben">
         </div>
 
-        <div class="c-panel__body">
-          <div class="u-flex u-flex-col" style="gap:10px;">
-            <div class="u-flex u-flex-row" style="gap:10px; flex-wrap:wrap;">
+        <div class="cg-actions">
+          <button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
+          <button class="c-btn" id="btnCfgClearPass" type="button">Passwort löschen</button>
+        </div>
+
+        <div class="cg-status">
+          <span id="cfgStatus"></span>
+        </div>
+      </div>
+
+      <!-- FDL -->
+      <div class="cg-row">
+        <div class="cg-item">FDL</div>
+
+        <div class="cg-main">
+          <select class="c-select" id="fdlSelect"></select>
+        </div>
+
+        <div class="cg-actions"></div>
+        <div class="cg-status"></div>
+      </div>
+
+      <!-- FDL TELEFON -->
+      <div class="cg-row">
+        <div class="cg-item">FDL Telefon</div>
+
+        <div class="cg-main">
+          <div id="fdlTel" class="cg-value"></div>
+        </div>
+
+        <div class="cg-actions"></div>
+        <div class="cg-status"></div>
+      </div>
+
+      <!-- MAIL EO -->
+      <div class="cg-row cg-row--checkbox">
+        <div class="cg-item">Mail EO</div>
+
+        <div class="cg-main">
+          <label class="cg-check">
+            <input type="checkbox" id="mailEoUsePicker">
+            <span>Dateien manuell auswählen</span>
+          </label>
+        </div>
+
+        <div class="cg-actions"></div>
+        <div class="cg-status"></div>
+      </div>
+
+      <!-- SIGNATUR -->
+      <div class="cg-row cg-row--signature">
+        <div class="cg-item">Unterschrift</div>
+
+        <div class="cg-main">
+          <div class="settings-signature">
+            <div class="settings-signature__subtitle">
+              Wird lokal auf diesem Gerät/Browser gespeichert.
+            </div>
+
+            <div class="settings-signature__actions">
               <label class="c-btn c-btn--ghost">
                 Bild hochladen
                 <input id="sigUpload" type="file" accept="image/*" hidden>
               </label>
+
               <button id="sigDraw" type="button" class="c-btn c-btn--ghost">Zeichnen</button>
               <button id="sigClear" type="button" class="c-btn c-btn--danger">Löschen</button>
             </div>
 
-            <div id="sigStatus" class="u-text-muted"></div>
+            <div id="sigStatus" class="settings-signature__status"></div>
 
-            <div>
+            <div class="settings-signature__preview">
               <div class="c-label">Vorschau</div>
-              <img id="sigPreview" alt="Unterschrift Vorschau" style="max-width:420px; background:#fff; border-radius:10px; display:none;">
+              <img
+                id="sigPreview"
+                alt="Unterschrift Vorschau"
+                style="max-width:420px; background:#fff; border-radius:10px; display:none;">
             </div>
           </div>
         </div>
+
+        <div class="cg-actions"></div>
+        <div class="cg-status"></div>
       </div>
     </div>
+  </div>
 </div>
