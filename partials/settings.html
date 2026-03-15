@@ -1,20 +1,33 @@
 <!-- settings.html -->
 <div class="view-settings__body">
-  <div class="c-panel c-panel--stack" id="settingsPanel">
-    <div class="c-panel__head settings-head">
+  <div class="c-panel c-panel--stack">
+    <div class="c-panel__head">
       <h2 class="c-title">Settings</h2>
     </div>
-    <div class="c-panel__body">
+    <!-- Header -->
+    <div class="cg-row cg-head">
+      <div></div>  <!-- Spalte 1 -->
+      <div></div>  <!-- Spalte 2 -->
+      <div></div>  <!-- Spalte 3 -->
+      <div></div>  <!-- Spalte 4+5 -->
+      <div></div>
+    </div>
 
+    <div class="c-panel__body">
       <!-- PASSWORT -->
-      <div class="settings-grid settings-row">
-        <div class="c-desc">Passwort (Config)</div>
-        <!--<div class="c-leg trip" data-trip-leg="1"><input class="c-input" data-trip-usg="1" inputmode="decimal"></div>-->
-        <input class="c-input" id="cfgPass" type="password" autocomplete="current-password" placeholder="Passwort eingeben">
-        <button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
-        <button class="c-btn" id="btnCfgClearPass" type="button">Passwort löschen</button>
-        <span id="cfgStatus" style="margin-left:8px;"></span>        
+      <div class="cg-row">
+        <div class="cg-item">Passwort (Config)</div>
+        <div class="cg-contacts cg-contacts--stack"> 
+          <input class="c-input" id="cfgPass" type="password" autocomplete="current-password" placeholder="Passwort eingeben">
       </div>
+      <div class="cg-action"><span class="muted"></span></div>  <!-- Spalte 3 -->
+
+
+          <button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
+          <button class="c-btn" id="btnCfgClearPass" type="button">Passwort löschen</button>
+          <span id="cfgStatus" style="margin-left:8px;"></span>        
+
+
 
       <div class="setting-row">
         <!--<button class="c-btn" id="btnCfgLoad" type="button">Config laden</button>
