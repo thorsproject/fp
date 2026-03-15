@@ -86,7 +86,7 @@
 }
 
 .perf-card__title{
-  padding: 10px 12px; /* Abstand innerhalb des Titels */
+  padding: 6px 12px; /* Abstand innerhalb des Titels */
   text-transform: uppercase;
   font-weight: 800;
   font-size: 13px;
