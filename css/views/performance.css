@@ -150,7 +150,7 @@
 .perf-cell--out{
   justify-content: center;
   color: var(--text, #e8eef8);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* reine Output-Felder */
