@@ -1103,19 +1103,6 @@ Nach Deaktivierung des Adblockers funktioniert alles korrekt.
     - vor
       -form.updateFieldAppearances(font)
 
-# Offene Punkte / Next Steps
-## mil. Flugplätze integrieren
-* TORA, LDA ...
-
-## Performance
-* Long Term: Aircraft Performance Daten integrieren
-
-## Weather
-* ggf. weitere Layer
-* Alternative Datenquellen prüfen
-* Map Marker Weather Update optimieren
-* Tile Cache weiter verbessern
-
 ---
 
 # Flight Planning Web App — State Update 14.03.2026 late
@@ -1173,3 +1160,59 @@ Nach Deaktivierung des Adblockers funktioniert alles korrekt.
 - Neuer Performance-Button mit eigener ID versehen.
 - `pdf_export.js` so erweitert, dass beide Export-Buttons denselben Export auslösen.
 - `exportFuelPerfPdf()` nimmt jetzt das Event-Argument und verwendet `ev.currentTarget`, damit jeweils der geklickte Button disabled/aktualisiert wird.
+
+## Performance
+- Landing-Wetter erweitert:
+  - `ld_temp` und `ld_qnh` werden jetzt automatisch für `ld_icao` zur geplanten Landezeit gesetzt.
+  - Quelle: Open-Meteo DWD-ICON Forecast.
+  - `ld_temp` aus `temperature_2m`, `ld_qnh` aus `pressure_msl`.
+- ETA-Logik für Landing-Wetter angepasst:
+  - Basis ist das oben eingetragene Datum.
+  - Mitternachtswechsel über mehrere aktive Legs wird erkannt.
+  - Forecast läuft jetzt auf UTC statt Europe/Berlin.
+- Datumsparser erweitert:
+  - unterstützt jetzt auch Formate wie `15.03.26`.
+- Landing-Temperatur wird für die Anzeige auf ganze Grad gerundet.
+- Unter `ld_taf` wird jetzt die Herkunft von `ld_temp` / `ld_qnh` angezeigt.
+- `rt_lm` Berechnung jetzt korrekt
+
+## PDF Export
+- Zusätzlicher Export-to-PDF-Button im Performance-Panel eingebunden.
+- `pdf_export.js` so angepasst, dass beide Export-Buttons denselben Export auslösen.
+- `exportFuelPerfPdf()` nutzt jetzt das Event-Argument (`ev.currentTarget`), damit jeweils der geklickte Button korrekt deaktiviert/reaktiviert wird.
+
+## Fuel Panel
+- Layout der Fuel-Highlight-Zeilen angepasst:
+  - Takeoff Fuel / Block Fuel / Landing Fuel jetzt bündig mit den anderen Zeilen.
+  - Highlight-Balken links/rechts optisch passend verbreitert, ohne die Inhalte zu verschieben.
+
+## Settings Panel
+- Settings-View komplett auf checklist-artige Zeilenstruktur umgebaut.
+- Header-Zeile mit Todo/Kontakt entfällt, nur die Row-Struktur wurde übernommen.
+- Passwort (Config), FDL, FDL Telefon, Mail EO und Unterschrift jetzt sauber zeilenweise aufgebaut.
+- `cfgStatus` direkt hinter die Config-Buttons gesetzt.
+
+## ORM / iOS
+- Problem auf iOS behoben:
+  - nach dem Finalisieren wird das ORM-Blatt auf iOS nicht mehr automatisch im selben Tab geöffnet.
+  - dadurch bleibt „Mail an EO“ direkt nutzbar.
+- ORM-Status-Thema analysiert:
+  - Status wird bereits gespeichert (`fp.orm.status.v1`).
+  - Problem ist sehr wahrscheinlich nicht das Speichern selbst, sondern ein Reset beim Initial-Restore von Datum/Callsign nach `loadAll()`.
+  - geplanter Fix: Reset beim ersten echten Restore-Key unterdrücken, damit Draft/Final-Status erhalten bleibt.
+
+## Sonstiges
+- `rt_oei_sc` zeigte zunächst nur `>10000`, Ursache war ein alter Storage-Wert; nach Löschen des gespeicherten Werts korrekt `>10000 ft`.
+
+
+# Offene Punkte / Next Steps
+
+## Performance
+* Long Term: Aircraft Performance Daten integrieren
+
+## Weather
+* Long Term: ggf. weitere Layer
+* Mid Term: Alternative Datenquellen prüfen
+
+## Checklist
+* Mail EO muss editierbar sein.
