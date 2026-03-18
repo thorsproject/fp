@@ -783,8 +783,6 @@ export function initOrmChecklist() {
         getArrayBuffer: async () => bytesToArrayBuffer(bytes),
       });
 
-      const isiOS = isIOSLike();
-
       setHint(
         isiOS
           ? "Finalisiert. Auf iOS wird das ORM nicht automatisch geöffnet, damit Mail EO direkt gesendet werden kann."
