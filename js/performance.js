@@ -4,6 +4,7 @@ import { qs, qsa, SEL } from "./ui/index.js";
 import { loadAirportWx } from "./metar.js";
 import { loadPerformanceState, savePerformanceState } from "./storage.js";
 import { getMilAirfieldsMeta, getAirfieldByIcao } from "./airfields.js";
+import { BURN, FIX, CAP } from "./fuelConstants.js";
 
 let runwayData = {};
 
@@ -1182,8 +1183,8 @@ function syncReturnLm() {
 
   const minus =
     eosid === "IFR" || eosid === "IFR/VFR OPT"
-      ? 3
-      : 1;
+      ? 3 * FIX.USG_LIT * FIX.JETA1_KG_PER_L
+      : 1 * FIX.USG_LIT * FIX.JETA1_KG_PER_L;
 
   setOut("rt_lm", formatWithSuffix(formatNum(tom - minus), "kg"));
 }
