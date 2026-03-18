@@ -89,6 +89,79 @@ function getEmailRecipient() {
   return readText(qs(SEL.mail.recipient)).trim();
 }
 
+function isApplePlatform() {
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+  return /Mac|iPhone|iPad|iPod/.test(platform) || /iPhone|iPad|iPod/.test(ua);
+}
+
+async function copyTextToClipboard(text) {
+  const value = String(text || "").trim();
+  if (!value) return false;
+
+  // Primär: moderner Clipboard API Weg
+  try {
+    if (window.isSecureContext && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+  } catch (err) {
+    dlog("clipboard.writeText failed", err);
+  }
+
+  // Fallback: execCommand("copy")
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = value;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    ta.style.left = "-1000px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return !!ok;
+  } catch (err) {
+    dlog("execCommand copy failed", err);
+    return false;
+  }
+}
+
+function showRecipientCopiedPopup(to, copied) {
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+
+  const isIOS =
+    /iPhone|iPad|iPod/.test(ua) ||
+    (platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  const isMac = /Mac/.test(platform) && !isIOS;
+
+  let pasteHintText = 'mit Strg-V in der Empfänger-Zeile eingefügt werden.';
+  if (isIOS) {
+    pasteHintText = 'in der Empfänger-Zeile über „Einfügen“ eingesetzt werden.';
+  } else if (isMac) {
+    pasteHintText = 'mit Command-V in der Empfänger-Zeile eingefügt werden.';
+  }
+
+  if (copied) {
+    alert(
+      `Die E-Mail-Adresse wurde in den Zwischenspeicher kopiert und kann ${pasteHintText}`
+    );
+    return;
+  }
+
+  alert(
+    `Die E-Mail-Adresse konnte nicht automatisch in den Zwischenspeicher kopiert werden.\n\nBitte manuell einfügen:\n${to}`
+  );
+}
+
 function getWxValues(scope = document) {
   const nr = String(readValue(qs(SEL.checklist.fieldByKey("wx_nr"), scope)) || "").trim();
   const v = String(readValue(qs(SEL.checklist.fieldByKey("wx_void"), scope)) || "").trim();
@@ -331,7 +404,14 @@ async function downloadEml({ to, subject, body, files, isoDate, cs }) {
   a.click();
   a.remove();
 
+  const copied = await copyTextToClipboard(to);
+
   URL.revokeObjectURL(url);
+
+  // leicht verzögert, damit der Download/Öffnen-Flow nicht gestört wird
+  setTimeout(() => {
+    showRecipientCopiedPopup(to, copied);
+  }, 120);
 }
 
 // ------------------ Picker ------------------
@@ -411,5 +491,6 @@ export async function handleMailEOClick(mode = "auto") {
 
   await downloadEml({ to, subject, body, files, isoDate, cs });
 
+  const btn = qs(SEL.mail.btnSend);
   if (btn) toggleClass(btn, "is-sent", true);
 }
