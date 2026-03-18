@@ -1,8 +1,5 @@
 // js/mail_eo.js
-// iOS / Browser mit Web Share API:
-//   -> natives Share-Sheet mit echten Dateianhängen (Mail auswählbar)
-// Sonst:
-//   -> Fallback auf .eml wie bisher
+// Erstellt eine .eml (RFC822) inkl. Attachments -> Nutzer öffnet sie im Mailprogramm und sendet selbst.
 
 import { collectAttachments, hasAttachment } from "./attachments.js";
 import { qs, SEL, readText, readValue, setDisabled, toggleClass, EVT, on } from "./ui/index.js";
@@ -18,7 +15,7 @@ function dlog(...args) {
 // ------------------ MODE (auto | picker) ------------------
 export function getMailMode() {
   const cb = qs(SEL.mail.cbUsePicker);
-  if (cb) return cb.checked ? "picker" : "auto";
+  if (cb) return readValue(cb) ? "picker" : "auto";
   return localStorage.getItem(LS_MAIL_MODE) === "picker" ? "picker" : "auto";
 }
 
@@ -31,18 +28,18 @@ function setMailButtonState() {
   const btn = qs(SEL.mail.btnSend);
   if (!btn) return;
 
-  // ORM muss finalisiert und als Attachment registriert sein
-  const ready = hasAttachment("orm");
   const mode = getMailMode();
+  const ready = mode === "picker" ? true : hasAttachment("orm");
 
   setDisabled(btn, !ready);
   toggleClass(btn, "is-disabled", !ready);
 
-  btn.title = !ready
-    ? "Bitte zuerst ORM finalisieren."
-    : mode === "picker"
-      ? "EO-Mail öffnen (ORM + weitere Dateien auswählen)"
-      : "EO-Mail öffnen";
+  btn.title =
+    mode === "picker"
+      ? "EO-Mail erstellen (Dateien manuell auswählen)"
+      : ready
+        ? "EO-Mail erstellen"
+        : "Bitte zuerst ORM speichern, dann Mail EO senden.";
 }
 
 function wireMailModeCheckbox() {
@@ -52,7 +49,7 @@ function wireMailModeCheckbox() {
   cb.checked = localStorage.getItem(LS_MAIL_MODE) === "picker";
 
   cb.addEventListener("change", () => {
-    setMailMode(cb.checked ? "picker" : "auto");
+    setMailMode(readValue(cb) ? "picker" : "auto");
     setMailButtonState();
   });
 
@@ -77,10 +74,14 @@ function refreshMailUi() {
   setMailButtonState();
 }
 
+// öffentliches init statt “Side-Effects beim Import”
 export function initMailEO() {
   refreshMailUi();
 
+  // Nach Includes (Settings kommt per Partial)
   on(EVT.includesLoaded, refreshMailUi);
+
+  // Wenn Attachments sich ändern (ORM gespeichert etc.)
   on(EVT.attachmentsChanged, setMailButtonState);
 }
 
@@ -91,8 +92,8 @@ function getEmailRecipient() {
 
 function getWxValues(scope = document) {
   const nr = String(readValue(qs(SEL.checklist.fieldByKey("wx_nr"), scope)) || "").trim();
-  const v = String(readValue(qs(SEL.checklist.fieldByKey("wx_void"), scope)) || "").trim();
-  const i = String(readValue(qs(SEL.checklist.fieldByKey("wx_init"), scope)) || "").trim();
+  const v  = String(readValue(qs(SEL.checklist.fieldByKey("wx_void"), scope)) || "").trim();
+  const i  = String(readValue(qs(SEL.checklist.fieldByKey("wx_init"), scope)) || "").trim();
   return { nr, voidv: v, init: i };
 }
 
@@ -141,26 +142,6 @@ function sortFilesOrmFirst(files) {
   });
 }
 
-function dedupeFiles(files) {
-  const seen = new Set();
-  const out = [];
-
-  for (const file of files) {
-    const key = [
-      file?.name || "",
-      file?.size || 0,
-      file?.lastModified || 0,
-      file?.type || "",
-    ].join("::");
-
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(file);
-  }
-
-  return out;
-}
-
 function buildAttachmentSummary(files) {
   const names = files.map((f) => `- ${f.name}`);
   const ormCount = files.filter(looksLikeOrmFile).length;
@@ -189,49 +170,7 @@ function buildEmlFilename({ isoDate, cs }) {
   return `EO-Mail-${sanitizeFilePart(isoDate)}${csPart}.eml`;
 }
 
-function isIOSLike() {
-  const ua = navigator.userAgent || "";
-  return /iPad|iPhone|iPod/.test(ua) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-}
-
-function canNativeShareFiles(files) {
-  if (!navigator.share || !files?.length) return false;
-
-  if (typeof navigator.canShare !== "function") {
-    // ältere Implementierungen
-    return true;
-  }
-
-  try {
-    return navigator.canShare({ files });
-  } catch {
-    return false;
-  }
-}
-
-async function shareFilesNative({ subject, body, files }) {
-  await navigator.share({
-    title: subject,
-    text: body,
-    files,
-  });
-}
-
-async function collectMailFiles(mode = "auto") {
-  let files = await collectAttachments();
-
-  if (mode === "picker") {
-    const extraFiles = await pickFilesViaDialog();
-    if (extraFiles.length) {
-      files = [...files, ...extraFiles];
-    }
-  }
-
-  return dedupeFiles(sortFilesOrmFirst(files));
-}
-
-// ------------------ MIME helpers (.eml fallback) ------------------
+// ------------------ MIME helpers ------------------
 function toBase64(uint8) {
   let binary = "";
   const chunkSize = 0x8000;
@@ -318,22 +257,6 @@ async function buildEml({ to, subject, body, files }) {
   return headers + textPart + attachmentParts.join("\r\n") + "\r\n" + end;
 }
 
-async function downloadEml({ to, subject, body, files, isoDate, cs }) {
-  const eml = await buildEml({ to, subject, body, files });
-
-  const blob = new Blob([eml], { type: "message/rfc822" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = buildEmlFilename({ isoDate, cs });
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  URL.revokeObjectURL(url);
-}
-
 // ------------------ Picker ------------------
 async function pickFilesViaDialog() {
   const input = document.createElement("input");
@@ -353,13 +276,25 @@ async function pickFilesViaDialog() {
 
 // ------------------ Main action ------------------
 export async function handleMailEOClick(mode = "auto") {
-  const btn = qs(SEL.mail.btnSend);
-
-  let files = await collectMailFiles(mode);
-  if (!files.length) {
-    alert("Keine Anhänge vorhanden. Bitte zuerst ORM finalisieren.");
+  const to = getEmailRecipient();
+  if (!to) {
+    alert("Kein Empfänger gefunden (Element .email fehlt/leer).");
     return;
   }
+
+  let files = [];
+  if (mode === "picker") {
+    files = await pickFilesViaDialog();
+    if (!files.length) return;
+  } else {
+    files = await collectAttachments();
+    if (!files.length) {
+      alert("Keine Anhänge vorhanden. Bitte ORM speichern (und später Logs erzeugen/importieren).");
+      return;
+    }
+  }
+
+  files = sortFilesOrmFirst(files);
 
   const isoDate = getIsoDateFromUi();
   const cs = getCallsign();
@@ -382,34 +317,20 @@ export async function handleMailEOClick(mode = "auto") {
     "",
   ].join("\r\n");
 
-  // Bevorzugt: natives Share-Sheet mit echten Anhängen
-  if (canNativeShareFiles(files)) {
-    try {
-      await shareFilesNative({ subject, body, files });
+  const eml = await buildEml({ to, subject, body, files });
 
-      if (btn) toggleClass(btn, "is-sent", true);
-      return;
-    } catch (err) {
-      // Nutzer hat Share-Sheet abgebrochen -> kein Fallback
-      if (err?.name === "AbortError") return;
+  const blob = new Blob([eml], { type: "message/rfc822" });
+  const url = URL.createObjectURL(blob);
 
-      dlog("share failed -> fallback to eml", err);
-    }
-  }
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = buildEmlFilename({ isoDate, cs });
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 
-  // Fallback für Browser ohne File-Share-Unterstützung:
-  // .eml wie bisher
-  const to = getEmailRecipient();
-  if (!to) {
-    alert(
-      isIOSLike()
-        ? "Auf diesem Gerät ist kein Dateiversand aus dem Browser verfügbar und es wurde kein Empfänger für den .eml-Fallback gefunden."
-        : "Kein Empfänger gefunden."
-    );
-    return;
-  }
-
-  await downloadEml({ to, subject, body, files, isoDate, cs });
-
+  const btn = qs(SEL.mail.btnSend);
   if (btn) toggleClass(btn, "is-sent", true);
+
+  URL.revokeObjectURL(url);
 }
