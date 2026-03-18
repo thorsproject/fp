@@ -15,10 +15,10 @@
   "main": {
     "temp": 8.19,
     "feels_like": 6.63,
-    "temp_min": 6.05,
-    "temp_max": 9.43,
+    "temp_min": 4.99,
+    "temp_max": 9.48,
     "pressure": 1030,
-    "humidity": 66,
+    "humidity": 68,
     "sea_level": 1030,
     "grnd_level": 1024
   },
@@ -30,10 +30,10 @@
   "clouds": {
     "all": 0
   },
-  "dt": 1773858995,
+  "dt": 1773862751,
   "sys": {
     "type": 2,
-    "id": 2039371,
+    "id": 2011538,
     "country": "DE",
     "sunrise": 1773810856,
     "sunset": 1773854087
