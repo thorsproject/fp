@@ -563,7 +563,7 @@ function formatEtaSourceLabel(etaLocalIso = "") {
   const m = String(etaLocalIso).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
   if (!m) return etaLocalIso;
 
-  return `${m[4]}:${m[5]} LT`;
+  return `${m[4]}:${m[5]} UTC`;
 }
 
 function getLandingTempQnhSourceNote() {
@@ -619,7 +619,7 @@ async function loadLandingForecastAtEta(icao, etaLocalIso) {
     `?latitude=${encodeURIComponent(lat)}` +
     `&longitude=${encodeURIComponent(lon)}` +
     `&hourly=temperature_2m,pressure_msl` +
-    `&timezone=unixtime` +
+    `&timezone=GMT` +
     `&forecast_days=7`;
 
   const promise = fetch(url, { cache: "no-store" })
