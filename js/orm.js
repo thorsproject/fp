@@ -815,6 +815,26 @@ export function initOrmChecklist() {
 
   // --- Reset ORM wenn Datum/CS wechseln (Draft + Final) ---
   let lastKey = null;
+  let ormKeyReady = false;
+
+  function getOrmKeyParts() {
+    const scope = getRouteScope();
+    const rawDate = String(readValue(qs(SEL.route.dateInput, scope)) ?? "").trim();
+    const cs = readText(qs(SEL.route.callsignDisplay, scope)).trim();
+
+    const dateIso =
+      /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate :
+      rawDate.match(/^(\d{2})\.(\d{2})\.(\d{4})$/) ? rawDate.replace(/^(\d{2})\.(\d{2})\.(\d{4})$/, "$3-$2-$1") :
+      rawDate.match(/^(\d{2})\.(\d{2})\.(\d{2})$/) ? rawDate.replace(/^(\d{2})\.(\d{2})\.(\d{2})$/, "20$3-$2-$1") :
+      "";
+
+    return { dateIso, cs };
+  }
+
+  function currentOrmKey() {
+    const { dateIso, cs } = getOrmKeyParts();
+    return `${dateIso}__${cs}`;
+  }
 
   function currentOrmKey() {
     const scope = getRouteScope();
@@ -824,11 +844,19 @@ export function initOrmChecklist() {
   }
 
   function maybeResetOnKeyChange() {
-    const key = currentOrmKey();
+    const { dateIso, cs } = getOrmKeyParts();
 
-    // initial setzen (kein Reset)
-    if (lastKey === null) {
+    // Solange Route noch nicht wirklich restauriert ist:
+    // kein Reset, kein lastKey aus Platzhalterwerten bauen.
+    if (!dateIso || !cs) return;
+
+    const key = `${dateIso}__${cs}`;
+
+    // Erster "echter" Key nach Init/Restore:
+    // nur merken, NICHT resetten.
+    if (!ormKeyReady) {
       lastKey = key;
+      ormKeyReady = true;
       return;
     }
 
@@ -836,16 +864,11 @@ export function initOrmChecklist() {
     lastKey = key;
 
     const hadDraft = !!localStorage.getItem(ORM_DRAFT_KEY);
-    const status = getOrmStatus(); // "template" | "draft" | "final"
+    const status = getOrmStatus();
     const wasFinal = status === "final";
 
-    // Nur resetten, wenn es wirklich was zu verwerfen gibt
     if (hadDraft || wasFinal) {
       resetOrmToTemplate("Datum/Callsign geändert");
-    } else {
-      // optional: UI trotzdem sauber ziehen, falls du willst
-      // renderOrmStatusBadge();
-      // syncChecklistOrmUi();
     }
   }
 
