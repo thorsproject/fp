@@ -489,6 +489,12 @@ async function getEditedPdfBytesFromViewer(iframe) {
   throw new Error(`PDF Export lieferte ungültige Daten (${typeof out}).`);
 }
 
+function isIOSLike() {
+  const ua = navigator.userAgent || "";
+  return /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
 function downloadPdfBytes(bytes, filename) {
   const blob = new Blob([bytes], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
@@ -752,8 +758,10 @@ export function initOrmChecklist() {
       bytes = await stampSignatureIntoPdf(bytes, sig, ORM_SIG_FIELDS);
       bytes = await lockFieldsInPdf(bytes, ORM_LOCK_FIELDS);
 
-      // 3) Speichern (Picker wenn möglich, sonst Download)
-      if ("showSaveFilePicker" in window) {
+      // 3) Speichern
+      const isiOS = isIOSLike();
+
+      if ("showSaveFilePicker" in window && !isiOS) {
         const handle = await showSaveFilePicker({
           suggestedName: filename,
           types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }],
@@ -761,8 +769,11 @@ export function initOrmChecklist() {
         const writable = await handle.createWritable();
         await writable.write(bytes);
         await writable.close();
-      } else {
+      } else if (!isiOS) {
         downloadPdfBytes(bytes, filename);
+      } else {
+        // iOS: nicht automatisch öffnen / nicht im selben Tab anzeigen
+        // PDF bleibt als Attachment registriert und kann direkt per Mail EO versendet werden.
       }
 
       // 4) Attachment registrieren (nach erfolgreichem Write/Download)
@@ -772,7 +783,13 @@ export function initOrmChecklist() {
         getArrayBuffer: async () => bytesToArrayBuffer(bytes),
       });
 
-      setHint("Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen).");
+      const isiOS = isIOSLike();
+
+      setHint(
+        isiOS
+          ? "Finalisiert. Auf iOS wird das ORM nicht automatisch geöffnet, damit Mail EO direkt gesendet werden kann."
+          : "Finalisiert & gespeichert. Hinweis: macOS Vorschau zeigt Formularwerte ggf. nicht (PDF Expert/Acrobat nutzen)."
+      );
       setOrmStatus("final");
       clearOrmDraft();
       renderOrmStatusBadge();
