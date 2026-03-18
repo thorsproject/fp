@@ -491,6 +491,5 @@ export async function handleMailEOClick(mode = "auto") {
 
   await downloadEml({ to, subject, body, files, isoDate, cs });
 
-  const btn = qs(SEL.mail.btnSend);
   if (btn) toggleClass(btn, "is-sent", true);
 }
