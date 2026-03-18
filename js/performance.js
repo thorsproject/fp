@@ -1183,8 +1183,8 @@ function syncReturnLm() {
 
   const minus =
     eosid === "IFR" || eosid === "IFR/VFR OPT"
-      ? 3 * FIX.USG_LIT * FIX.JETA1_KG_PER_L
-      : 1 * FIX.USG_LIT * FIX.JETA1_KG_PER_L;
+      ? Math.round(3 * FIX.USG_LIT * FIX.JETA1_KG_PER_L)
+      : Math.round(1 * FIX.USG_LIT * FIX.JETA1_KG_PER_L);
 
   setOut("rt_lm", formatWithSuffix(formatNum(tom - minus), "kg"));
 }
