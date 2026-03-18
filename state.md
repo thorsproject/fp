@@ -203,8 +203,8 @@
 
 ## Auto-Update (wird per Script gepflegt)
 <!-- STATE:AUTO:BEGIN -->
-- Last updated (commit time): 2026-03-07T18:11:17+01:00
-- HEAD: 61ea449
+- Last updated (commit time): 2026-03-18T23:47:42+01:00
+- HEAD: 409b007
 - Branch: main
 - App Version: 0.3
 - Active Features:
@@ -216,15 +216,16 @@
   - Performance Planning
   - Map View
 - Last commits:
-- 61ea449 STATE: Add DFS runway generator and initial runway dataset (thorsproject)
+- 409b007 STATE: pre release state for testing (thorsproject)
 - Changed files (this commit):
   - .DS_Store
+  - .github/workflows/update-runways.yml
   - .github/workflows/update-state.yml
   - .github/workflows/update-weather.yml
-  - .github/workflows/update-runways.yml
   - .gitignore
   - .vscode/tasks.json
   - Layout_structure.txt
+  - copy
   - css/base.css
   - css/components.css
   - css/layout.css
@@ -238,8 +239,11 @@
   - css/views/route.css
   - css/views/settings.css
   - data/Bildschirmfoto 2026-02-16 um 00.52.16.png
+  - data/Fuel+Perf.pdf
+  - data/Fuel+Perf.xlsx
   - data/ORMBlatt.pdf
   - data/airfields.json
+  - data/airfields_mil.json
   - data/airfields_missing.txt
   - data/alternates.json
   - data/alternates_missing.txt
@@ -247,6 +251,7 @@
   - data/approved_alternates.csv
   - data/config.enc
   - data/performance_runways.json
+  - data/update_milaip_json.py
   - data/weather.json
   - data/windgrid.json
   - icon-192.png
@@ -270,6 +275,7 @@
   - js/metar.js
   - js/orm.js
   - js/path.js
+  - js/pdf_export.js
   - js/performance.js
   - js/phone_popup.js
   - js/phones.js
@@ -287,6 +293,7 @@
   - js/ui/state.js
   - js/ui/ui.js
   - js/vertprof.js
+  - js/weather_layers.js
   - js/wind.js
   - manifest.json
   - package.json
