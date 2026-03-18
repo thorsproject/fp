@@ -517,7 +517,7 @@ function getActiveLegFramesForPerf() {
   });
 }
 
-function buildLandingEtaLocalIso() {
+function buildLandingEtaUTCIso() {
   const dateIso = getRouteDateIso();
   if (!dateIso) return "";
 
@@ -567,7 +567,7 @@ function formatEtaSourceLabel(etaLocalIso = "") {
 }
 
 function getLandingTempQnhSourceNote() {
-  const etaLocalIso = buildLandingEtaLocalIso();
+  const etaLocalIso = buildLandingEtaUTCIso();
   const etaLabel = formatEtaSourceLabel(etaLocalIso);
 
   if (!etaLabel) {
@@ -619,7 +619,7 @@ async function loadLandingForecastAtEta(icao, etaLocalIso) {
     `?latitude=${encodeURIComponent(lat)}` +
     `&longitude=${encodeURIComponent(lon)}` +
     `&hourly=temperature_2m,pressure_msl` +
-    `&timezone=Europe%2FBerlin` +
+    `&timezone=unixtime` +
     `&forecast_days=7`;
 
   const promise = fetch(url, { cache: "no-store" })
@@ -660,7 +660,7 @@ async function loadLandingForecastAtEta(icao, etaLocalIso) {
 }
 
 async function writeLandingForecastToFields(icao) {
-  const etaLocalIso = buildLandingEtaLocalIso();
+  const etaLocalIso = buildLandingEtaUTCIso();
   console.log("ld forecast start", {
     icao,
     routeDate: document.getElementById("dateInput")?.value || "",
