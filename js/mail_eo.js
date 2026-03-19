@@ -143,23 +143,20 @@ function showRecipientCopiedPopup(to, copied) {
 
   const isMac = /Mac/.test(platform) && !isIOS;
 
-  let pasteHintText = 'mit Strg-V in der Empfänger-Zeile eingefügt werden.';
-  if (isIOS) {
-    pasteHintText = 'in der Empfänger-Zeile über „Einfügen“ eingesetzt werden.';
-  } else if (isMac) {
-    pasteHintText = 'mit Command-V in der Empfänger-Zeile eingefügt werden.';
-  }
-
+  let msg = "Die E-Mail-Adresse konnte nicht automatisch kopiert werden.";
   if (copied) {
-    alert(
-      `Die E-Mail-Adresse wurde in den Zwischenspeicher kopiert und kann ${pasteHintText}`
-    );
-    return;
+    if (isIOS) {
+      msg = "Die E-Mail-Adresse wurde kopiert und kann in der Empfänger-Zeile über „Einfügen“ eingesetzt werden.";
+    } else if (isMac) {
+      msg = "Die E-Mail-Adresse wurde kopiert und kann mit Command-V in die Empfänger-Zeile eingefügt werden.";
+    } else {
+      msg = "Die E-Mail-Adresse wurde kopiert und kann mit Strg-V in die Empfänger-Zeile eingefügt werden.";
+    }
+  } else if (to) {
+    msg = `Kopieren fehlgeschlagen. Bitte Empfänger manuell einfügen: ${to}`;
   }
 
-  alert(
-    `Die E-Mail-Adresse konnte nicht automatisch in den Zwischenspeicher kopiert werden.\n\nBitte manuell einfügen:\n${to}`
-  );
+  showMailToast(msg, copied ? 3200 : 4200);
 }
 
 function ensureMailToast() {
