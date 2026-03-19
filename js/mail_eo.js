@@ -2,14 +2,14 @@
 // iOS / Browser mit Web Share API:
 //   -> natives Share-Sheet mit echten Dateianhängen (Mail auswählbar)
 // Sonst:
-//   -> Fallback auf .eml wie bisher
+//   -> Fallback auf .eml
 
 import { collectAttachments, hasAttachment } from "./attachments.js";
 import { qs, SEL, readText, readValue, setDisabled, toggleClass, EVT, on } from "./ui/index.js";
 
 const LS_MAIL_MODE = "fp.mail_eo.mode"; // "auto" | "picker"
-
 const DEBUG_MAIL = false;
+
 function dlog(...args) {
   if (!DEBUG_MAIL) return;
   console.log("[mail_eo]", ...args);
@@ -31,7 +31,6 @@ function setMailButtonState() {
   const btn = qs(SEL.mail.btnSend);
   if (!btn) return;
 
-  // ORM muss finalisiert und als Attachment registriert sein
   const ready = hasAttachment("orm");
   const mode = getMailMode();
 
@@ -79,7 +78,6 @@ function refreshMailUi() {
 
 export function initMailEO() {
   refreshMailUi();
-
   on(EVT.includesLoaded, refreshMailUi);
   on(EVT.attachmentsChanged, setMailButtonState);
 }
@@ -89,17 +87,10 @@ function getEmailRecipient() {
   return readText(qs(SEL.mail.recipient)).trim();
 }
 
-function isApplePlatform() {
-  const ua = navigator.userAgent || "";
-  const platform = navigator.platform || "";
-  return /Mac|iPhone|iPad|iPod/.test(platform) || /iPhone|iPad|iPod/.test(ua);
-}
-
 async function copyTextToClipboard(text) {
   const value = String(text || "").trim();
   if (!value) return false;
 
-  // Primär: moderner Clipboard API Weg
   try {
     if (window.isSecureContext && navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(value);
@@ -109,7 +100,6 @@ async function copyTextToClipboard(text) {
     dlog("clipboard.writeText failed", err);
   }
 
-  // Fallback: execCommand("copy")
   try {
     const ta = document.createElement("textarea");
     ta.value = value;
@@ -133,7 +123,7 @@ async function copyTextToClipboard(text) {
   }
 }
 
-function buildRecipientConfirmMessage(to, copied) {
+function buildRecipientModalMessage(to, copied) {
   const ua = navigator.userAgent || "";
   const platform = navigator.platform || "";
 
@@ -147,10 +137,9 @@ function buildRecipientConfirmMessage(to, copied) {
     return [
       "Die E-Mail-Adresse konnte nicht automatisch in den Zwischenspeicher kopiert werden.",
       "",
-      "Empfänger:",
-      to || "(leer)",
+      `Empfänger: ${to || "(leer)"}`,
       "",
-      "Mail trotzdem öffnen?"
+      "Mail jetzt trotzdem öffnen?"
     ].join("\n");
   }
 
@@ -158,7 +147,7 @@ function buildRecipientConfirmMessage(to, copied) {
     return [
       "Die E-Mail-Adresse wurde in den Zwischenspeicher kopiert.",
       "",
-      "Sie kann in Mail in der Empfänger-Zeile über „Einfügen“ eingesetzt werden.",
+      "Sie kann in der Empfänger-Zeile über „Einfügen“ eingesetzt werden.",
       "",
       "Mail jetzt öffnen?"
     ].join("\n");
@@ -168,7 +157,7 @@ function buildRecipientConfirmMessage(to, copied) {
     return [
       "Die E-Mail-Adresse wurde in den Zwischenspeicher kopiert.",
       "",
-      "Sie kann in Mail mit Command-V in die Empfänger-Zeile eingefügt werden.",
+      "Sie kann mit Command-V in die Empfänger-Zeile eingefügt werden.",
       "",
       "Mail jetzt öffnen?"
     ].join("\n");
@@ -177,10 +166,152 @@ function buildRecipientConfirmMessage(to, copied) {
   return [
     "Die E-Mail-Adresse wurde in den Zwischenspeicher kopiert.",
     "",
-    "Sie kann in Mail mit Strg-V in die Empfänger-Zeile eingefügt werden.",
+    "Sie kann mit Strg-V in die Empfänger-Zeile eingefügt werden.",
     "",
     "Mail jetzt öffnen?"
   ].join("\n");
+}
+
+function ensureMailModalStyles() {
+  if (document.getElementById("mailEoModalStyles")) return;
+
+  const style = document.createElement("style");
+  style.id = "mailEoModalStyles";
+  style.textContent = `
+    .mail-eo-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 99999;
+    }
+    .mail-eo-modal.is-open {
+      display: block;
+    }
+    .mail-eo-modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+    }
+    .mail-eo-modal__dialog {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(92vw, 460px);
+      background: #1f2329;
+      color: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      font-family: inherit;
+    }
+    .mail-eo-modal__title {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .mail-eo-modal__text {
+      margin: 0;
+      white-space: pre-line;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+    .mail-eo-modal__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .mail-eo-modal__btn {
+      appearance: none;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font: inherit;
+      cursor: pointer;
+    }
+    .mail-eo-modal__btn--ghost {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .mail-eo-modal__btn--primary {
+      background: #72e6c4;
+      color: #05352a;
+      font-weight: 700;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function ensureMailConfirmModal() {
+  ensureMailModalStyles();
+
+  let root = document.getElementById("mailEoConfirmModal");
+  if (root) return root;
+
+  root = document.createElement("div");
+  root.id = "mailEoConfirmModal";
+  root.className = "mail-eo-modal";
+  root.innerHTML = `
+    <div class="mail-eo-modal__backdrop"></div>
+    <div class="mail-eo-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="mailEoModalTitle">
+      <h3 id="mailEoModalTitle" class="mail-eo-modal__title">Mail EO senden</h3>
+      <p class="mail-eo-modal__text" id="mailEoModalText"></p>
+      <div class="mail-eo-modal__actions">
+        <button type="button" class="mail-eo-modal__btn mail-eo-modal__btn--ghost" id="mailEoModalCancel">Abbrechen</button>
+        <button type="button" class="mail-eo-modal__btn mail-eo-modal__btn--primary" id="mailEoModalOk">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(root);
+  return root;
+}
+
+function askRecipientConfirm({ to, copied }) {
+  const modal = ensureMailConfirmModal();
+  const textEl = modal.querySelector("#mailEoModalText");
+  const okBtn = modal.querySelector("#mailEoModalOk");
+  const cancelBtn = modal.querySelector("#mailEoModalCancel");
+  const backdrop = modal.querySelector(".mail-eo-modal__backdrop");
+
+  textEl.textContent = buildRecipientModalMessage(to, copied);
+  modal.classList.add("is-open");
+
+  return new Promise((resolve) => {
+    const prevActive = document.activeElement;
+
+    const cleanup = () => {
+      modal.classList.remove("is-open");
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      backdrop.removeEventListener("click", onCancel);
+      document.removeEventListener("keydown", onKeyDown);
+      prevActive?.focus?.();
+    };
+
+    const onOk = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    const onCancel = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    const onKeyDown = (e) => {
+      if (!modal.classList.contains("is-open")) return;
+      if (e.key === "Escape") onCancel();
+      if (e.key === "Enter") onOk();
+    };
+
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    backdrop.addEventListener("click", onCancel);
+    document.addEventListener("keydown", onKeyDown);
+
+    setTimeout(() => okBtn.focus(), 0);
+  });
 }
 
 function getWxValues(scope = document) {
@@ -293,7 +424,6 @@ function canNativeShareFiles(files) {
   if (!navigator.share || !files?.length) return false;
 
   if (typeof navigator.canShare !== "function") {
-    // ältere Implementierungen
     return true;
   }
 
@@ -425,8 +555,6 @@ async function downloadEml({ to, subject, body, files, isoDate, cs }) {
   a.click();
   a.remove();
 
-  const copied = await copyTextToClipboard(to);
-
   URL.revokeObjectURL(url);
 }
 
@@ -451,7 +579,7 @@ async function pickFilesViaDialog() {
 export async function handleMailEOClick(mode = "auto") {
   const btn = qs(SEL.mail.btnSend);
 
-  let files = await collectMailFiles(mode);
+  const files = await collectMailFiles(mode);
   if (!files.length) {
     alert("Keine Anhänge vorhanden. Bitte zuerst ORM finalisieren.");
     return;
@@ -459,7 +587,6 @@ export async function handleMailEOClick(mode = "auto") {
 
   const isoDate = getIsoDateFromUi();
   const cs = getCallsign();
-
   const { logCount } = buildAttachmentSummary(files);
   const subject = buildSubject({ isoDate, cs, logCount });
 
@@ -481,32 +608,20 @@ export async function handleMailEOClick(mode = "auto") {
   const to = getEmailRecipient();
   const copied = to ? await copyTextToClipboard(to) : false;
 
-  const proceed = window.confirm(buildRecipientConfirmMessage(to, copied));
+  const proceed = await askRecipientConfirm({ to, copied });
   if (!proceed) return;
 
-  // Bevorzugt: natives Share-Sheet mit echten Anhängen
   if (canNativeShareFiles(files)) {
-    // Kopieren direkt mit dem Klick anstoßen, solange noch User-Gesture aktiv ist
-    const copyPromise = to ? copyTextToClipboard(to) : Promise.resolve(false);
-
     try {
       await shareFilesNative({ subject, body, files });
-
       if (btn) toggleClass(btn, "is-sent", true);
-
-      const copied = await copyPromise;
-
       return;
     } catch (err) {
-      // Nutzer hat Share-Sheet abgebrochen -> kein Fallback
       if (err?.name === "AbortError") return;
-
       dlog("share failed -> fallback to eml", err);
     }
   }
 
-  // Fallback für Browser ohne File-Share-Unterstützung:
-  // .eml wie bisher
   if (!to) {
     alert(
       isIOSLike()
