@@ -146,11 +146,11 @@
 /* LEG 1 / LEG 2 / ... links hochkant */
 .leg-title{
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: left;
+  justify-content: left;
   align-self: stretch;
-  justify-self: center;
-  text-align: left;
+  justify-self: left;
+  text-align: center;
   line-height: 1.0;
   font-size: 12px;
   letter-spacing: 0.06em;
