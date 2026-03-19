@@ -8,6 +8,17 @@
   padding-left: var(--panel-gutter);
   padding-right: var(--panel-gutter);
   box-sizing: border-box;
+
+  /* eigener 5-Spalten-Header */
+  grid-template-columns: max-content 85px max-content 1fr 85px;
+}
+
+#kopfContainer .aero-label{
+  padding-left: 10px; /* vorher 20px, sonst wirkt es weiter rechts */
+}
+
+#kopfContainer .c-output{
+  justify-self: start;
 }
 
 /* Master grid */
