@@ -15,7 +15,7 @@
   display: grid;
   grid-template-columns: var(--route-cols);
   grid-auto-rows: 30px;
-  gap: 3px;
+  gap: 1px;
   align-items: center;
 }
 
@@ -44,6 +44,8 @@
 
 /* Column 6 spacing helper */
 /*.c-panel .master-grid .col6 { margin-left: 15px; }*/
+
+/* Column 4 spacing helper */
 .c-panel .master-grid .col4 { margin-left: 7px; }
 
 /* Specific widths */
@@ -148,7 +150,7 @@
   justify-content: center;
   align-self: stretch;
   justify-self: center;
-  text-align: center;
+  text-align: left;
   line-height: 1.0;
   font-size: 12px;
   letter-spacing: 0.06em;
