@@ -142,16 +142,15 @@
 /* --- Legs kompakter / final --- */
 /* LEG 1 / LEG 2 / ... links hochkant */
 .leg-title{
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
   display: flex;
   align-items: center;
   justify-content: center;
   align-self: stretch;
   justify-self: center;
-  white-space: nowrap;
+  text-align: center;
+  line-height: 1.0;
   font-size: 12px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   padding: 4px 2px;
 }
 
