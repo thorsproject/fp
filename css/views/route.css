@@ -138,3 +138,56 @@
 .config-badge.is-on{
   font-weight: 600;
 }
+
+/* --- Legs kompakter / final --- */
+/* LEG 1 / LEG 2 / ... links hochkant */
+.leg-title{
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  justify-self: center;
+  white-space: nowrap;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  padding: 4px 2px;
+}
+
+/* Togglebuttons hochkant */
+.legToggle{
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  min-width: 30px;
+  width: 30px;
+  min-height: 96px;
+  padding: 6px 2px;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.legToggle[data-state="active"]{ background:#2e7d32; color:#fff; }
+.legToggle[data-state="inactive"]{ background:#8b1e1e; color:#fff; }
+
+/* rotate beibehalten, auch bei hover */
+.legToggle:hover{ transform: rotate(180deg) scale(1.05); }
+
+/* Alternate-Zeile kompakter */
+.leg-alt-label{
+  justify-self: center;
+  white-space: nowrap;
+}
+
+#legsContainer .master-grid{
+  align-items: center;
+}

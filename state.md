@@ -1212,6 +1212,15 @@ Nach Deaktivierung des Adblockers funktioniert alles korrekt.
 - `rt_oei_sc` zeigte zunächst nur `>10000`, Ursache war ein alter Storage-Wert; nach Löschen des gespeicherten Werts korrekt `>10000 ft`.
 
 
+# Flight Planning Web App — State Update 19.03.2026
+## Mail EO
+- `mail_eo.js` überarbeitet und bereinigt.
+- Vor dem Öffnen von Mail/Share wird die EO-Mailadresse jetzt in den Zwischenspeicher kopiert.
+- Danach erscheint ein eigenes In-App-Modal im Browser mit Hinweis zum Einfügen der Adresse.
+- Erst nach Bestätigung im Modal wird der Mail-Vorgang gestartet.
+- Web Share API bleibt bevorzugter Weg, `.eml` bleibt nur Fallback.
+- Toast-/alert-/confirm-Zwischenlösungen und doppelter Ballast wurden entfernt.
+- Aktueller Stand: funktioniert wie gewünscht, Problem behoben.
 # Offene Punkte / Next Steps
 
 ## Performance
