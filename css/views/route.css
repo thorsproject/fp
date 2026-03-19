@@ -44,7 +44,7 @@
 
 /* Column 6 spacing helper */
 /*.c-panel .master-grid .col6 { margin-left: 15px; }*/
-.c-panel .master-grid .col4 { margin-left: 5px; }
+.c-panel .master-grid .col4 { margin-left: 7px; }
 
 /* Specific widths */
 #lfzSelect, #tacSelect { width: 85px; }
