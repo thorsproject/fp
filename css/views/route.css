@@ -149,7 +149,7 @@
   align-items: center; /* Vertikal */
   justify-content: center;
   align-self: stretch;
-  justify-self: left;
+  justify-self: center;
   text-align: center;
   line-height: 1.0;
   font-size: 12px;
