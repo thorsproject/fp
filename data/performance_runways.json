@@ -2,12 +2,12 @@
   "_meta": {
     "source": "DFS AIP",
     "amendment": 9999,
-    "amendment_date": "18 MAR 2026",
-    "airac_effective": "2026-02-19",
-    "airac_valid_until": "2026-03-18",
-    "generated_at": "2026-03-18T04:31:45.984Z",
-    "airport_dataset": "ED_AirportHeliport_2026-02-19_2026-02-19_snapshot.xml",
-    "runway_dataset": "ED_Runway_2026-02-19_2026-02-19_snapshot.xml"
+    "amendment_date": "19 MAR 2026",
+    "airac_effective": "2026-03-19",
+    "airac_valid_until": "2026-04-15",
+    "generated_at": "2026-03-19T04:30:19.928Z",
+    "airport_dataset": "ED_AirportHeliport_2026-03-19_2026-03-19_snapshot.xml",
+    "runway_dataset": "ED_Runway_2026-03-19_2026-03-19_snapshot.xml"
   },
   "EDVE": {
     "name": "Braunschweig-Wolfsburg Airport",
@@ -183,11 +183,11 @@
         "tora": 2200,
         "lda": 2200
       },
-      "25G": {
+      "07G": {
         "tora": 1000,
         "lda": 1000
       },
-      "07G": {
+      "25G": {
         "tora": 1000,
         "lda": 1000
       }
@@ -293,11 +293,7 @@
         "tora": 2305,
         "lda": 2305
       },
-      "10N": {
-        "tora": 1325,
-        "lda": 1325
-      },
-      "10S": {
+      "28S": {
         "tora": 600,
         "lda": 600
       },
@@ -305,9 +301,13 @@
         "tora": 1325,
         "lda": 1325
       },
-      "28S": {
+      "10S": {
         "tora": 600,
         "lda": 600
+      },
+      "10N": {
+        "tora": 1325,
+        "lda": 1325
       }
     }
   },
