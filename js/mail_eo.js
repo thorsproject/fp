@@ -462,12 +462,26 @@ export async function handleMailEOClick(mode = "auto") {
     "",
   ].join("\r\n");
 
+  const to = getEmailRecipient();
+
   // Bevorzugt: natives Share-Sheet mit echten Anhängen
   if (canNativeShareFiles(files)) {
+    // Kopieren direkt mit dem Klick anstoßen, solange noch User-Gesture aktiv ist
+    const copyPromise = to ? copyTextToClipboard(to) : Promise.resolve(false);
+
     try {
       await shareFilesNative({ subject, body, files });
 
       if (btn) toggleClass(btn, "is-sent", true);
+
+      const copied = await copyPromise;
+
+      if (to) {
+        setTimeout(() => {
+          showRecipientCopiedPopup(to, copied);
+        }, 120);
+      }
+
       return;
     } catch (err) {
       // Nutzer hat Share-Sheet abgebrochen -> kein Fallback
@@ -479,7 +493,6 @@ export async function handleMailEOClick(mode = "auto") {
 
   // Fallback für Browser ohne File-Share-Unterstützung:
   // .eml wie bisher
-  const to = getEmailRecipient();
   if (!to) {
     alert(
       isIOSLike()
