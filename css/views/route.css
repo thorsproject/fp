@@ -155,7 +155,7 @@
 }
 
 /* Togglebuttons hochkant */
-.legToggle{
+/*.legToggle{
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   display: inline-flex;
@@ -173,13 +173,10 @@
   line-height: 1;
   cursor: pointer;
   transition: 0.2s ease;
-}
-
-.legToggle[data-state="active"]{ background:#2e7d32; color:#fff; }
-.legToggle[data-state="inactive"]{ background:#8b1e1e; color:#fff; }
+}*/
 
 /* rotate beibehalten, auch bei hover */
-.legToggle:hover{ transform: rotate(180deg) scale(1.05); }
+/*.legToggle:hover{ transform: rotate(180deg) scale(1.05); }*/
 
 /* Alternate-Zeile kompakter */
 .leg-alt-label{
