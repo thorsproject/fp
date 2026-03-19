@@ -157,6 +157,14 @@
   padding: 1px 2px;
 }
 
+.leg-title span{
+  display: block;
+}
+
+.leg-title__num{
+  margin-top: 4px; /* hier fein einstellen */
+}
+
 /* Alternate-Zeile kompakter */
 .leg-alt-label{
   justify-self: center;
