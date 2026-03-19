@@ -428,11 +428,6 @@ async function downloadEml({ to, subject, body, files, isoDate, cs }) {
   const copied = await copyTextToClipboard(to);
 
   URL.revokeObjectURL(url);
-
-  // leicht verzögert, damit der Download/Öffnen-Flow nicht gestört wird
-  setTimeout(() => {
-    showRecipientCopiedPopup(to, copied);
-  }, 120);
 }
 
 // ------------------ Picker ------------------
