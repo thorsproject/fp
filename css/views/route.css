@@ -146,6 +146,7 @@
 /* LEG 1 / LEG 2 / ... links hochkant */
 .leg-title{
   display: flex;
+  flex-direction: column; /* vertikal stapeln */
   align-items: top; /* Vertikal */
   justify-content: center;
   align-self: normal;
