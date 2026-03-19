@@ -11,7 +11,7 @@
 
   /* eigener 5-Spalten-Header */
   /*grid-template-columns: max-content 85px max-content 1fr 85px;*/
-  grid-template-columns: max-content 85px max-content 1fr 60px;
+  grid-template-columns: 30px 85px 25px 85px 30px;
 }
 
 #kopfContainer .aero-label{
