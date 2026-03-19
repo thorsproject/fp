@@ -85,7 +85,7 @@
   font-weight: bold;
   font-size: 12px;
   width: 100%;
-  max-width: none;
+  max-width: 80px;
   text-align: center;
   cursor: pointer;
   transition: 0.2s ease;
