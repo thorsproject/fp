@@ -146,8 +146,8 @@
 /* LEG 1 / LEG 2 / ... links hochkant */
 .leg-title{
   display: flex;
-  align-items: center;
-  justify-content: left;
+  align-items: center; /* Vertikal */
+  justify-content: center;
   align-self: stretch;
   justify-self: left;
   text-align: center;
