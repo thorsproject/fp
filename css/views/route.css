@@ -148,8 +148,8 @@
   display: flex;
   align-items: center; /* Vertikal */
   justify-content: center;
-  align-self: stretch;
-  justify-self: center;
+  align-self: normal;
+  justify-self: left; /* horizontal */
   text-align: center;
   line-height: 1.0;
   font-size: 12px;
