@@ -133,7 +133,7 @@ async function copyTextToClipboard(text) {
   }
 }
 
-function showRecipientCopiedPopup(to, copied) {
+function buildRecipientConfirmMessage(to, copied) {
   const ua = navigator.userAgent || "";
   const platform = navigator.platform || "";
 
@@ -143,46 +143,44 @@ function showRecipientCopiedPopup(to, copied) {
 
   const isMac = /Mac/.test(platform) && !isIOS;
 
-  let msg = "Die E-Mail-Adresse konnte nicht automatisch kopiert werden.";
-  if (copied) {
-    if (isIOS) {
-      msg = "Die E-Mail-Adresse wurde kopiert und kann in der Empfänger-Zeile über „Einfügen“ eingesetzt werden.";
-    } else if (isMac) {
-      msg = "Die E-Mail-Adresse wurde kopiert und kann mit Command-V in die Empfänger-Zeile eingefügt werden.";
-    } else {
-      msg = "Die E-Mail-Adresse wurde kopiert und kann mit Strg-V in die Empfänger-Zeile eingefügt werden.";
-    }
-  } else if (to) {
-    msg = `Kopieren fehlgeschlagen. Bitte Empfänger manuell einfügen: ${to}`;
+  if (!copied) {
+    return [
+      "Die E-Mail-Adresse konnte nicht automatisch in den Zwischenspeicher kopiert werden.",
+      "",
+      "Empfänger:",
+      to || "(leer)",
+      "",
+      "Mail trotzdem öffnen?"
+    ].join("\n");
   }
 
-  showMailToast(msg, copied ? 3200 : 4200);
-}
+  if (isIOS) {
+    return [
+      "Die E-Mail-Adresse wurde in den Zwischenspeicher kopiert.",
+      "",
+      "Sie kann in Mail in der Empfänger-Zeile über „Einfügen“ eingesetzt werden.",
+      "",
+      "Mail jetzt öffnen?"
+    ].join("\n");
+  }
 
-function ensureMailToast() {
-  let el = document.getElementById("mailToast");
-  if (el) return el;
+  if (isMac) {
+    return [
+      "Die E-Mail-Adresse wurde in den Zwischenspeicher kopiert.",
+      "",
+      "Sie kann in Mail mit Command-V in die Empfänger-Zeile eingefügt werden.",
+      "",
+      "Mail jetzt öffnen?"
+    ].join("\n");
+  }
 
-  el = document.createElement("div");
-  el.id = "mailToast";
-  el.className = "mail-toast";
-  el.setAttribute("role", "status");
-  el.setAttribute("aria-live", "polite");
-  document.body.appendChild(el);
-
-  return el;
-}
-
-function showMailToast(message, ms = 2600) {
-  const el = ensureMailToast();
-
-  el.textContent = message;
-  el.classList.add("is-visible");
-
-  clearTimeout(el._hideTimer);
-  el._hideTimer = setTimeout(() => {
-    el.classList.remove("is-visible");
-  }, ms);
+  return [
+    "Die E-Mail-Adresse wurde in den Zwischenspeicher kopiert.",
+    "",
+    "Sie kann in Mail mit Strg-V in die Empfänger-Zeile eingefügt werden.",
+    "",
+    "Mail jetzt öffnen?"
+  ].join("\n");
 }
 
 function getWxValues(scope = document) {
@@ -486,6 +484,10 @@ export async function handleMailEOClick(mode = "auto") {
   ].join("\r\n");
 
   const to = getEmailRecipient();
+  const copied = to ? await copyTextToClipboard(to) : false;
+
+  const proceed = window.confirm(buildRecipientConfirmMessage(to, copied));
+  if (!proceed) return;
 
   // Bevorzugt: natives Share-Sheet mit echten Anhängen
   if (canNativeShareFiles(files)) {
@@ -498,12 +500,6 @@ export async function handleMailEOClick(mode = "auto") {
       if (btn) toggleClass(btn, "is-sent", true);
 
       const copied = await copyPromise;
-
-      if (to) {
-        setTimeout(() => {
-          showRecipientCopiedPopup(to, copied);
-        }, 120);
-      }
 
       return;
     } catch (err) {
