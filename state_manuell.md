@@ -417,16 +417,17 @@ FP_CONFIG_PASS="team2026" node tools/config-crypto.mjs enc data/config.json data
 FP_CONFIG_PASS="team2026" node tools/config-crypto.mjs dec data/config.enc data/config.json
 
 # Standard-Workflow zum Aktualisieren der MilAip
-  * Schritt 1 — MilAip von ForeFlight herunterladen
+  * Schritt 1 — MilAip von ForeFlight herunterladen und umbenennen
     - ForeFlight: Documents/Bundeswehr/ACC – Aero Info
     - Speicherort lokal: Nutzer/Webhosting/update_milaip
+    - Datei umbenennen in: milaip.pdf
   * Schritt 2 — aktuelle "airfields_mil.json" aus reposite herunterladen
     - Reposite: fp/Data/airfields_mil.json
     - Speicherort lokal: Nutzer/Webhosting/update_milaip
   * Schritt 3 — Terminal öffnen
     - cd Webhosting
     - cd update_milaip
-    - folgenden Befehl ausführen: python3 update_milaip_json.py --pdf "MILAIP19FEB-18MAR26.pdf" --json "airfields_mil.json"
+    - folgenden Befehl ausführen: python3 update_milaip_json.py --pdf "milaip.pdf" --json "airfields_mil.json"
     - Ergebnis sollte folgendermaße sein:
         Written: airfields_mil.json
         ETHB: updated 2 runway entries
