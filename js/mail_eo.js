@@ -162,6 +162,32 @@ function showRecipientCopiedPopup(to, copied) {
   );
 }
 
+function ensureMailToast() {
+  let el = document.getElementById("mailToast");
+  if (el) return el;
+
+  el = document.createElement("div");
+  el.id = "mailToast";
+  el.className = "mail-toast";
+  el.setAttribute("role", "status");
+  el.setAttribute("aria-live", "polite");
+  document.body.appendChild(el);
+
+  return el;
+}
+
+function showMailToast(message, ms = 2600) {
+  const el = ensureMailToast();
+
+  el.textContent = message;
+  el.classList.add("is-visible");
+
+  clearTimeout(el._hideTimer);
+  el._hideTimer = setTimeout(() => {
+    el.classList.remove("is-visible");
+  }, ms);
+}
+
 function getWxValues(scope = document) {
   const nr = String(readValue(qs(SEL.checklist.fieldByKey("wx_nr"), scope)) || "").trim();
   const v = String(readValue(qs(SEL.checklist.fieldByKey("wx_void"), scope)) || "").trim();
