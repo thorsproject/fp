@@ -45,7 +45,7 @@
   --app-pad: 5px;         /* Abstand der ganzen App zum Browserrand */
   --col-gap: 5px;         /* Abstand zwischen Sidebar (links) und Main (rechts) */
   --panel-gutter: 10px;   /* Innenluft innerhalb der Spalten und auch vertikaler Abstand in einigen Views */
-  --sidebar-w: 420px;     /* desktop sidebar width */
+  --sidebar-w: 420px;     /* desktop sidebar width alt: 530 */
 }
 
 
