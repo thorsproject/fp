@@ -22,6 +22,7 @@ import {
 
 import { createWeatherLayers, setWeatherVisible } from "./weather_layers.js";
 import { createWindLayers, drawWindBarbsViewport } from "./wind.js?v=99";
+import { initNotams, scheduleNotamRefresh } from "./notams.js";
 import { showVerticalProfilePopup } from "./vertprof.js";
 import { initChecklistUI } from "./checklist.js";
 import { initPhones } from "./phones.js";
@@ -383,6 +384,7 @@ map.on("click", (e) => {
   updateAltMarkers(map);
 
   // ---------- Init modules ----------
+  initNotams();
   initDateInput();
   initLFZ();
   initLegActivation({
@@ -390,6 +392,7 @@ map.on("click", (e) => {
       updateLegMarkers(map);
       updateAltMarkers(map);
       syncPerformanceDerived();
+      scheduleNotamRefresh();
     },
   });
 

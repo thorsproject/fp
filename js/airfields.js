@@ -4,6 +4,7 @@
 // Wetter kommt aus metar.js, Marker werden direkt mit passender fltCat-Farbe gesetzt.
 
 import { loadAirportWx, buildWxPopupHtml } from "./metar.js";
+import { scheduleNotamRefresh } from "./notams.js";
 
 let airfieldsDB = {};     // approved airfields
 let alternatesDB = {};    // approved alternates
@@ -328,6 +329,7 @@ export function wireAeroValidationAndMarkers(map) {
       t.value = t.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 4);
       clearFieldError(t);
       updateLegMarkers(map);
+      scheduleNotamRefresh();
       return;
     }
 
@@ -335,6 +337,7 @@ export function wireAeroValidationAndMarkers(map) {
       t.value = t.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 4);
       clearFieldError(t);
       updateAltMarkers(map);
+      scheduleNotamRefresh();
       return;
     }
   });
@@ -348,6 +351,7 @@ export function wireAeroValidationAndMarkers(map) {
       if (!code) {
         clearFieldError(t);
         updateLegMarkers(map);
+        scheduleNotamRefresh();
         return;
       }
 
@@ -358,6 +362,7 @@ export function wireAeroValidationAndMarkers(map) {
       }
 
       updateLegMarkers(map);
+      scheduleNotamRefresh();
       return;
     }
 
