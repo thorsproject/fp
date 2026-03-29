@@ -1,53 +1,54 @@
 {
   "coord": {
-    "lon": 13.4,
+    "lon": 13.405,
     "lat": 52.52
   },
   "weather": [
-    {
-      "id": 310,
-      "main": "Drizzle",
-      "description": "light intensity drizzle rain",
-      "icon": "09n"
-    },
     {
       "id": 500,
       "main": "Rain",
       "description": "light rain",
       "icon": "10n"
+    },
+    {
+      "id": 310,
+      "main": "Drizzle",
+      "description": "light intensity drizzle rain",
+      "icon": "09n"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 4.29,
-    "feels_like": 0.72,
-    "temp_min": 3.41,
-    "temp_max": 5.08,
-    "pressure": 1020,
-    "humidity": 86,
-    "sea_level": 1020,
-    "grnd_level": 1014
+    "temp": 4.5,
+    "feels_like": 2.55,
+    "temp_min": 3.01,
+    "temp_max": 5.18,
+    "pressure": 1021,
+    "humidity": 87,
+    "sea_level": 1021,
+    "grnd_level": 1015
   },
   "visibility": 10000,
   "wind": {
-    "speed": 4.47,
-    "deg": 320
+    "speed": 2.24,
+    "deg": 306,
+    "gust": 3.13
   },
   "rain": {
-    "1h": 0.15
+    "1h": 0.37
   },
   "clouds": {
     "all": 75
   },
-  "dt": 1774735801,
+  "dt": 1774747493,
   "sys": {
     "type": 2,
     "id": 2011538,
     "country": "DE",
-    "sunrise": 1774673433,
-    "sunset": 1774719137
+    "sunrise": 1774759690,
+    "sunset": 1774805640
   },
-  "timezone": 3600,
+  "timezone": 7200,
   "id": 6545310,
   "name": "Mitte",
   "cod": 200
