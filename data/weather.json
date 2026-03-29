@@ -5,42 +5,32 @@
   },
   "weather": [
     {
-      "id": 500,
-      "main": "Rain",
-      "description": "light rain",
-      "icon": "10n"
-    },
-    {
-      "id": 310,
-      "main": "Drizzle",
-      "description": "light intensity drizzle rain",
-      "icon": "09n"
+      "id": 803,
+      "main": "Clouds",
+      "description": "broken clouds",
+      "icon": "04n"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 4.5,
-    "feels_like": 2.55,
-    "temp_min": 3.01,
-    "temp_max": 5.18,
-    "pressure": 1021,
-    "humidity": 87,
-    "sea_level": 1021,
-    "grnd_level": 1015
+    "temp": 3.8,
+    "feels_like": 0.65,
+    "temp_min": 2.27,
+    "temp_max": 4.48,
+    "pressure": 1023,
+    "humidity": 88,
+    "sea_level": 1023,
+    "grnd_level": 1017
   },
   "visibility": 10000,
   "wind": {
-    "speed": 2.24,
-    "deg": 306,
-    "gust": 3.13
-  },
-  "rain": {
-    "1h": 0.37
+    "speed": 3.58,
+    "deg": 320
   },
   "clouds": {
     "all": 75
   },
-  "dt": 1774747493,
+  "dt": 1774758088,
   "sys": {
     "type": 2,
     "id": 2011538,
@@ -49,7 +39,7 @@
     "sunset": 1774805640
   },
   "timezone": 7200,
-  "id": 6545310,
-  "name": "Mitte",
+  "id": 7576815,
+  "name": "Alt-Kölln",
   "cod": 200
 }
