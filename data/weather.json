@@ -13,24 +13,24 @@
   ],
   "base": "stations",
   "main": {
-    "temp": 5.05,
-    "feels_like": 1.91,
-    "temp_min": 3.81,
-    "temp_max": 6.12,
-    "pressure": 1024,
-    "humidity": 83,
-    "sea_level": 1024,
+    "temp": 6.3,
+    "feels_like": 3.68,
+    "temp_min": 5.48,
+    "temp_max": 7.83,
+    "pressure": 1025,
+    "humidity": 77,
+    "sea_level": 1025,
     "grnd_level": 1018
   },
   "visibility": 10000,
   "wind": {
-    "speed": 4.02,
+    "speed": 3.6,
     "deg": 310
   },
   "clouds": {
     "all": 20
   },
-  "dt": 1774770085,
+  "dt": 1774772937,
   "sys": {
     "type": 2,
     "id": 2011538,
@@ -39,7 +39,7 @@
     "sunset": 1774805640
   },
   "timezone": 7200,
-  "id": 7576815,
-  "name": "Alt-Kölln",
+  "id": 6545310,
+  "name": "Mitte",
   "cod": 200
 }
