@@ -169,6 +169,11 @@
     "lon": 14.1523,
     "name": "Heringsdorf Airport"
   },
+  "EDQD": {
+    "lat": 49.985001,
+    "lon": 11.64,
+    "name": "Bayreuth Airport"
+  },
   "EDQM": {
     "lat": 50.288544,
     "lon": 11.852876,
@@ -179,15 +184,15 @@
     "lon": 12.506389,
     "name": "Leipzig–Altenburg Airport"
   },
-  "EDQD": {
-    "lat": 49.985001,
-    "lon": 11.64,
-    "name": "Bayreuth Airport"
-  },
   "EDGS": {
     "lat": 50.707699,
     "lon": 8.08297,
     "name": "Siegerland Airport"
+  },
+  "EDTY": {
+    "lat": 49.118332,
+    "lon": 9.783889,
+    "name": "Adolf Würth Airport"
   },
   "EDMS": {
     "lat": 48.900833,
@@ -203,11 +208,6 @@
     "lat": 48.7156982421875,
     "lon": 11.534000396728516,
     "name": "Ingolstadt Manching Airport"
-  },
-  "EDTY": {
-    "lat": 49.118332,
-    "lon": 9.783889,
-    "name": "Adolf Würth Airport"
   },
   "EDHK": {
     "lat": 54.37957,
