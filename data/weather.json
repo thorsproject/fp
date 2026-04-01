@@ -8,32 +8,32 @@
       "id": 741,
       "main": "Fog",
       "description": "fog",
-      "icon": "50n"
+      "icon": "50d"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 1.07,
-    "feels_like": -0.6,
-    "temp_min": -0.55,
-    "temp_max": 2.16,
-    "pressure": 1025,
-    "humidity": 94,
-    "sea_level": 1025,
-    "grnd_level": 1019
+    "temp": 1.61,
+    "feels_like": -0.65,
+    "temp_min": -0.48,
+    "temp_max": 2.82,
+    "pressure": 1026,
+    "humidity": 90,
+    "sea_level": 1026,
+    "grnd_level": 1020
   },
-  "visibility": 450,
+  "visibility": 250,
   "wind": {
-    "speed": 1.54,
-    "deg": 270
+    "speed": 2.06,
+    "deg": 170
   },
   "clouds": {
-    "all": 12
+    "all": 100
   },
-  "dt": 1775006994,
+  "dt": 1775024509,
   "sys": {
     "type": 2,
-    "id": 2000002,
+    "id": 2011538,
     "country": "DE",
     "sunrise": 1775018465,
     "sunset": 1775065153
