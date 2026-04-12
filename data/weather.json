@@ -13,12 +13,12 @@
   ],
   "base": "stations",
   "main": {
-    "temp": 9.38,
-    "feels_like": 8.1,
-    "temp_min": 9.38,
-    "temp_max": 9.38,
+    "temp": 10.17,
+    "feels_like": 9.41,
+    "temp_min": 10.17,
+    "temp_max": 10.17,
     "pressure": 1017,
-    "humidity": 85,
+    "humidity": 83,
     "sea_level": 1017,
     "grnd_level": 1011
   },
@@ -31,7 +31,7 @@
   "clouds": {
     "all": 100
   },
-  "dt": 1776002038,
+  "dt": 1776003848,
   "sys": {
     "country": "DE",
     "sunrise": 1775967337,
