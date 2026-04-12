@@ -13,25 +13,25 @@
   ],
   "base": "stations",
   "main": {
-    "temp": 10.17,
-    "feels_like": 9.41,
-    "temp_min": 10.17,
-    "temp_max": 10.17,
+    "temp": 10.28,
+    "feels_like": 9.53,
+    "temp_min": 10.28,
+    "temp_max": 10.28,
     "pressure": 1017,
     "humidity": 83,
     "sea_level": 1017,
-    "grnd_level": 1011
+    "grnd_level": 1012
   },
   "visibility": 10000,
   "wind": {
-    "speed": 2.49,
-    "deg": 155,
-    "gust": 5.99
+    "speed": 2.35,
+    "deg": 144,
+    "gust": 4.74
   },
   "clouds": {
     "all": 100
   },
-  "dt": 1776003848,
+  "dt": 1776007152,
   "sys": {
     "country": "DE",
     "sunrise": 1775967337,
