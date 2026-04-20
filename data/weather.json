@@ -8,37 +8,37 @@
       "id": 804,
       "main": "Clouds",
       "description": "overcast clouds",
-      "icon": "04d"
+      "icon": "04n"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 8.54,
-    "feels_like": 6.87,
-    "temp_min": 8.54,
-    "temp_max": 8.54,
-    "pressure": 1018,
-    "humidity": 86,
-    "sea_level": 1018,
+    "temp": 8.06,
+    "feels_like": 8.06,
+    "temp_min": 8.06,
+    "temp_max": 8.06,
+    "pressure": 1019,
+    "humidity": 85,
+    "sea_level": 1019,
     "grnd_level": 1013
   },
   "visibility": 10000,
   "wind": {
-    "speed": 2.83,
-    "deg": 90,
-    "gust": 7.49
+    "speed": 0.47,
+    "deg": 36,
+    "gust": 1.44
   },
   "clouds": {
-    "all": 88
+    "all": 100
   },
-  "dt": 1776706915,
+  "dt": 1776710904,
   "sys": {
     "country": "DE",
     "sunrise": 1776657474,
     "sunset": 1776708741
   },
   "timezone": 7200,
-  "id": 6545310,
-  "name": "Mitte",
+  "id": 2950159,
+  "name": "Berlin",
   "cod": 200
 }
