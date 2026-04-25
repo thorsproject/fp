@@ -109,15 +109,15 @@
     "lon": 10.960713,
     "name": "Erfurt-Weimar Airport"
   },
-  "ESMQ": {
-    "lat": 56.685501,
-    "lon": 16.2876,
-    "name": "Kalmar Airport"
-  },
   "EPSC": {
     "lat": 53.584702,
     "lon": 14.9022,
     "name": "Solidarity Szczecin–Goleniów Airport"
+  },
+  "ESMQ": {
+    "lat": 56.685501,
+    "lon": 16.2876,
+    "name": "Kalmar Airport"
   },
   "EKRN": {
     "lat": 55.063301,
