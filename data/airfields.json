@@ -39,15 +39,15 @@
     "lon": 13.767831,
     "name": "Dresden Airport"
   },
-  "EPPO": {
-    "lat": 52.421598,
-    "lon": 16.823359,
-    "name": "Poznań-Ławica Airport"
-  },
   "EDJA": {
     "lat": 47.988092,
     "lon": 10.238248,
     "name": "Memmingen Allgau Airport"
+  },
+  "EPPO": {
+    "lat": 52.421598,
+    "lon": 16.823359,
+    "name": "Poznań-Ławica Airport"
   },
   "EPWR": {
     "lat": 51.103719,
@@ -79,25 +79,25 @@
     "lon": 8.617459,
     "name": "Paderborn Lippstadt Airport"
   },
-  "EKRK": {
-    "lat": 55.585602,
-    "lon": 12.1314,
-    "name": "Copenhagen Roskilde Airport"
-  },
   "EDMA": {
     "lat": 48.425278,
     "lon": 10.931667,
     "name": "Augsburg Airport"
   },
-  "EPBY": {
-    "lat": 53.096802,
-    "lon": 17.977699,
-    "name": "Ignacy Jan Paderewski Bydgoszcz Airport"
+  "EKRK": {
+    "lat": 55.585602,
+    "lon": 12.1314,
+    "name": "Copenhagen Roskilde Airport"
   },
   "EDLN": {
     "lat": 51.230278,
     "lon": 6.504444,
     "name": "Mönchengladbach Airport"
+  },
+  "EPBY": {
+    "lat": 53.096802,
+    "lon": 17.977699,
+    "name": "Ignacy Jan Paderewski Bydgoszcz Airport"
   },
   "EDVK": {
     "lat": 51.418395,
@@ -129,6 +129,11 @@
     "lon": 14.068699836730957,
     "name": "Jönköping Airport"
   },
+  "EDAZ": {
+    "lat": 52.204631,
+    "lon": 13.159526,
+    "name": "Schönhagen Airfield"
+  },
   "ESTA": {
     "lat": 56.29610061645508,
     "lon": 12.847100257873535,
@@ -138,11 +143,6 @@
     "lat": 52.319199,
     "lon": 10.5561,
     "name": "Braunschweig-Wolfsburg Airport"
-  },
-  "EDAZ": {
-    "lat": 52.204631,
-    "lon": 13.159526,
-    "name": "Schönhagen Airfield"
   },
   "EDTM": {
     "lat": 48.05389,
@@ -174,6 +174,16 @@
     "lon": 11.64,
     "name": "Bayreuth Airport"
   },
+  "EDTY": {
+    "lat": 49.118332,
+    "lon": 9.783889,
+    "name": "Adolf Würth Airport"
+  },
+  "EDMS": {
+    "lat": 48.900833,
+    "lon": 12.516667,
+    "name": "Straubing Airport"
+  },
   "EDQM": {
     "lat": 50.288544,
     "lon": 11.852876,
@@ -189,35 +199,20 @@
     "lon": 8.08297,
     "name": "Siegerland Airport"
   },
-  "EDTY": {
-    "lat": 49.118332,
-    "lon": 9.783889,
-    "name": "Adolf Würth Airport"
-  },
-  "EDMS": {
-    "lat": 48.900833,
-    "lon": 12.516667,
-    "name": "Straubing Airport"
+  "ETSI": {
+    "lat": 48.7156982421875,
+    "lon": 11.534000396728516,
+    "name": "Ingolstadt Manching Airport"
   },
   "EKOD": {
     "lat": 55.475307,
     "lon": 10.327206,
     "name": "Odense Hans Christian Andersen Airport"
   },
-  "ETSI": {
-    "lat": 48.7156982421875,
-    "lon": 11.534000396728516,
-    "name": "Ingolstadt Manching Airport"
-  },
   "EDHK": {
     "lat": 54.37957,
     "lon": 10.145266,
     "name": "Kiel-Holtenau Airport"
-  },
-  "ESMX": {
-    "lat": 56.929100036621094,
-    "lon": 14.727999687194824,
-    "name": "Växjö Kronoberg Airport"
   },
   "EDBM": {
     "lat": 52.073612,
@@ -233,6 +228,11 @@
     "lat": 53.918201,
     "lon": 12.2783,
     "name": "Rostock-Laage Airport"
+  },
+  "ESMX": {
+    "lat": 56.929100036621094,
+    "lon": 14.727999687194824,
+    "name": "Växjö Kronoberg Airport"
   },
   "EDWI": {
     "lat": 53.50222,
@@ -264,6 +264,11 @@
     "lon": 7.2275,
     "name": "Emden Airport"
   },
+  "EDXR": {
+    "lat": 54.220001,
+    "lon": 9.599444,
+    "name": "Rendsburg-Schachtholm Airfield"
+  },
   "EDAQ": {
     "lat": 51.552223,
     "lon": 12.053889,
@@ -289,11 +294,6 @@
     "lon": 13.325542,
     "name": "Rügen Airport"
   },
-  "EDXR": {
-    "lat": 54.220001,
-    "lon": 9.599444,
-    "name": "Rendsburg-Schachtholm Airfield"
-  },
   "ETHN": {
     "lat": 49.39162,
     "lon": 9.956747,
@@ -308,6 +308,11 @@
     "lat": 48.710999,
     "lon": 11.2115,
     "name": "Neuburg Air Base"
+  },
+  "EDAX": {
+    "lat": 53.306389,
+    "lon": 12.752222,
+    "name": "Müritz Airpark"
   },
   "ETSH": {
     "lat": 51.767799,
@@ -333,11 +338,6 @@
     "lat": 52.918888,
     "lon": 12.425278,
     "name": "Kyritz Airfield"
-  },
-  "EDAX": {
-    "lat": 53.306389,
-    "lon": 12.752222,
-    "name": "Müritz Airpark"
   },
   "ETHC": {
     "lat": 52.591202,
