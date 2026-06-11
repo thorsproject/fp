@@ -2,12 +2,12 @@
   "_meta": {
     "source": "DFS AIP",
     "amendment": 9999,
-    "amendment_date": "10 JUN 2026",
-    "airac_effective": "2026-05-14",
-    "airac_valid_until": "2026-06-10",
-    "generated_at": "2026-06-10T06:42:00.008Z",
-    "airport_dataset": "ED_AirportHeliport_2026-05-14_2026-05-14_snapshot.xml",
-    "runway_dataset": "ED_Runway_2026-05-14_2026-05-14_snapshot.xml"
+    "amendment_date": "11 JUN 2026",
+    "airac_effective": "2026-06-11",
+    "airac_valid_until": "2026-07-08",
+    "generated_at": "2026-06-11T07:04:11.096Z",
+    "airport_dataset": "ED_AirportHeliport_2026-06-11_2026-06-11_snapshot.xml",
+    "runway_dataset": "ED_Runway_2026-06-11_2026-06-11_snapshot.xml"
   },
   "EDVE": {
     "name": "Braunschweig-Wolfsburg Airport",
