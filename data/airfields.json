@@ -39,15 +39,15 @@
     "lon": 13.767831,
     "name": "Dresden Airport"
   },
-  "EDJA": {
-    "lat": 47.988092,
-    "lon": 10.238248,
-    "name": "Memmingen Allgau Airport"
-  },
   "EPPO": {
     "lat": 52.421598,
     "lon": 16.823359,
     "name": "Poznań-Ławica Airport"
+  },
+  "EDJA": {
+    "lat": 47.988092,
+    "lon": 10.238248,
+    "name": "Memmingen Allgau Airport"
   },
   "EPWR": {
     "lat": 51.103719,
