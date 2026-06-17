@@ -5,42 +5,42 @@
   },
   "weather": [
     {
-      "id": 802,
+      "id": 803,
       "main": "Clouds",
-      "description": "scattered clouds",
-      "icon": "03n"
+      "description": "broken clouds",
+      "icon": "04d"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 12.67,
-    "feels_like": 12.13,
-    "temp_min": 10.79,
-    "temp_max": 13.25,
-    "pressure": 1016,
-    "humidity": 82,
-    "sea_level": 1016,
-    "grnd_level": 1011
+    "temp": 23.73,
+    "feels_like": 23.39,
+    "temp_min": 21.9,
+    "temp_max": 24.48,
+    "pressure": 1018,
+    "humidity": 47,
+    "sea_level": 1018,
+    "grnd_level": 1013
   },
   "visibility": 10000,
   "wind": {
-    "speed": 1.74,
-    "deg": 62,
-    "gust": 2.82
+    "speed": 5.36,
+    "deg": 284,
+    "gust": 7.15
   },
   "clouds": {
-    "all": 36
+    "all": 83
   },
-  "dt": 1781654203,
+  "dt": 1781695141,
   "sys": {
     "type": 2,
-    "id": 2012272,
+    "id": 2009543,
     "country": "DE",
     "sunrise": 1781664164,
     "sunset": 1781724709
   },
   "timezone": 7200,
-  "id": 6545310,
-  "name": "Mitte",
+  "id": 2950159,
+  "name": "Berlin",
   "cod": 200
 }
