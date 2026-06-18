@@ -124,15 +124,15 @@
     "lon": 14.7596,
     "name": "Bornholm Airport"
   },
-  "ESGJ": {
-    "lat": 57.757598876953125,
-    "lon": 14.068699836730957,
-    "name": "Jönköping Airport"
-  },
   "EDAZ": {
     "lat": 52.204631,
     "lon": 13.159526,
     "name": "Schönhagen Airfield"
+  },
+  "ESGJ": {
+    "lat": 57.757598876953125,
+    "lon": 14.068699836730957,
+    "name": "Jönköping Airport"
   },
   "ESTA": {
     "lat": 56.29610061645508,
