@@ -8,33 +8,33 @@
       "id": 804,
       "main": "Clouds",
       "description": "overcast clouds",
-      "icon": "04d"
+      "icon": "04n"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 24.45,
-    "feels_like": 25.56,
-    "temp_min": 24.45,
-    "temp_max": 29.67,
-    "pressure": 1015,
-    "humidity": 100,
-    "sea_level": 1015,
-    "grnd_level": 1010
+    "temp": 27.81,
+    "feels_like": 29.07,
+    "temp_min": 23.9,
+    "temp_max": 28.98,
+    "pressure": 1017,
+    "humidity": 59,
+    "sea_level": 1017,
+    "grnd_level": 1011
   },
   "visibility": 10000,
   "wind": {
-    "speed": 3.44,
-    "deg": 40,
-    "gust": 6.61
+    "speed": 1.03,
+    "deg": 28,
+    "gust": 0.85
   },
   "clouds": {
     "all": 100
   },
-  "dt": 1782587570,
+  "dt": 1782593254,
   "sys": {
     "type": 2,
-    "id": 2038087,
+    "id": 2033447,
     "country": "DE",
     "sunrise": 1782528308,
     "sunset": 1782588807
