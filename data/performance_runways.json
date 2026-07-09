@@ -2,12 +2,12 @@
   "_meta": {
     "source": "DFS AIP",
     "amendment": 9999,
-    "amendment_date": "08 JUL 2026",
-    "airac_effective": "2026-06-11",
-    "airac_valid_until": "2026-07-08",
-    "generated_at": "2026-07-08T05:31:08.298Z",
-    "airport_dataset": "ED_AirportHeliport_2026-06-11_2026-06-11_snapshot.xml",
-    "runway_dataset": "ED_Runway_2026-06-11_2026-06-11_snapshot.xml"
+    "amendment_date": "09 JUL 2026",
+    "airac_effective": "2026-07-09",
+    "airac_valid_until": "2026-08-05",
+    "generated_at": "2026-07-09T06:14:43.613Z",
+    "airport_dataset": "ED_AirportHeliport_2026-07-09_2026-07-09_snapshot.xml",
+    "runway_dataset": "ED_Runway_2026-07-09_2026-07-09_snapshot.xml"
   },
   "EDVE": {
     "name": "Braunschweig-Wolfsburg Airport",
@@ -540,11 +540,11 @@
     "name": "Paderborn Lippstadt Airport",
     "source": "DFS AIP",
     "runways": {
-      "24": {
+      "23": {
         "tora": 2180,
         "lda": 2180
       },
-      "06": {
+      "05": {
         "tora": 2180,
         "lda": 2180
       }
@@ -641,12 +641,12 @@
     "source": "DFS AIP",
     "runways": {
       "25": {
-        "tora": 2080,
-        "lda": 2080
+        "tora": 1301,
+        "lda": 1341
       },
       "07": {
-        "tora": 2080,
-        "lda": 2080
+        "tora": 1341,
+        "lda": 1301
       }
     }
   },
