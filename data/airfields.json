@@ -84,15 +84,15 @@
     "lon": 10.931667,
     "name": "Augsburg Airport"
   },
-  "EKRK": {
-    "lat": 55.585602,
-    "lon": 12.1314,
-    "name": "Copenhagen Roskilde Airport"
-  },
   "EDLN": {
     "lat": 51.230278,
     "lon": 6.504444,
     "name": "Mönchengladbach Airport"
+  },
+  "EKRK": {
+    "lat": 55.585602,
+    "lon": 12.1314,
+    "name": "Copenhagen Roskilde Airport"
   },
   "EPBY": {
     "lat": 53.096802,
