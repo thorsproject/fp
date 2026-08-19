@@ -5,36 +5,33 @@
   },
   "weather": [
     {
-      "id": 500,
-      "main": "Rain",
-      "description": "light rain",
-      "icon": "10d"
+      "id": 804,
+      "main": "Clouds",
+      "description": "overcast clouds",
+      "icon": "04d"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 18.49,
-    "feels_like": 18.8,
-    "temp_min": 17.75,
-    "temp_max": 19.45,
-    "pressure": 1005,
-    "humidity": 92,
-    "sea_level": 1005,
+    "temp": 19.28,
+    "feels_like": 19.64,
+    "temp_min": 18.86,
+    "temp_max": 20.01,
+    "pressure": 1003,
+    "humidity": 91,
+    "sea_level": 1003,
     "grnd_level": 999
   },
   "visibility": 10000,
   "wind": {
-    "speed": 3.13,
+    "speed": 3.58,
     "deg": 188,
-    "gust": 3.58
-  },
-  "rain": {
-    "1h": 0.41
+    "gust": 4.92
   },
   "clouds": {
     "all": 100
   },
-  "dt": 1787146432,
+  "dt": 1787156332,
   "sys": {
     "type": 2,
     "id": 2011538,
