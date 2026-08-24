@@ -5,35 +5,35 @@
   },
   "weather": [
     {
-      "id": 803,
-      "main": "Clouds",
-      "description": "broken clouds",
-      "icon": "04d"
+      "id": 800,
+      "main": "Clear",
+      "description": "clear sky",
+      "icon": "01n"
     }
   ],
   "base": "stations",
   "main": {
-    "temp": 19.79,
-    "feels_like": 19.37,
-    "temp_min": 18.88,
-    "temp_max": 21.12,
+    "temp": 15.2,
+    "feels_like": 14.79,
+    "temp_min": 12.83,
+    "temp_max": 16.15,
     "pressure": 1020,
-    "humidity": 59,
+    "humidity": 77,
     "sea_level": 1020,
     "grnd_level": 1015
   },
   "visibility": 10000,
   "wind": {
-    "speed": 1.03,
-    "deg": 0
+    "speed": 2.06,
+    "deg": 70
   },
   "clouds": {
-    "all": 65
+    "all": 0
   },
-  "dt": 1787591803,
+  "dt": 1787602459,
   "sys": {
     "type": 2,
-    "id": 2009543,
+    "id": 2011538,
     "country": "DE",
     "sunrise": 1787544222,
     "sunset": 1787595260
