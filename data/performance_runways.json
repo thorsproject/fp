@@ -2,12 +2,12 @@
   "_meta": {
     "source": "DFS AIP",
     "amendment": 9999,
-    "amendment_date": "03 SEP 2026",
-    "airac_effective": "2026-08-06",
-    "airac_valid_until": "2026-09-02",
-    "generated_at": "2026-09-03T07:09:37.115Z",
-    "airport_dataset": "ED_AirportHeliport_2026-08-06_2026-08-06_snapshot.xml",
-    "runway_dataset": "ED_Runway_2026-08-06_2026-08-06_snapshot.xml"
+    "amendment_date": "04 SEP 2026",
+    "airac_effective": "2026-09-03",
+    "airac_valid_until": "2026-09-30",
+    "generated_at": "2026-09-04T07:13:19.619Z",
+    "airport_dataset": "ED_AirportHeliport_2026-09-03_2026-09-03_snapshot.xml",
+    "runway_dataset": "ED_Runway_2026-09-03_2026-09-03_snapshot.xml"
   },
   "EDVE": {
     "name": "Braunschweig-Wolfsburg Airport",
@@ -300,58 +300,6 @@
       "28N": {
         "tora": 1325,
         "lda": 1325
-      },
-      "28S": {
-        "tora": 600,
-        "lda": 600
-      },
-      "10S": {
-        "tora": 600,
-        "lda": 600
-      }
-    }
-  },
-  "EDGS": {
-    "name": "Siegerland Airport",
-    "source": "DFS AIP",
-    "runways": {
-      "13": {
-        "tora": 1620,
-        "lda": 1620
-      },
-      "22": {
-        "tora": 500,
-        "lda": 500
-      },
-      "31": {
-        "tora": 1620,
-        "lda": 1620
-      },
-      "04": {
-        "tora": 500,
-        "lda": 500
-      },
-      "13G": {
-        "tora": 600,
-        "lda": 600
-      },
-      "31G": {
-        "tora": 600,
-        "lda": 600
-      }
-    }
-  },
-  "EDLW": {
-    "name": "Dortmund Airport",
-    "source": "DFS AIP",
-    "runways": {
-      "24": {
-        "tora": 2000,
-        "lda": 1700
-      },
-      "06": {
-        "tora": 2000,
-        "lda": 1700
       }
     }
   },
@@ -377,20 +325,6 @@
       }
     }
   },
-  "EDQD": {
-    "name": "Bayreuth Airport",
-    "source": "DFS AIP",
-    "runways": {
-      "24": {
-        "tora": 1034,
-        "lda": 1034
-      },
-      "06": {
-        "tora": 1034,
-        "lda": 1034
-      }
-    }
-  },
   "EDDP": {
     "name": "Leipzig/Halle Airport",
     "source": "DFS AIP",
@@ -413,31 +347,17 @@
       }
     }
   },
-  "EDJA": {
-    "name": "Memmingen Allgau Airport",
+  "EDQD": {
+    "name": "Bayreuth Airport",
     "source": "DFS AIP",
     "runways": {
       "24": {
-        "tora": 2630,
-        "lda": 2401
+        "tora": 1034,
+        "lda": 1034
       },
       "06": {
-        "tora": 2630,
-        "lda": 2630
-      }
-    }
-  },
-  "EDHL": {
-    "name": "Lübeck Blankensee Airport",
-    "source": "DFS AIP",
-    "runways": {
-      "25": {
-        "tora": 2102,
-        "lda": 2102
-      },
-      "07": {
-        "tora": 2102,
-        "lda": 1922
+        "tora": 1034,
+        "lda": 1034
       }
     }
   },
@@ -491,17 +411,17 @@
       }
     }
   },
-  "EDQM": {
-    "name": "Hof-Plauen Airport",
+  "EDHL": {
+    "name": "Lübeck Blankensee Airport",
     "source": "DFS AIP",
     "runways": {
-      "26": {
-        "tora": 1480,
-        "lda": 1420
+      "25": {
+        "tora": 2102,
+        "lda": 2102
       },
-      "08": {
-        "tora": 1480,
-        "lda": 1240
+      "07": {
+        "tora": 2102,
+        "lda": 1922
       }
     }
   },
@@ -522,6 +442,36 @@
       }
     }
   },
+  "EDGS": {
+    "name": "Siegerland Airport",
+    "source": "DFS AIP",
+    "runways": {
+      "13": {
+        "tora": 1620,
+        "lda": 1620
+      },
+      "22": {
+        "tora": 500,
+        "lda": 500
+      },
+      "31": {
+        "tora": 1620,
+        "lda": 1620
+      },
+      "04": {
+        "tora": 500,
+        "lda": 500
+      },
+      "13G": {
+        "tora": 600,
+        "lda": 600
+      },
+      "31G": {
+        "tora": 600,
+        "lda": 600
+      }
+    }
+  },
   "EDTM": {
     "name": "Mengen-Hohentengen Airfield",
     "source": "DFS AIP",
@@ -536,17 +486,17 @@
       }
     }
   },
-  "EDLP": {
-    "name": "Paderborn Lippstadt Airport",
+  "EDJA": {
+    "name": "Memmingen Allgau Airport",
     "source": "DFS AIP",
     "runways": {
-      "23": {
-        "tora": 2180,
-        "lda": 2180
+      "24": {
+        "lda": 2401,
+        "tora": 2630
       },
-      "05": {
-        "tora": 2180,
-        "lda": 2180
+      "06": {
+        "tora": 2630,
+        "lda": 2630
       }
     }
   },
@@ -561,6 +511,34 @@
       "31": {
         "tora": 1200,
         "lda": 1200
+      }
+    }
+  },
+  "EDLW": {
+    "name": "Dortmund Airport",
+    "source": "DFS AIP",
+    "runways": {
+      "24": {
+        "tora": 2000,
+        "lda": 1700
+      },
+      "06": {
+        "tora": 2000,
+        "lda": 1700
+      }
+    }
+  },
+  "EDLP": {
+    "name": "Paderborn Lippstadt Airport",
+    "source": "DFS AIP",
+    "runways": {
+      "23": {
+        "tora": 2180,
+        "lda": 2180
+      },
+      "05": {
+        "tora": 2180,
+        "lda": 2180
       }
     }
   },
@@ -611,6 +589,20 @@
       "09": {
         "tora": 1350,
         "lda": 1250
+      }
+    }
+  },
+  "EDQM": {
+    "name": "Hof-Plauen Airport",
+    "source": "DFS AIP",
+    "runways": {
+      "26": {
+        "tora": 1480,
+        "lda": 1420
+      },
+      "08": {
+        "tora": 1480,
+        "lda": 1240
       }
     }
   },
