@@ -184,6 +184,11 @@
     "lon": 12.516667,
     "name": "Straubing Airport"
   },
+  "EKOD": {
+    "lat": 55.475307,
+    "lon": 10.327206,
+    "name": "Odense Hans Christian Andersen Airport"
+  },
   "EDQM": {
     "lat": 50.288544,
     "lon": 11.852876,
@@ -203,11 +208,6 @@
     "lat": 48.7156982421875,
     "lon": 11.534000396728516,
     "name": "Ingolstadt Manching Airport"
-  },
-  "EKOD": {
-    "lat": 55.475307,
-    "lon": 10.327206,
-    "name": "Odense Hans Christian Andersen Airport"
   },
   "EDHK": {
     "lat": 54.37957,
@@ -264,6 +264,11 @@
     "lon": 7.2275,
     "name": "Emden Airport"
   },
+  "EDCG": {
+    "lat": 54.38347,
+    "lon": 13.325542,
+    "name": "Rügen Airport"
+  },
   "EDXR": {
     "lat": 54.220001,
     "lon": 9.599444,
@@ -288,11 +293,6 @@
     "lat": 54.338253,
     "lon": 12.710515,
     "name": "Stralsund-Barth Airport"
-  },
-  "EDCG": {
-    "lat": 54.38347,
-    "lon": 13.325542,
-    "name": "Rügen Airport"
   },
   "ETHN": {
     "lat": 49.39162,
