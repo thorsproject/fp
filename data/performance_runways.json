@@ -2,10 +2,10 @@
   "_meta": {
     "source": "DFS AIP",
     "amendment": 9999,
-    "amendment_date": "30 OCT 2026",
+    "amendment_date": "23 NOV 2026",
     "airac_effective": "2026-10-29",
     "airac_valid_until": "2026-11-25",
-    "generated_at": "2026-10-30T08:37:34.983Z",
+    "generated_at": "2026-11-23T10:43:57.442Z",
     "airport_dataset": "ED_AirportHeliport_2026-10-29_2026-10-29_snapshot.xml",
     "runway_dataset": "ED_Runway_2026-10-29_2026-10-29_snapshot.xml"
   },
